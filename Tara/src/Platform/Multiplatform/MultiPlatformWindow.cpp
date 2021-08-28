@@ -1,0 +1,144 @@
+#include "tarapch.h"
+#include "MultiPlatformWindow.h"
+
+//#include "GLFW/glfw3.h"
+
+namespace Tara {
+
+	static bool TARA_GLFW_INTITIALIZED = false;
+	
+	MultiPlatformWindow::MultiPlatformWindow(uint32_t width, uint32_t height, const std::string& title)
+	{
+		m_Data.Width = width;
+		m_Data.Height = height;
+		m_Data.Title = title;
+		m_Data.VSync = true;
+		if (!TARA_GLFW_INTITIALIZED) {
+			int result = glfwInit();
+			DCHECK_F(result, "GLFW failed to intialize properly!");
+			TARA_GLFW_INTITIALIZED = true;
+		}
+
+		m_WindowHandle = glfwCreateWindow((int)width, (int)height, title.c_str(), NULL, NULL);
+		DCHECK_NOTNULL_F(m_WindowHandle, "GLFW Window failed to be created properly!");
+		glfwMakeContextCurrent(m_WindowHandle);
+		glfwSetWindowUserPointer(m_WindowHandle, &m_Data);
+		SetVSync(true);
+
+		//Create Event Handles.....
+
+		//window closed:
+		glfwSetWindowCloseCallback(m_WindowHandle, [](GLFWwindow* window) 
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				WindowCloseEvent e;
+				data.EventCallback(e);
+			});
+
+		glfwSetWindowSizeCallback(m_WindowHandle, [](GLFWwindow* window, int width, int height)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				WindowResizeEvent e(width, height);
+				data.EventCallback(e);
+			});
+
+		glfwSetKeyCallback(m_WindowHandle, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				//KeyPressedEvent / KeyReleasedEvent
+				int repeat = 0;
+				switch (action) {
+				case GLFW_REPEAT: {
+					repeat = 1;
+				}
+				case GLFW_PRESS: {
+					KeyPressEvent e(key, mods, repeat);
+					data.EventCallback(e);
+					break;
+				}
+				case GLFW_RELEASE: {
+					KeyReleaseEvent e(key, mods);
+					data.EventCallback(e);
+					break;
+				}
+				}
+			});
+
+		glfwSetCharCallback(m_WindowHandle, [](GLFWwindow* window, unsigned int character)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				//KeyTypedEvent
+				KeyTypeEvent e(character);
+				data.EventCallback(e);
+			});
+
+		glfwSetMouseButtonCallback(m_WindowHandle, [](GLFWwindow* window, int button, int action, int mods)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				//MousePressedEvent / MouseReleasedEvent
+				switch (action) {
+				case GLFW_PRESS : {
+					MouseButtonPressEvent e(button);
+					data.EventCallback(e);
+					break;
+				}
+				case GLFW_RELEASE: {
+					MouseButtonReleaseEvent e(button);
+					data.EventCallback(e);
+					break;
+				}
+				}
+			});
+
+		glfwSetCursorPosCallback(m_WindowHandle, [](GLFWwindow* window, double xPos, double yPos)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				//MouseMovedEvent
+				MouseMoveEvent e((float)xPos, (float)yPos);
+				data.EventCallback(e);
+			});
+
+		glfwSetScrollCallback(m_WindowHandle, [](GLFWwindow* window, double xOffset, double yOffset)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				//MouseScrolledEvent
+				MouseScrollEvent e((float)xOffset, (float)yOffset);
+				data.EventCallback(e);
+			});
+
+
+	}
+
+	MultiPlatformWindow::~MultiPlatformWindow()
+	{
+		//somehow, change to be if this is the LAST window of the application
+		glfwDestroyWindow(m_WindowHandle);
+		glfwTerminate();
+	}
+
+	void MultiPlatformWindow::OnUpdate()
+	{
+		glfwPollEvents();
+		glfwSwapBuffers(m_WindowHandle); //TODO: move to renderer?
+	}
+
+	void MultiPlatformWindow::SetVSync(bool enabled)
+	{
+		if (enabled) {
+			glfwSwapInterval(1);
+		}
+		else {
+			glfwSwapInterval(0);
+		}
+		m_Data.VSync = enabled;
+	}
+
+
+
+	//call this to creat a window.
+	WindowRef Window::Create(uint32_t width, uint32_t height, const std::string& title)
+	{
+		return std::make_shared<MultiPlatformWindow>(width, height, title);
+	}
+}
+
