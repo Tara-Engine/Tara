@@ -26,6 +26,8 @@ namespace Tara {
 		void PollEvents();
 		void Render();
 
+		inline bool IsRunning() const { return m_Running; }
+
 		bool EventCallback(Event& e);
 	protected:
 		bool m_Running;
