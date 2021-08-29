@@ -20,6 +20,7 @@ namespace Tara {
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool GetVSync() = 0;
 		virtual void* GetNativeWindow() const = 0; //native window reference
+		virtual void SwapBuffers() = 0;
 
 		//implment in platform-dependant window class
 		static WindowRef Create(uint32_t width, uint32_t height, const std::string& title); 

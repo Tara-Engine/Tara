@@ -18,6 +18,7 @@ namespace Tara {
 		virtual void SetVSync(bool enabled) override;
 		virtual bool GetVSync() override { return m_Data.VSync; }
 		virtual void* GetNativeWindow() const override { return m_WindowHandle; }
+		virtual void SwapBuffers() {glfwSwapBuffers(m_WindowHandle);}
 
 	private:
 		GLFWwindow* m_WindowHandle;

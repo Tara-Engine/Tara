@@ -1,6 +1,8 @@
 #pragma once
 #include "Tara/Core/Window.h"
+#include "Tara/Core/Scene.h"
 
+//TEMP
 #include "Tara/Renderer/Shader.h"
 #include "Tara/Renderer/Buffer.h"
 #include "Tara/Renderer/VertexArray.h"
@@ -32,16 +34,14 @@ namespace Tara {
 
 		inline bool IsRunning() const { return m_Running; }
 
+		inline const WindowRef& GetWindow() const { return m_Window; }
+		inline const SceneRef& GetScene() const { return m_Scene; }
+
 		bool EventCallback(Event& e);
 	private:
 		bool m_Running;
 		WindowRef m_Window;
-
-		VertexBufferRef m_VertexBuffer;
-		IndexBufferRef m_IndexBuffer;
-		VertexArrayRef m_VertexArray;
-		ShaderRef m_Shader;
-		
+		SceneRef m_Scene;
 	};
 
 }

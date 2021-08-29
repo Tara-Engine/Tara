@@ -122,6 +122,7 @@ namespace Tara {
 	MultiPlatformWindow::~MultiPlatformWindow()
 	{
 		//somehow, change to be if this is the LAST window of the application
+		LOG_S(INFO) << "Window Object Destroyed!";
 		glfwDestroyWindow(m_WindowHandle);
 		glfwTerminate();
 	}
@@ -129,7 +130,6 @@ namespace Tara {
 	void MultiPlatformWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_WindowHandle); //TODO: move to renderer?
 	}
 
 	void MultiPlatformWindow::SetVSync(bool enabled)

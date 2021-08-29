@@ -101,6 +101,8 @@ project("Tara")
 	
 	filter("")
 
+
+
 project("Playground")
 	location("Playground")
 	kind("ConsoleApp")
@@ -121,8 +123,9 @@ project("Playground")
 	includedirs({
 		"%{prj.name}/src",
 		"Tara/src",
+		"%{IncludeDir.glad}",
 		"%{IncludeDir.loguru}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
 	})
 	
 	libdirs({
