@@ -1,6 +1,10 @@
 #pragma once
 #include "Tara/Core/Window.h"
 
+#include "Tara/Renderer/Shader.h"
+#include "Tara/Renderer/Buffer.h"
+#include "Tara/Renderer/VertexArray.h"
+
 namespace Tara {
 
 	class Application {
@@ -29,9 +33,15 @@ namespace Tara {
 		inline bool IsRunning() const { return m_Running; }
 
 		bool EventCallback(Event& e);
-	protected:
+	private:
 		bool m_Running;
 		WindowRef m_Window;
+
+		VertexBufferRef m_VertexBuffer;
+		IndexBufferRef m_IndexBuffer;
+		VertexArrayRef m_VertexArray;
+		ShaderRef m_Shader;
+		
 	};
 
 }

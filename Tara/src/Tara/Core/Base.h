@@ -8,7 +8,6 @@ if I decide to support multiple platforms
 #ifdef _WIN32
 	#ifdef _WIN64
 		#define TARA_PLATFORM_WINDOWS
-		#define DEBUG_BREAK __debugbreak()
 	#else
 		#error "x86 builds not supported!"
 	#endif
@@ -30,7 +29,6 @@ if I decide to support multiple platforms
 	#error "Android not currently Supported"
 #elif defined(__linux__)
 	#define TARA_PLATFORM_LINUX
-	#define DEBUG_BREAK __builtin_trap()
 	#error "Linux not currently Supported"
 #endif
 

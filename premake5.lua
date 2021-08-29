@@ -20,6 +20,7 @@ IncludeDir = {
 	glad = "Vendor/glad/include",
 	glfw = "Vendor/glfw/include",
 	loguru = "Vendor/loguru/include",
+	glm = "Vendor/glm"
 }
 --"sdl" = "Vendor/sdl/include",
 group("dependancies")
@@ -58,7 +59,8 @@ project("Tara")
 		"%{prj.name}/src",
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glfw}",
-		"%{IncludeDir.loguru}"
+		"%{IncludeDir.loguru}",
+		"%{IncludeDir.glm}"
 	})
 	
 	libdirs({
@@ -119,7 +121,8 @@ project("Playground")
 	includedirs({
 		"%{prj.name}/src",
 		"Tara/src",
-		"%{IncludeDir.loguru}"
+		"%{IncludeDir.loguru}",
+		"%{IncludeDir.glm}"
 	})
 	
 	libdirs({

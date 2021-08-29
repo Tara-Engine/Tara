@@ -355,5 +355,8 @@ MigrationBackup/
 **/*.vcxproj.user
 **/*.sln
 
+# makefiles
+**/Makefile
+
 #custom log files
 **.*.log

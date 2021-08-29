@@ -1,0 +1,38 @@
+#pragma once
+#include "Tara/Renderer/Shader.h"
+
+namespace Tara {
+
+	class OpenGLShader : public Shader {
+	public:
+		OpenGLShader(Shader::SourceType type,const std::string& vertexSrc,const std::string& fragmentSrc);
+		~OpenGLShader();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		//uniform sending
+		virtual void Send(const std::string& name, int value) override;
+		virtual void Send(const std::string& name, float value) override;
+		virtual void Send(const std::string& name, const glm::vec2& value) override;
+		virtual void Send(const std::string& name, const glm::vec3& value) override;
+		virtual void Send(const std::string& name, const glm::vec4& value) override;
+		virtual void Send(const std::string& name, const glm::mat3& value) override;
+		virtual void Send(const std::string& name, const glm::mat4& value) override;
+
+	public:
+		static uint32_t DatatypeToGLenum(Shader::Datatype type);
+
+	private:
+		void Build(const std::unordered_map<uint32_t, std::string>& sources);
+		std::string ReadShaderTextFile(const std::string& filename);
+
+		int32_t GetUniformLocation(const std::string& name);
+
+	private:
+		uint32_t m_RendererID;
+		std::unordered_map<std::string, int32_t> m_UniformCache;
+
+	};
+
+}

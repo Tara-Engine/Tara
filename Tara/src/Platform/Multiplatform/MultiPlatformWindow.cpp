@@ -8,6 +8,10 @@ namespace Tara {
 
 	static bool TARA_GLFW_INTITIALIZED = false;
 	
+	static void TARA_GLFW_Error_Callback(int errcode, const char* desc) {
+		LOG_S(ERROR) << "GLFW ERROR[" << errcode << "]: " << desc;
+	}
+
 	MultiPlatformWindow::MultiPlatformWindow(uint32_t width, uint32_t height, const std::string& title)
 	{
 		m_Data.Width = width;
@@ -17,9 +21,14 @@ namespace Tara {
 		if (!TARA_GLFW_INTITIALIZED) {
 			int result = glfwInit();
 			DCHECK_F(result, "GLFW failed to intialize properly!");
+			glfwSetErrorCallback(TARA_GLFW_Error_Callback);
 			TARA_GLFW_INTITIALIZED = true;
 		}
-
+		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef DEBUG
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+#endif
 		m_WindowHandle = glfwCreateWindow((int)width, (int)height, title.c_str(), NULL, NULL);
 		DCHECK_NOTNULL_F(m_WindowHandle, "GLFW Window failed to be created properly!");
 		glfwMakeContextCurrent(m_WindowHandle);
