@@ -2,6 +2,10 @@
 #include "tarapch.h"
 
 namespace Tara {
+
+	/// <summary>
+	/// The Class of the event, for filtering
+	/// </summary>
 	enum class EventClass {
 		None = 0,
 		WindowClose, WindowResize, 
@@ -10,7 +14,10 @@ namespace Tara {
 		//TODO: collision, hit, etc. Application Events
 	};
 
-	enum EventCategory {
+	/// <summary>
+	/// the Category of the event. an event might have more than one, or'd together
+	/// </summary>
+	enum EventCategory : uint16_t {
 		None = 0,
 		EventCategoryNative		 = BIT(0),
 		EventCategoryApplication = BIT(1), //FUTURE-PROOFING
@@ -26,39 +33,93 @@ namespace Tara {
 								inline virtual EventClass GetEventClass() const override {return EventClass::type;}\
 								inline virtual const char* GetName() const override { return #type; }
 
-#define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
+#define EVENT_CLASS_CATEGORY(category) virtual uint16_t GetCategoryFlags() const override { return category; }
 
-	//ALL events (collisiton, mousemoved, keypressed, hit, etc.)
+	/// <summary>
+	/// Event base class, all events are passed around as this.
+	/// </summary>
 	class Event {
 		//so that the EventFilter can view Event's private and protected members
 		friend class EventFilter; 
 	public:
+		/// <summary>
+		/// Get the class of the event
+		/// </summary>
+		/// <returns>the class of teh event</returns>
 		virtual EventClass GetEventClass() const = 0;
+		/// <summary>
+		/// Get a C-style strigified name of the event
+		/// </summary>
+		/// <returns>c-string name of the event</returns>
 		virtual const char* GetName() const = 0;
-		virtual int GetCategoryFlags() const = 0;
+		/// <summary>
+		/// get the category flags of the event
+		/// </summary>
+		/// <returns></returns>
+		virtual uint16_t GetCategoryFlags() const = 0;
+		/// <summary>
+		/// Get a C++-stype strigifiec name of the event
+		/// </summary>
+		/// <returns>std::string name of the event</returns>
 		virtual std::string ToString() const { return GetName(); }
+		/// <summary>
+		/// Get if the event has been marked as handled or not
+		/// </summary>
+		/// <returns>true if handled, false otherwise</returns>
 		inline bool Handled() const { return m_Handled; }
+		/// <summary>
+		/// check if the event is in a given category.
+		/// </summary>
+		/// <param name="category">the category to test for</param>
+		/// <returns>bool if the event is in the category</returns>
 		inline bool isInCategory(EventCategory category) { return GetCategoryFlags() & category; }
 	protected:
+		/// <summary>
+		/// protected bool to store if the event has been handled.
+		/// </summary>
 		bool m_Handled = false;
 	};
 
-	//native window events
+	
+	/// <summary>
+	/// Natvie Window Events
+	/// </summary>
 	class NativeEvent : public Event {
 		EVENT_CLASS_CATEGORY(EventCategoryNative)
 	};
 
-	//game events
+	/// <summary>
+	/// Engine- or Appliction-generated events
+	/// Such as collision, trace hits, etc.
+	/// </summary>
 	class ApplicationEvent : public Event {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	//used for filtering events to various specific event functions
+	/// <summary>
+	/// A filter to filer events based on class to different funcions.
+	/// Usage:
+	/// EventFilter filter(event);
+	/// filter.Call&lt;EventSubclassName&gt;(TARA_BIND_FN(ClassName:FunctionName));
+	/// filter.Call&lt;EventDifferentSubclassName&gt;(TARA_BIND_FN(ClassName:FunctionName));
+	/// </summary>
 	class EventFilter {
 	public:
+		/// <summary>
+		/// Constructor for an Event Filter
+		/// </summary>
+		/// <param name="e">The event</param>
 		EventFilter(Event& e)
 			: m_Event(e) {}
-		template<typename T, typename F> bool Dispatch(const F& func) {
+		/// <summary>
+		/// Attempt to call the supplied function with the event the filter was created with, 
+		/// if it is the supplied subclass
+		/// </summary>
+		/// <typeparam name="T">EventSubclassType</typeparam>
+		/// <typeparam name="F">function type, [bool](EventSubclassType e){...}</typeparam>
+		/// <param name="func">the bound function</param>
+		/// <returns>bool if the function could be called</returns>
+		template<typename T, typename F> bool Call(const F& func) {
 			if (m_Event.GetEventClass() == T::GetStaticClass()) {
 				m_Event.m_Handled = func(static_cast<T&>(m_Event));
 				return true;
@@ -66,10 +127,18 @@ namespace Tara {
 			return false;
 		}
 	private:
+		/// <summary>
+		/// The stored event
+		/// </summary>
 		Event& m_Event;
 	};
 	
-	//used for logging events
+	/// <summary>
+	/// Event logging through streams
+	/// </summary>
+	/// <param name="os">the stream</param>
+	/// <param name="e">the event</param>
+	/// <returns>the stream, again</returns>
 	inline std::ostream& operator<<(std::ostream& os, const Event& e) {
 		return os << e.ToString();
 	}
@@ -78,6 +147,10 @@ namespace Tara {
 	|							Individual Event Classes								|
 	\----------------------------------------------------------------------------------*/
 
+	/// <summary>
+	/// Window Closed Event
+	/// Generated when the window is closed
+	/// </summary>
 	class WindowCloseEvent : public NativeEvent {
 	public:
 		WindowCloseEvent(){}
@@ -85,6 +158,10 @@ namespace Tara {
 		EVENT_CLASS_CATEGORY(EventCategoryNative)
 	};
 
+	/// <summary>
+	/// Window Resize Event
+	/// Created when the window is resized
+	/// </summary>
 	class WindowResizeEvent : public NativeEvent {
 	public:
 		WindowResizeEvent(uint32_t width, uint32_t height)
@@ -106,7 +183,10 @@ namespace Tara {
 		uint32_t m_Width, m_Height;
 	};
 
-	//base class for key events
+	/// <summary>
+	/// Key Event
+	/// abstract base class for key events
+	/// </summary>
 	class KeyEvent : public NativeEvent {
 	public:
 		KeyEvent(int32_t key, int32_t mods)
@@ -118,6 +198,10 @@ namespace Tara {
 		int32_t m_Key, m_Mods;
 	};
 
+	/// <summary>
+	/// Key Pressed Event
+	/// Generated when a key is pressed or repeated
+	/// </summary>
 	class KeyPressEvent : public KeyEvent {
 	public:
 		KeyPressEvent(int32_t key, int32_t mods, int32_t repeatCount)
@@ -133,6 +217,10 @@ namespace Tara {
 		int32_t m_RepeatCount;
 	};
 
+	/// <summary>
+	/// Key Released Event
+	/// generated when a key is released
+	/// </summary>
 	class KeyReleaseEvent : public KeyEvent {
 	public:
 		KeyReleaseEvent(int32_t key, int32_t mods)
@@ -145,6 +233,10 @@ namespace Tara {
 		EVENT_CLASS_CLASS(KeyRelease)
 	};
 
+	/// <summary>
+	/// Key Typed Event
+	/// generated when a typing key is pressed. The key is an ASCII keycode, and can be cast to char
+	/// </summary>
 	class KeyTypeEvent : public KeyEvent {
 	public:
 		KeyTypeEvent(int32_t key)
@@ -156,8 +248,11 @@ namespace Tara {
 		}
 		EVENT_CLASS_CLASS(KeyType)
 	};
-
-	//base class for mouse button events
+	
+	/// <summary>
+	/// Mouse Button Events
+	/// base class for mouse button events
+	/// </summary>
 	class MouseButtonEvent : public NativeEvent {
 	public:
 		MouseButtonEvent(int32_t button)
@@ -168,6 +263,10 @@ namespace Tara {
 		int32_t m_Button;
 	};
 
+	/// <summary>
+	/// Mouse Button Press Event
+	/// created when a mouse button is pressed
+	/// </summary>
 	class MouseButtonPressEvent : public MouseButtonEvent {
 	public:
 		MouseButtonPressEvent(int32_t button)
@@ -180,6 +279,10 @@ namespace Tara {
 		EVENT_CLASS_CLASS(MouseButtonPress)
 	};
 
+	/// <summary>
+	/// Mouse Button Release Event
+	/// created when a mouse button is released
+	/// </summary>
 	class MouseButtonReleaseEvent : public MouseButtonEvent {
 	public:
 		MouseButtonReleaseEvent(int32_t button)
@@ -192,6 +295,10 @@ namespace Tara {
 		EVENT_CLASS_CLASS(MouseButtonRelease)
 	};
 
+	/// <summary>
+	/// Mouse Move Event
+	/// created when the mouse is moved
+	/// </summary>
 	class MouseMoveEvent : public NativeEvent {
 	public:
 		MouseMoveEvent(float xPos, float yPos)
@@ -209,6 +316,10 @@ namespace Tara {
 		float m_xPos, m_yPos;
 	};
 
+	/// <summary>
+	/// Mouse Scroll Event
+	/// created when the mouse is scrolled.
+	/// </summary>
 	class MouseScrollEvent : public NativeEvent {
 	public:
 		MouseScrollEvent(float xOffset, float yOffset)

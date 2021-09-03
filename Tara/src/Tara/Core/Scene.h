@@ -6,29 +6,59 @@
 
 namespace Tara {
 
-
+	/// <summary>
+	/// Scene class, or, a level in a game.
+	/// </summary>
 	class Scene {
 	public:
+		/// <summary>
+		/// Construct a new default scene
+		/// </summary>
 		Scene();
 		virtual ~Scene();
 
-		/*
-		used for "soft" loading/unloading. 
-		IE, a deactivated scene should be able to be actiavated
-		again, and behave just as right before it was deactivated.
-		Activation is the step in construction (except for overloaded constructors!), 
-		while deactivation is a step in deletion.
-		*/
+		/// <summary>
+		/// Activate a scene. DOES NOT automatically get called from constructor.
+		/// Used for re-loading a deactivated scene
+		/// </summary>
 		virtual void Activate();
+		/// <summary>
+		/// Deactiveate a scene. DOES NOT automatically get called from destructor.
+		/// Used for soft unloading a scene
+		/// </summary>
 		virtual void Deactivate();
 
+		/// <summary>
+		/// Update the Scene
+		/// </summary>
 		virtual void Update();
+		/// <summary>
+		/// Draw the Scene
+		/// </summary>
 		virtual void Draw();
+		/// <summary>
+		/// Pass an Event to scene
+		/// </summary>
+		/// <param name="e">the event</param>
 		virtual void OnEvent(Event& e);
 
 
-
+		/// <summary>
+		/// Push a Layer into the Scene.
+		/// The Scene takes ownership of the Layer. A Layer should never belong to two scenes, 
+		/// this will cause undefined behavior.
+		/// </summary>
+		/// <param name="layer">the layer to push</param>
+		/// <returns>true if layer pushed correctly</returns>
 		bool PushLayer(Layer* layer);
+		/// <summary>
+		/// Push an Overlay Layer into the Scene.
+		/// The Scene takes ownership of the Layer. A Layer should never belong to two scenes, 
+		/// this will cause undefined behavior.
+		/// Overlay Layers are drawn after all regular layers, and should be used for UI.
+		/// </summary>
+		/// <param name="layer">the layer to push</param>
+		/// <returns>true if layer pushed correctly</returns>
 		bool PushOverlay(Layer* layer);
 
 	private:
@@ -38,6 +68,9 @@ namespace Tara {
 
 	};
 
+	/// <summary>
+	/// Reference to a Scene class, or, a level in a game.
+	/// </summary>
 	using SceneRef = std::shared_ptr<Scene>;
 
 }

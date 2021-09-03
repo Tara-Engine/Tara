@@ -5,18 +5,15 @@
 namespace Tara {
 	Scene::Scene()
 	{
-		//TODO: initialize two basic layers...
-		Activate();
 	}
 
 	Scene::~Scene()
 	{
-		Deactivate();
-
 	}
 
 	void Scene::Activate()
 	{
+		//TODO: initialize two basic layers...
 	}
 
 	void Scene::Deactivate()

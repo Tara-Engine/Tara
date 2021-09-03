@@ -5,14 +5,24 @@ A Tara application, for testing purposes.
 */
 #include <Tara.h>
 
+/// <summary>
+/// Testing Layer
+/// </summary>
 class TestingLayer : public Tara::Layer {
 public:
+	/// <summary>
+	/// Constructor
+	/// </summary>
 	TestingLayer() {}
+	
 	~TestingLayer() {
 		Deactivate();
 	}
 
-	virtual void Activate() {
+	/// <summary>
+	/// Activattion function override
+	/// </summary>
+	virtual void Activate() override {
 		LOG_S(INFO) << "Testing Layer Activated!";
 
 		m_VertexArray = Tara::VertexArray::Create();
@@ -24,22 +34,22 @@ public:
 			 0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 			 0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 		};
-		Tara::VertexBufferRef VBRef = Tara::VertexBuffer::Create(vertecies, sizeof(vertecies) / sizeof(float));
+		Tara::VertexBufferRef vb_ref = Tara::VertexBuffer::Create(vertecies, sizeof(vertecies) / sizeof(float));
 
-		VBRef->SetLayout({
+		vb_ref->SetLayout({
 			{Tara::Shader::Datatype::Float3, "position"},
 			{Tara::Shader::Datatype::Float4, "color"}
 			});
 
-		m_VertexArray->AddVertexBuffer(VBRef);
+		m_VertexArray->AddVertexBuffer(vb_ref);
 
 
 		//Index Buffer
 		uint32_t indecies[3] = {
 			0, 1, 2
 		};
-		Tara::IndexBufferRef IBRef = Tara::IndexBuffer::Create(indecies, sizeof(indecies) / sizeof(uint32_t));
-		m_VertexArray->SetIndexBuffer(IBRef);
+		Tara::IndexBufferRef ib_ref = Tara::IndexBuffer::Create(indecies, sizeof(indecies) / sizeof(uint32_t));
+		m_VertexArray->SetIndexBuffer(ib_ref);
 
 
 		m_Shader = Tara::Shader::Create(
@@ -77,7 +87,7 @@ int main(int argc, char** argv) {
 	Tara::Application::Get()->Init(1200, 700, "Tara Playground Application!");
 	//add layers to scene...
 	Tara::Application::Get()->GetScene()->PushLayer(new TestingLayer());
-
+	//run
 	Tara::Application::Get()->Run();
 	return 0;
 }

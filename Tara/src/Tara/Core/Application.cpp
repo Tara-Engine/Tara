@@ -35,7 +35,7 @@ namespace Tara {
 	void Application::Init(uint32_t x, uint32_t y, const std::string& title)
 	{
 		m_Window = Window::Create(x, y, title);
-		m_Window->SetNativeEventCallback(BIND_EVENT_FN(Application::EventCallback));
+		m_Window->SetNativeEventCallback(TARA_BIND_FN(Application::EventCallback));
 		Input::Init(m_Window);
 
 		RenderCommand::Init();

@@ -41,5 +41,5 @@ that should be in every file
 #define BIT(x) (1 << x)
 
 //used to bind event functions
-#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+#define TARA_BIND_FN(x) std::bind(&x, this, std::placeholders::_1)
 
