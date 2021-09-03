@@ -143,6 +143,10 @@ namespace Tara {
 		m_Data.VSync = enabled;
 	}
 
+	void MultiPlatformWindow::SwapBuffers()
+	{
+		glfwSwapBuffers(m_WindowHandle);
+	}
 
 
 	//call this to creat a window.

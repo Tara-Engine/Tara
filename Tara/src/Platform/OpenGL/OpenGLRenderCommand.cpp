@@ -18,7 +18,7 @@ namespace Tara{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 
-	inline void OpenGLRenderCommand::GLError(
+	void OpenGLRenderCommand::GLError(
 		uint32_t source,
 		uint32_t type,
 		uint32_t id,
