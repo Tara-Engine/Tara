@@ -20,7 +20,9 @@ IncludeDir = {
 	glad = "Vendor/glad/include",
 	glfw = "Vendor/glfw/include",
 	loguru = "Vendor/loguru/include",
-	glm = "Vendor/glm"
+	glm = "Vendor/glm",
+	stb = "Vendor/stb",
+	json = "Vendor/json/single_include"
 }
 --"sdl" = "Vendor/sdl/include",
 group("dependancies")
@@ -60,7 +62,9 @@ project("Tara")
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.glfw}",
 		"%{IncludeDir.loguru}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb}",
+		"%{IncludeDir.json}",
 	})
 	
 	libdirs({
@@ -126,6 +130,7 @@ project("Playground")
 		"%{IncludeDir.glad}",
 		"%{IncludeDir.loguru}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.json}",
 	})
 	
 	libdirs({

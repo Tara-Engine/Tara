@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "Shader.h"
+#include "Tara/Asset/AssetLibrary.h"
 
 //platform-specific includes
 #include "Platform/OpenGL/OpenGLShader.h"
@@ -43,13 +44,15 @@ namespace Tara {
         }
         return 0;
     }
-    ShaderRef Shader::Create(Shader::SourceType type, const std::string& vertexSrc, const std::string& fragmentSrc)
+    ShaderRef Shader::Create(const std::string& name, Shader::SourceType type, const std::string& vertexSrc, const std::string& fragmentSrc)
     {
+        ShaderRef ref;
         switch (Renderer::GetRenderBackend()) {
-        case RenderBackend::OpenGl: return std::make_shared<OpenGLShader>(type, vertexSrc, fragmentSrc);
+        case RenderBackend::OpenGl: ref = std::make_shared<OpenGLShader>(name, type, vertexSrc, fragmentSrc); break;
 
         case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
         }
-        return ShaderRef();
+        AssetLibrary::Get()->RegisterAsset(ref);
+        return ref;
     }
 }

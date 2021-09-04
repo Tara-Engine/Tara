@@ -9,11 +9,12 @@
 namespace Tara{
 
 	OpenGLShader::OpenGLShader(
+		const std::string& name,
 		Shader::SourceType type, 
 		const std::string& vertexSrc, 
 		const std::string& fragmentSrc
 	)
-		: m_RendererID(0)
+		: Shader(name), m_RendererID(0)
 	{
 		switch (type) {
 		case Shader::SourceType::Strings: {

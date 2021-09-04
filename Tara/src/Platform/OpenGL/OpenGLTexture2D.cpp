@@ -1,0 +1,86 @@
+#include "tarapch.h"
+#include "OpenGLTexture2D.h"
+#include "Tara/Asset/AssetLibrary.h"
+
+#include "glad/glad.h"
+#include "stb_image.h"
+
+
+namespace Tara{
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
+		: Texture2D(GetAssetNameFromPath(path)), m_Path(path), m_RendererID(0), m_Width(0), m_Height(0)
+	{
+		loadFromFile();
+		LOG_S(INFO) << "Image Loaded from File: " << path;
+	}
+
+	OpenGLTexture2D::~OpenGLTexture2D()
+	{
+		glDeleteTextures(1, &m_RendererID);
+	}
+
+	void OpenGLTexture2D::Bind(int slot) const
+	{
+		glBindTextureUnit(slot, m_RendererID);
+	}
+
+	void OpenGLTexture2D::loadFromFile()
+	{
+		int32_t width, height, channels;
+		stbi_set_flip_vertically_on_load(1);
+		//stbi_set_unpremultiply_on_load(1);
+		stbi_uc* imageData = stbi_load(m_Path.c_str(), &width, &height, &channels, 0);
+		DCHECK_NOTNULL_F(imageData, "Failed to load image! Path: %s", m_Path);
+		m_Width = width;
+		m_Height = height;
+
+		GLenum internalFormat = 0, dataFormat = 0;
+		
+
+		switch (channels) {
+		case 1: {
+			internalFormat = GL_R8;
+			dataFormat = GL_RED;
+			break;
+		}
+		case 2: {
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RG;
+			break;
+		}
+		case 3: {
+			internalFormat = GL_RGB8;
+			dataFormat = GL_RGB;
+			break;
+		}
+		case 4: {
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+			break;
+		}
+		default: break;
+		}
+
+		DCHECK_F(internalFormat && dataFormat, "Unsupported number of channels in an image!");
+
+		//should be able to regenerate on the fly...
+		if (m_RendererID == 0) {
+			glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+		}
+		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
+
+		//TODO: make these setting that can be changed!
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTextureSubImage2D(
+			m_RendererID,
+			0,0,0,
+			m_Width, m_Height,
+			dataFormat, GL_UNSIGNED_BYTE,
+			imageData
+		);
+
+		stbi_image_free(imageData);
+	}
+}

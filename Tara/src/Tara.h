@@ -14,6 +14,7 @@
 #include "Tara/Renderer/VertexArray.h"
 #include "Tara/Renderer/Shader.h"
 #include "Tara/Renderer/RenderCommand.h"
+#include "Tara/Renderer/Texture.h"
 
 //Core
 #include "Tara/Core/Scene.h"
@@ -21,6 +22,9 @@
 #include "Tara/Core/Window.h"
 #include "Tara/Core/Application.h"
 
+//Assets
+#include "Tara/Asset/AssetLibrary.h"
+#include "Tara/Asset/Asset.h"
 
 #define LOGURU_WITH_STREAMS 1
 #include "loguru/loguru.hpp"

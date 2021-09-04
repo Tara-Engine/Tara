@@ -24,10 +24,7 @@ namespace Tara {
 		/// Get the singleton Application
 		/// </summary>
 		/// <returns>Application pointer</returns>
-		static Application* Get() {
-			static Application app;
-			return &app;
-		}
+		static Application* Get();
 		//singleton stuff
 		Application(Application const&) = delete;
 		void operator=(Application const&) = delete;

@@ -1,17 +1,21 @@
 #pragma once
 #include "Tara/Renderer/Renderer.h"
 #include "glm/glm.hpp"
+#include "Tara/Asset/Asset.h"
 
 namespace Tara {
 	/// <summary>
 	/// Shader class for storing and making shaders
 	/// </summary>
-	class Shader {
+	class Shader : public Asset{
 		/// <summary>
 		/// Shader reference
 		/// </summary>
 		using ShaderRef = std::shared_ptr<Shader>;
 	public:
+		Shader(const std::string name)
+			: Asset(name) {}
+
 		virtual ~Shader() {}
 		/// <summary>
 		/// Bind the current shader
@@ -114,6 +118,7 @@ namespace Tara {
 		/// <param name="fragmentSrc">Raw code / filepath for the fragment stage</param>
 		/// <returns></returns>
 		static ShaderRef Create(
+			const std::string& name,
 			Shader::SourceType type, 
 			const std::string& vertexSrc, 
 			const std::string& fragmentSrc

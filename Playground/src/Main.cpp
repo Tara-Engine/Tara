@@ -29,36 +29,52 @@ public:
 		m_VertexArray->Bind();
 
 		//vertex buffer
+		/*
 		float vertecies[3 * (3 + 4)] = {
 			-0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			 0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 			 0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 		};
+		*/
+		float vertecies[4 * (3 + 2)] = {
+			-0.5f, -0.5f,  0.0f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.0f,  0.0f, 1.0f
+		};
+
 		Tara::VertexBufferRef vb_ref = Tara::VertexBuffer::Create(vertecies, sizeof(vertecies) / sizeof(float));
 
 		vb_ref->SetLayout({
 			{Tara::Shader::Datatype::Float3, "position"},
-			{Tara::Shader::Datatype::Float4, "color"}
+			{Tara::Shader::Datatype::Float2, "uv"}
 			});
 
 		m_VertexArray->AddVertexBuffer(vb_ref);
 
 
 		//Index Buffer
+		/*
 		uint32_t indecies[3] = {
 			0, 1, 2
+		};
+		*/
+		uint32_t indecies[6] = {
+			0, 1, 2, 2, 3, 0
 		};
 		Tara::IndexBufferRef ib_ref = Tara::IndexBuffer::Create(indecies, sizeof(indecies) / sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(ib_ref);
 
 
-		m_Shader = Tara::Shader::Create(
+		Tara::ShaderRef shader = Tara::Shader::Create(
+			"s_BasicShader",
 			Tara::Shader::SourceType::TextFiles,
-			"assets/basic.vertex.glsl",
-			"assets/basic.fragment.glsl"
+			"assets/texture.vertex.glsl",
+			"assets/texture.fragment.glsl"
 		);
-		m_Shader->Bind();
+		shader->Bind();
 
+		m_Texture = Tara::Texture2D::Create("assets/UV_Checker.png");
 	}
 	
 	virtual void Deactivate() {
@@ -69,7 +85,15 @@ public:
 	
 	virtual void Draw() {
 		m_VertexArray->Bind();
-		m_Shader->Bind();
+		//m_Shader->Bind();
+		Tara::ShaderRef shader = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Shader>("s_BasicShader");
+		if (shader) { 
+			shader->Bind(); 
+			shader->Send("u_Texture", 0);
+		}
+		m_Texture->Bind(0);
+		
+
 		Tara::RenderCommand::Draw(m_VertexArray);
 	}
 	
@@ -79,7 +103,8 @@ public:
 private:
 	//TESTING STUFF
 	Tara::VertexArrayRef m_VertexArray;
-	Tara::ShaderRef m_Shader;
+	Tara::Texture2DRef m_Texture;
+	//Tara::ShaderRef m_Shader;
 };
 
 

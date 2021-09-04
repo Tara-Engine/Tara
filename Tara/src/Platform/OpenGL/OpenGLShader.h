@@ -5,7 +5,7 @@ namespace Tara {
 
 	class OpenGLShader : public Shader {
 	public:
-		OpenGLShader(Shader::SourceType type,const std::string& vertexSrc,const std::string& fragmentSrc);
+		OpenGLShader(const std::string& name, Shader::SourceType type,const std::string& vertexSrc,const std::string& fragmentSrc);
 		~OpenGLShader();
 
 		virtual void Bind() const override;

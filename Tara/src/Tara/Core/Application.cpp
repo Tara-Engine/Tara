@@ -24,6 +24,12 @@ namespace Tara {
 		});
 	}
 
+	Application* Application::Get()
+	{
+		static Application app;
+		return &app;
+	}
+
 	Application::~Application()
 	{	
 		m_Scene = SceneRef();	//manually cause these to be replaced
