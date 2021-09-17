@@ -47,7 +47,7 @@ namespace Tara {
 		/// <summary>
 		/// Update step
 		/// </summary>
-		void Update();
+		void Update(float deltaTime);
 
 		/// <summary>
 		/// Poll events step
@@ -57,7 +57,7 @@ namespace Tara {
 		/// <summary>
 		/// Render step
 		/// </summary>
-		void Render();
+		void Render(float deltaTime);
 
 		/// <summary>
 		/// Check if application is running
@@ -82,10 +82,18 @@ namespace Tara {
 		/// <param name="e">event</param>
 		/// <returns>if the event is handled</returns>
 		bool EventCallback(Event& e);
+
+		/// <summary>
+		/// Get the game delta time
+		/// </summary>
+		/// <returns>delta time, in seconds</returns>
+		inline float GetDeltaTime() const { return m_DeltaTime; }
 	private:
 		bool m_Running;
 		WindowRef m_Window;
 		SceneRef m_Scene;
+		float m_LastFrameTime;
+		float m_DeltaTime;
 	};
 
 }

@@ -79,11 +79,11 @@ public:
 		m_Camera = std::make_shared<Tara::OrthographicCamera>(4.0f);
 	}
 	
-	virtual void Deactivate() {
+	virtual void Deactivate() override {
 		LOG_S(INFO) << "Testing Layer Deactivated!";
 	}
 
-	virtual void Update() {
+	virtual void Update(float deltaTime) override{
 		
 		//move camera
 		glm::vec3 offset = { 0.0f,0.0f,0.0f };
@@ -100,10 +100,10 @@ public:
 			offset.x += 1;
 		}
 
-		m_Camera->SetPosition(m_Camera->GetPosition() + (offset * m_PlayerSpeed));
+		m_Camera->SetPosition(m_Camera->GetPosition() + (offset * (m_PlayerSpeed * deltaTime)));
 	}
 	
-	virtual void Draw() {
+	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera);
 		
 		m_Shader->Bind();
@@ -117,7 +117,7 @@ public:
 	}
 	
 	
-	virtual void OnEvent(Tara::Event& e) {}
+	virtual void OnEvent(Tara::Event& e) override {}
 
 private:
 	//TESTING STUFF
@@ -125,7 +125,7 @@ private:
 	Tara::Texture2DRef m_Texture;
 	Tara::ShaderRef m_Shader;
 	Tara::CameraRef m_Camera;
-	float m_PlayerSpeed = 0.1f;
+	float m_PlayerSpeed = 1.0f;
 };
 
 

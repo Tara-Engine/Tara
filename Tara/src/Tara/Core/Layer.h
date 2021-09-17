@@ -1,7 +1,7 @@
 #pragma once
 #include "tarapch.h"
 #include "Tara/Input/Event.h"
-
+#include "Tara/Core/Entity.h"
 
 namespace Tara {
 
@@ -11,6 +11,7 @@ namespace Tara {
 	/// a instance of that subclass pushed to a scene.
 	/// </summary>
 	class Layer {
+		friend class Entity;
 	public:
 		/// <summary>
 		/// Layer Constructor
@@ -31,11 +32,11 @@ namespace Tara {
 		/// <summary>
 		/// Update function for a layer
 		/// </summary>
-		virtual void Update();
+		virtual void Update(float deltaTime);
 		/// <summary>
 		/// Draw function for a Layer
 		/// </summary>
-		virtual void Draw();
+		virtual void Draw(float deltaTime);
 		/// <summary>
 		/// Event function for a Layer
 		/// Used to pass events to the layer.
@@ -44,6 +45,17 @@ namespace Tara {
 		virtual void OnEvent(Event& e);
 
 		//TODO: stuff relating to entities and components
+
+		bool AddEntity(EntityRef ref);
+
+		bool RemoveEntity(EntityRef ref);
+
+		bool IsEntityRoot(EntityRef ref);
+
+
+	private:
+
+		std::list<EntityRef> m_Entities;
 
 	};
 

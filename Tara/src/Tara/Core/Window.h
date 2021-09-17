@@ -65,6 +65,12 @@ namespace Tara {
 		/// <param name="title">window title</param>
 		/// <returns>Window reference</returns>
 		static WindowRef Create(uint32_t width, uint32_t height, const std::string& title); 
+
+		/// <summary>
+		/// Get the last frame time. Not quite Delta Time, but used to calculate it.
+		/// </summary>
+		/// <returns>the last frame time, in seconds</returns>
+		virtual float GetLastFrameTime() const = 0;
 	};
 
 	/// <summary>

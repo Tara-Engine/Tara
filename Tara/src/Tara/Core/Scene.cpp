@@ -21,23 +21,23 @@ namespace Tara {
 	}
 
 
-	void Scene::Update()
+	void Scene::Update(float deltaTime)
 	{
 		for (auto& layer : m_Layers) {
-			layer->Update();
+			layer->Update(deltaTime);
 		}
 		for (auto& layer : m_Overlays) {
-			layer->Update();
+			layer->Update(deltaTime);
 		}
 	}
 
-	void Scene::Draw()
+	void Scene::Draw(float deltaTime)
 	{
 		for (auto& layer : m_Layers) {
-			layer->Draw();
+			layer->Draw(deltaTime);
 		}
 		for (auto& layer : m_Overlays) {
-			layer->Draw();
+			layer->Draw(deltaTime);
 		}
 	}
 

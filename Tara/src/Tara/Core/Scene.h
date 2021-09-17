@@ -31,11 +31,11 @@ namespace Tara {
 		/// <summary>
 		/// Update the Scene
 		/// </summary>
-		virtual void Update();
+		virtual void Update(float deltaTime);
 		/// <summary>
 		/// Draw the Scene
 		/// </summary>
-		virtual void Draw();
+		virtual void Draw(float deltaTime);
 		/// <summary>
 		/// Pass an Event to scene
 		/// </summary>

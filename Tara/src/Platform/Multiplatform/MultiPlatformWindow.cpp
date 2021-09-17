@@ -149,6 +149,11 @@ namespace Tara {
 		glfwSwapBuffers(m_WindowHandle);
 	}
 
+	float MultiPlatformWindow::GetLastFrameTime() const
+	{
+		return (float)glfwGetTime();
+	}
+
 
 	//call this to creat a window.
 	WindowRef Window::Create(uint32_t width, uint32_t height, const std::string& title)

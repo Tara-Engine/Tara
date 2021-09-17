@@ -56,9 +56,14 @@ namespace Tara {
 		//default application main loop
 		while (m_Running) {
 			try {
+				//get deltaTime 
+				float time = m_Window->GetLastFrameTime();
+				m_DeltaTime = time - m_LastFrameTime;
+				m_LastFrameTime = time;
+
 				PollEvents();
-				Update();
-				Render();
+				Update(m_DeltaTime);
+				Render(m_DeltaTime);
 				
 			}
 			catch (std::exception e) {
@@ -69,12 +74,12 @@ namespace Tara {
 		} 
 	}
 
-	void Application::Update()
+	void Application::Update(float deltaTime)
 	{
 		//update the window first, to cause all event states to update
 		m_Window->OnUpdate();
 		//then, update the scene
-		m_Scene->Update();
+		m_Scene->Update(deltaTime);
 	}
 
 	void Application::PollEvents()
@@ -85,13 +90,13 @@ namespace Tara {
 		//Then, poll it for any events, and pass to the scene
 	}
 
-	void Application::Render()
+	void Application::Render(float deltaTime)
 	{
 		//clear window
 		RenderCommand::SetClearColor(0.0f, 0.0f, 0.0f);
 		RenderCommand::Clear();
 		//draw scene
-		m_Scene->Draw();
+		m_Scene->Draw(deltaTime);
 		//swap buffers
 		m_Window->SwapBuffers();
 	}
