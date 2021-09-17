@@ -6,10 +6,10 @@
 #include "Platform/OpenGL/OpenGLBuffer.h"
 namespace Tara{
 
-    VertexBufferRef VertexBuffer::Create(float* verteces, uint32_t count)
+    VertexBufferRef VertexBuffer::Create(float* vertices, uint32_t count)
     {
         switch (Renderer::GetRenderBackend()) {
-        case RenderBackend::OpenGl : return std::make_shared<OpenGLVertexBuffer>(verteces, count);
+        case RenderBackend::OpenGl : return std::make_shared<OpenGLVertexBuffer>(vertices, count);
 
         case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
         }
@@ -17,10 +17,10 @@ namespace Tara{
     }
 
 
-    IndexBufferRef IndexBuffer::Create(uint32_t* indecies, uint32_t count)
+    IndexBufferRef IndexBuffer::Create(uint32_t* indices, uint32_t count)
     {
         switch (Renderer::GetRenderBackend()) {
-        case RenderBackend::OpenGl: return std::make_shared<OpenGLIndexBuffer>(indecies, count);
+        case RenderBackend::OpenGl: return std::make_shared<OpenGLIndexBuffer>(indices, count);
 
         case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
         }

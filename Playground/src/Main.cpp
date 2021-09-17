@@ -30,20 +30,20 @@ public:
 
 		//vertex buffer
 		/*
-		float vertecies[3 * (3 + 4)] = {
+		float vertices[3 * (3 + 4)] = {
 			-0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 			 0.0f,  0.5f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
 			 0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 		};
 		*/
-		float vertecies[4 * (3 + 2)] = {
+		float vertices[4 * (3 + 2)] = {
 			-0.5f, -0.5f,  0.0f,  0.0f, 0.0f,
 			 0.5f, -0.5f,  0.0f,  1.0f, 0.0f,
 			 0.5f,  0.5f,  0.0f,  1.0f, 1.0f,
 			-0.5f,  0.5f,  0.0f,  0.0f, 1.0f
 		};
 
-		Tara::VertexBufferRef vb_ref = Tara::VertexBuffer::Create(vertecies, sizeof(vertecies) / sizeof(float));
+		Tara::VertexBufferRef vb_ref = Tara::VertexBuffer::Create(vertices, sizeof(vertices) / sizeof(float));
 
 		vb_ref->SetLayout({
 			{Tara::Shader::Datatype::Float3, "position"},
@@ -59,10 +59,10 @@ public:
 			0, 1, 2
 		};
 		*/
-		uint32_t indecies[6] = {
+		uint32_t indices[6] = {
 			0, 1, 2, 2, 3, 0
 		};
-		Tara::IndexBufferRef ib_ref = Tara::IndexBuffer::Create(indecies, sizeof(indecies) / sizeof(uint32_t));
+		Tara::IndexBufferRef ib_ref = Tara::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(ib_ref);
 
 

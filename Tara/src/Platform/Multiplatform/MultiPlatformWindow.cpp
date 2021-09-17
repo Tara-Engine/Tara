@@ -61,6 +61,7 @@ namespace Tara {
 				case GLFW_REPEAT: {
 					repeat = 1;
 				}
+				// fallthrough
 				case GLFW_PRESS: {
 					KeyPressEvent e(key, mods, repeat);
 					data.EventCallback(e);

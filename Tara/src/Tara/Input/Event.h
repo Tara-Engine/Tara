@@ -72,7 +72,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="category">the category to test for</param>
 		/// <returns>bool if the event is in the category</returns>
-		inline bool isInCategory(EventCategory category) { return GetCategoryFlags() & category; }
+		inline bool IsInCategory(EventCategory category) { return GetCategoryFlags() & category; }
 	protected:
 		/// <summary>
 		/// protected bool to store if the event has been handled.
