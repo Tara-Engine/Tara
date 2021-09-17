@@ -5,7 +5,7 @@ namespace Tara {
 
 	class OpenGLRenderCommand : public RenderCommand {
 	public:
-		OpenGLRenderCommand() {}
+		OpenGLRenderCommand();
 	protected:
 		virtual void ISetClearColor(float r, float g, float b) override;
 		virtual void IClear() override;

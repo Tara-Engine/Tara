@@ -1,4 +1,5 @@
 #include "tarapch.h"
+#include "Tara/Renderer/Renderer.h"
 #include "VertexArray.h"
 
 //platform-specific

@@ -16,14 +16,8 @@ namespace Tara {
 	{
 		switch (Renderer::GetRenderBackend()) {
 		case RenderBackend::OpenGl: {
-			//OpenGL context stuff
-			gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-			glDebugMessageCallback(&OpenGLRenderCommand::GLError, (void*)0);
-
-			//TODO: add opengl ponter creation
+			//add opengl ponter creation
 			s_RC = std::make_unique<OpenGLRenderCommand>();
-
 			break;
 		}
 		case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");

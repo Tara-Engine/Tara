@@ -1,5 +1,4 @@
 #pragma once
-#include "Tara/Renderer/Renderer.h"
 #include "Tara/Renderer/Shader.h"
 
 namespace Tara {

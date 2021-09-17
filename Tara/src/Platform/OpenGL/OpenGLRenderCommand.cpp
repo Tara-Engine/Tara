@@ -2,7 +2,21 @@
 #include "OpenGLRenderCommand.h"
 
 #include "glad/glad.h"
+
+//remove this, make window independant!!
+#include "GLFW/glfw3.h"
 namespace Tara{
+	OpenGLRenderCommand::OpenGLRenderCommand()
+	{
+		//load glad functions
+		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(&OpenGLRenderCommand::GLError, (void*)0);
+		//blending
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	void OpenGLRenderCommand::ISetClearColor(float r, float g, float b)
 	{
 		glClearColor(r, g, b, 1.0f);

@@ -15,6 +15,7 @@
 #include "Tara/Renderer/Shader.h"
 #include "Tara/Renderer/RenderCommand.h"
 #include "Tara/Renderer/Texture.h"
+#include "Tara/Renderer/Camera.h"
 
 //Core
 #include "Tara/Core/Scene.h"
@@ -25,6 +26,9 @@
 //Assets
 #include "Tara/Asset/AssetLibrary.h"
 #include "Tara/Asset/Asset.h"
+
+//math
+#include "Tara/Math/Types.h"
 
 #define LOGURU_WITH_STREAMS 1
 #include "loguru/loguru.hpp"

@@ -1,5 +1,9 @@
 #pragma once
 #include "tarapch.h"
+#include "Tara/Renderer/Shader.h"
+#include "Tara/Renderer/VertexArray.h"
+#include "Tara/Renderer/Camera.h"
+#include "Tara/Math/Types.h"
 
 namespace Tara {
 
@@ -25,12 +29,22 @@ namespace Tara {
 		/// <returns>the rendering backend</returns>
 		static RenderBackend GetRenderBackend() { return s_RenderBackend; }
 
+		static void BeginScene(const CameraRef camera);
+		static void EndScene();
+
+		static void Draw(VertexArrayRef vertexArray, ShaderRef shader, Transform transform);
+
 	private:
+
+		struct SceneData {
+			CameraRef camera;
+		};
+
 		/// <summary>
 		/// Stored rendering backend
 		/// </summary>
 		static RenderBackend s_RenderBackend;
-
+		static SceneData s_SceneData;
 	};
 
 }

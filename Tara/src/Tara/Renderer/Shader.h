@@ -1,5 +1,4 @@
 #pragma once
-#include "Tara/Renderer/Renderer.h"
 #include "glm/glm.hpp"
 #include "Tara/Asset/Asset.h"
 

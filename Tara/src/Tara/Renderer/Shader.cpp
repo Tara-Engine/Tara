@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "Shader.h"
+#include "Tara/Renderer/Renderer.h"
 #include "Tara/Asset/AssetLibrary.h"
 
 //platform-specific includes

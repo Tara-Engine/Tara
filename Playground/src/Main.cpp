@@ -66,35 +66,54 @@ public:
 		m_VertexArray->SetIndexBuffer(ib_ref);
 
 
-		Tara::ShaderRef shader = Tara::Shader::Create(
+		m_Shader = Tara::Shader::Create(
 			"s_BasicShader",
 			Tara::Shader::SourceType::TextFiles,
 			"assets/texture.vertex.glsl",
 			"assets/texture.fragment.glsl"
 		);
-		shader->Bind();
+		m_Shader->Bind();
 
 		m_Texture = Tara::Texture2D::Create("assets/UV_Checker.png");
+
+		m_Camera = std::make_shared<Tara::OrthographicCamera>(4.0f);
 	}
 	
 	virtual void Deactivate() {
 		LOG_S(INFO) << "Testing Layer Deactivated!";
 	}
 
-	virtual void Update() {}
+	virtual void Update() {
+		
+		//move camera
+		glm::vec3 offset = { 0.0f,0.0f,0.0f };
+		if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_S)) {
+			offset.y -= 1;
+		}
+		if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_W)) {
+			offset.y += 1;
+		}
+		if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_A)) {
+			offset.x -= 1;
+		}
+		if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_D)) {
+			offset.x += 1;
+		}
+
+		m_Camera->SetPosition(m_Camera->GetPosition() + (offset * m_PlayerSpeed));
+	}
 	
 	virtual void Draw() {
-		m_VertexArray->Bind();
-		//m_Shader->Bind();
-		Tara::ShaderRef shader = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Shader>("s_BasicShader");
-		if (shader) { 
-			shader->Bind(); 
-			shader->Send("u_Texture", 0);
-		}
+		Tara::Renderer::BeginScene(m_Camera);
+		
+		m_Shader->Bind();
+
+		m_Shader->Send("u_Texture", 0);
 		m_Texture->Bind(0);
 		
+		Tara::Renderer::Draw(m_VertexArray, m_Shader, { {0,0,0}, {0,0,0}, {1,1,1} });
 
-		Tara::RenderCommand::Draw(m_VertexArray);
+		Tara::Renderer::EndScene();
 	}
 	
 	
@@ -104,7 +123,9 @@ private:
 	//TESTING STUFF
 	Tara::VertexArrayRef m_VertexArray;
 	Tara::Texture2DRef m_Texture;
-	//Tara::ShaderRef m_Shader;
+	Tara::ShaderRef m_Shader;
+	Tara::CameraRef m_Camera;
+	float m_PlayerSpeed = 0.1f;
 };
 
 

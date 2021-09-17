@@ -1,4 +1,5 @@
 #include "tarapch.h"
+#include "Tara/Renderer/Renderer.h"
 #include "Buffer.h"
 
 //platfrom-specific
