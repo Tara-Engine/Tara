@@ -33,7 +33,19 @@ namespace Tara{
             ref->m_Parent.lock()->AddChild(ref); //auto cast to weak_ptr
         }
         else {
-            ref->m_OwningLayer.lock()->AddEntity(ref);//auto cast to weak_ptr
+            bool result = ref->m_OwningLayer.lock()->AddEntity(ref);//auto cast to weak_ptr
+            //LOG_S(INFO) << "Entity Registered! Name: [" << ref->GetName() << "] Sucess? " << result;
+        }
+    }
+
+    Transform Entity::GetWorldTransform() const
+    {
+        if (GetParent().lock()) {
+            auto parentTransform = GetParent().lock()->GetWorldTransform();
+            return parentTransform + m_Transform;
+        }
+        else {
+            return m_Transform;
         }
     }
 
@@ -65,15 +77,16 @@ namespace Tara{
         return nullptr;
     }
 
-    //TODO: add parenting child to level
     EntityRef Entity::RemoveChildByName(const std::string& name)
     {
         for (auto child : m_Children) {
             if (child->GetName() == name) {
-                m_Children.remove(child);
-                child->SetParent(std::weak_ptr<Entity>());
-                m_OwningLayer.lock()->AddEntity(child);
-                return child;
+                if (RemoveChildByRef(child)) {
+                    return child;
+                }
+                else {
+                    return nullptr;
+                }
             }
         }
         return nullptr;
@@ -155,18 +168,35 @@ namespace Tara{
 
     void Entity::Draw(float deltaTime)
     {
-        //draw children first, then self
+        //draw self first, then children
+        OnDraw( deltaTime);
         for (auto child : m_Children) {
             child->Draw(deltaTime);
         }
-        OnDraw(deltaTime);
+    }
+
+    void Entity::DebugLogAllChildren(bool recursive, int indentLevel) const
+    {
+        for (auto child : m_Children) {
+            LOG_S(INFO) << std::string(indentLevel, ' ') << child->GetName() << "{" << (child->GetParent().lock() == shared_from_this()) << "}";
+            if (recursive) {
+                child->DebugLogAllChildren(true, indentLevel + 1);
+            }
+            
+        }
     }
 
     void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
     {
+        if (newParent.lock() == nullptr) {
+            LOG_S(INFO) << "Entity::SetParent clearing the parent.";
+            m_Parent = EntityNoRef();
+            return;
+        }
         //make sure the new parent is not a child
         //if ignoreChecks is true, it should not run the IsChild function
         if (!ignoreChecks || IsChild(newParent.lock(), true)) {
+            LOG_S(WARNING) << "Entity::SetParent called, but parent not set.";
             return;
         }
         m_Parent = newParent;

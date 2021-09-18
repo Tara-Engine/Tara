@@ -41,8 +41,21 @@ public:
 			LOG_S(ERROR) << "weak_from_this is null!";
 		}
 
-		auto entity = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Transform{ {0.5,0.5,0}, {0,0,0}, {1,1,1}});
+		auto entity = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Transform{ {1,0,0}, {0,0,0}, {1,1,1}}, "YellowSquare");
 		entity->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+		m_Parent1 = entity;
+
+		entity = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Transform{ {-2,0,0}, {0,0,0}, {1,1,1} }, "RedSquare");
+		entity->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+		m_Parent2 = entity;
+
+		entity = TColorRectEntity::Create(m_Parent1, weak_from_this(), Tara::Transform{ {0.5,-0.5,0}, {0,0,0}, {0.5,0.5,1} }, "BlueSquare");
+		entity->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
+		m_Child1 = entity;
+
+		entity = TColorRectEntity::Create(m_Child1, weak_from_this(), Tara::Transform{ {0.5,-0.5,0}, {0,0,0}, {0.5,0.5,1} }, "CyanSquare");
+		entity->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+		m_Child2 = entity;
 	}
 	
 	virtual void Deactivate() override {
@@ -74,7 +87,7 @@ public:
 	
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera);
-		
+		//LOG_S(INFO) << "Scene Begun!";
 		/*anatomy of a transform:
 		* { { pos as vec3}, {euler angle rot as rotator}, {scale as vec3} }
 		*/
@@ -84,17 +97,58 @@ public:
 
 		//call super draw func
 		Tara::Layer::Draw(deltaTime);
-
+		//LOG_S(INFO) << "Scene Ended";
 		Tara::Renderer::EndScene();
 	}
 	
-	virtual void OnEvent(Tara::Event& e) override {}
+	virtual void OnEvent(Tara::Event& e) override {
+		//LOG_S(INFO) << "TestingLayer::OnEvent!";
+		Tara::EventFilter filter(e);
+		filter.Call<Tara::MouseButtonPressEvent>(TARA_BIND_FN(TestingLayer::OnMousePressedEvent));
+	}
+
+	bool OnMousePressedEvent(Tara::MouseButtonPressEvent& e) {
+		//
+		if (e.getButton() == TARA_MOUSE_BUTTON_1) {
+			if (m_Child1->GetParent().lock() == m_Parent1) {
+				m_Child1->SwapParent(m_Parent2);
+			}
+			else {
+				m_Child1->SwapParent(m_Parent1);
+			}
+		}
+		else if (e.getButton() == TARA_MOUSE_BUTTON_2) {
+			
+			//LOG_S(INFO) << "Mouse Button Pressed!";
+			auto entity = m_Child1->RemoveChildByName("CyanSquare");
+			if (!entity) {
+				LOG_S(INFO) << "Child not found";
+				m_Child1->AddChild(m_Child2);
+			}
+			else {
+				LOG_S(INFO) << "Child found";
+			}
+		}
+		else if (e.getButton() == TARA_MOUSE_BUTTON_3) {
+			for (auto entity : GetEntityList()) {
+				LOG_S(INFO) << entity->GetName() << "{" << (entity->GetParent().lock() == nullptr) << "}";
+				entity->DebugLogAllChildren(true, 1);
+			}
+		}
+
+		return false;
+	}
 
 private:
 	//TESTING STUFF
 	Tara::Texture2DRef m_Texture;
 	Tara::CameraRef m_Camera;
 	float m_PlayerSpeed = 1.0f;
+
+	Tara::EntityRef m_Parent1;
+	Tara::EntityRef m_Parent2;
+	Tara::EntityRef m_Child1;
+	Tara::EntityRef m_Child2;
 };
 
 

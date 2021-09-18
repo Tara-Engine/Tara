@@ -40,6 +40,7 @@ namespace Tara{
 	{
 		if (!IsEntityRoot(ref)) {
 			m_Entities.push_back(ref);
+			return true;
 		}
 		return false;
 	}
@@ -55,7 +56,7 @@ namespace Tara{
 
 	bool Layer::IsEntityRoot(EntityRef ref)
 	{
-		return std::find(m_Entities.begin(), m_Entities.end(), ref) != m_Entities.begin();
+		return std::find(m_Entities.begin(), m_Entities.end(), ref) != m_Entities.end();
 	}
 
 }

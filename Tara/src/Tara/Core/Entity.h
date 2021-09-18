@@ -72,11 +72,17 @@ namespace Tara {
 	public:
 
 		/// <summary>
-		/// Get the transform of the Entity
+		/// Get the transform of the Entity relative to parent
 		/// </summary>
 		/// <returns>the current transform</returns>
-		const Transform& GetTransform() const { return m_Transform; }
+		const Transform& GetRelativeTransform() const { return m_Transform; }
 		
+		/// <summary>
+		/// Get the world transform of the Entity
+		/// </summary>
+		/// <returns>the current world transform</returns>
+		Transform GetWorldTransform() const;
+
 		/// <summary>
 		/// Set the transform of the entity
 		/// </summary>
@@ -151,6 +157,13 @@ namespace Tara {
 		/// <param name="deltaTime"></param>
 		void Draw(float deltaTime);
 	
+
+		/// <summary>
+		/// Debug function, logs the name of every child to the output
+		/// </summary>
+		/// <param name="recursive">if it should be done recursively.</param>
+		/// <param name="indentLevel">Internal Use Only</param>
+		void DebugLogAllChildren(bool recursive = false, int indentLevel = 0) const;
 protected:
 
 		/// <summary>
@@ -159,13 +172,21 @@ protected:
 		/// <param name="newParent"> the new parent</param>
 		void SetParent(EntityNoRef newParent, bool ignoreChecks = false);
 
+		/// <summary>
+		/// Get a const ref to the list of children
+		/// </summary>
+		/// <returns>the list of children</returns>
+		const std::list<EntityRef>& GetChildren() const { return m_Children; }
 
 	protected:
 		const std::string m_Name;
 		Transform m_Transform;
-		EntityNoRef m_Parent;
 		const std::weak_ptr<Layer> m_OwningLayer;
+
+	private:
+		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
+
 	};
 
 	/// <summary>

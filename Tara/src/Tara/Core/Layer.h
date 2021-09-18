@@ -52,6 +52,10 @@ namespace Tara {
 		bool IsEntityRoot(EntityRef ref);
 
 
+	protected:
+
+		const std::list<EntityRef>& GetEntityList() const { return m_Entities; }
+
 	private:
 
 		std::list<EntityRef> m_Entities;

@@ -78,8 +78,8 @@ namespace Tara{
 		* Rotation happens in the extrinsix order or Roll, then Pitch, then Yaw. Or, around Z, then around X, then around Y.
 		*/
 
-		/*
 		glm::mat4 scale = glm::scale(glm::mat4(1), Scale);
+		
 		glm::mat4 rot = glm::rotate(
 			glm::rotate(
 				glm::rotate(
@@ -93,22 +93,25 @@ namespace Tara{
 			Rotation.Yaw, 
 			{ 0.0f, 1.0f, 0.0f }
 		);
+		
 		glm::mat4 pos = glm::translate(glm::mat4(1), Position);
-		*/
+		
 
-		//whole nasty thing in one line.
-		return glm::translate(glm::rotate(glm::rotate(glm::rotate(glm::scale(glm::mat4(1), Scale),Rotation.Roll,{ 0.0f, 0.0f, 1.0f }),Rotation.Pitch,{ 1.0f, 0.0f, 0.0f }),Rotation.Yaw,{ 0.0f, 1.0f, 0.0f }), Position);
+		return pos * rot * scale;
+
+		//whole nasty thing in one line. (except its somehow broken, causing scale to move things too.)
+		//return glm::translate(glm::rotate(glm::rotate(glm::rotate(glm::scale(glm::mat4(1), Scale),Rotation.Roll,{ 0.0f, 0.0f, 1.0f }),Rotation.Pitch,{ 1.0f, 0.0f, 0.0f }),Rotation.Yaw,{ 0.0f, 1.0f, 0.0f }), Position);
 	}
 
 
 	Transform Transform::operator+(const Transform& other)
 	{
-		return Transform(Position+other.Position, Rotation+other.Rotation, Scale+other.Scale);
+		return Transform(Position+ (other.Position * Scale), Rotation+other.Rotation, Scale*other.Scale);
 	}
 
 
 	Transform Transform::operator-(const Transform& other)
 	{
-		return Transform(Position - other.Position, Rotation - other.Rotation, Scale - other.Scale);
+		return Transform(Position - (other.Position / Scale), Rotation - other.Rotation, Scale / other.Scale);
 	}
 }

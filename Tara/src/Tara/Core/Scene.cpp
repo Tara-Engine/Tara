@@ -43,6 +43,13 @@ namespace Tara {
 
 	void Scene::OnEvent(Event& e)
 	{
+		//LOG_S(INFO) << "Scene::OnEvent!";
+		for (auto& layer : m_Overlays) {
+			layer->OnEvent(e);
+		}
+		for (auto& layer : m_Layers) {
+			layer->OnEvent(e);
+		}
 	}
 
 	bool Scene::PushLayer(LayerRef layer)

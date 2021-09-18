@@ -21,5 +21,6 @@ void TColorRectEntity::OnUpdate(float deltaTime)
 
 void TColorRectEntity::OnDraw(float deltaTime)
 {
-	Tara::Renderer::Quad(m_Color, m_Transform);
+	//LOG_S(INFO) << "TColorRectEntity draw call!";
+	Tara::Renderer::Quad(m_Color, GetWorldTransform());
 }
