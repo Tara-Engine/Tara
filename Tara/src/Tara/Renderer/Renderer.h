@@ -5,6 +5,7 @@
 #include "Tara/Renderer/Camera.h"
 #include "Tara/Math/Types.h"
 #include "Tara/Renderer/Texture.h"
+#include "Tara/Math/BoundingBox.h"
 
 namespace Tara {
 
@@ -50,6 +51,14 @@ namespace Tara {
 		static void Draw(VertexArrayRef vertexArray, ShaderRef shader, Transform transform);
 
 		/// <summary>
+		/// draw a arbitrary vertex array
+		/// </summary>
+		/// <param name="vertexArray">the vertex array to draw</param>
+		/// <param name="shader">the shader to draw with</param>
+		/// <param name="transform">where the vertex array is</param>
+		static void DrawLines(VertexArrayRef vertexArray, ShaderRef shader, Transform transform);
+
+		/// <summary>
 		/// draw a texture on a 1x1 quad
 		/// </summary>
 		/// <param name="texture">the texture to draw</param>
@@ -63,6 +72,12 @@ namespace Tara {
 		/// <param name="transform">the transform of the quad</param>
 		static void Quad(glm::vec4 color, Transform transform);
 
+		/// <summary>
+		/// Draw a bounding box
+		/// </summary>
+		/// <param name="box">the box to draw</param>
+		/// <param name="color">the color to draw it in</param>
+		static void DrawBoundingBox(const BoundingBox& box, glm::vec4 color = { 0,0,0,1 });
 	private:
 
 		/// <summary>
@@ -83,6 +98,7 @@ namespace Tara {
 		static SceneData s_SceneData;
 
 		static VertexArrayRef s_QuadArray;
+		static VertexArrayRef s_BoxArray;
 		static ShaderRef s_TextureQuadShader;
 		static ShaderRef s_ColorQuadShader;
 	};

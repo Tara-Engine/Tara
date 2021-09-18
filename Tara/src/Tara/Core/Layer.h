@@ -45,15 +45,33 @@ namespace Tara {
 
 		//TODO: stuff relating to entities and components
 
+		/// <summary>
+		/// Add an entity to the layer as a Root entity
+		/// </summary>
+		/// <param name="ref">the entity to add</param>
+		/// <returns>false if failed, true otherwise</returns>
 		bool AddEntity(EntityRef ref);
 
+		/// <summary>
+		/// Remove an entity form the layer, if it is a root entity
+		/// </summary>
+		/// <param name="ref">the entity to remove</param>
+		/// <returns>false if failed, true otherwise</returns>
 		bool RemoveEntity(EntityRef ref);
 
+		/// <summary>
+		/// check if a particular entity is root
+		/// </summary>
+		/// <param name="ref">the entity to check for</param>
+		/// <returns>true if present, false otherwise</returns>
 		bool IsEntityRoot(EntityRef ref);
 
 
 	protected:
-
+		/// <summary>
+		/// Get a const ref to the list of entities that are root in this layer
+		/// </summary>
+		/// <returns>const ref to list of entities that are root in this layer</returns>
 		const std::list<EntityRef>& GetEntityList() const { return m_Entities; }
 
 	private:

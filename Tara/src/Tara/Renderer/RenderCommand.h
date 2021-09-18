@@ -41,6 +41,12 @@ namespace Tara {
 		/// <param name="vertexArray"></param>
 		inline static void Draw(VertexArrayRef vertexArray) { s_RC->IDraw(vertexArray); }
 
+		/// <summary>
+		/// Draw the current VertexArray using lines. Does not bind the VertexArray passed to it.
+		/// </summary>
+		/// <param name="vertexArray"></param>
+		inline static void DrawLines(VertexArrayRef vertexArray) { s_RC->IDrawLines(vertexArray); }
+
 	protected:
 		/// <summary>
 		/// Protected SetClearColor, for underlying implementation to override
@@ -58,6 +64,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="vertexArray"></param>
 		virtual void IDraw(VertexArrayRef vertexArray) = 0;
+
+		/// <summary>
+		/// Protected DrawLines, for underlying implementation to override
+		/// </summary>
+		/// <param name="vertexArray"></param>
+		virtual void IDrawLines(VertexArrayRef vertexArray) = 0;
 	private:
 		/// <summary>
 		/// the unique pointer to the underlying RenderCommand instance.

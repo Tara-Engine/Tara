@@ -32,6 +32,11 @@ namespace Tara{
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 
+	void OpenGLRenderCommand::IDrawLines(VertexArrayRef vertexArray)
+	{
+		glDrawElements(GL_LINES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
+	}
+
 	void OpenGLRenderCommand::GLError(
 		uint32_t source,
 		uint32_t type,

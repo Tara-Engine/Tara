@@ -88,9 +88,14 @@ public:
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera);
 		//LOG_S(INFO) << "Scene Begun!";
+		
 		/*anatomy of a transform:
 		* { { pos as vec3}, {euler angle rot as rotator}, {scale as vec3} }
 		*/
+
+		//create and draw a debug bounding box
+		Tara::BoundingBox box({ 0, 0, 0 }, { 1, 1, 1 });
+		Tara::Renderer::DrawBoundingBox(box, { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		//draw a textured quad
 		Tara::Renderer::Quad(m_Texture, { {-0.5f,-0.5f,0.0f}, {0,0,0}, {1,1,1} });

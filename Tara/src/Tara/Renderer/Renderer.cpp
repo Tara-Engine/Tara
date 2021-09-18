@@ -1,6 +1,7 @@
 #include "tarapch.h"
 #include "Tara/Renderer/Renderer.h"
 #include "Tara/Renderer/RenderCommand.h"
+#include "Tara/Math/BoundingBox.h"
 //#include "Tara/Renderer/VertexArray.h"
 //#include "Tara/Renderer/Shader.h"
 //#include "Tara/Math/Types.h"
@@ -18,12 +19,15 @@ namespace Tara {
 	static bool s_InitializedQuadDraw = false;
 
 	VertexArrayRef Renderer::s_QuadArray = nullptr;
+	VertexArrayRef Renderer::s_BoxArray = nullptr;
 	ShaderRef Renderer::s_TextureQuadShader = nullptr;
 	ShaderRef Renderer::s_ColorQuadShader = nullptr;
 
-#define VERTEX_ELEMENT_COUNT 4 * (2 + 3)
-#define VERTEX_INDEX_COUNT 6
+#define VERTEX_ELEMENT_COUNT_QUAD 4 * (2 + 3)
+#define VERTEX_INDEX_COUNT_QUAD 6
 	
+#define VERTEX_ELEMENT_COUNT_BOX 8 * 3
+#define VERTEX_INDEX_COUNT_BOX 8 * 3
 
 
 
@@ -39,18 +43,18 @@ namespace Tara {
 			s_QuadArray = VertexArray::Create();
 
 			//data
-			float vertices[VERTEX_ELEMENT_COUNT] = {
-				0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-				1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-				1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-				0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+			float verticesQuad[VERTEX_ELEMENT_COUNT_QUAD] = {
+				0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //bottom left
+				1.0f, 0.0f, 0.0f, 1.0f, 0.0f, //bottom right
+				1.0f, 1.0f, 0.0f, 1.0f, 1.0f, //top right
+				0.0f, 1.0f, 0.0f, 0.0f, 1.0f  //top left
 			};
-			uint32_t indices[VERTEX_INDEX_COUNT] = {
+			uint32_t indicesQuad[VERTEX_INDEX_COUNT_QUAD] = {
 					0, 1, 2, 2, 3, 0
 			};
 
 			//add vertex data to array and set layout
-			VertexBufferRef vb_ref = VertexBuffer::Create(vertices, VERTEX_ELEMENT_COUNT);
+			VertexBufferRef vb_ref = VertexBuffer::Create(verticesQuad, VERTEX_ELEMENT_COUNT_QUAD);
 			vb_ref->SetLayout({
 				{Tara::Shader::Datatype::Float3, "position"},
 				{Tara::Shader::Datatype::Float2, "uv"}
@@ -58,8 +62,38 @@ namespace Tara {
 			s_QuadArray->AddVertexBuffer(vb_ref);
 
 			//add index data to array
-			IndexBufferRef ib_ref = IndexBuffer::Create(indices, VERTEX_INDEX_COUNT);
+			IndexBufferRef ib_ref = IndexBuffer::Create(indicesQuad, VERTEX_INDEX_COUNT_QUAD);
 			s_QuadArray->SetIndexBuffer(ib_ref);
+			
+			s_BoxArray = VertexArray::Create();
+			float verticesBox[VERTEX_ELEMENT_COUNT_BOX] = {
+				0.0f, 0.0f, 0.0f, //back bottom left
+				1.0f, 0.0f, 0.0f, //back bottom right
+				1.0f, 1.0f, 0.0f, //back top right
+				0.0f, 1.0f, 0.0f, //back top left
+
+				0.0f, 0.0f, 1.0f, //front bottom left
+				1.0f, 0.0f, 1.0f, //front bottom right
+				1.0f, 1.0f, 1.0f, //front top right
+				0.0f, 1.0f, 1.0f, //front top left
+			};
+			uint32_t indicesBox[VERTEX_INDEX_COUNT_BOX] = {
+					0, 1,  1, 2,  2, 3,  3, 0, //back
+					0, 4,  1, 5,  2, 6,  3, 7, //sides
+					4, 5,  5, 6,  6, 7,  7, 4  //front
+			};
+
+			//add vertex data to array and set layout
+			vb_ref = VertexBuffer::Create(verticesBox, VERTEX_ELEMENT_COUNT_BOX);
+			vb_ref->SetLayout({
+				{Tara::Shader::Datatype::Float3, "position"},
+			});
+			s_BoxArray->AddVertexBuffer(vb_ref);
+
+			//add index data to array
+			ib_ref = IndexBuffer::Create(indicesBox, VERTEX_INDEX_COUNT_BOX);
+			s_BoxArray->SetIndexBuffer(ib_ref);
+
 
 			//shaders
 			//These are stored as raw source code strings so that they are available even if there are no shader asset files.
@@ -131,6 +165,15 @@ namespace Tara {
 		RenderCommand::Draw(vertexArray);
 	}
 
+	void Renderer::DrawLines(VertexArrayRef vertexArray, ShaderRef shader, Transform transform)
+	{
+		vertexArray->Bind();
+		shader->Bind();
+		shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
+		shader->Send("u_MatrixModel", transform.GetTransformMatrix());
+		RenderCommand::DrawLines(vertexArray);
+	}
+
 	void Renderer::Quad(Texture2DRef texture, Transform transform)
 	{
 		if (s_SceneData.camera == nullptr) {
@@ -151,4 +194,16 @@ namespace Tara {
 		s_ColorQuadShader->Send("u_Color", color);
 		Draw(s_QuadArray, s_ColorQuadShader, transform);
 	}
+
+	void Renderer::DrawBoundingBox(const BoundingBox& box, glm::vec4 color)
+	{
+		s_ColorQuadShader->Bind();
+		s_ColorQuadShader->Send("u_Color", color);
+		s_ColorQuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
+		s_ColorQuadShader->Send("u_MatrixModel", glm::translate(glm::mat4(1), box.Position) *glm::scale(glm::mat4(1), box.Extent));
+		s_BoxArray->Bind();
+		RenderCommand::DrawLines(s_BoxArray);
+	}
+
+
 }
