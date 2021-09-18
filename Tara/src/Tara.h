@@ -22,6 +22,7 @@
 #include "Tara/Core/Layer.h"
 #include "Tara/Core/Window.h"
 #include "Tara/Core/Application.h"
+#include "Tara/Core/Entity.h"
 
 //Assets
 #include "Tara/Asset/AssetLibrary.h"

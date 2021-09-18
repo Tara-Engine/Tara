@@ -45,16 +45,16 @@ namespace Tara {
 	{
 	}
 
-	bool Scene::PushLayer(Layer* layer)
+	bool Scene::PushLayer(LayerRef layer)
 	{
-		m_Layers.push_back(std::unique_ptr<Layer>(layer));
+		m_Layers.push_back(layer);
 		layer->Activate();
 		return true;
 	}
 
-	bool Scene::PushOverlay(Layer* layer)
+	bool Scene::PushOverlay(LayerRef layer)
 	{
-		m_Overlays.push_back(std::unique_ptr<Layer>(layer));
+		m_Overlays.push_back(layer);
 		layer->Activate();
 		return false;
 	}

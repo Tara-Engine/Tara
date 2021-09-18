@@ -19,15 +19,38 @@ namespace Tara {
 		/// Reference to entity
 		/// </summary>
 		using EntityRef = std::shared_ptr<Entity>;
+		
+		/// <summary>
+		/// non-owning (No) refrerence to entity
+		/// </summary>
+		using EntityNoRef = std::weak_ptr<Entity>;
+		
 	public:
 		/// <summary>
 		/// Basic entity constructor.
+		/// Since entities cannot add themselves to their parents or the layer (due to shared pointer strangeness)
+		/// they way to contstruct them is the Create static function. Thus, this is protected
 		/// </summary>
 		/// <param name="name">the name of the entity</param>
-		Entity(std::weak_ptr<Entity> parent, std::weak_ptr<Layer> owningLayer,  std::string name = "Entity")
-			:m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name)
-		{};
+		Entity(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform,  std::string name);
 
+		/// <summary>
+		/// Create a new entity
+		/// </summary>
+		/// <param name="parent">the parent entity, may be null</param>
+		/// <param name="owningLayer">the owning layer, may not be null</param>
+		/// <param name="transform">the transform, defaults to origin, no rot, and a scale of 1</param>
+		/// <param name="name">the name</param>
+		/// <returns>A reference to the new entity</returns>
+		static EntityRef Create(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "Entity");
+
+		/// <summary>
+		/// Register an externally created entity. This adds it to the parent, etc.
+		/// </summary>
+		/// <param name="ref">the entity to register</param>
+		static void Register(EntityRef ref);
+
+	public:
 		/// <summary>
 		/// basic entity destructor
 		/// </summary>
@@ -37,13 +60,13 @@ namespace Tara {
 		/// The overridable update function. This should be overriden for all subclasses
 		/// </summary>
 		/// <param name="deltaTime">the time between frames, in seconds</param>
-		virtual void OnUpdate(float deltaTime) = 0;
+		virtual void OnUpdate(float deltaTime) {};
 
 		/// <summary>
 		/// The overridable draw function. This should be overriden for all subclasses
 		/// </summary>
 		/// <param name="deltaTime">The time between frames, in seconds</param>
-		virtual void OnDraw(float deltaTime) = 0;
+		virtual void OnDraw(float deltaTime) {};
 
 
 	public:
@@ -107,13 +130,13 @@ namespace Tara {
 		/// </summary>
 		/// <param name="newParent">the new parent enetity</param>
 		/// <returns>true if operation was successful</returns>
-		bool SwapParent(std::weak_ptr<Entity> newParent);
+		bool SwapParent(EntityNoRef newParent);
 
 		/// <summary>
 		/// Get the parent of an entity.
 		/// </summary>
 		/// <returns>The parent</returns>
-		std::weak_ptr<Entity> GetParent() const { return m_Parent; }
+		EntityNoRef GetParent() const { return m_Parent; }
 
 
 		/// <summary>
@@ -134,13 +157,13 @@ protected:
 		/// Set the parent of an entity. Should not be manually called
 		/// </summary>
 		/// <param name="newParent"> the new parent</param>
-		void SetParent(std::weak_ptr<Entity> newParent, bool ignoreChecks = false);
+		void SetParent(EntityNoRef newParent, bool ignoreChecks = false);
 
 
 	protected:
 		const std::string m_Name;
 		Transform m_Transform;
-		std::weak_ptr<Entity> m_Parent;
+		EntityNoRef m_Parent;
 		const std::weak_ptr<Layer> m_OwningLayer;
 		std::list<EntityRef> m_Children;
 	};
@@ -150,4 +173,12 @@ protected:
 	/// Entities are game objects that have a location in the world.
 	/// </summary>
 	using EntityRef = std::shared_ptr<Entity>;
+
+	/// <summary>
+	/// non-owning (No) Reference to the base class for all entities in the game. 
+	/// Entities are game objects that have a location in the world.
+	/// </summary>
+	using EntityNoRef = std::weak_ptr<Entity>;
+
 }
+#define EMPTY_ENTITYNOREF Tara::EntityNoRef()

@@ -58,5 +58,4 @@ namespace Tara{
 		return std::find(m_Entities.begin(), m_Entities.end(), ref) != m_Entities.begin();
 	}
 
-
 }

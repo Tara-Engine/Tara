@@ -50,7 +50,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="layer">the layer to push</param>
 		/// <returns>true if layer pushed correctly</returns>
-		bool PushLayer(Layer* layer);
+		bool PushLayer(LayerRef layer);
 		/// <summary>
 		/// Push an Overlay Layer into the Scene.
 		/// The Scene takes ownership of the Layer. A Layer should never belong to two scenes, 
@@ -59,12 +59,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="layer">the layer to push</param>
 		/// <returns>true if layer pushed correctly</returns>
-		bool PushOverlay(Layer* layer);
+		bool PushOverlay(LayerRef layer);
 
 	private:
 
-		std::vector<std::unique_ptr<Layer>> m_Layers;
-		std::vector<std::unique_ptr<Layer>> m_Overlays;
+		std::vector<LayerRef> m_Layers;
+		std::vector<LayerRef> m_Overlays;
 
 	};
 

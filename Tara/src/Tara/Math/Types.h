@@ -7,6 +7,9 @@
 #include <glm/ext/quaternion_float.hpp>
 #include "glm/ext/quaternion_common.hpp"
 
+
+#define TRANSFORM_DEFAULT {{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f}}
+
 namespace Tara {
 
 	

@@ -3,6 +3,40 @@
 #include "Tara/Core/Layer.h"
 
 namespace Tara{
+    Entity::Entity(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform, std::string name)
+        :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform)
+    {
+
+        CHECK_NOTNULL_F(m_OwningLayer.lock(), "the owning layer of a newly created entity should never be null!");
+        
+        /*
+        //entities cannot add themselves to their parent or the layer, as they have ... issues with shared pointers
+        if (m_Parent.lock()) {
+            m_Parent.lock()->AddChild(shared_from_this());
+        }
+        else {
+            m_OwningLayer.lock()->AddEntity(shared_from_this());
+        }
+        */
+    }
+
+    EntityRef Entity::Create(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform, std::string name)
+    {
+        EntityRef newEntity = std::make_shared<Entity>(parent, owningLayer, transform, name);
+        Register(newEntity);
+        return newEntity;
+    }
+
+    void Entity::Register(EntityRef ref)
+    {
+        if (ref->m_Parent.lock()) {
+            ref->m_Parent.lock()->AddChild(ref); //auto cast to weak_ptr
+        }
+        else {
+            ref->m_OwningLayer.lock()->AddEntity(ref);//auto cast to weak_ptr
+        }
+    }
+
     bool Entity::IsChild(EntityRef ref, bool recursive) const
     {
         if (std::find(m_Children.begin(), m_Children.end(), ref) != m_Children.end()) {
@@ -92,7 +126,7 @@ namespace Tara{
         return true;
     }
 
-    bool Entity::SwapParent(std::weak_ptr<Entity> newParent)
+    bool Entity::SwapParent(EntityNoRef newParent)
     {
         //check if newParent can be parent
         if (IsChild(newParent.lock(), true)) {
@@ -128,7 +162,7 @@ namespace Tara{
         OnDraw(deltaTime);
     }
 
-    void Entity::SetParent(std::weak_ptr<Entity> newParent, bool ignoreChecks)
+    void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
     {
         //make sure the new parent is not a child
         //if ignoreChecks is true, it should not run the IsChild function

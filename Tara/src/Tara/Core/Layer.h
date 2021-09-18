@@ -10,8 +10,7 @@ namespace Tara {
 	/// This class should be subclassed to make a custom application, and 
 	/// a instance of that subclass pushed to a scene.
 	/// </summary>
-	class Layer {
-		friend class Entity;
+	class Layer : public std::enable_shared_from_this<Layer> {
 	public:
 		/// <summary>
 		/// Layer Constructor
@@ -59,4 +58,17 @@ namespace Tara {
 
 	};
 
+	/// <summary>
+	/// Reference to the Layer Class. Layers are "Draw slices" of a scene. 
+	/// This class should be subclassed to make a custom application, and 
+	/// a instance of that subclass pushed to a scene.
+	/// </summary>
+	using LayerRef = std::shared_ptr<Layer>;
+	
+	/// <summary>
+	/// Non-Owning Reference to the Layer Class. Layers are "Draw slices" of a scene. 
+	/// This class should be subclassed to make a custom application, and 
+	/// a instance of that subclass pushed to a scene.
+	/// </summary>
+	using LayerNoRef = std::weak_ptr<Layer>;
 }
