@@ -78,7 +78,7 @@ instead of using `int` or `unsigned int`, stick to the standard, guaranteed size
 ### Ref types
 As mentioned in the Class area, most classes should have an associated Ref type that is a typedef (technically, `using`) of a `std::shared_ptr<Class>`. These should be used primarily instead of the raw class.
 
-Non-owning pointers should ALWAYS be raw pointers. When passing ownership, either use a move constructor, or, if you are passign ownership of a new item, pass as raw pointer.
+Non-owning pointers should either be raw pointers, or std::weak_ptr. When passing ownership, either use a move constructor, or, if you are passing ownership of a new item, pass as raw pointer.
 
 
 
