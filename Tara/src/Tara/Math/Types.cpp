@@ -71,6 +71,20 @@ namespace Tara{
 			cos(Roll * 0.5f) * cos(Pitch * 0.5f) * sin(Yaw * 0.5f) + sin(Roll * 0.5f) * sin(Pitch * 0.5) * cos(Yaw * 0.5)
 		);
 	}
+
+
+	Vector Rotator::RotateVector(const Vector& vec) const
+	{
+		return glm::rotateY(
+			glm::rotateX(
+				glm::rotateZ(
+					vec, glm::radians(Roll)
+				), glm::radians(Pitch)
+			), glm::radians(Yaw)
+		);
+	}
+
+
 	glm::mat4 Transform::GetTransformMatrix() const
 	{
 		/*Explanation:
@@ -84,13 +98,13 @@ namespace Tara{
 			glm::rotate(
 				glm::rotate(
 					glm::mat4(1), 
-					Rotation.Roll, 
+					glm::radians(Rotation.Roll), 
 					{ 0.0f, 0.0f, 1.0f }
 				), 
-				Rotation.Pitch, 
+				glm::radians(Rotation.Pitch),
 				{ 1.0f, 0.0f, 0.0f }
 			), 
-			Rotation.Yaw, 
+			glm::radians(Rotation.Yaw),
 			{ 0.0f, 1.0f, 0.0f }
 		);
 		
@@ -106,12 +120,12 @@ namespace Tara{
 
 	Transform Transform::operator+(const Transform& other)
 	{
-		return Transform(Position+ (other.Position * Scale), Rotation+other.Rotation, Scale*other.Scale);
+		return Transform(Position+ Rotation.RotateVector(other.Position) * Scale, Rotation+other.Rotation, Scale*other.Scale);
 	}
 
 
 	Transform Transform::operator-(const Transform& other)
 	{
-		return Transform(Position - (other.Position / Scale), Rotation - other.Rotation, Scale / other.Scale);
+		return Transform(Position - Rotation.Inverse().RotateVector(other.Position) / Scale, Rotation - other.Rotation, Scale / other.Scale);
 	}
 }

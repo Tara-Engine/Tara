@@ -186,6 +186,15 @@ namespace Tara{
         }
     }
 
+    BoundingBox Entity::GetFullBoundingBox() const
+    {
+        BoundingBox box = GetSpecificBoundingBox();
+        for (auto child : m_Children) {
+            box = box + child->GetFullBoundingBox(); //not += because that is not overloaded.
+        }
+        return box;
+    }
+
     void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
     {
         if (newParent.lock() == nullptr) {

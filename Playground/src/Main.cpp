@@ -62,10 +62,17 @@ public:
 		LOG_S(INFO) << "Testing Layer Deactivated!";
 	}
 
-	virtual void Update(float deltaTime) override{
-		
+	virtual void Update(float deltaTime) override {
+
 		//call super update function
 		Tara::Layer::Update(deltaTime);
+
+		//rotation of parent2
+		m_TimeCounter += deltaTime;
+		float alpha = (sinf(m_TimeCounter) + 1) / 2;
+		auto t = m_Parent2->GetRelativeTransform();
+		t.Rotation.Roll = (45.0f * alpha);
+		m_Parent2->SetTransform(t);
 
 		//move camera
 		Tara::Vector offset = { 0.0f,0.0f,0.0f };
@@ -82,6 +89,9 @@ public:
 			offset.x += 1;
 		}
 
+		glm::vec3 val = { 0,0,1 };
+		
+
 		m_Camera->SetPosition(m_Camera->GetPosition() + (offset * (m_PlayerSpeed * deltaTime)));
 	}
 	
@@ -94,8 +104,8 @@ public:
 		*/
 
 		//create and draw a debug bounding box
-		Tara::BoundingBox box({ 0, 0, 0 }, { 1, 1, 1 });
-		Tara::Renderer::DrawBoundingBox(box, { 1.0f, 1.0f, 1.0f, 1.0f });
+		//Tara::BoundingBox box({ 0, 0, 0 }, { 1, 1, 1 });
+		//Tara::Renderer::DrawBoundingBox(box, { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		//draw a textured quad
 		Tara::Renderer::Quad(m_Texture, { {-0.5f,-0.5f,0.0f}, {0,0,0}, {1,1,1} });
@@ -154,6 +164,8 @@ private:
 	Tara::EntityRef m_Parent2;
 	Tara::EntityRef m_Child1;
 	Tara::EntityRef m_Child2;
+
+	float m_TimeCounter = 0;
 };
 
 

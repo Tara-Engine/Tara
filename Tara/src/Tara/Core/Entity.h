@@ -3,7 +3,7 @@
 #include "tarapch.h"
 #include <glm/glm.hpp>
 #include "Tara/Math/Types.h"
-
+#include "Tara/Math/BoundingBox.h"
 
 
 namespace Tara {
@@ -25,7 +25,17 @@ namespace Tara {
 		/// </summary>
 		using EntityNoRef = std::weak_ptr<Entity>;
 		
+		/// <summary>
+		/// So that Layer can access protected functions from Entity.
+		/// </summary>
+		friend class Layer;
+
 	public:
+		/***********************************************************************************
+		*                          Construction Functions                                  *
+		************************************************************************************/
+
+
 		/// <summary>
 		/// Basic entity constructor.
 		/// Since entities cannot add themselves to their parents or the layer (due to shared pointer strangeness)
@@ -50,26 +60,39 @@ namespace Tara {
 		/// <param name="ref">the entity to register</param>
 		static void Register(EntityRef ref);
 
-	public:
 		/// <summary>
 		/// basic entity destructor
 		/// </summary>
 		virtual ~Entity() = default;
+	
+	public:
+
+		/***********************************************************************************
+		*                          Overridable Functions                                   *
+		************************************************************************************/
 
 		/// <summary>
 		/// The overridable update function. This should be overriden for all subclasses
 		/// </summary>
 		/// <param name="deltaTime">the time between frames, in seconds</param>
-		virtual void OnUpdate(float deltaTime) {};
+		inline virtual void OnUpdate(float deltaTime) {};
 
 		/// <summary>
 		/// The overridable draw function. This should be overriden for all subclasses
 		/// </summary>
 		/// <param name="deltaTime">The time between frames, in seconds</param>
-		virtual void OnDraw(float deltaTime) {};
+		inline virtual void OnDraw(float deltaTime) {};
 
+		/// <summary>
+		/// Get the specific bounding box of the entity. Should be overridden for subtypes
+		/// </summary>
+		/// <returns>the bounding box</returns>
+		inline virtual BoundingBox GetSpecificBoundingBox() const { return { 0,0,0,-1,-1,-1 }; }
 
 	public:
+		/***********************************************************************************
+		*                          Basic Utility Funcions                                  *
+		************************************************************************************/
 
 		/// <summary>
 		/// Get the transform of the Entity relative to parent
@@ -144,7 +167,22 @@ namespace Tara {
 		/// <returns>The parent</returns>
 		EntityNoRef GetParent() const { return m_Parent; }
 
+		
+		
+		/// <summary>
+		/// Debug function, logs the name of every child to the output
+		/// </summary>
+		/// <param name="recursive">if it should be done recursively.</param>
+		/// <param name="indentLevel">Internal Use Only</param>
+		void DebugLogAllChildren(bool recursive = false, int indentLevel = 0) const;
 
+		/// <summary>
+		/// Get the bounding box around this and all children entities.
+		/// </summary>
+		/// <returns></returns>
+		BoundingBox GetFullBoundingBox() const;
+
+protected:
 		/// <summary>
 		/// Update the entity. Should not be manually called
 		/// </summary>
@@ -156,27 +194,22 @@ namespace Tara {
 		/// </summary>
 		/// <param name="deltaTime"></param>
 		void Draw(float deltaTime);
-	
 
-		/// <summary>
-		/// Debug function, logs the name of every child to the output
-		/// </summary>
-		/// <param name="recursive">if it should be done recursively.</param>
-		/// <param name="indentLevel">Internal Use Only</param>
-		void DebugLogAllChildren(bool recursive = false, int indentLevel = 0) const;
-protected:
-
-		/// <summary>
-		/// Set the parent of an entity. Should not be manually called
-		/// </summary>
-		/// <param name="newParent"> the new parent</param>
-		void SetParent(EntityNoRef newParent, bool ignoreChecks = false);
 
 		/// <summary>
 		/// Get a const ref to the list of children
 		/// </summary>
 		/// <returns>the list of children</returns>
 		const std::list<EntityRef>& GetChildren() const { return m_Children; }
+
+
+	private:
+		/// <summary>
+		/// Set the parent of an entity. Should not be manually called
+		/// </summary>
+		/// <param name="newParent"> the new parent</param>
+		void SetParent(EntityNoRef newParent, bool ignoreChecks = false);
+
 
 	protected:
 		const std::string m_Name;
@@ -202,4 +235,4 @@ protected:
 	using EntityNoRef = std::weak_ptr<Entity>;
 
 }
-#define EMPTY_ENTITYNOREF Tara::EntityNoRef()
+

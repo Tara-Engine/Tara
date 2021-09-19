@@ -47,11 +47,19 @@ namespace Tara {
 		};
 
 		/// <summary>
+		/// Copy Constructor
+		/// </summary>
+		/// <param name="src">the box to copy</param>
+		BoundingBox(const BoundingBox& src)
+			: Position(src.Position), Extent(src.Extent)
+		{}
+
+		/// <summary>
 		/// Create a new BoundingBox from two vectors
 		/// </summary>
 		/// <param name="pos">the origin of the box</param>
 		/// <param name="extent">the extent of the box</param>
-		BoundingBox(Vector pos, Vector extent)
+		BoundingBox(Vector pos = { 0.0f,0.0f,0.0f }, Vector extent = {1.0f, 1.0f, 1.0f})
 			: Position(pos), Extent(extent)
 		{}
 
@@ -73,13 +81,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="other">the other box</param>
 		/// <returns>true if they are overlapping, false otherwise</returns>
-		inline bool Overlaping(const BoundingBox& other) const {
-			return  !(
-				(x + Width  < other.x || other.x + other.Width  < x) ||
-				(y + Height < other.y || other.y + other.Height < y) ||
-				(z + Depth  < other.z || other.z + other.Depth  < z)
-			);
-		}
+		bool Overlaping(const BoundingBox& other) const;
 
 		/// <summary>
 		/// Fast check to if a BoundingBox is overlapping a sphere
@@ -89,26 +91,32 @@ namespace Tara {
 		/// <param name="origin">the origin of the sphere</param>
 		/// <param name="radius">the radius of the sphere</param>
 		/// <returns></returns>
-		inline bool OverlappingSphere(const Vector origin, const float radius) {
-			return (
-				((x - radius < origin.x) && (x + Width  + radius > origin.x)) &&
-				((y - radius < origin.y) && (y + Height + radius > origin.y)) &&
-				((z - radius < origin.z) && (z + Depth  + radius > origin.z))
-			);
-		}
+		bool OverlappingSphere(const Vector origin, const float radius) const;
 
 		/// <summary>
 		/// Combine two bounding boxes. This returns a new box that encompases both.
 		/// </summary>
 		/// <param name="other">the other bounding box to add</param>
 		/// <returns>the new bounding box that is larger than both</returns>
-		inline BoundingBox operator+(const BoundingBox& other) {
-			Vector minpos = {std::min(x, other.x),std::min(y, other.y), std::min(z, other.z)};
-			Vector maxpos = { std::max(x + Width, other.x + other.Width), std::max(y + Height, other.y + other.Height) , std::max(z + Depth, other.z + other.Depth) };
-			return BoundingBox(minpos, maxpos - minpos);
+		BoundingBox operator+(const BoundingBox& other) const;
+
+		/// <summary>
+		/// Modify a bounding box by a transform.
+		/// In essence, it takes the box, transforms it, and makes a new box around the old one.
+		/// </summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		BoundingBox operator*(const Transform& t) const;
+
+		/// <summary>
+		/// Take a transform and apply it to a 1x1x1 bounding box to create a new bounding box
+		/// Rotation is ignored
+		/// </summary>
+		/// <param name="transform">the transform to use</param>
+		/// <returns>the new bounding box</returns>
+		inline static BoundingBox FromTransform(const Transform& t) {
+			return BoundingBox() * t;
 		}
-
-
 	};
 
 

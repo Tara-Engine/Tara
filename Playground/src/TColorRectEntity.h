@@ -17,6 +17,8 @@ public:
 
 	virtual void OnDraw(float deltaTime) override;
 
+	inline virtual Tara::BoundingBox GetSpecificBoundingBox() const override { return Tara::BoundingBox::FromTransform(GetWorldTransform()); }
+
 	//color stuff
 	inline void SetColor(glm::vec4 color) { m_Color = color; }
 	inline const glm::vec4& GetColor() const { return m_Color; }

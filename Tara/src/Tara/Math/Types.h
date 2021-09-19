@@ -3,9 +3,10 @@
 * 
 */
 
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include <glm/ext/quaternion_float.hpp>
-#include "glm/ext/quaternion_common.hpp"
+#include <glm/ext/quaternion_common.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 
 #define TRANSFORM_DEFAULT {{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f}}
@@ -91,6 +92,17 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		glm::quat ToQuaternion() const;
+
+		/// <summary>
+		/// Rotate a vector by oneself
+		/// </summary>
+		/// <param name="vec">the vector to rotate</param>
+		/// <returns></returns>
+		Vector RotateVector(const Vector& vec) const;
+
+		inline Rotator Inverse() const {
+			return Rotator{ -Roll, -Pitch, -Yaw };
+		};
 	};
 
 	/// <summary>

@@ -23,4 +23,8 @@ void TColorRectEntity::OnDraw(float deltaTime)
 {
 	//LOG_S(INFO) << "TColorRectEntity draw call!";
 	Tara::Renderer::Quad(m_Color, GetWorldTransform());
+	Tara::BoundingBox box = GetSpecificBoundingBox();
+	Tara::Renderer::DrawBoundingBox(box, { 0.5f, 0.5f, 0.5f, 1.0f });
+	box = GetFullBoundingBox();
+	Tara::Renderer::DrawBoundingBox(box, { 1.0f, 1.0f, 1.0f, 1.0f });
 }
