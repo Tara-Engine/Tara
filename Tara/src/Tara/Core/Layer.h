@@ -2,6 +2,7 @@
 #include "tarapch.h"
 #include "Tara/Input/Event.h"
 #include "Tara/Core/Entity.h"
+#include "Tara/Input/EventListener.h"
 
 namespace Tara {
 
@@ -11,6 +12,9 @@ namespace Tara {
 	/// a instance of that subclass pushed to a scene.
 	/// </summary>
 	class Layer : public std::enable_shared_from_this<Layer> {
+
+		friend class Entity;
+
 	public:
 		/// <summary>
 		/// Layer Constructor
@@ -43,7 +47,7 @@ namespace Tara {
 		/// <param name="e">the event</param>
 		virtual void OnEvent(Event& e);
 
-		//TODO: stuff relating to entities and components
+		
 
 		/// <summary>
 		/// Add an entity to the layer as a Root entity
@@ -66,6 +70,19 @@ namespace Tara {
 		/// <returns>true if present, false otherwise</returns>
 		bool IsEntityRoot(EntityRef ref);
 
+		/// <summary>
+		/// Enable/Disable a specific reference as a listener
+		/// </summary>
+		/// <param name="ref">the reference</param>
+		/// <param name="enable">if it should be enabled</param>
+		/// <returns>true if successful</returns>
+		bool EnableListener(EventListenerNoRef ref, bool enable = true);
+
+		/// <summary>
+		/// Run the overlap checks for this layer.
+		/// Do not call manually, called by Scene
+		/// </summary>
+		//void RunOverlapChecks();
 
 	protected:
 		/// <summary>
@@ -78,6 +95,7 @@ namespace Tara {
 
 		std::list<EntityRef> m_Entities;
 
+		std::list<EventListenerNoRef> m_Listeners;
 	};
 
 	/// <summary>

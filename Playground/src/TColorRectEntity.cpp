@@ -28,3 +28,41 @@ void TColorRectEntity::OnDraw(float deltaTime)
 	box = GetFullBoundingBox();
 	Tara::Renderer::DrawBoundingBox(box, { 1.0f, 1.0f, 1.0f, 1.0f });
 }
+
+
+TControlableEntity::TControlableEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name)
+	:TColorRectEntity(parent, owningLayer, transform, name), m_Speed(1.0f)
+{
+}
+
+std::shared_ptr<TControlableEntity> TControlableEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name)
+{
+	std::shared_ptr<TControlableEntity> newEntity = std::make_shared<TControlableEntity>(parent, owningLayer, transform, name);
+	Tara::Entity::Register(newEntity);
+	return newEntity;
+}
+
+TControlableEntity::~TControlableEntity()
+{
+}
+
+void TControlableEntity::OnUpdate(float deltaTime)
+{
+	Tara::Vector offset = { 0.0f,0.0f,0.0f };
+	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_S)) {
+		offset.y -= 1;
+	}
+	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_W)) {
+		offset.y += 1;
+	}
+	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_A)) {
+		offset.x -= 1;
+	}
+	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_D)) {
+		offset.x += 1;
+	}
+
+	auto t = GetRelativeTransform();
+	t.Position += offset * deltaTime * m_Speed;
+	SetTransform(t);
+}

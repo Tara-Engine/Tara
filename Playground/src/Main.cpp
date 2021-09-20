@@ -16,7 +16,9 @@ public:
 	/// <summary>
 	/// Constructor
 	/// </summary>
-	TestingLayer() {}
+	TestingLayer() 
+		: m_Player(nullptr) 
+	{}
 	
 	~TestingLayer() {
 		Deactivate();
@@ -56,6 +58,11 @@ public:
 		entity = TColorRectEntity::Create(m_Child1, weak_from_this(), Tara::Transform{ {0.5,-0.5,0}, {0,0,0}, {0.5,0.5,1} }, "CyanSquare");
 		entity->SetColor({ 0.0f, 1.0f, 1.0f, 1.0f });
 		m_Child2 = entity;
+
+		m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
+		m_Player->SetSpeed(1.5f);
+		m_Player->ListenForEvents(true);
 	}
 	
 	virtual void Deactivate() override {
@@ -75,6 +82,8 @@ public:
 		m_Parent2->SetTransform(t);
 
 		//move camera
+		
+		/*
 		Tara::Vector offset = { 0.0f,0.0f,0.0f };
 		if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_S)) {
 			offset.y -= 1;
@@ -89,10 +98,8 @@ public:
 			offset.x += 1;
 		}
 
-		glm::vec3 val = { 0,0,1 };
-		
-
 		m_Camera->SetPosition(m_Camera->GetPosition() + (offset * (m_PlayerSpeed * deltaTime)));
+		*/
 	}
 	
 	virtual void Draw(float deltaTime) override{
@@ -165,6 +172,7 @@ private:
 	Tara::EntityRef m_Child1;
 	Tara::EntityRef m_Child2;
 
+	std::shared_ptr<TControlableEntity> m_Player;
 	float m_TimeCounter = 0;
 };
 

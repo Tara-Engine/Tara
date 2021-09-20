@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "Tara/Math/Types.h"
 #include "Tara/Math/BoundingBox.h"
-
+#include "Tara/Input/EventListener.h"
 
 namespace Tara {
 
@@ -14,7 +14,7 @@ namespace Tara {
 	/// Base class for all entities in the game. 
 	/// Entities are game objects that have a location in the world.
 	/// </summary>
-	class Entity : public std::enable_shared_from_this<Entity> {
+	class Entity : public std::enable_shared_from_this<Entity>, public EventListener {
 		/// <summary>
 		/// Reference to entity
 		/// </summary>
@@ -181,6 +181,12 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		BoundingBox GetFullBoundingBox() const;
+
+		/// <summary>
+		/// Enable/Disable Listening for application window native events
+		/// </summary>
+		/// <param name="enabled"></param>
+		virtual void ListenForEvents(bool enable = true) final override;
 
 protected:
 		/// <summary>

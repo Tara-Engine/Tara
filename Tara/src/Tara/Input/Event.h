@@ -10,7 +10,8 @@ namespace Tara {
 		None = 0,
 		WindowClose, WindowResize, 
 		KeyPress, KeyRelease, KeyType,
-		MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll
+		MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
+		Overlap
 		//TODO: collision, hit, etc. Application Events
 	};
 
@@ -24,7 +25,8 @@ namespace Tara {
 		EventCategoryInput		 = BIT(2),
 		EventCategoryKeyboard	 = BIT(3),
 		EventCategoryMouse		 = BIT(4),
-		EventCategoryMouseButton = BIT(5)
+		EventCategoryMouseButton = BIT(5),
+		EventCategoryOverlap	 = BIT(6),
 		//TODO: Categories of application events
 	};
 
@@ -337,5 +339,5 @@ namespace Tara {
 		float m_xOffset, m_yOffset;
 	};
 
-	//TODO: Add application events
+	
 }

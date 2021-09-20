@@ -26,3 +26,18 @@ public:
 private:
 	glm::vec4 m_Color;
 };
+
+class TControlableEntity : public TColorRectEntity {
+public:
+	TControlableEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name);
+	static std::shared_ptr<TControlableEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "TControlableEntity");
+	virtual ~TControlableEntity();
+
+	virtual void OnUpdate(float deltaTime) override;
+
+	inline void SetSpeed(float s) { m_Speed = s; }
+	inline float GetSpeed() const { return m_Speed; }
+
+private:
+	float m_Speed;
+};

@@ -195,6 +195,12 @@ namespace Tara{
         return box;
     }
 
+    void Entity::ListenForEvents(bool enable)
+    {
+        m_OwningLayer.lock()->EnableListener(weak_from_this(), enable);
+        SetListeningForEvents(enable);
+    }
+
     void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
     {
         if (newParent.lock() == nullptr) {
