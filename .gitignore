@@ -36,6 +36,7 @@ bld/
 [Vv]endor/stb/
 [Vv]endor/glad/bin-int/*
 [Vv]endor/loguru/bin-int/*
+**/*.tlog
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
