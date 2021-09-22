@@ -39,7 +39,7 @@ namespace Tara {
 		/// Move constructor
 		/// </summary>
 		/// <param name="m">the manifold being moved</param>
-		Manifold(const Manifold&& m) noexcept
+		Manifold(Manifold&& m) noexcept
 			:A(std::move(m.A)),B(std::move(m.B)),Penetration(m.Penetration),Normal(std::move(m.Normal))
 		{}
 		

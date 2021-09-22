@@ -127,6 +127,71 @@ namespace Tara{
 		}
 	}
 
+
+	std::list<EntityRef> Layer::GetAllEntitiesInBox(const BoundingBox& box)
+	{
+		std::list<EntityRef> Overlaps;
+		std::list<EntityRef> PotentialOverlaps;
+
+		//initial state of queue
+		for (auto entity : m_Entities) {
+			if (box.Overlaping(entity->GetFullBoundingBox())) {
+				PotentialOverlaps.push_back(entity);
+			}
+		}
+
+		while (!PotentialOverlaps.empty()) {
+			EntityRef entity = PotentialOverlaps.front();
+			PotentialOverlaps.pop_front();
+
+			//if the specific box overlaps, then add
+			if (box.Overlaping(entity->GetSpecificBoundingBox())) {
+				Overlaps.push_back(entity);
+			}
+
+			//enqueue children if they overlap
+			for (auto child : entity->GetChildren()) {
+				if (box.Overlaping(child->GetFullBoundingBox())) {
+					PotentialOverlaps.push_back(child);
+				}
+			}
+		}
+
+		return Overlaps;
+	}
+
+	std::list<EntityRef> Layer::GetAllEntitiesInRadius(Vector origin, float radius)
+	{
+		std::list<EntityRef> Overlaps;
+		std::list<EntityRef> PotentialOverlaps;
+
+		//initial state of queue
+		for (auto entity : m_Entities) {
+			if (entity->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
+				PotentialOverlaps.push_back(entity);
+			}
+		}
+
+		while (!PotentialOverlaps.empty()) {
+			EntityRef entity = PotentialOverlaps.front();
+			PotentialOverlaps.pop_front();
+
+			//if the specific box overlaps, then add
+			if (entity->GetSpecificBoundingBox().OverlappingSphere(origin, radius)) {
+				Overlaps.push_back(entity);
+			}
+
+			//enqueue children if they overlap
+			for (auto child : entity->GetChildren()) {
+				if (child->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
+					PotentialOverlaps.push_back(child);
+				}
+			}
+		}
+
+		return Overlaps;
+	}
+
 	
 
 }

@@ -87,6 +87,21 @@ namespace Tara {
 		/// </summary>
 		void RunOverlapChecks();
 
+		/// <summary>
+		/// Get a list of all the entities that overlap a bounding box
+		/// </summary>
+		/// <param name="box">The box to check with</param>
+		/// <returns>a list of all entities</returns>
+		std::list<EntityRef> GetAllEntitiesInBox(const BoundingBox& box);
+
+		/// <summary>
+		/// Get a list of all the entities that overlap a circle/sphere
+		/// </summary>
+		/// <param name="origin">the position</param>
+		/// <param name="radius"></param>
+		/// <returns></returns>
+		std::list<EntityRef> GetAllEntitiesInRadius(Vector origin, float radius);
+
 	protected:
 		/// <summary>
 		/// Get a const ref to the list of entities that are root in this layer
