@@ -3,8 +3,11 @@
 #include "Tara/Input/Event.h"
 #include "Tara/Core/Entity.h"
 #include "Tara/Input/EventListener.h"
+#include "Tara/Input/Manifold.h"
 
 namespace Tara {
+
+	struct Manifold;
 
 	/// <summary>
 	/// Layer Class. Layers are "Draw slices" of a scene. 
@@ -80,7 +83,7 @@ namespace Tara {
 
 		/// <summary>
 		/// Run the overlap checks for this layer.
-		/// Do not call manually, called by Scene
+		/// Do not call manually, it is called by Scene
 		/// </summary>
 		void RunOverlapChecks();
 
@@ -91,11 +94,17 @@ namespace Tara {
 		/// <returns>const ref to list of entities that are root in this layer</returns>
 		const std::list<EntityRef>& GetEntityList() const { return m_Entities; }
 
+
+	private:
+		inline void AddManifoldToQueue(Manifold&& m) {m_FrameManifoldQueue.push_back(m);}
+
 	private:
 
 		std::list<EntityRef> m_Entities;
 
 		std::list<EventListenerNoRef> m_Listeners;
+
+		std::list<Manifold> m_FrameManifoldQueue;
 	};
 
 	/// <summary>

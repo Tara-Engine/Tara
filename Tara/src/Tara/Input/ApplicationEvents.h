@@ -1,6 +1,6 @@
 #pragma once
 #include "Tara/Input/Event.h"
-
+#include "Tara/Input/Manifold.h"
 
 namespace Tara {
 	
@@ -18,19 +18,19 @@ namespace Tara {
 	class OverlapEvent : public ApplicationEvent {
 	public:
 		//TODO: Add manifold to event!
-		OverlapEvent(EntityRef self, EntityRef other)
-			 :m_Self(self), m_Other(other)
+		OverlapEvent(const Manifold& manifold)
+			 :m_Manifold(manifold)
 		{}
-		virtual EntityRef GetSelf() const { return m_Self; }
-		virtual EntityRef GetOther() const { return m_Other; }
-
-		virtual OverlapEvent Invert() const { return OverlapEvent(m_Other, m_Self); }
+		virtual EntityRef GetSelf() const { return m_Manifold.A; }
+		virtual EntityRef GetOther() const { return m_Manifold.B; }
+		virtual float GetPenetration() const { return m_Manifold.Penetration; }
+		virtual Vector GetNormal() const { return m_Manifold.Normal; }
 
 		virtual std::string ToString() const override;
 
 		EVENT_CLASS_CLASS(Overlap)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryOverlap)
 	protected:
-		EntityRef m_Self, m_Other;
+		const Manifold& m_Manifold;
 	};
 }

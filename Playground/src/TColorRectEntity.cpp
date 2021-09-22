@@ -37,7 +37,7 @@ void TColorRectEntity::OnEvent(Tara::Event& e)
 
 bool TColorRectEntity::OnOverlapEvent(Tara::OverlapEvent& e)
 {
-	//LOG_S(INFO) << "Entity '" << GetName() << "' Overlaped with '" << e.GetOther()->GetName();
+	LOG_S(INFO) << "Entity '" << GetName() << "' Overlaped with '" << e.GetOther()->GetName() << " Penetration: " << e.GetPenetration();
 	return false;
 }
 

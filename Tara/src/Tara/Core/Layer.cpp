@@ -1,6 +1,7 @@
 #include "tarapch.h"
 #include "Layer.h"
 
+
 namespace Tara{
 	Layer::Layer()
 	{
@@ -92,6 +93,10 @@ namespace Tara{
 
 	void Layer::RunOverlapChecks()
 	{
+		//clear manifolds
+		m_FrameManifoldQueue.clear();
+
+		// Set up queue
 		std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
 
 		//for all entities, check their own children
@@ -115,6 +120,13 @@ namespace Tara{
 		for (auto pair : overlapQueue) {
 			pair.first->OtherOverlapChecks(pair.second);
 		}
+
+		//Now, deal with all the manifolds that have been made
+		for (Manifold m : m_FrameManifoldQueue) {
+			m.Resolve();
+		}
 	}
+
+	
 
 }

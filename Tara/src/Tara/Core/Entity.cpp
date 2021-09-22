@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Tara/Core/Layer.h"
 #include "Tara/Input/ApplicationEvents.h"
+#include "Tara/Input/Manifold.h"
 
 namespace Tara{
     Entity::Entity(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform, std::string name)
@@ -255,16 +256,8 @@ namespace Tara{
     {
         //IF the core AABB of self and other overlap, THEN generate overlap event
         if (GetSpecificBoundingBox().Overlaping(other->GetSpecificBoundingBox())) {
-            //TODO: instead of generating events, generate a manifold, and do something with it
-
-            //LOG_S(INFO) << "[OVERLAP] root vs root! " << GetName() << " and " << other->GetName();
-            
-            
-            //GENERATE EVENT!
-            OverlapEvent e(shared_from_this(), other);
-            OnEvent(e);
-            other->OnEvent(e.Invert());
-
+            Manifold m(shared_from_this(), other);
+            m_OwningLayer.lock()->AddManifoldToQueue(std::move(m));
 
             //INENTIONAL NO RETURN
         }
@@ -331,6 +324,8 @@ namespace Tara{
             //}
         }
     }
+
+    
 
 
 

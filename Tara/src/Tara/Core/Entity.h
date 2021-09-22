@@ -9,6 +9,7 @@
 namespace Tara {
 
 	class Layer;
+	struct Manifold;
 
 	/// <summary>
 	/// Base class for all entities in the game. 
@@ -225,6 +226,9 @@ protected:
 		/// </summary>
 		/// <param name="other"></param>
 		virtual void OtherOverlapChecks(EntityRef other);
+
+
+		
 
 	private:
 		/// <summary>
