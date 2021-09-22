@@ -209,12 +209,32 @@ protected:
 		const std::list<EntityRef>& GetChildren() const { return m_Children; }
 
 
+
+		/// <summary>
+		/// Run Overlap checks for oneself and one's children.
+		/// This function should not be called manually, except in an overloaded version of this function
+		/// override to make a custom manner of handling overlap checks for a specific type of entity
+		/// </summary>
+		virtual void SelfOverlapChecks();
+
+		/// <summary>
+		/// Run an overlap check between self+children and another, entity
+		/// This function should not be called manually, except in an overloaded version of this function or an overloaded version of SelfOverlapChecks()
+		/// override to make a custom manner of handling overlap checks for a specific type of entity
+		/// Responsible for generating manifolds between two objects
+		/// </summary>
+		/// <param name="other"></param>
+		virtual void OtherOverlapChecks(EntityRef other);
+
 	private:
 		/// <summary>
 		/// Set the parent of an entity. Should not be manually called
 		/// </summary>
 		/// <param name="newParent"> the new parent</param>
 		void SetParent(EntityNoRef newParent, bool ignoreChecks = false);
+
+		
+
 
 
 	protected:

@@ -7,6 +7,8 @@
 #include "Tara/Input/Event.h"
 #include "Tara/Input/Mappings.h"
 #include "Tara/Input/Input.h"
+#include "Tara/Input/ApplicationEvents.h"
+#include "Tara/Input/EventListener.h"
 
 //renderer
 #include "Tara/Renderer/Renderer.h"

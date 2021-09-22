@@ -25,11 +25,11 @@ namespace Tara {
 	{
 		for (auto& layer : m_Layers) {
 			layer->Update(deltaTime);
-			//layer->RunOverlapChecks();
+			layer->RunOverlapChecks();
 		}
 		for (auto& layer : m_Overlays) {
 			layer->Update(deltaTime);
-			//layer->RunOverlapChecks();
+			layer->RunOverlapChecks();
 		}
 	}
 

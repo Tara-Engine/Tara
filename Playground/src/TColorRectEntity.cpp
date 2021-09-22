@@ -29,6 +29,18 @@ void TColorRectEntity::OnDraw(float deltaTime)
 	Tara::Renderer::DrawBoundingBox(box, { 1.0f, 1.0f, 1.0f, 1.0f });
 }
 
+void TColorRectEntity::OnEvent(Tara::Event& e)
+{
+	Tara::EventFilter filter(e);
+	filter.Call<Tara::OverlapEvent>(TARA_BIND_FN(TColorRectEntity::OnOverlapEvent));
+}
+
+bool TColorRectEntity::OnOverlapEvent(Tara::OverlapEvent& e)
+{
+	//LOG_S(INFO) << "Entity '" << GetName() << "' Overlaped with '" << e.GetOther()->GetName();
+	return false;
+}
+
 
 TControlableEntity::TControlableEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name)
 	:TColorRectEntity(parent, owningLayer, transform, name), m_Speed(1.0f)

@@ -14,7 +14,7 @@ namespace Tara {
 		/// Handle the event.
 		/// </summary>
 		/// <param name="e">the event to handle</param>
-		void OnEvent(Event& e) {}
+		virtual void OnEvent(Event& e) {}
 
 		/// <summary>
 		/// Enable/Disable Listening for native window events

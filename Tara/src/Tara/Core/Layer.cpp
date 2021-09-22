@@ -89,4 +89,32 @@ namespace Tara{
 		return true;
 	}
 
+
+	void Layer::RunOverlapChecks()
+	{
+		std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
+
+		//for all entities, check their own children
+		for (auto iter1 = m_Entities.begin(); iter1 != m_Entities.end(); iter1++) {
+			EntityRef entity1 = *iter1;
+			entity1->SelfOverlapChecks();
+			
+			//run all root x root, full AABB overlap check
+			auto iter2 = iter1;
+			iter2++;
+			for (; iter2 != m_Entities.end(); iter2++) {
+				EntityRef entity2 = *iter2;
+				if (entity1->GetFullBoundingBox().Overlaping(entity2->GetFullBoundingBox())) {
+					//for all that have overlaps, queue up
+					overlapQueue.push_back({ entity1, entity2 });
+				}
+			}
+		}
+
+		//when done, run OtherOverlapChecks on them
+		for (auto pair : overlapQueue) {
+			pair.first->OtherOverlapChecks(pair.second);
+		}
+	}
+
 }

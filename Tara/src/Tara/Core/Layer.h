@@ -82,7 +82,7 @@ namespace Tara {
 		/// Run the overlap checks for this layer.
 		/// Do not call manually, called by Scene
 		/// </summary>
-		//void RunOverlapChecks();
+		void RunOverlapChecks();
 
 	protected:
 		/// <summary>

@@ -1,6 +1,7 @@
 #include "tarapch.h"
 #include "Entity.h"
 #include "Tara/Core/Layer.h"
+#include "Tara/Input/ApplicationEvents.h"
 
 namespace Tara{
     Entity::Entity(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform, std::string name)
@@ -215,6 +216,120 @@ namespace Tara{
             return;
         }
         m_Parent = newParent;
+    }
+
+    void Entity::SelfOverlapChecks()
+    {
+        std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
+
+        for (auto iter1 = m_Children.begin(); iter1 != m_Children.end(); iter1++) {
+            //for all entities, check their own children
+            EntityRef child1 = *iter1;
+            child1->SelfOverlapChecks();
+
+            //run all children x root, 
+            if (GetSpecificBoundingBox().Overlaping(child1->GetFullBoundingBox())) {
+                //for any that overlap (Full AABB for children only), queue up
+                overlapQueue.push_back({ shared_from_this(), child1 });
+            }
+
+            //run all children x children full AABB overlap check
+            auto iter2 = iter1;
+            iter2++;
+            for (; iter2 != m_Children.end(); iter2++) {
+                EntityRef child2 = *iter2;
+                if (child1->GetFullBoundingBox().Overlaping(child2->GetFullBoundingBox())) {
+                    //for any that overlap (Full AABB for children only), queue up
+                    overlapQueue.push_back({ child1, child2 });
+                }
+            }
+        }
+
+        //when finished, run through that queue and call OtherOverlapChecks on them
+        for (auto pair : overlapQueue) {
+            pair.first->OtherOverlapChecks(pair.second);
+        }
+    }
+
+    void Entity::OtherOverlapChecks(EntityRef other)
+    {
+        //IF the core AABB of self and other overlap, THEN generate overlap event
+        if (GetSpecificBoundingBox().Overlaping(other->GetSpecificBoundingBox())) {
+            //TODO: instead of generating events, generate a manifold, and do something with it
+
+            //LOG_S(INFO) << "[OVERLAP] root vs root! " << GetName() << " and " << other->GetName();
+            
+            
+            //GENERATE EVENT!
+            OverlapEvent e(shared_from_this(), other);
+            OnEvent(e);
+            other->OnEvent(e.Invert());
+
+
+            //INENTIONAL NO RETURN
+        }
+
+        //ALSO, filter it down more, by checking children against other full AABB, and get list of children that overlap
+        std::list<EntityRef> selfPotentialChildrenQueue;
+        BoundingBox otherBox= other->GetFullBoundingBox(); //cache this
+        for (auto child : m_Children) {
+            if (child == other) { continue; } //otherwise, it starts colliding children and self.
+
+            if (child->GetFullBoundingBox().Overlaping(otherBox)) {
+                selfPotentialChildrenQueue.push_back(child);
+            }
+        }
+        //other's children against our full aabb
+        std::list<EntityRef> otherPotentialChildrenQueue;
+        otherBox = GetFullBoundingBox(); //cache this
+        for (auto otherChild : other->m_Children) {
+            if (otherBox.Overlaping(otherChild->GetFullBoundingBox())) {
+                otherPotentialChildrenQueue.push_back(otherChild);
+            }
+        }
+
+        //THEN, find the self+children in that list that overlap other's core or potential children.
+        std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
+        otherBox = other->GetSpecificBoundingBox();
+        //first, do self's potential children against the other root
+        for (auto child : selfPotentialChildrenQueue) {
+            if (child == other) {
+                continue;// skip adding the child again
+            } 
+            if (child->GetFullBoundingBox().Overlaping(otherBox)) {
+                //for each of those, queue up
+                overlapQueue.push_back({ child, other });
+            }
+        }
+        for (auto otherChild : otherPotentialChildrenQueue) {
+            otherBox = otherChild->GetFullBoundingBox(); //cache this
+            //second, self root against other children
+            if (GetSpecificBoundingBox().Overlaping(otherBox)) {
+                //for each of those, queue up
+                overlapQueue.push_back({ shared_from_this(), otherChild });
+            }
+            //third, self potential children against other's children
+            for (auto child : selfPotentialChildrenQueue) {
+                if (child->GetFullBoundingBox().Overlaping(otherBox)) {
+                   //for each of those, queue up
+                    overlapQueue.push_back({ child, otherChild });
+                }
+            }
+        }
+
+        //when done checking all, run through queue and call this function recursively
+        for (auto pair : overlapQueue) {
+            //these checks no longer nesecary, the conditions that would make them true are no longer added to queue
+            //if (pair.second->IsChild(pair.first, true)) {
+            //    continue;
+            //}
+            //if (pair.first != pair.second) {
+                pair.first->OtherOverlapChecks(pair.second);
+            //}
+            //else{
+            //    LOG_S(WARNING) << "Infinite recursion blocked in overlap detection: " << GetName() << " is trying to overlap itself!";
+            //}
+        }
     }
 
 

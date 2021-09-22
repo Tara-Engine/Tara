@@ -17,6 +17,10 @@ public:
 
 	virtual void OnDraw(float deltaTime) override;
 
+	virtual void OnEvent(Tara::Event& e) override;
+
+	virtual bool OnOverlapEvent(Tara::OverlapEvent& e);
+
 	inline virtual Tara::BoundingBox GetSpecificBoundingBox() const override { return Tara::BoundingBox::FromTransform(GetWorldTransform()); }
 
 	//color stuff
