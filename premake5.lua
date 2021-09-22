@@ -167,3 +167,68 @@ project("Playground")
 		optimize("On")
 	
 	filter("")
+	
+group("ClassProjs")
+
+project("CS425-PA02")
+	location("CS425-PA02")
+	kind("ConsoleApp")
+	language("C++")
+	cppdialect("C++17") --prefered C++19, but premake does not support that yet
+	staticruntime("Off")
+	
+	targetdir("bin/"..outputdir.."/%{prj.name}")
+	objdir("bin/int/"..outputdir.."/%{prj.name}")
+	
+	files({
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.hpp",
+		"%{prj.name}/src/**.c",
+		"%{prj.name}/src/**.cpp"
+	})
+	
+	includedirs({
+		"%{prj.name}/src",
+		"Tara/src",
+		"%{IncludeDir.glad}",
+		"%{IncludeDir.loguru}",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.json}",
+	})
+	
+	libdirs({
+		"Vendor/glfw/lib-vc2019", --glfw
+	})
+	
+	links({
+		"Tara",
+		"glfw3",
+		"glad",
+		"loguru",
+	})
+	
+	filter("system:Windows")
+		system("windows")
+		systemversion("latest")
+		
+		defines({})
+		
+		links({
+			"opengl32.lib"
+		})
+		
+	filter("")
+	
+	filter("configurations:Debug")
+		runtime("Debug")
+		defines("DEBUG")
+		symbols("On")
+		
+	filter("configurations:Release")
+		runtime("Release")
+		defines("NDBUG")
+		optimize("On")
+	
+	filter("")
+
+group("")
