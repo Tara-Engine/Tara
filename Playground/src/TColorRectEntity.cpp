@@ -51,6 +51,7 @@ std::shared_ptr<TControlableEntity> TControlableEntity::Create(Tara::EntityNoRef
 {
 	std::shared_ptr<TControlableEntity> newEntity = std::make_shared<TControlableEntity>(parent, owningLayer, transform, name);
 	Tara::Entity::Register(newEntity);
+	newEntity->ListenForEvents(true);
 	return newEntity;
 }
 

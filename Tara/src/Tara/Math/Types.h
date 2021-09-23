@@ -146,6 +146,17 @@ namespace Tara {
 		Transform operator- (const Transform& other);
 	};
 
-
+	/// <summary>
+	/// Map a value in one range to another range
+	/// </summary>
+	/// <param name="a">the value</param>
+	/// <param name="minA">minimum of the origin range</param>
+	/// <param name="maxA">maximum of the origin range</param>
+	/// <param name="minB">minimum of the destination range</param>
+	/// <param name="maxB">maximum of the destination range</param>
+	/// <returns></returns>
+	inline float MapRange(float a, float minA, float maxA, float minB, float maxB) {
+		return minB + (((maxB - minB) / (maxA - minA)) * (a - minA));
+	}
 	
 }

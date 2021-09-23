@@ -17,6 +17,14 @@ namespace Tara {
 	/// </summary>
 	class Entity : public std::enable_shared_from_this<Entity>, public EventListener {
 		/// <summary>
+		/// So that Layer can access protected functions from Entity.
+		/// </summary>
+		friend class Layer;
+		
+
+	public: //so as to not break subclasses
+
+		/// <summary>
 		/// Reference to entity
 		/// </summary>
 		using EntityRef = std::shared_ptr<Entity>;
@@ -26,10 +34,6 @@ namespace Tara {
 		/// </summary>
 		using EntityNoRef = std::weak_ptr<Entity>;
 		
-		/// <summary>
-		/// So that Layer can access protected functions from Entity.
-		/// </summary>
-		friend class Layer;
 
 	public:
 		/***********************************************************************************

@@ -33,6 +33,9 @@
 //math
 #include "Tara/Math/Types.h"
 
+//Entites
+#include "Tara/Entities/SpriteEntity.h"
+
+
 #define LOGURU_WITH_STREAMS 1
 #include "loguru/loguru.hpp"
-
