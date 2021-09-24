@@ -38,8 +38,12 @@ public:
 
 		//the number here is width in world units the screen will be wide. Has no effect on window size.
 		//to make in 1:1 with pixels, set it to the width of the window.
-		std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
-		m_Camera = camera;
+		
+		m_Camera = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
+		m_Camera->SetOrthographicExtent(8.0f);
+		std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
+		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
+		//m_Camera = camera;
 
 		//new TColorRectEntity(Tara::EntityNoRef(), weak_from_this(), { {0.5,0,0}, {0,0,0}, {1,1,1} });
 
@@ -67,6 +71,9 @@ public:
 		m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 		m_Player->SetSpeed(1.5f);
+
+		//attach camera to player
+		m_Player->AddChild(m_Camera);
 	}
 	
 	virtual void Deactivate() override {
@@ -81,7 +88,7 @@ public:
 	}
 	
 	virtual void Draw(float deltaTime) override{
-		Tara::Renderer::BeginScene(m_Camera);
+		Tara::Renderer::BeginScene(m_Camera->GetCamera());
 		
 		/*anatomy of a transform:
 		* { { pos as vec3}, {euler angle rot as rotator}, {scale as vec3} }
@@ -112,9 +119,12 @@ public:
 private:
 	//TESTING STUFF
 	Tara::Texture2DRef m_Texture;
-	Tara::CameraRef m_Camera;
+	
+	//Tara::CameraRef m_Camera;
+	
 	float m_PlayerSpeed = 1.0f;
 
+	Tara::CameraEntityRef m_Camera;
 	std::shared_ptr<TControlableEntity> m_Player;
 	float m_TimeCounter = 0;
 };

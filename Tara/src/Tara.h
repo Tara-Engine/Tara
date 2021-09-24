@@ -35,7 +35,7 @@
 
 //Entites
 #include "Tara/Entities/SpriteEntity.h"
-
+#include "Tara/Entities/CameraEntity.h"
 
 #define LOGURU_WITH_STREAMS 1
 #include "loguru/loguru.hpp"
