@@ -52,6 +52,7 @@ public:
 		}
 
 		
+		auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
 
 		auto extent = camera->GetExtent();
 		std::random_device rd;
@@ -64,7 +65,7 @@ public:
 				0
 			};
 
-			auto sprite = Tara::SpriteEntity::Create(Tara::EntityNoRef(), weak_from_this(), t, "sprite");
+			auto sprite = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite");
 			sprite->SetTexture(m_Texture);
 		}
 

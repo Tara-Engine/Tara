@@ -3,16 +3,7 @@
 
 namespace Tara{
 
-	bool BoundingBox::Overlaping(const BoundingBox& other) const
-	{
-		//negative-size don't collide
-		if (Width < 0 || Height < 0 || Depth < 0) { return false; }
-		return  !(
-			(x + Width < other.x || other.x + other.Width < x) ||
-			(y + Height < other.y || other.y + other.Height < y) ||
-			(z + Depth < other.z || other.z + other.Depth < z)
-			);
-	}
+	
 
 	bool BoundingBox::OverlappingSphere(const Vector origin, const float radius) const
 	{
@@ -74,6 +65,16 @@ namespace Tara{
 		//if (newExtent.y < 0) { newPosition.y += newExtent.y; newExtent.y *= -1; }
 		//if (newExtent.z < 0) { newPosition.z += newExtent.z; newExtent.z *= -1; }
 		return BoundingBox(newPosition, newExtent);
+	}
+
+	bool BoundingBox::operator==(const BoundingBox& other) const
+	{
+		return (Position == other.Position && Extent == other.Extent);
+	}
+
+	bool BoundingBox::operator<(const BoundingBox& other) const
+	{
+		return (x * x + y * y + z * z < other.x* other.x + other.y * other.y + other.z * other.z);
 	}
 
 }

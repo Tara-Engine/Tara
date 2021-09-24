@@ -221,7 +221,7 @@ namespace Tara{
 
     void Entity::SelfOverlapChecks()
     {
-        std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
+        std::list<std::pair<EntityRef&, EntityRef&>> overlapQueue;
 
         for (auto iter1 = m_Children.begin(); iter1 != m_Children.end(); iter1++) {
             //for all entities, check their own children
@@ -282,7 +282,7 @@ namespace Tara{
         }
 
         //THEN, find the self+children in that list that overlap other's core or potential children.
-        std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
+        std::list<std::pair<EntityRef&, EntityRef&>> overlapQueue;
         otherBox = other->GetSpecificBoundingBox();
         //first, do self's potential children against the other root
         for (auto child : selfPotentialChildrenQueue) {

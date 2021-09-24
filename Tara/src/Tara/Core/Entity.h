@@ -21,6 +21,7 @@ namespace Tara {
 		/// </summary>
 		friend class Layer;
 		
+		
 
 	public: //so as to not break subclasses
 
@@ -213,7 +214,8 @@ protected:
 		/// <returns>the list of children</returns>
 		const std::list<EntityRef>& GetChildren() const { return m_Children; }
 
-
+		
+	public: //must be public to properly inherit
 
 		/// <summary>
 		/// Run Overlap checks for oneself and one's children.

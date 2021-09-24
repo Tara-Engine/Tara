@@ -81,7 +81,15 @@ namespace Tara {
 		/// </summary>
 		/// <param name="other">the other box</param>
 		/// <returns>true if they are overlapping, false otherwise</returns>
-		bool Overlaping(const BoundingBox& other) const;
+		inline bool Overlaping(const BoundingBox& other) const {
+			//negative-size don't collide
+			if (Width < 0 || Height < 0 || Depth < 0 || other.Width < 0 || other.Height < 0 || other.Depth < 0) { return false; }
+			return  !(
+				(x + Width < other.x || other.x + other.Width < x) ||
+				(y + Height < other.y || other.y + other.Height < y) ||
+				(z + Depth < other.z || other.z + other.Depth < z)
+				);
+		};
 
 		/// <summary>
 		/// Fast check to if a BoundingBox is overlapping a sphere
@@ -107,6 +115,20 @@ namespace Tara {
 		/// <param name="t"></param>
 		/// <returns></returns>
 		BoundingBox operator*(const Transform& t) const;
+
+		/// <summary>
+		/// Equality operator
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		bool operator==(const BoundingBox& other) const;
+
+		/// <summary>
+		/// Less than operator
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		bool operator<(const BoundingBox& other) const;
 
 		/// <summary>
 		/// Take a transform and apply it to a 1x1x1 bounding box to create a new bounding box
