@@ -29,7 +29,7 @@ if I decide to support multiple platforms
 	#error "Android not currently Supported"
 #elif defined(__linux__)
 	#define TARA_PLATFORM_LINUX
-	#error "Linux not currently Supported"
+	#pragma message ("Warning! Linux builds untested. If a segfault occurs on execution, your OpenGL version may not be high enough.")
 #endif
 
 /*

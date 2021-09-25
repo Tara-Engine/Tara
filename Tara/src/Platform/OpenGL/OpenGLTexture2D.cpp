@@ -30,7 +30,7 @@ namespace Tara{
 		stbi_set_flip_vertically_on_load(1);
 		//stbi_set_unpremultiply_on_load(1);
 		stbi_uc* imageData = stbi_load(m_Path.c_str(), &width, &height, &channels, 0);
-		DCHECK_NOTNULL_F(imageData, "Failed to load image! Path: %s", m_Path);
+		DCHECK_NOTNULL_F(imageData, "Failed to load image! Path: %s", m_Path.c_str());
 		m_Width = width;
 		m_Height = height;
 

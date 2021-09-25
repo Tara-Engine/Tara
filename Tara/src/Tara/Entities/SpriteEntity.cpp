@@ -18,7 +18,7 @@ namespace Tara{
 	void SpriteEntity::OnDraw(float deltaTime)
 	{
 		if (m_Texture)
-			Renderer::Quad(m_Texture, m_Transform);
+			Renderer::Quad(m_Texture, GetWorldTransform());
 	}
 
 }

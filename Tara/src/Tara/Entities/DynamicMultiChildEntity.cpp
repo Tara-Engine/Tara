@@ -39,7 +39,7 @@ namespace Tara{
                 m_Tree = m_Tree->AddChild(child->GetFullBoundingBox(), child, overlaps);
                 //for every overlap in the tree, add to queue
                 for (auto child2 : overlaps) {
-                    overlapQueue.push_back({ child2, child });
+                    overlapQueue.push_back(std::make_pair(child2, child ));
                 }
             }
         }

@@ -65,10 +65,10 @@ namespace Tara{
 	glm::quat Rotator::ToQuaternion() const
 	{
 		return glm::quat(
-			cos(Roll * 0.5f) * cos(Pitch * 0.5f) * cos(Yaw * 0.5f) + sin(Roll * 0.5f) * sin(Pitch * 0.5) * sin(Yaw * 0.5),
-			sin(Roll * 0.5f) * cos(Pitch * 0.5f) * cos(Yaw * 0.5f) + cos(Roll * 0.5f) * sin(Pitch * 0.5) * sin(Yaw * 0.5),
-			cos(Roll * 0.5f) * sin(Pitch * 0.5f) * cos(Yaw * 0.5f) + sin(Roll * 0.5f) * cos(Pitch * 0.5) * sin(Yaw * 0.5),
-			cos(Roll * 0.5f) * cos(Pitch * 0.5f) * sin(Yaw * 0.5f) + sin(Roll * 0.5f) * sin(Pitch * 0.5) * cos(Yaw * 0.5)
+			cosf(Roll * 0.5f) * cosf(Pitch * 0.5f) * cosf(Yaw * 0.5f) + sinf(Roll * 0.5f) * sinf(Pitch * 0.5f) * sinf(Yaw * 0.5f),
+			sinf(Roll * 0.5f) * cosf(Pitch * 0.5f) * cosf(Yaw * 0.5f) + cosf(Roll * 0.5f) * sinf(Pitch * 0.5f) * sinf(Yaw * 0.5f),
+			cosf(Roll * 0.5f) * sinf(Pitch * 0.5f) * cosf(Yaw * 0.5f) + sinf(Roll * 0.5f) * cosf(Pitch * 0.5f) * sinf(Yaw * 0.5f),
+			cosf(Roll * 0.5f) * cosf(Pitch * 0.5f) * sinf(Yaw * 0.5f) + sinf(Roll * 0.5f) * sinf(Pitch * 0.5f) * cosf(Yaw * 0.5f)
 		);
 	}
 

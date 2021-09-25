@@ -111,7 +111,7 @@ namespace Tara{
 				EntityRef entity2 = *iter2;
 				if (entity1->GetFullBoundingBox().Overlaping(entity2->GetFullBoundingBox())) {
 					//for all that have overlaps, queue up
-					overlapQueue.push_back({ entity1, entity2 });
+					overlapQueue.push_back(std::make_pair(entity1, entity2 ));
 				}
 			}
 		}

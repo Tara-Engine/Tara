@@ -19,7 +19,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {
 	glad = "Vendor/glad/include",
 	glfw = "Vendor/glfw/include",
-	loguru = "Vendor/loguru/include",
+	loguru = "Vendor/loguru",
 	glm = "Vendor/glm",
 	stb = "Vendor/stb",
 	json = "Vendor/json/single_include"
@@ -27,7 +27,7 @@ IncludeDir = {
 --"sdl" = "Vendor/sdl/include",
 group("dependancies")
 	include("Vendor/glad")
-	include("Vendor/loguru")
+	include("Vendor")
 
 
 
@@ -67,12 +67,9 @@ project("Tara")
 		"%{IncludeDir.json}",
 	})
 	
-	libdirs({
-		"Vendor/glfw/lib-vc2019", --glfw
-	})
 	
 	links({
-		"glfw3",
+		"glfw",
 		"glad",
 		"loguru",
 	})
@@ -91,6 +88,15 @@ project("Tara")
 			"opengl32.lib"
 		})
 		
+	filter("system:linux")
+		system("linux")
+		systemversion("latest")
+		toolset("clang")
+		links({
+			"GL",
+			"X11", "dl", "pthread", "m", "z", --"Xtest", "Xfixes"
+		})
+	
 	filter("")
 	
 	filter("configurations:Debug")
@@ -133,13 +139,10 @@ project("Playground")
 		"%{IncludeDir.json}",
 	})
 	
-	libdirs({
-		"Vendor/glfw/lib-vc2019", --glfw
-	})
 	
 	links({
 		"Tara",
-		"glfw3",
+		"glfw",
 		"glad",
 		"loguru",
 	})
@@ -153,7 +156,16 @@ project("Playground")
 		links({
 			"opengl32.lib"
 		})
-		
+	
+	filter("system:linux")
+		system("linux")
+		systemversion("latest")
+		toolset("clang")
+		links({
+			"GL",
+			"X11", "dl", "pthread", "m", "z", --"Xtest", "Xfixes"
+		})
+	
 	filter("")
 	
 	filter("configurations:Debug")
@@ -196,13 +208,10 @@ project("CS425-PA02")
 		"%{IncludeDir.json}",
 	})
 	
-	libdirs({
-		"Vendor/glfw/lib-vc2019", --glfw
-	})
 	
 	links({
 		"Tara",
-		"glfw3",
+		"glfw",
 		"glad",
 		"loguru",
 	})
@@ -216,7 +225,16 @@ project("CS425-PA02")
 		links({
 			"opengl32.lib"
 		})
-		
+	
+	filter("system:linux")
+		system("linux")
+		systemversion("latest")
+		toolset("clang")
+		links({
+			"GL",
+			"X11", "dl", "pthread", "m", "z", --"Xtest", "Xfixes"
+		})
+	
 	filter("")
 	
 	filter("configurations:Debug")

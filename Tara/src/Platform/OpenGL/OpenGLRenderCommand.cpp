@@ -10,6 +10,8 @@ namespace Tara{
 	{
 		//load glad functions
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		LOG_S(INFO) << "OpenGL Loaded: \nVersion: " << glGetString(GL_VERSION) << " \nRenderer: " << glGetString(GL_RENDERER) << " \nVendor: " << glGetString(GL_VENDOR);
+
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(&OpenGLRenderCommand::GLError, (void*)0);
 		//blending

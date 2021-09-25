@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once //this is technically a main file, so this is silly to have
 
 //c++ standard stuff
 
@@ -28,7 +28,7 @@
 
 //library stuff
 #define LOGURU_WITH_STREAMS 1
-#include "loguru/loguru.hpp"
+#include "loguru.hpp"
 
 #include "glm/glm.hpp"
 

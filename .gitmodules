@@ -7,3 +7,9 @@
 [submodule "Vendor/json"]
 	path = Vendor/json
 	url = https://github.com/nlohmann/json.git
+[submodule "Vendor/loguru"]
+	path = Vendor/loguru
+	url = https://github.com/emilk/loguru.git
+[submodule "Vendor/glfw"]
+	path = Vendor/glfw
+	url = https://github.com/glfw/glfw.git

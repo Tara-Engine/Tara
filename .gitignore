@@ -35,7 +35,7 @@ bld/
 [Ll]ogs/
 [Vv]endor/stb/
 [Vv]endor/glad/bin/*
-[Vv]endor/loguru/bin/*
+[Vv]endor/bin/*
 **/*.tlog
 
 # Visual Studio 2015/2017 cache/options directory
@@ -374,3 +374,6 @@ MigrationBackup/
 
 # update scripts
 update.sh
+
+# UNIX makefiles
+**/[Mm]akefile

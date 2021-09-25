@@ -191,7 +191,7 @@ namespace Tara{
 			in.close();
 		}
 		else {
-			ABORT_F("Error! Attempted to open an invalid shader file: %s", filename);
+			ABORT_F("Error! Attempted to open an invalid shader file: %s", filename.c_str());
 		}
 		return result;
 	}
@@ -204,7 +204,7 @@ namespace Tara{
 		}
 		else {
 			int32_t loc = glGetUniformLocation(m_RendererID, name.c_str());
-			DCHECK_F((loc != -1), "Uniform [%s] does not exist!", name);
+			DCHECK_F((loc != -1), "Uniform [%s] does not exist!", name.c_str());
 			m_UniformCache.insert_or_assign(name, loc);
 			return loc;
 		}

@@ -221,7 +221,7 @@ namespace Tara{
 
     void Entity::SelfOverlapChecks()
     {
-        std::list<std::pair<EntityRef&, EntityRef&>> overlapQueue;
+        std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
 
         for (auto iter1 = m_Children.begin(); iter1 != m_Children.end(); iter1++) {
             //for all entities, check their own children
@@ -231,7 +231,7 @@ namespace Tara{
             //run all children x root, 
             if (GetSpecificBoundingBox().Overlaping(child1->GetFullBoundingBox())) {
                 //for any that overlap (Full AABB for children only), queue up
-                overlapQueue.push_back({ shared_from_this(), child1 });
+                overlapQueue.push_back(std::make_pair( shared_from_this(), child1 ));
             }
 
             //run all children x children full AABB overlap check
@@ -241,7 +241,7 @@ namespace Tara{
                 EntityRef child2 = *iter2;
                 if (child1->GetFullBoundingBox().Overlaping(child2->GetFullBoundingBox())) {
                     //for any that overlap (Full AABB for children only), queue up
-                    overlapQueue.push_back({ child1, child2 });
+                    overlapQueue.push_back(std::make_pair( child1, child2 ));
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace Tara{
         }
 
         //THEN, find the self+children in that list that overlap other's core or potential children.
-        std::list<std::pair<EntityRef&, EntityRef&>> overlapQueue;
+        std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
         otherBox = other->GetSpecificBoundingBox();
         //first, do self's potential children against the other root
         for (auto child : selfPotentialChildrenQueue) {
@@ -291,7 +291,7 @@ namespace Tara{
             } 
             if (child->GetFullBoundingBox().Overlaping(otherBox)) {
                 //for each of those, queue up
-                overlapQueue.push_back({ child, other });
+                overlapQueue.push_back(std::make_pair( child, other ));
             }
         }
         for (auto otherChild : otherPotentialChildrenQueue) {
@@ -299,13 +299,13 @@ namespace Tara{
             //second, self root against other children
             if (GetSpecificBoundingBox().Overlaping(otherBox)) {
                 //for each of those, queue up
-                overlapQueue.push_back({ shared_from_this(), otherChild });
+                overlapQueue.push_back(std::make_pair(shared_from_this(), otherChild ));
             }
             //third, self potential children against other's children
             for (auto child : selfPotentialChildrenQueue) {
                 if (child->GetFullBoundingBox().Overlaping(otherBox)) {
                    //for each of those, queue up
-                    overlapQueue.push_back({ child, otherChild });
+                    overlapQueue.push_back(std::make_pair(child, otherChild ));
                 }
             }
         }

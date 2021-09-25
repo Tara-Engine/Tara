@@ -194,6 +194,12 @@ namespace Tara {
 		/// <param name="enabled"></param>
 		virtual void ListenForEvents(bool enable = true) final override;
 
+		/// <summary>
+		/// Get a weak ref to the owning layer
+		/// </summary>
+		/// <returns>a weak ref to the owning layer</returns>
+		inline std::weak_ptr<Layer> GetOwningLayer() const { return m_OwningLayer; }
+
 protected:
 		/// <summary>
 		/// Update the entity. Should not be manually called
@@ -246,13 +252,10 @@ protected:
 		
 
 
-
-	protected:
+	private:
 		const std::string m_Name;
 		Transform m_Transform;
 		const std::weak_ptr<Layer> m_OwningLayer;
-
-	private:
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
 
