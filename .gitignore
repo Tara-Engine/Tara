@@ -35,6 +35,7 @@ bld/
 [Ll]ogs/
 [Vv]endor/stb/
 [Vv]endor/glad/bin/*
+[Vv]endor/loguru/*
 [Vv]endor/bin/*
 **/*.tlog
 

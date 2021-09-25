@@ -2,15 +2,20 @@
 #include "SpriteEntity.h"
 #include "Tara/Renderer/Renderer.h"
 
-namespace Tara{
+namespace Tara {
 
 	SpriteEntity::SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
 		: Entity(parent, owningLayer, transform, name), m_Texture(nullptr)
 	{}
 
-	std::shared_ptr<SpriteEntity> SpriteEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
+	SpriteEntity::SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, Tara::Texture2DRef texture)
+		: Entity(parent, owningLayer, transform, name), m_Texture(texture)
+	{}
+
+
+	std::shared_ptr<SpriteEntity> SpriteEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, Tara::Texture2DRef texture)
 	{
-		std::shared_ptr<SpriteEntity> newEntity = std::make_shared<SpriteEntity>(parent, owningLayer, transform, name);
+		std::shared_ptr<SpriteEntity> newEntity = std::make_shared<SpriteEntity>(parent, owningLayer, transform, name, texture);
 		Entity::Register(newEntity);
 		return newEntity;
 	}

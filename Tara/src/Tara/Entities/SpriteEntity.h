@@ -8,8 +8,9 @@ namespace Tara {
 
 	public:
 		SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Tara::Transform transform, std::string name);
+		SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture);
 
-		static std::shared_ptr<SpriteEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity");
+		static std::shared_ptr<SpriteEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", Tara::Texture2DRef texture = nullptr);
 
 	public:
 		virtual ~SpriteEntity() {};
@@ -18,7 +19,7 @@ namespace Tara {
 
 		virtual void OnDraw(float deltaTime) override;
 
-		//virtual void OnEvent(Tara::Event& e) override;//No need to override
+		//virtual void OnEvent(Tara::Event& e) override; //No need to override
 
 		inline virtual Tara::BoundingBox GetSpecificBoundingBox() const override { return Tara::BoundingBox::FromTransform(GetWorldTransform()); }
 
