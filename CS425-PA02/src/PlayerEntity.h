@@ -18,11 +18,5 @@ namespace Tara {
 		//virtual void OnDraw(float deltaTime) override; //No need to override
 
 		//virtual void OnEvent(Tara::Event& e) override; //No need to override
-
-		inline void SetVelocity(glm::vec2 vel) { m_Velocity = vel; }
-		inline const glm::vec2& GetVelocity() const { return m_Velocity; }
-
-	private:
-		glm::vec2 m_Velocity;
 	};
 }
