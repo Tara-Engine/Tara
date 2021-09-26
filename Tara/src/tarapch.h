@@ -5,6 +5,7 @@
 //data structures
 #include <string>
 #include <sstream>
+#include <array>
 #include <list>
 #include <vector>
 #include <unordered_map>
@@ -16,6 +17,7 @@
 #include <memory>
 #include <functional>
 #include <utility>
+#include <numeric>
 
 #include <exception>
 #include <stdexcept>

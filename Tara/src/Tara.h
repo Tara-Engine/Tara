@@ -32,6 +32,9 @@
 
 //math
 #include "Tara/Math/Types.h"
+#include "Tara/Math/BoundingBox.h"
+#include "Tara/Math/Functions.h"
+#include "Tara/Math/Noise.h"
 
 //Entites
 #include "Tara/Entities/SpriteEntity.h"
