@@ -194,7 +194,7 @@ project("CS425-PA02")
 	
 	files({
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.hpp",
+		"%{prj.name}/src/**.hpp", 
 		"%{prj.name}/src/**.c",
 		"%{prj.name}/src/**.cpp"
 	})

@@ -56,21 +56,56 @@ public:
 
 		auto extent = camera->GetExtent();
 		std::random_device rd;
+		float delta = (extent.Left - extent.Right)/(float)SPRITE_MAX, xpos = extent.Right;
+
+		/*
 		for (int i=0;i<SPRITE_MAX;i++){
 			Tara::Transform t;
 			t.Scale = { 0.2f, 0.2f, 0.2f };
 			t.Position = {
+
+				//Interpolation Test
+				//xpos,
+				//Tara::Lerp<float>(extent.Top, extent.Bottom, (float)i /( (float)SPRITE_MAX-1)),
+				
+				//Randomness Test
 				Tara::MapRange((float)(rd() % 1000),0,1000,extent.Left,extent.Right-0.2),
 				Tara::MapRange((float)(rd() % 1000),0,1000,extent.Bottom,extent.Top-0.2),
+				
+				//that z value
 				0
 			};
-
+			xpos += delta;
 			auto sprite = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite");
 			sprite->SetTexture(m_Texture);
 		}
+		*/
+
+		//Noise test
+
+		Tara::Noise noise(21, 0.05f, 1.0f, 0.5f, 2);
+
+		for (int x = 0; x < 20; x++) {
+			for (int y = 0; y < 20; y++) {
+				if (noise(x, y) > 0.0) {
+					Tara::Transform t;
+					t.Scale = { 0.2f, 0.2f, 0.2f };
+					t.Position = {
+						//map x and y
+						Tara::MapRange((float)(x),0,19,extent.Left,extent.Right - 0.2),
+						Tara::MapRange((float)(y),0,19,extent.Bottom,extent.Top - 0.2),
+
+						//that z value
+						0
+					};
+					auto sprite = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite");
+					sprite->SetTexture(m_Texture);
+				}
+			}
+		}
 
 		m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
-		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 1.0f });
+		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
 		m_Player->SetSpeed(1.5f);
 
 		//attach camera to player
