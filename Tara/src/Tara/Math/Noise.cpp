@@ -35,7 +35,7 @@
 * 1: Using it in a C++ space (ie, it should be based on a class)
 * 2: Allowing for random seeding and octaves
 * 3: Making it easier to use in Tara and part of the Tara namespace
-* 
+* All in all, the changes were mostly just wrapping it in a class and making the perutation array non-static
 */
 #include <random>
 
