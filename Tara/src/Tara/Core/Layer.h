@@ -102,6 +102,18 @@ namespace Tara {
 		/// <returns></returns>
 		std::list<EntityRef> GetAllEntitiesInRadius(Vector origin, float radius);
 
+
+		/// <summary>
+		/// Get a list of all the entities that overlap a circle/sphere that are a specific templated subclass
+		/// </summary>
+		/// <typeparam name="T">some subclass of Entity</typeparam>
+		/// <param name="origin">the position</param>
+		/// <param name="radius">the distance</param>
+		/// <returns></returns>
+		template<class T> 
+		std::list<std::shared_ptr<T>> GetAllEntitiesOfClassInRadius(Vector origin, float radius);
+
+
 	protected:
 		/// <summary>
 		/// Get a const ref to the list of entities that are root in this layer
@@ -135,4 +147,51 @@ namespace Tara {
 	/// a instance of that subclass pushed to a scene.
 	/// </summary>
 	using LayerNoRef = std::weak_ptr<Layer>;
+
+
+
+
+
+	/****************************************************************
+	 *                     Implementations                          *
+	 ****************************************************************/
+
+
+	template<class T>
+	inline std::list<std::shared_ptr<T>> Layer::GetAllEntitiesOfClassInRadius(Vector origin, float radius)
+	{
+		static_assert(std::is_base_of<Entity, T>::value, "Provided Template is not a subclass of Tara::Entity");
+
+		std::list<std::shared_ptr<T>> Overlaps;
+		std::list<EntityRef> PotentialOverlaps;
+
+		//initial state of queue
+		for (auto entity : m_Entities) {
+			if (entity->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
+				PotentialOverlaps.push_back(entity);
+			}
+		}
+
+		while (!PotentialOverlaps.empty()) {
+			EntityRef entity = PotentialOverlaps.front();
+			PotentialOverlaps.pop_front();
+
+			//if the specific box overlaps, then add
+			if (entity->GetSpecificBoundingBox().OverlappingSphere(origin, radius)) {
+				std::shared_ptr<T> typedEntity = std::dynamic_pointer_cast<T>(entity);
+				if (typedEntity) {
+					Overlaps.push_back(typedEntity);
+				}
+			}
+
+			//enqueue children if they overlap
+			for (auto child : entity->GetChildren()) {
+				if (child->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
+					PotentialOverlaps.push_back(child);
+				}
+			}
+		}
+
+		return Overlaps;
+	}
 }

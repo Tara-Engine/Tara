@@ -23,9 +23,13 @@ public:
 		Tara::Texture2DRef particleTexture = Tara::Texture2D::Create("assets/Particle.png");
 
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
-		player->ListenForEvents(true);
 
-		auto particle = ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {50,50,50} }, "particle", particleTexture);
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 10; y++) {
+				ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-250 + x*50,-250 + y * 50,0},{0,0,0}, {50,50,50} }, "particle", particleTexture);
+			}
+		}
+		//ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {50,0,0},{0,0,0}, {50,50,50} }, "particle", particleTexture);
 	}
 
 	virtual void Deactivate() override {
@@ -33,7 +37,7 @@ public:
 	}
 
 	virtual void Update(float deltaTime) override {
-
+		Tara::Layer::Update(deltaTime);
 	}
 
 	virtual void Draw(float deltaTime) override {

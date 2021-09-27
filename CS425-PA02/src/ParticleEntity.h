@@ -17,7 +17,7 @@ public:
 	);
 
 
-	//virtual void OnUpdate(float deltaTime) override; //No need to override
+	virtual void OnUpdate(float deltaTime) override; //No need to override
 
 	//virtual void OnDraw(float deltaTime) override; //No need to override
 
