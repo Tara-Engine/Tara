@@ -21,7 +21,12 @@ public:
 
 	//virtual void OnDraw(float deltaTime) override; //No need to override
 
-	//virtual void OnEvent(Tara::Event& e) override; //No need to override
+	inline virtual void OnEvent(Tara::Event& e) override {
+		Tara::EventFilter filter(e);
+		filter.Call<Tara::OverlapEvent>(TARA_BIND_FN(ParticleEntity::OnOverlapEvent));
+	} 
+
+	bool OnOverlapEvent(Tara::OverlapEvent& e);
 private:
 	Tara::Vector m_Velocity;
 };

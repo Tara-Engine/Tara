@@ -101,10 +101,19 @@ namespace Tara {
 		/// <param name="radius"></param>
 		/// <returns></returns>
 		std::list<EntityRef> GetAllEntitiesInRadius(Vector origin, float radius);
-
+		
 
 		/// <summary>
-		/// Get a list of all the entities that overlap a circle/sphere that are a specific templated subclass
+		/// Get a list of all the entities that overlap a bounding box that are a specific templated subclass of Entity
+		/// </summary>
+		/// <typeparam name="T">some subclass of Entity</typeparam>
+		/// <param name="box">The box to check with</param>
+		/// <returns>a list of all entities</returns>
+		template<class T>
+		std::list<std::shared_ptr<T>> GetAllEntitiesOfClassInBox(const BoundingBox& box);
+
+		/// <summary>
+		/// Get a list of all the entities that overlap a circle/sphere that are a specific templated subclass of Entity
 		/// </summary>
 		/// <typeparam name="T">some subclass of Entity</typeparam>
 		/// <param name="origin">the position</param>
@@ -158,9 +167,47 @@ namespace Tara {
 
 
 	template<class T>
+	inline std::list<std::shared_ptr<T>> Layer::GetAllEntitiesOfClassInBox(const BoundingBox& box)
+	{
+		static_assert(std::is_base_of<Entity, T>::value, "Provided class is not a subclass of Tara::Entity");
+
+		std::list<std::shared_ptr<T>> Overlaps;
+		std::list<EntityRef> PotentialOverlaps;
+
+		//initial state of queue
+		for (auto entity : m_Entities) {
+			if (box.Overlaping(entity->GetFullBoundingBox())) {
+				PotentialOverlaps.push_back(entity);
+			}
+		}
+
+		while (!PotentialOverlaps.empty()) {
+			EntityRef entity = PotentialOverlaps.front();
+			PotentialOverlaps.pop_front();
+
+			//if the specific box overlaps, then add
+			if (box.Overlaping(entity->GetSpecificBoundingBox())) {
+				std::shared_ptr<T> typedEntity = std::dynamic_pointer_cast<T>(entity);
+				if (typedEntity) {
+					Overlaps.push_back(typedEntity);
+				}
+			}
+
+			//enqueue children if they overlap
+			for (auto child : entity->GetChildren()) {
+				if (box.Overlaping(child->GetFullBoundingBox())) {
+					PotentialOverlaps.push_back(child);
+				}
+			}
+		}
+
+		return Overlaps;
+	}
+
+	template<class T>
 	inline std::list<std::shared_ptr<T>> Layer::GetAllEntitiesOfClassInRadius(Vector origin, float radius)
 	{
-		static_assert(std::is_base_of<Entity, T>::value, "Provided Template is not a subclass of Tara::Entity");
+		static_assert(std::is_base_of<Entity, T>::value, "Provided class is not a subclass of Tara::Entity");
 
 		std::list<std::shared_ptr<T>> Overlaps;
 		std::list<EntityRef> PotentialOverlaps;
@@ -194,4 +241,6 @@ namespace Tara {
 
 		return Overlaps;
 	}
+
+
 }

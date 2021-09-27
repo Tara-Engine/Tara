@@ -7,6 +7,8 @@
 static int WIDTH = 1200;
 static int HEIGHT = 700;
 
+static int PARTICLE_SIZE = 25;
+
 class GameLayer : public Tara::Layer {
 public:
 	GameLayer()
@@ -23,12 +25,15 @@ public:
 		Tara::Texture2DRef particleTexture = Tara::Texture2D::Create("assets/Particle.png");
 
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
+		
+		Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-200,-200,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
 
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
-				ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-250 + x*50,-250 + y * 50,0},{0,0,0}, {50,50,50} }, "particle", particleTexture);
+				ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-250 + x*50,-250 + y * 50,0},{0,0,0}, {PARTICLE_SIZE,PARTICLE_SIZE,1} }, "particle", particleTexture);
 			}
 		}
+
 		//ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {50,0,0},{0,0,0}, {50,50,50} }, "particle", particleTexture);
 	}
 
@@ -49,13 +54,17 @@ public:
 	}
 
 	virtual void OnEvent(Tara::Event& e) override {
-		
+		Tara::EventFilter filter(e);
+		filter.Call<Tara::WindowResizeEvent>(TARA_BIND_FN(GameLayer::OnWindowResizeEvent));
 	}
 
-	
+	bool OnWindowResizeEvent(Tara::WindowResizeEvent& e) {
+		m_Camera->SetExtent((float)e.getWidth());
+		return false;
+	}
 
 private:
-	Tara::CameraRef m_Camera;
+	std::shared_ptr<Tara::OrthographicCamera> m_Camera;
 	
 };
 

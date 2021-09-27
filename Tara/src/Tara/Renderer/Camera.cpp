@@ -57,6 +57,7 @@ namespace Tara {
 			float aspectRatio = (float)window->GetWidth() / (float)window->GetHeight();
 			float width = m_Extent.Right - m_Extent.Left;
 			float height = width / aspectRatio;
+			LOG_S(INFO) << "Ortho Camera Resize: Aspect: " << aspectRatio << " Width: " << width << " Height:" << height;
 			m_Extent.Top = height / 2.0f;
 			m_Extent.Bottom = -m_Extent.Top;
 			m_Extent.Near = -1.0f;

@@ -47,7 +47,12 @@ namespace Tara {
 
 		glfwSetWindowSizeCallback(m_WindowHandle, [](GLFWwindow* window, int width, int height)
 			{
+				//TODO: move to Renderer
+				glViewport(0, 0, width, height);
+				
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				data.Width = width;
+				data.Height = height;
 				WindowResizeEvent e(width, height);
 				data.EventCallback(e);
 			});

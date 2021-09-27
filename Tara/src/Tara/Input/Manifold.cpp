@@ -11,6 +11,7 @@ namespace Tara {
 		: A(a), B(b), Penetration(0), Normal(0,0,0)
 	{
 		//create the actual manifold data here
+		//NOTE: Z-overlaps are currently commented out due to ... problems.
 
 		//everything is calculated from these boxes.
 		BoundingBox boxA = A->GetSpecificBoundingBox();
@@ -33,15 +34,17 @@ namespace Tara {
 			overlap.y = (boxB.y + boxB.Height) - boxA.y;
 		}
 
+		/*
 		if (boxA.z < boxB.z) {
 			overlap.z = (boxA.z + boxA.Depth) - boxB.z;
 		}
 		else {
 			overlap.z = (boxB.z + boxB.Depth) - boxA.z;
 		}
+		*/
 
 		//get the normal
-		if (abs(overlap.x) < abs(overlap.y) && abs(overlap.x) < abs(overlap.z)) {
+		if (abs(overlap.x) < abs(overlap.y) /* && abs(overlap.x) < abs(overlap.z)*/) {
 			//normal is in X
 			if (overlap.x > 0) {
 				Normal = { 1,0,0 };
@@ -52,7 +55,7 @@ namespace Tara {
 				Penetration = -overlap.x;
 			}
 		}
-		else if (abs(overlap.y) < abs(overlap.x) && abs(overlap.y) < abs(overlap.z)) {
+		else /*if (abs(overlap.y) < abs(overlap.x) && abs(overlap.y) < abs(overlap.z))*/ {
 			//normal is in Y
 			if (overlap.y > 0) {
 				Normal = { 0,1,0 };
@@ -63,6 +66,7 @@ namespace Tara {
 				Penetration = -overlap.y;
 			}
 		}
+		/*
 		else {
 			//normal is in Z
 			if (overlap.z > 0) {
@@ -74,6 +78,7 @@ namespace Tara {
 				Penetration = -overlap.z;
 			}
 		}
+		*/
 
 	}
 	
