@@ -6,10 +6,18 @@ A Tara application, for testing purposes.
 
 #include <Tara.h>
 
+/*
+OpenGL include - BAD - used for developing new features ONLY
+*/
+#include "glad/glad.h"
+
 //testing types
 #include "TColorRectEntity.h"
-
+#include "BatchTestLayer.h"
 #define SPRITE_MAX 100
+
+
+
 
 /// <summary>
 /// Testing Layer
@@ -35,6 +43,7 @@ public:
 
 		//make a texture asset
 		m_Texture = Tara::Texture2D::Create("assets/UV_Checker.png");
+		m_Texture2 = Tara::Texture2D::Create("assets/wall.png");
 
 		//the number here is width in world units the screen will be wide. Has no effect on window size.
 		//to make in 1:1 with pixels, set it to the width of the window.
@@ -83,8 +92,8 @@ public:
 
 		//Noise test
 
-		Tara::Noise noise(21, 0.05f, 1.0f, 0.5f, 2);
-
+		//Tara::Noise noise(21, 0.05f, 1.0f, 0.5f, 2);
+		/*
 		for (int x = 0; x < 20; x++) {
 			for (int y = 0; y < 20; y++) {
 				if (noise(x, y) > 0.0) {
@@ -103,13 +112,16 @@ public:
 				}
 			}
 		}
-
+		*/
 		m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
 		m_Player->SetSpeed(1.5f);
 
 		//attach camera to player
 		m_Player->AddChild(m_Camera);
+
+
+		
 	}
 	
 	virtual void Deactivate() override {
@@ -125,6 +137,7 @@ public:
 	
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera->GetCamera());
+		
 		
 		/*anatomy of a transform:
 		* { { pos as vec3}, {euler angle rot as rotator}, {scale as vec3} }
@@ -155,6 +168,8 @@ public:
 private:
 	//TESTING STUFF
 	Tara::Texture2DRef m_Texture;
+	Tara::Texture2DRef m_Texture2;
+	
 	
 	//Tara::CameraRef m_Camera;
 	
@@ -163,13 +178,16 @@ private:
 	Tara::CameraEntityRef m_Camera;
 	std::shared_ptr<TControlableEntity> m_Player;
 	float m_TimeCounter = 0;
+
+	Tara::ShaderRef m_GShader;
+	Tara::VertexArrayRef m_QuadPoints;
 };
 
 
 int main(int argc, char** argv) {
 	Tara::Application::Get()->Init(1200, 700, "Tara Playground Application!");
 	//add layers to scene...
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<BatchTestLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

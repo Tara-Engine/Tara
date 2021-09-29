@@ -8,6 +8,7 @@
 
 namespace Tara{
 
+	/*
 	OpenGLShader::OpenGLShader(
 		const std::string& name,
 		Shader::SourceType type, 
@@ -37,6 +38,34 @@ namespace Tara{
 		}
 		}
 	}
+	*/
+
+	OpenGLShader::OpenGLShader(const std::string& name, Shader::SourceType type, std::unordered_map<TargetStage, std::string> sources)
+		: Shader(name), m_RendererID(0)
+	{
+		switch (type) {
+		case Shader::SourceType::Strings: {
+			std::unordered_map<GLenum, std::string> sourcesParsed;
+			for (auto kv : sources) {
+				sourcesParsed[TargetStageToGLenum(kv.first)] = kv.second;
+			}
+			Build(sourcesParsed);
+			break;
+		}
+		case SourceType::TextFiles: {
+			std::unordered_map<GLenum, std::string> sourcesParsed;
+			for (auto kv : sources) {
+				sourcesParsed[TargetStageToGLenum(kv.first)] = ReadShaderTextFile(kv.second);
+			}
+			Build(sourcesParsed);
+			break;
+		}
+		case SourceType::BinaryFiles: {
+			ABORT_F("Binary SPIR-V shader files not yet supported!");
+			break;
+		}
+		}
+	}
 
 	OpenGLShader::~OpenGLShader()
 	{
@@ -56,6 +85,11 @@ namespace Tara{
 	void OpenGLShader::Send(const std::string& name, int value)
 	{
 		glUniform1i(GetUniformLocation(name), value);
+	}
+
+	void OpenGLShader::Send(const std::string& name, int* value, int count)
+	{
+		glUniform1iv(GetUniformLocation(name), count, value);
 	}
 
 	void OpenGLShader::Send(const std::string& name, float value)
@@ -106,6 +140,19 @@ namespace Tara{
 		case Shader::Datatype::Int3:	return GL_INT;
 		case Shader::Datatype::Int4:	return GL_INT;
 		case Shader::Datatype::Bool:	return GL_BOOL;
+		}
+		return 0;
+	}
+
+	uint32_t OpenGLShader::TargetStageToGLenum(Shader::TargetStage stage)
+	{
+		switch (stage) {
+		case Shader::TargetStage::Compute:					return GL_COMPUTE_SHADER;
+		case Shader::TargetStage::Vertex:					return GL_VERTEX_SHADER;
+		case Shader::TargetStage::TessellationControl:		return GL_TESS_CONTROL_SHADER;
+		case Shader::TargetStage::TessellationEvaluation:	return GL_TESS_EVALUATION_SHADER;
+		case Shader::TargetStage::Geometry:					return GL_GEOMETRY_SHADER;
+		case Shader::TargetStage::Pixel:					return GL_FRAGMENT_SHADER;
 		}
 		return 0;
 	}
@@ -172,10 +219,10 @@ namespace Tara{
 
 		//detatch and delete shaders
 		for (uint8_t s = 0; s < index; s++) {
-			glDetachShader(program, shader_IDs[s]);
-			glDeleteShader(shader_IDs[s]);
+			//glDetachShader(program, shader_IDs[s]);
+			//glDeleteShader(shader_IDs[s]);
 		}
-
+		LOG_S(INFO) << "Shader created";
 		m_RendererID = program;
 	}
 

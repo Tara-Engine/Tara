@@ -47,11 +47,29 @@ namespace Tara {
     }
     ShaderRef Shader::Create(const std::string& name, Shader::SourceType type, const std::string& vertexSrc, const std::string& fragmentSrc)
     {
+        LOG_S(WARNING) << "Warning: Shader::Create() with a vertex and fragment is depriciated! Use the version with a map from TargetStage to string instead!";
         ShaderRef ref;
         switch (Renderer::GetRenderBackend()) {
-        case RenderBackend::OpenGl: ref = std::make_shared<OpenGLShader>(name, type, vertexSrc, fragmentSrc); break;
+        case RenderBackend::OpenGl: {
+            std::unordered_map<TargetStage, std::string>  sources;
+            sources[TargetStage::Vertex] = vertexSrc;
+            sources[TargetStage::Pixel] = fragmentSrc;
+            ref = std::make_shared<OpenGLShader>(name, type, sources);
+            break;
+        }
 
-        case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
+        case RenderBackend::None: ABORT_F("RenderBackend::None not supported!");
+        }
+        AssetLibrary::Get()->RegisterAsset(ref);
+        return ref;
+    }
+    ShaderRef Shader::Create(const std::string& name, Shader::SourceType type, std::unordered_map<TargetStage, std::string> sources)
+    {
+        ShaderRef ref;
+        switch (Renderer::GetRenderBackend()) {
+        case RenderBackend::OpenGl: ref = std::make_shared<OpenGLShader>(name, type, sources); break;
+
+        case RenderBackend::None: ABORT_F("RenderBackend::None not supported!");
         }
         AssetLibrary::Get()->RegisterAsset(ref);
         return ref;

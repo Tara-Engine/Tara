@@ -27,8 +27,15 @@ public:
 	} 
 
 	bool OnOverlapEvent(Tara::OverlapEvent& e);
+
+	inline void SetBaseTextureName(std::string name) { m_BaseTextureName = name; }
+	inline void SetGlowTextureName(std::string name) { m_GlowTextureName = name; }
 private:
 	Tara::Vector m_Velocity;
+	std::string m_BaseTextureName;
+	std::string m_GlowTextureName;
+	bool m_HitPlayerRecently = false;
+	bool m_IsGlowing = false;
 };
 
 using ParticleEntityRef = std::shared_ptr<ParticleEntity>;

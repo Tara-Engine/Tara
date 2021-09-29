@@ -44,7 +44,7 @@ namespace Tara{
 			break;
 		}
 		case 2: {
-			internalFormat = GL_RGBA8;
+			internalFormat = GL_RG8;
 			dataFormat = GL_RG;
 			break;
 		}

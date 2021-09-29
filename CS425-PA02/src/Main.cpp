@@ -23,14 +23,18 @@ public:
 
 		Tara::Texture2DRef wallTexture = Tara::Texture2D::Create("assets/wall.png");
 		Tara::Texture2DRef particleTexture = Tara::Texture2D::Create("assets/Particle.png");
+		Tara::Texture2DRef particleGlowTexture = Tara::Texture2D::Create("assets/Particle_glowing.png");
 
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
 		
+
 		Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-200,-200,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
 
+		auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
-				ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-250 + x*50,-250 + y * 50,0},{0,0,0}, {PARTICLE_SIZE,PARTICLE_SIZE,1} }, "particle", particleTexture);
+				auto particle = ParticleEntity::Create(dmce, weak_from_this(), { {-250 + x*50,-250 + y * 50,0},{0,0,0}, {PARTICLE_SIZE,PARTICLE_SIZE,1} }, "particle", particleTexture);
+				particle->SetGlowTextureName(particleGlowTexture->GetAssetName());
 			}
 		}
 

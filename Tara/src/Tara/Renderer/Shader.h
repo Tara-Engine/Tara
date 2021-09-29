@@ -31,6 +31,15 @@ namespace Tara {
 		/// <param name="name">Name of the uniform</param>
 		/// <param name="value">value to send</param>
 		virtual void Send(const std::string& name, int value) = 0;
+
+		/// <summary>
+		/// Send a value to a uniform in the Shader
+		/// </summary>
+		/// <param name="name">the name of the uniform</param>
+		/// <param name="value">value to send (array of ints)</param>
+		/// <param name="count">number of ints being sent</param>
+		virtual void Send(const std::string& name, int* value, int count) = 0;
+
 		/// <summary>
 		/// Sends a value to a uniform in the Shader
 		/// </summary>
@@ -91,6 +100,13 @@ namespace Tara {
 			Bool
 		};
 
+		/// <summary>
+		/// Particular source file target stage in the graphics pipeline
+		/// </summary>
+		enum class TargetStage : uint8_t {
+			Compute, Vertex, TessellationControl, TessellationEvaluation, Geometry, Pixel
+		};
+
 	public:
 		/// <summary>
 		/// Get the size of a Shader::Datatype
@@ -122,12 +138,19 @@ namespace Tara {
 			const std::string& vertexSrc, 
 			const std::string& fragmentSrc
 		);
-		/*TODO: add overloaded Create functions for shaders with other programmed steps:
-			? compute (1 input string) (compute)
-			+ geometry (3 input string) (vertex, geom, frag), 
-			+ Tesselation(4 input strings) (vertex, tess ctrl, tess eval, frag), or
-			+ both (5 input strings) (vertex, tess ctrl, tess eval, geom, frag)
-		*/
+
+		/// <summary>
+		/// Create a new shader
+		/// </summary>
+		/// <param name="name">the shader name</param>
+		/// <param name="type">the shader type</param>
+		/// <param name="sources">the shader source map</param>
+		/// <returns></returns>
+		static ShaderRef Create(
+			const std::string& name,
+			Shader::SourceType type,
+			std::unordered_map<TargetStage, std::string> sources
+		);
 
 	};
 	/// <summary>

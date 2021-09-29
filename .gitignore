@@ -378,3 +378,6 @@ update.sh
 
 # UNIX makefiles
 **/[Mm]akefile
+
+# RenderDoc capture settings files
+*.cap

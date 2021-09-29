@@ -129,6 +129,14 @@ namespace Tara {
 		/// <returns>a reference to the new VertexBuffer</returns>
 		static VertexBufferRef Create(float* vertexes, uint32_t count);
 
+		/// <summary>
+		/// Create a new VertexBuffer
+		/// </summary>
+		/// <param name="vertexes">a pointer to an array of data</param>
+		/// <param name="size">ise of array in bites</param>
+		/// <returns>a reference to the new VertexBuffer</returns>
+		//static VertexBufferRef Create(void* vertexes, uint32_t size);
+
 	protected:
 		/// <summary>
 		/// private storage of the buffer layout

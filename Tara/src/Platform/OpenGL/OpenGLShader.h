@@ -5,7 +5,10 @@ namespace Tara {
 
 	class OpenGLShader : public Shader {
 	public:
-		OpenGLShader(const std::string& name, Shader::SourceType type,const std::string& vertexSrc,const std::string& fragmentSrc);
+		//OpenGLShader(const std::string& name, Shader::SourceType type,const std::string& vertexSrc,const std::string& fragmentSrc);
+		OpenGLShader(const std::string& name, Shader::SourceType type, std::unordered_map<TargetStage, std::string> sources);
+		
+
 		~OpenGLShader();
 
 		virtual void Bind() const override;
@@ -13,6 +16,7 @@ namespace Tara {
 
 		//uniform sending
 		virtual void Send(const std::string& name, int value) override;
+		virtual void Send(const std::string& name, int* value, int count) override;
 		virtual void Send(const std::string& name, float value) override;
 		virtual void Send(const std::string& name, const glm::vec2& value) override;
 		virtual void Send(const std::string& name, const glm::vec3& value) override;
@@ -24,6 +28,8 @@ namespace Tara {
 		static uint32_t DatatypeToGLenum(Shader::Datatype type);
 
 	private:
+		static uint32_t TargetStageToGLenum(Shader::TargetStage stage);
+
 		void Build(const std::unordered_map<uint32_t, std::string>& sources);
 		std::string ReadShaderTextFile(const std::string& filename);
 

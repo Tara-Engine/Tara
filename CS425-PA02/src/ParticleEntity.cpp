@@ -1,5 +1,6 @@
 #include "ParticleEntity.h"
 #include "WallEntity.h"
+#include "PlayerEntity.h"
 
 #define MIN_DIST 50
 #define MAX_DIST 200
@@ -8,7 +9,14 @@
 ParticleEntity::ParticleEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture)
 	:Tara::SpriteEntity(parent, owningLayer, transform, name, texture), m_Velocity(0,0,0)
 {
-
+	Tara::Texture2DRef tex = GetTexture();
+	if (tex) {
+		m_BaseTextureName = tex->GetAssetName();
+	}
+	else {
+		m_BaseTextureName = "";
+	}
+	m_GlowTextureName = "";
 }
 
 std::shared_ptr<ParticleEntity> ParticleEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture)
@@ -79,6 +87,18 @@ void ParticleEntity::OnUpdate(float deltaTime)
 	}
 
 	SetTransform(localTransform); //update position
+
+	//glow stuff
+	if (m_IsGlowing && !m_HitPlayerRecently) {
+		//unset glow
+		m_IsGlowing = false;
+		auto newTex = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>(m_BaseTextureName);
+		if (newTex) {
+			SetTexture(newTex);
+		}
+	}
+	//reset this
+	m_HitPlayerRecently = false;
 }
 
 
@@ -117,5 +137,18 @@ bool ParticleEntity::OnOverlapEvent(Tara::OverlapEvent& e)
 
 		return true;
 	}
+	
+	std::shared_ptr<Tara::PlayerEntity> player = std::dynamic_pointer_cast<Tara::PlayerEntity>(e.GetOther());
+	if (player) {
+		m_IsGlowing = true;
+		m_HitPlayerRecently = true;
+		auto newTex = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>(m_GlowTextureName);
+		if (newTex) {
+			SetTexture(newTex);
+		}
+
+		return true;
+	}
+	
 
 }

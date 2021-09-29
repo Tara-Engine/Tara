@@ -6,6 +6,7 @@ namespace Tara {
 	class OpenGLVertexBuffer : public VertexBuffer {
 	public:
 		OpenGLVertexBuffer(float* verteces, uint32_t count);
+		//OpenGLVertexBuffer(void* verteces, uint32_t size);
 		~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;

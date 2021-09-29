@@ -41,8 +41,9 @@ namespace Tara {
 		}
 		if (input->IsKeyPressed(TARA_KEY_D) || input->IsKeyPressed(TARA_KEY_RIGHT))
 		{
-			v.y = 1;
+			v.x = 1;
 		}
 		t.Position += v * 100.0f * deltaTime;
+		SetTransform(t);
 	}
 }

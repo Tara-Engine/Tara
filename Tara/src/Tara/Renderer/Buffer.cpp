@@ -16,6 +16,17 @@ namespace Tara{
         return VertexBufferRef();
     }
 
+    /*
+    VertexBufferRef VertexBuffer::Create(void* vertices, uint32_t size)
+    {
+        switch (Renderer::GetRenderBackend()) {
+        case RenderBackend::OpenGl: return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+
+        case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
+        }
+        return VertexBufferRef();
+    }
+    */
 
     IndexBufferRef IndexBuffer::Create(uint32_t* indices, uint32_t count)
     {
