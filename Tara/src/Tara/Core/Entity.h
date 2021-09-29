@@ -240,7 +240,21 @@ protected:
 		virtual void OtherOverlapChecks(EntityRef other);
 
 
+		/// <summary>
+		/// Apppend to a list of all the children that overlap a bounding box
+		/// </summary>
+		/// <param name="box">the box to check with</param>
+		/// <param name="list">the list to append to</param>
+		virtual void GetAllChildrenInBox(const BoundingBox& box, std::list<EntityRef>& list);
 		
+		
+		/// <summary>
+		/// Append to a list of all the children that overlap a circle/sphere
+		/// </summary>
+		/// <param name="origin">the position</param>
+		/// <param name="radius">the radius</param>
+		/// <param name="list">the list to append to</param>
+		virtual void GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list);
 
 	private:
 		/// <summary>

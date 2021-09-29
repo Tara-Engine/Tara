@@ -37,7 +37,7 @@ namespace Tara {
 			if (m_Tree) { delete m_Tree; m_Tree = nullptr; }
 		}
 
-	protected:
+	public:
 
 		/// <summary>
 		/// Run Overlap checks for oneself and one's children.
@@ -54,6 +54,23 @@ namespace Tara {
 		/// </summary>
 		/// <param name="other"></param>
 		virtual void OtherOverlapChecks(EntityRef other) override;
+
+
+		/// <summary>
+		/// Apppend to a list of all the children that overlap a bounding box
+		/// </summary>
+		/// <param name="box">the box to check with</param>
+		/// <param name="list">the list to append to</param>
+		virtual void GetAllChildrenInBox(const BoundingBox& box, std::list<EntityRef>& list) override;
+
+
+		/// <summary>
+		/// Append to a list of all the children that overlap a circle/sphere
+		/// </summary>
+		/// <param name="origin">the position</param>
+		/// <param name="radius">the radius</param>
+		/// <param name="list">the list to append to</param>
+		virtual void GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list) override;
 
 	private:
 
@@ -111,6 +128,15 @@ namespace Tara {
 			/// <param name="box">the box</param>
 			/// <param name="overlapping">the list to fill</param>
 			void TraceBox(BoundingBox box, std::list<EntityRef>& overlapping);
+
+			/// <summary>
+			/// Trace a sphere against the tree, and get every entity that overlaps it
+			/// The list is passed as reference so that there is not a continuous concatinating of lists
+			/// </summary>
+			/// <param name="center">center of sphere</param>
+			/// <param name="radius">radius of sphere</param>
+			/// <param name="overlapping">the list to fill</param>
+			void TraceSphere(Vector center, float radius, std::list<EntityRef>& overlapping);
 
 			/// <summary>
 			/// Update bounding box

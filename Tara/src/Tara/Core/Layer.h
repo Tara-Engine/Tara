@@ -171,36 +171,14 @@ namespace Tara {
 	{
 		static_assert(std::is_base_of<Entity, T>::value, "Provided class is not a subclass of Tara::Entity");
 
+		std::list<EntityRef> PotentialOverlaps = GetAllEntitiesInBox(box);
 		std::list<std::shared_ptr<T>> Overlaps;
-		std::list<EntityRef> PotentialOverlaps;
-
-		//initial state of queue
-		for (auto entity : m_Entities) {
-			if (box.Overlaping(entity->GetFullBoundingBox())) {
-				PotentialOverlaps.push_back(entity);
+		for (auto entity : PotentialOverlaps) {
+			std::shared_ptr<T> target = std::dynamic_pointer_cast<T>(entity);
+			if (target) {
+				Overlaps.push_back(target);
 			}
 		}
-
-		while (!PotentialOverlaps.empty()) {
-			EntityRef entity = PotentialOverlaps.front();
-			PotentialOverlaps.pop_front();
-
-			//if the specific box overlaps, then add
-			if (box.Overlaping(entity->GetSpecificBoundingBox())) {
-				std::shared_ptr<T> typedEntity = std::dynamic_pointer_cast<T>(entity);
-				if (typedEntity) {
-					Overlaps.push_back(typedEntity);
-				}
-			}
-
-			//enqueue children if they overlap
-			for (auto child : entity->GetChildren()) {
-				if (box.Overlaping(child->GetFullBoundingBox())) {
-					PotentialOverlaps.push_back(child);
-				}
-			}
-		}
-
 		return Overlaps;
 	}
 
@@ -209,36 +187,14 @@ namespace Tara {
 	{
 		static_assert(std::is_base_of<Entity, T>::value, "Provided class is not a subclass of Tara::Entity");
 
+		std::list<EntityRef> PotentialOverlaps = GetAllEntitiesInRadius(origin, radius);
 		std::list<std::shared_ptr<T>> Overlaps;
-		std::list<EntityRef> PotentialOverlaps;
-
-		//initial state of queue
-		for (auto entity : m_Entities) {
-			if (entity->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
-				PotentialOverlaps.push_back(entity);
+		for (auto entity : PotentialOverlaps) {
+			std::shared_ptr<T> target = std::dynamic_pointer_cast<T>(entity);
+			if (target) {
+				Overlaps.push_back(target);
 			}
 		}
-
-		while (!PotentialOverlaps.empty()) {
-			EntityRef entity = PotentialOverlaps.front();
-			PotentialOverlaps.pop_front();
-
-			//if the specific box overlaps, then add
-			if (entity->GetSpecificBoundingBox().OverlappingSphere(origin, radius)) {
-				std::shared_ptr<T> typedEntity = std::dynamic_pointer_cast<T>(entity);
-				if (typedEntity) {
-					Overlaps.push_back(typedEntity);
-				}
-			}
-
-			//enqueue children if they overlap
-			for (auto child : entity->GetChildren()) {
-				if (child->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
-					PotentialOverlaps.push_back(child);
-				}
-			}
-		}
-
 		return Overlaps;
 	}
 

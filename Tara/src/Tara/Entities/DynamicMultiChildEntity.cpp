@@ -67,6 +67,20 @@ namespace Tara{
         }
     }
 
+    void DynamicMultiChildEntity::GetAllChildrenInBox(const BoundingBox& box, std::list<EntityRef>& list)
+    {
+        if (m_Tree) {
+            m_Tree->TraceBox(box, list);
+        }
+    }
+
+    void DynamicMultiChildEntity::GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list)
+    {
+        if (m_Tree) {
+            m_Tree->TraceSphere(origin, radius, list);
+        }
+    }
+
 
 
 
@@ -142,6 +156,21 @@ namespace Tara{
             }
             if (Right->Box.Overlaping(box)) {
                 Right->TraceBox(box, overlapping);
+            }
+        }
+    }
+
+    void DynamicMultiChildEntity::Node::TraceSphere(Vector center, float radius, std::list<EntityRef>& overlapping)
+    {
+        if (Entity != nullptr) {
+            overlapping.push_back(Entity);
+        }
+        else {
+            if (Left->Box.OverlappingSphere(center, radius)) {
+                Left->TraceSphere(center, radius, overlapping);
+            }
+            if (Right->Box.OverlappingSphere(center, radius)) {
+                Right->TraceSphere(center, radius, overlapping);
             }
         }
     }

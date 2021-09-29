@@ -203,6 +203,8 @@ namespace Tara{
         SetListeningForEvents(enable);
     }
 
+ 
+
     void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
     {
         if (newParent.lock() == nullptr) {
@@ -325,8 +327,33 @@ namespace Tara{
         }
     }
 
-    
 
+   
+
+    void Entity::GetAllChildrenInBox(const BoundingBox& box, std::list<EntityRef>& list)
+    {
+        for (auto child : m_Children) {
+            if (box.Overlaping(child->GetFullBoundingBox())) {
+                if (box.Overlaping(child->GetSpecificBoundingBox())) {
+                    list.push_back(child);
+                }
+                child->GetAllChildrenInBox(box, list);
+            }
+        }
+    }
+
+    
+    void Entity::GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list)
+    {
+        for (auto child : m_Children) {
+            if (child->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
+                if (child->GetSpecificBoundingBox().OverlappingSphere(origin, radius)) {
+                    list.push_back(child);
+                }
+                child->GetAllChildrenInRadius(origin, radius, list);
+            }
+        }
+    }
 
 
 }

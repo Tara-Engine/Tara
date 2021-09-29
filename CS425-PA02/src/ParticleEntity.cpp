@@ -150,5 +150,5 @@ bool ParticleEntity::OnOverlapEvent(Tara::OverlapEvent& e)
 		return true;
 	}
 	
-
+	return false;
 }
