@@ -31,10 +31,17 @@ public:
 		Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-200,-200,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
 
 		auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
-		for (int x = 0; x < 10; x++) {
-			for (int y = 0; y < 10; y++) {
-				auto particle = ParticleEntity::Create(dmce, weak_from_this(), { {-250 + x*50,-250 + y * 50,0},{0,0,0}, {PARTICLE_SIZE,PARTICLE_SIZE,1} }, "particle", particleTexture);
+		Tara::Noise noise = Tara::Noise(time(0));
+		srand(time(0));
+		int spawned = 0;
+		while (spawned < 100) {
+			int x = -300 + (rand() % 600);
+			int y = -300 + (rand() % 600);
+			float val = noise(x, y);
+			if ((val + 1) * 50 > rand() % 75) { // values above +0.5 are guaranteed spawns
+				auto particle = ParticleEntity::Create(dmce, weak_from_this(), { {x,y,0},{0,0,0}, {PARTICLE_SIZE,PARTICLE_SIZE,1} }, "particle", particleTexture);
 				particle->SetGlowTextureName(particleGlowTexture->GetAssetName());
+				spawned++;
 			}
 		}
 
