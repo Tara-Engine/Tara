@@ -28,20 +28,30 @@ public:
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
 		
 
-		Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {-200,-200,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
-
 		auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
-		Tara::Noise noise = Tara::Noise(time(0));
+		Tara::Noise particleNoise = Tara::Noise(time(0));
 		srand(time(0));
-		int spawned = 0;
-		while (spawned < 100) {
+		int particlesSpawned = 0;
+		while (particlesSpawned < 100) {
 			int x = -300 + (rand() % 600);
 			int y = -300 + (rand() % 600);
-			float val = noise(x, y);
+			float val = particleNoise(x, y);
 			if ((val + 1) * 50 > rand() % 75) { // values above +0.5 are guaranteed spawns
 				auto particle = ParticleEntity::Create(dmce, weak_from_this(), { {x,y,0},{0,0,0}, {PARTICLE_SIZE,PARTICLE_SIZE,1} }, "particle", particleTexture);
 				particle->SetGlowTextureName(particleGlowTexture->GetAssetName());
-				spawned++;
+				particlesSpawned++;
+			}
+		}
+
+		Tara::Noise wallNoise = Tara::Noise((uint32_t)(time(0)*-1));
+		int wallsSpawned = 0;
+		while (wallsSpawned < 3) {
+			int x = -40 + (rand() % 80);
+			int y = -40 + (rand() % 80);
+			float val = wallNoise(x, y);
+			if ((val + 1) * 50 > rand() % 75) {
+				Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {x*8,y*8,0},{0,0,0}, {100,100,100} }, "wall", wallTexture);
+				wallsSpawned++;
 			}
 		}
 
