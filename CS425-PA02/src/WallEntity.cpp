@@ -16,6 +16,8 @@ namespace Tara {
 	std::shared_ptr<WallEntity> WallEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, Tara::Texture2DRef texture)
 	{
 		std::shared_ptr<WallEntity> newEntity = std::make_shared<WallEntity>(parent, owningLayer, transform, name, texture);
+		//must be done outside of constructor because 
+		//you have to have it fully constructed before getting a shared ptr
 		Entity::Register(newEntity);
 		return newEntity;
 	}
