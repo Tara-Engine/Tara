@@ -1,9 +1,14 @@
 #version 450 core
+#extension GL_ARB_bindless_texture : require
+
 layout(location=0)out vec4 color;
 #define TEXTURE_COUNT 3
 
 
-uniform sampler2D u_Textures[TEXTURE_COUNT];
+
+uniform sampler2D u_Texture0;
+uniform sampler2D u_Texture1;
+uniform sampler2D u_Texture2;
 
 in GEOM_OUT {
 	vec2 UV;
@@ -12,16 +17,13 @@ in GEOM_OUT {
 } v_VertexData;
 
 void main(){
+	
 	if(v_VertexData.TextureIndex < 0){
 		color = v_VertexData.Color;
 	}
-	//else if(v_VertexData.TextureIndex > 2) {
-	//	color = vec4(1,0,1,1);
-	//}
 	else{
-		//int index = min(max(v_VertexData.TextureIndex, 0),(TEXTURE_COUNT-1));
-		int idx = int(v_VertexData.TextureIndex);
-		color = v_VertexData.Color * texture(u_Textures[idx], v_VertexData.UV);
-		//color = vec4(idx,idx,idx,1.0);
+		sampler2D textures[3] = {u_Texture0, u_Texture1, u_Texture2};
+		int index = int(v_VertexData.TextureIndex);
+		color = v_VertexData.Color * texture(textures[index], v_VertexData.UV);
 	}
 }

@@ -45,7 +45,7 @@ namespace Tara {
 		Input::Init(m_Window);
 
 		RenderCommand::Init();
-
+		RenderCommand::SetClearColor(0.0f, 0.0f, 0.0f); //Default value
 		//make a default scene
 		m_Scene = std::make_shared<Scene>();
 	}
@@ -93,7 +93,7 @@ namespace Tara {
 	void Application::Render(float deltaTime)
 	{
 		//clear window
-		RenderCommand::SetClearColor(0.0f, 0.0f, 0.0f);
+		
 		RenderCommand::Clear();
 		//draw scene
 		m_Scene->Draw(deltaTime);

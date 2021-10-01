@@ -126,8 +126,10 @@ void BatchTestLayer::Draw(float deltaTime)
 	m_GShader->Bind();
 	m_GShader->Send("u_MatrixViewProjection", m_Camera->GetCamera()->GetViewProjectionMatrix());
 	m_GShader->Send("u_MatrixModel", glm::mat4(1.0f));
-	int textures[] = { 0, 1, 2 };
-	m_GShader->Send("u_Textures", textures, 3);
+	//int textures[] = { 0, 1, 2 };
+	m_GShader->Send("u_Texture0", 0);
+	m_GShader->Send("u_Texture1", 1);
+	m_GShader->Send("u_Texture2", 2);
 	m_QuadPoints->Bind();
 	//glPointSize(10);
 	glDrawArrays(GL_POINTS, 0, 5);
@@ -142,4 +144,15 @@ void BatchTestLayer::Draw(float deltaTime)
 #endif
 
 	Tara::Renderer::EndScene();
+}
+
+void BatchTestLayer::OnEvent(Tara::Event& e)
+{
+	Tara::EventFilter filter(e);
+	filter.Call<Tara::WindowResizeEvent>(TARA_BIND_FN(BatchTestLayer::OnWindowResizeEvent));
+}
+
+bool BatchTestLayer::OnWindowResizeEvent(Tara::WindowResizeEvent& e) {
+	m_Camera->SetOrthographicExtent(8.0f);
+	return false;
 }

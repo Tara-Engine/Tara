@@ -27,7 +27,9 @@ public:
 
 	virtual void Draw(float deltaTime) override;
 
+	virtual void OnEvent(Tara::Event& e) override;
 
+	bool BatchTestLayer::OnWindowResizeEvent(Tara::WindowResizeEvent& e);
 private:
 	Tara::Texture2DRef m_Texture;
 	Tara::Texture2DRef m_Texture2;

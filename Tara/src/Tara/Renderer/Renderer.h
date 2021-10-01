@@ -78,6 +78,7 @@ namespace Tara {
 		/// <param name="box">the box to draw</param>
 		/// <param name="color">the color to draw it in</param>
 		static void DrawBoundingBox(const BoundingBox& box, glm::vec4 color = { 0,0,0,1 });
+
 	private:
 
 		/// <summary>

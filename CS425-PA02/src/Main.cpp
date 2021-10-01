@@ -19,14 +19,29 @@ public:
 	}
 
 	virtual void Activate() override {
+		Tara::RenderCommand::SetClearColor({0.0f,0.845f,1.0f});
+
 		m_Camera = std::make_shared<Tara::OrthographicCamera>((float)WIDTH);
 
 		Tara::Texture2DRef wallTexture = Tara::Texture2D::Create("assets/wall.png");
 		Tara::Texture2DRef particleTexture = Tara::Texture2D::Create("assets/Particle.png");
 		Tara::Texture2DRef particleGlowTexture = Tara::Texture2D::Create("assets/Particle_glowing.png");
+		Tara::Texture2DRef characterTexture = Tara::Texture2D::Create("assets/Character.png");
+	
 
-		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,100} }, "player", wallTexture);
-		
+		Tara::Noise wallNoise = Tara::Noise((uint32_t)(time(0)*-1));
+		int wallsSpawned = 0;
+		while (wallsSpawned < 3) {
+			int x = -40 + (rand() % 80);
+			int y = -40 + (rand() % 80);
+			float val = wallNoise(x, y);
+			if ((val + 1) * 50 > rand() % 75) {
+				Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {x*8,y*8,0},{0,0,0}, {100,100,1} }, "wall", wallTexture);
+				wallsSpawned++;
+			}
+		}
+
+		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,1} }, "player", characterTexture);
 
 		auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
 		Tara::Noise particleNoise = Tara::Noise(time(0));
@@ -43,18 +58,6 @@ public:
 			}
 		}
 
-		Tara::Noise wallNoise = Tara::Noise((uint32_t)(time(0)*-1));
-		int wallsSpawned = 0;
-		while (wallsSpawned < 3) {
-			int x = -40 + (rand() % 80);
-			int y = -40 + (rand() % 80);
-			float val = wallNoise(x, y);
-			if ((val + 1) * 50 > rand() % 75) {
-				Tara::WallEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {x*8,y*8,0},{0,0,0}, {100,100,100} }, "wall", wallTexture);
-				wallsSpawned++;
-			}
-		}
-
 		//ParticleEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {50,0,0},{0,0,0}, {50,50,50} }, "particle", particleTexture);
 	}
 
@@ -68,7 +71,7 @@ public:
 
 	virtual void Draw(float deltaTime) override {
 		Tara::Renderer::BeginScene(m_Camera);
-
+		
 		Tara::Layer::Draw(deltaTime);
 
 		Tara::Renderer::EndScene();
