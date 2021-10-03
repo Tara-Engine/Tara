@@ -44,7 +44,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="path">the path to the texture</param>
 		/// <returns>Reference to the new texture</returns>
-		static Texture2DRef Create(const std::string& path);
+		static Texture2DRef Create(const std::string& path, const std::string& name = "");
 	};
 
 	/// <summary>

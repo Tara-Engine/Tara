@@ -7,8 +7,8 @@
 
 
 namespace Tara{
-	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
-		: Texture2D(GetAssetNameFromPath(path)), m_Path(path), m_RendererID(0), m_Width(0), m_Height(0)
+	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, const std::string& name)
+		: Texture2D(name), m_Path(path), m_RendererID(0), m_Width(0), m_Height(0)
 	{
 		loadFromFile();
 		LOG_S(INFO) << "Image Loaded from File: " << path;
