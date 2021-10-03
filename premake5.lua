@@ -182,8 +182,8 @@ project("Playground")
 	
 group("ClassProjs")
 
-project("CS425-PA02")
-	location("CS425-PA02")
+project("CS425-PA03")
+	location("CS425-PA03")
 	kind("ConsoleApp")
 	language("C++")
 	cppdialect("C++17") --prefered C++19, but premake does not support that yet

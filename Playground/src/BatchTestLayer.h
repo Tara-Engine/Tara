@@ -46,4 +46,5 @@ private:
 	Tara::ShaderRef m_GShader;
 	Tara::VertexArrayRef m_QuadPoints;
 	
+	std::vector<QuadData> m_Quads;
 };

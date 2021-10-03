@@ -36,10 +36,18 @@ void BatchTestLayer::Activate()
 	sources[Tara::Shader::TargetStage::Pixel] = "assets/quad.frag.glsl";
 	m_GShader = Tara::Shader::Create("geomQuadShader", Tara::Shader::SourceType::TextFiles, sources);
 
+
+	m_Quads.push_back(QuadData({ 0,0 }, { 1,1 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,0,0,1 }, -1.0f));
+	m_Quads.push_back(QuadData({ -2,0 }, { 0.5,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 0.0f));
+	m_Quads.push_back(QuadData({ 1,-2 }, { 0.75,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 1.0f));
+	m_Quads.push_back(QuadData({ -1,2 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 1.0f));
+	m_Quads.push_back(QuadData({ 2,1 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 2.0f));
+
 	//create quad points array
 	m_QuadPoints = Tara::VertexArray::Create();
 	m_QuadPoints->Bind();
 
+	/*
 	QuadData quadData[]{
 		QuadData({ 0,0 }, { 1,1 },       { 0.0f,0.0f }, { 1.0f,1.0f },     { 1,0,0,1 }, -1.0f),
 		QuadData({ -2,0 }, { 0.5,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f },     { 1,1,1,1 },  0.0f),
@@ -47,7 +55,9 @@ void BatchTestLayer::Activate()
 		QuadData({ -1,2 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f },    { 1,1,1,1 },  1.0f),
 		QuadData({ 2,1 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f },    { 1,1,1,1 },  2.0f),
 	};
-	auto quadVertecies = Tara::VertexBuffer::Create((float*)quadData, sizeof(quadData)/sizeof(float));
+	*/
+	int floatInQuadData = sizeof(QuadData) / sizeof(float);
+	auto quadVertecies = Tara::VertexBuffer::Create((float*)m_Quads.data(), m_Quads.size() * floatInQuadData);
 
 	quadVertecies->Bind();
 	quadVertecies->SetLayout({
@@ -132,7 +142,7 @@ void BatchTestLayer::Draw(float deltaTime)
 	m_GShader->Send("u_Texture2", 2);
 	m_QuadPoints->Bind();
 	//glPointSize(10);
-	glDrawArrays(GL_POINTS, 0, 5);
+	glDrawArrays(GL_POINTS, 0, m_Quads.size());
 #else
 	m_Texture->Bind(0);
 	m_Texture2->Bind(1);
