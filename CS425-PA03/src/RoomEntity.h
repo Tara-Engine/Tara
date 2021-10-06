@@ -40,13 +40,7 @@ public:
 	/// <returns></returns>
 	static RoomEntityRef Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, uint32_t doorState, uint32_t perm, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "RoomEntity");
 
-	/// <summary>
-	/// Get the appropreate texture from  the doorstate and permutation
-	/// </summary>
-	/// <param name="doorState"></param>
-	/// <param name="perm"></param>
-	/// <returns></returns>
-	static Tara::Texture2DRef RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm);
+	
 
 	/// <summary>
 	/// Get the door state

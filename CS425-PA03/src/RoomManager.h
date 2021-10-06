@@ -43,6 +43,14 @@ public:
 	static uint32_t InvertDoorState(uint32_t state);
 
 	/// <summary>
+	/// Get the appropreate texture from  the doorstate and permutation
+	/// </summary>
+	/// <param name="doorState"></param>
+	/// <param name="perm"></param>
+	/// <returns></returns>
+	static Tara::Texture2DRef RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm);
+
+	/// <summary>
 	/// Load the textures for all room permutations;
 	/// </summary>
 	void LoadRoomTextures();
@@ -70,5 +78,9 @@ public:
 
 private:
 	//Some datastructure to hold the rooms
+
+
+
+
 
 };

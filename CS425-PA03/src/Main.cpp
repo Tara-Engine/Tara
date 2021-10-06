@@ -1,7 +1,7 @@
 
 #include <Tara.h>
 #include "PlayerEntity.h"
-
+#include "RoomManager.h"
 
 //initial screen size
 const static int WIDTH = 1200;
@@ -23,11 +23,12 @@ public:
 	//this function is called when the layer is loaded to the screen. OpenGL context is guaranteed to be made, and engine systems initialized
 	virtual void Activate() override {
 		//set BG color
-		Tara::RenderCommand::SetClearColor({0.0f,0.845f,1.0f});
+		Tara::RenderCommand::SetClearColor({0.0f,0.0f,0.0f});
 
 		//make our camera
 		m_Camera = std::make_shared<Tara::OrthographicCamera>((float)WIDTH);
 
+		RoomManager::Get()->LoadRoomTextures();
 		
 		//create the player
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,1} }, "player", nullptr);
