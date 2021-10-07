@@ -19,11 +19,11 @@ std::string RoomManager::StatesAndPermToString(uint32_t doorStates, uint32_t per
 {
 	static char IDs[] = { 'U', 'D', 'L', 'R'};
 	std::stringstream ss;
-	if (perm > 0) {
+	if (perm > 0 && perm < 5) {
 		ss << perm;
 	}
 	else {
-		ss << (rand() % MAX_ROOM_PERMS + 1); //could use a better random engine.
+		ss << 1; 
 	}
 	ss << '-';
 	for (int i = 0; i < 4; i++) {
@@ -49,8 +49,10 @@ uint32_t RoomManager::InvertDoorState(uint32_t state)
 
 Tara::Texture2DRef RoomManager::RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm)
 {
-	auto asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>(RoomManager::StatesAndPermToString(doorState, perm));
+	std::string name = RoomManager::StatesAndPermToString(doorState, perm);
+	auto asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>(name);
 	if (!asset) {
+		LOG_S(WARNING) << "Unknown door image get apptempted: " << name;
 		asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>("1-D"); //default is 1-D.png, if that fails, then nullptr
 	}
 	return asset;

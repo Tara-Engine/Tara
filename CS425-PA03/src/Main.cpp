@@ -35,11 +35,18 @@ public:
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
-
-		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_DOWN | DOORSTATE_RIGHT, 1);
-		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP   | DOORSTATE_RIGHT, 2);
-		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_DOWN | DOORSTATE_LEFT , 3);
-		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP   | DOORSTATE_LEFT , 4);
+		//*
+		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_DOWN | DOORSTATE_RIGHT, 0);
+		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP   | DOORSTATE_RIGHT, 0);
+		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_DOWN | DOORSTATE_LEFT , 2);
+		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP   | DOORSTATE_LEFT , 0);
+		//*/
+		/*
+		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_UP | DOORSTATE_LEFT, 1);
+		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP | DOORSTATE_LEFT, 2);
+		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_UP | DOORSTATE_LEFT, 3);
+		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP | DOORSTATE_LEFT, 4);
+		//*/
 
 		//create the player
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,1} }, "player", nullptr);
@@ -70,7 +77,7 @@ public:
 
 	//called by OnEvent if the event is a WindowResizeEvent
 	bool OnWindowResizeEvent(Tara::WindowResizeEvent& e) {
-		m_Camera->SetExtent((float)e.getWidth()); //tell the camera we resized, so it can compensate.
+		m_Camera->SetExtent((float)e.getWidth() / 100.0f); //tell the camera we resized, so it can compensate.
 		return false;
 	}
 
