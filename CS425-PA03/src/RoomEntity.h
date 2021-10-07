@@ -15,11 +15,6 @@
 //No namespcace, as this is part of the game, not the engine
 
 
-
-//this should have the default size of a room. (ie, its scale)
-//but I am not sure what that is yet.
-#define ROOMSIZE 0
-
 class RoomEntity : public Tara::SpriteEntity {
 public:
 	using RoomEntityRef = std::shared_ptr<RoomEntity>;

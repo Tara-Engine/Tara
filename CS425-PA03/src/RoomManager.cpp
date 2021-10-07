@@ -1,5 +1,9 @@
 #include "RoomManager.h"
 
+static const uint32_t ROOMSIZE_PX = 144; //pixel size of original room images
+static const float ROOM_SCALE = ROOMSIZE_PX * 4.0f;
+
+
 RoomManager::RoomManager()
 {
 	LoadRoomTextures();
@@ -53,6 +57,12 @@ Tara::Texture2DRef RoomManager::RoomTextureFromDoorsAndPerm(uint32_t doorState, 
 }
 
 
+void RoomManager::Init(Tara::EntityNoRef defaultParent, Tara::LayerNoRef defaultLayer)
+{
+	m_DefaultParent = defaultParent;
+	m_DefaultLayer = defaultLayer;
+}
+
 void RoomManager::LoadRoomTextures(){
 	for (int doors = 0x1; doors < 0x10; doors++) {
 		for (int perms = 1; perms < 5; perms++) {
@@ -62,22 +72,44 @@ void RoomManager::LoadRoomTextures(){
 	}
 }
 
-/*************************************************
-*				TODO SECTION					 *
-**************************************************/
+
 
 
 bool RoomManager::AddRoom(int32_t x, int32_t y, uint32_t doors, uint32_t perm)
 {
-	return false;
+	auto loc = std::make_pair(x, y);
+	//auto loc = x;
+	if (m_Rooms.find(loc) != m_Rooms.end()) {
+		//the room already exists
+		return false;
+	}
+	auto room = RoomEntity::Create(
+		m_DefaultParent, m_DefaultLayer, 
+		doors, perm, 
+		Tara::Transform(
+			Tara::Vector( x * ROOM_SCALE, y * ROOM_SCALE, 0.0f ), 
+			Tara::Rotator(0.0f, 0.0f, 0.0f), 
+			Tara::Vector(ROOM_SCALE, ROOM_SCALE, 1.0f)
+		)
+	);
+	m_Rooms[loc] = room;
+	return true;
 }
 
-
-
-RoomEntityRef RoomManager::GetRoomAt(int32_t x, int32_t y)
+RoomEntityRef RoomManager::GetRoom(int32_t x, int32_t y)
 {
+	auto loc = std::make_pair(x, y);
+	//auto loc = x;
+	auto f = m_Rooms.find(loc);
+	if (f != m_Rooms.end()) {
+		return f->second;
+	}
 	return nullptr;
 }
+
+/*************************************************
+*				TODO SECTION					 *
+**************************************************/
 
 void RoomManager::Generate()
 {

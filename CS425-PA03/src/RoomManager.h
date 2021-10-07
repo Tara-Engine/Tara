@@ -51,6 +51,13 @@ public:
 	static Tara::Texture2DRef RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm);
 
 	/// <summary>
+	/// Initialize the manager
+	/// </summary>
+	/// <param name="defaultParent">the default parent for rooms</param>
+	/// <param name="defaultLayer">the default layer for rooms</param>
+	void Init(Tara::EntityNoRef defaultParent, Tara::LayerNoRef defaultLayer);
+
+	/// <summary>
 	/// Load the textures for all room permutations;
 	/// </summary>
 	void LoadRoomTextures();
@@ -72,15 +79,25 @@ public:
 	/// <param name="x">the x coordinate</param>
 	/// <param name="y">the y coordinate</param>
 	/// <returns>the room. May be nullptr</returns>
-	RoomEntityRef GetRoomAt(int32_t x, int32_t y);
+	RoomEntityRef GetRoom(int32_t x, int32_t y);
 	
 	void Generate(); 
 
 private:
-	//Some datastructure to hold the rooms
+	
+	//callable struct for hashing pairs
+	struct pair_hash{
+		template <class T1, class T2>
+		std::size_t operator() (const std::pair<T1, T2>& pair) const {
+			return std::hash<T1>()(pair.first) ^ std::hash<T2>()(pair.second);
+		}
+	};
 
+	std::unordered_map<std::pair<uint32_t,uint32_t>, RoomEntityRef, pair_hash> m_Rooms;
 
-
+	Tara::EntityNoRef m_DefaultParent;
+	Tara::LayerNoRef m_DefaultLayer;
 
 
 };
+

@@ -26,12 +26,25 @@ public:
 		Tara::RenderCommand::SetClearColor({0.0f,0.0f,0.0f});
 
 		//make our camera
-		m_Camera = std::make_shared<Tara::OrthographicCamera>((float)WIDTH);
+		auto cameraEntity = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
+		cameraEntity->SetOrthographicExtent((float)WIDTH / 100.0f); // the /100 is used to counteract the scale of the player
+		//cameraEntity->SetOrthographicExtent(8.0f);
+		m_Camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(cameraEntity->GetCamera());
+		//m_Camera = std::make_shared<Tara::OrthographicCamera>((float)WIDTH);
 
+		//very important to initialize first!
+		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
-		
+
+		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_DOWN | DOORSTATE_RIGHT, 1);
+		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP   | DOORSTATE_RIGHT, 2);
+		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_DOWN | DOORSTATE_LEFT , 3);
+		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP   | DOORSTATE_LEFT , 4);
+
 		//create the player
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,1} }, "player", nullptr);
+		player->AddChild(cameraEntity);
+		
 	}
 
 	virtual void Deactivate() override {
