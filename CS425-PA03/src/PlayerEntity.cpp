@@ -47,7 +47,7 @@ namespace Tara {
 		}
 		//apply movement directly to position
 		Tara::Transform  t = GetRelativeTransform();
-		t.Position += v * 100.0f * deltaTime;
+		t.Position += v * 500.0f * deltaTime;
 		SetTransform(t);
 	}
 }

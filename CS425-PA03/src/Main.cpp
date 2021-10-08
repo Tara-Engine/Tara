@@ -35,7 +35,7 @@ public:
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
-		//*
+		/*
 		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_DOWN | DOORSTATE_RIGHT, 0);
 		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP   | DOORSTATE_RIGHT, 0);
 		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_DOWN | DOORSTATE_LEFT , 2);
@@ -47,6 +47,7 @@ public:
 		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_UP | DOORSTATE_LEFT, 3);
 		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP | DOORSTATE_LEFT, 4);
 		//*/
+		RoomManager::Get()->Generate(time(0), 5, 5, 30);
 
 		//create the player
 		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,1} }, "player", nullptr);

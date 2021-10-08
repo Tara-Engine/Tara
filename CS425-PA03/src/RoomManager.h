@@ -81,7 +81,7 @@ public:
 	/// <returns>the room. May be nullptr</returns>
 	RoomEntityRef GetRoom(int32_t x, int32_t y);
 	
-	void Generate(); 
+	void Generate(uint32_t seed, int32_t width, int32_t height, int32_t steps); 
 
 private:
 	
