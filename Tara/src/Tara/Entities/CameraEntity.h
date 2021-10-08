@@ -69,6 +69,18 @@ namespace Tara {
 		void SetOrthographicExtent(float width);
 
 		/// <summary>
+		/// Set if the camera should use the world scale for its projection matrix
+		/// </summary>
+		/// <param name="v"></param>
+		inline void SetUseWorldScale(bool v) { m_UseWorldScale = v; }
+
+		/// <summary>
+		/// Get if the camera should use the world scale for its projection matrix
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetUseWorldScale() const { return m_UseWorldScale; }
+
+		/// <summary>
 		/// Get the camera being used by this entity
 		/// </summary>
 		/// <returns>the camera</returns>
@@ -90,6 +102,11 @@ namespace Tara {
 		/// Orhtographic - specific
 		/// </summary>
 		OrthographicCamera::OrthoExtent m_OrthoExtent;
+
+		/// <summary>
+		/// Use the world scale of the camera for the projection matrix
+		/// </summary>
+		bool m_UseWorldScale = false;
 	};
 	
 	/// <summary>

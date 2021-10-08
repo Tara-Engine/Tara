@@ -113,10 +113,15 @@ namespace Tara {
 		Transform GetWorldTransform() const;
 
 		/// <summary>
-		/// Set the transform of the entity
+		/// Set the relative transform of the entity
 		/// </summary>
 		/// <param name="transform">the new transform</param>
-		void SetTransform(const Transform& transform) { m_Transform = transform; }
+		inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
+
+		/// <summary>
+		/// set the world transform of an entity
+		/// </summary>
+		void SetWorldTransform(const Transform& transform);
 
 		/// <summary>
 		/// Get the name of the entity
@@ -200,6 +205,32 @@ namespace Tara {
 		/// <returns>a weak ref to the owning layer</returns>
 		inline std::weak_ptr<Layer> GetOwningLayer() const { return m_OwningLayer; }
 
+
+		/// <summary>
+		/// Set if the chilren of this entity should be updated first
+		/// </summary>
+		/// <param name="v">true if they should be, false otherwise.</param>
+		inline void SetUpdateChildrenFirst(bool v) { m_UpdateChildrenFirst = v; }
+
+		/// <summary>
+		/// Get if the chilren of this entity should be updated first
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetUpdateChildrenFirst() const { return m_UpdateChildrenFirst; }
+
+		/// <summary>
+		/// Set if the chilren of this entity should be drawn first
+		/// </summary>
+		/// <param name="v">true if they should be, false otherwise.</param>
+		inline void SetDrawChildrenFirst(bool v) { m_DrawChildrenFirst = v; }
+
+		/// <summary>
+		/// Get if the chilren of this entity should be drawn first
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetDrawChildrenFirst() const { return m_DrawChildrenFirst; }
+
+
 protected:
 		/// <summary>
 		/// Update the entity. Should not be manually called
@@ -272,7 +303,8 @@ protected:
 		const std::weak_ptr<Layer> m_OwningLayer;
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
-
+		bool m_UpdateChildrenFirst = true;
+		bool m_DrawChildrenFirst = false;
 	};
 
 	/// <summary>

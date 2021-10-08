@@ -35,8 +35,10 @@ namespace Tara{
 
 	void Layer::OnEvent(Event& e)
 	{
+		//LOG_S(INFO) << "Layer OnEvent called!";
 		std::list<EventListenerNoRef> removable;
 		for (auto listener : m_Listeners) {
+			//LOG_S(INFO) << "Event listener OnEvent called!";
 			auto lockedListener = listener.lock();
 			if (lockedListener) {
 				//valid non-null listener
@@ -80,9 +82,10 @@ namespace Tara{
 	{
 		if (enable){
 			if (std::find(m_Listeners.begin(), m_Listeners.end(), ref) == m_Listeners.end()) {
+				m_Listeners.push_back(ref);
+				//LOG_S(INFO) << "Adding Event Listener!";
 				return true;
 			}
-			m_Listeners.push_back(ref);
 		}
 		else {
 			m_Listeners.remove(ref);

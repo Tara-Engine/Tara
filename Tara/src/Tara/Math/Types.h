@@ -64,28 +64,28 @@ namespace Tara {
 		/// </summary>
 		/// <param name="other"> the other rotator</param>
 		/// <returns>the new rotator</returns>
-		Rotator operator+ (const Rotator& other);
+		Rotator operator+ (const Rotator& other) const;
 
 		/// <summary>
 		/// get the difference of two rotators. Normalization occurs
 		/// </summary>
 		/// <param name="other">the other rotator</param>
 		/// <returns>the new rotator</returns>
-		Rotator operator- (const Rotator& other);
+		Rotator operator- (const Rotator& other) const;
 
 		/// <summary>
 		/// multiply a rotator by a float. Linear scaling
 		/// </summary>
 		/// <param name="other">the float</param>
 		/// <returns>the new rotator</returns>
-		Rotator operator*(const float& other);
+		Rotator operator*(const float& other) const;
 
 		/// <summary>
 		/// divide a rotator by a float. Linear scalaing
 		/// </summary>
 		/// <param name="other">the float</param>
 		/// <returns>the new rotator</returns>
-		Rotator operator/(const float& other);
+		Rotator operator/(const float& other) const;
 
 		/// <summary>
 		/// convert the euler angles to quaternion
@@ -136,14 +136,14 @@ namespace Tara {
 		/// </summary>
 		/// <param name="other">the other transform</param>
 		/// <returns>resulting new transform</returns>
-		Transform operator+ (const Transform& other);
+		Transform operator+ (const Transform& other) const;
 
 		/// <summary>
 		/// inverse combine two transforms
 		/// </summary>
 		/// <param name="other">the transform to remove from the current one</param>
 		/// <returns>tje resulting new transform</returns>
-		Transform operator- (const Transform& other);
+		Transform operator- (const Transform& other) const;
 	};
 
 	

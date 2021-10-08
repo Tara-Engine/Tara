@@ -1,53 +1,81 @@
-#include "tarapch.h"
 #include "PlayerEntity.h"
 #include "Tara/Renderer/Renderer.h"
 #include "Tara/Input/Input.h"
 #include "Tara/Input/Mappings.h"
 
-namespace Tara {
+const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
-	PlayerEntity::PlayerEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
-		: SpriteEntity(parent, owningLayer, transform, name, nullptr)
-	{}
-
-	PlayerEntity::PlayerEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, Tara::Texture2DRef texture)
-		: SpriteEntity(parent, owningLayer, transform, name, texture)
-	{}
+PlayerEntity::PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture)
+	: SpriteEntity(parent, owningLayer, transform, name, texture), m_Target(transform.Position), m_Origin(transform.Position), m_Timer(0), m_Traveling(false)
+{}
 
 
-	std::shared_ptr<PlayerEntity> PlayerEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, Tara::Texture2DRef texture)
-	{
-		std::shared_ptr<PlayerEntity> newEntity = std::make_shared<PlayerEntity>(parent, owningLayer, transform, name, texture);
-		//must be done outside of constructor because 
-		//you have to have it fully constructed before getting a shared ptr
-		Entity::Register(newEntity);
-		return newEntity;
+std::shared_ptr<PlayerEntity> PlayerEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture)
+{
+	std::shared_ptr<PlayerEntity> newEntity = std::make_shared<PlayerEntity>(parent, owningLayer, transform, name, texture);
+	//must be done outside of constructor because 
+	//you have to have it fully constructed before getting a shared ptr
+	Entity::Register(newEntity);
+	newEntity->ListenForEvents(true); //listen for window events
+	return newEntity;
+}
+
+void PlayerEntity::OnUpdate(float deltaTime)
+{
+	//apply movement directly to position
+	Tara::Transform  t = GetWorldTransform();
+	
+	if (m_Traveling) {
+		LOG_S(INFO) << "Traveling!";
+		m_Timer += deltaTime;
+		if (m_Timer >= m_MaxTime) {
+			m_Traveling = false;
+			m_Timer = 0;
+			t.Position = m_Target;
+			m_Origin = m_Target;
+		}
+		else {
+			t.Position = Tara::CubicInterp<Tara::Vector>(m_Origin, m_Target, m_Timer / m_MaxTime);
+		}
 	}
+	//TODO: movement
 
-	void PlayerEntity::OnUpdate(float deltaTime)
-	{
-		//poll the input to get movement
-		Tara::Input *input = Tara::Input::Get();
-		Tara::Vector v = Tara::Vector(0.0f, 0.0f, 0.0f);
-		if (input->IsKeyPressed(TARA_KEY_W) || input->IsKeyPressed(TARA_KEY_UP))
-		{
-			v.y = 1;
-		}
-		if (input->IsKeyPressed(TARA_KEY_S) || input->IsKeyPressed(TARA_KEY_DOWN))
-		{
-			v.y = -1;
-		}
-		if (input->IsKeyPressed(TARA_KEY_A) || input->IsKeyPressed(TARA_KEY_LEFT))
-		{
-			v.x = -1;
-		}
-		if (input->IsKeyPressed(TARA_KEY_D) || input->IsKeyPressed(TARA_KEY_RIGHT))
-		{
-			v.x = 1;
-		}
-		//apply movement directly to position
-		Tara::Transform  t = GetRelativeTransform();
-		t.Position += v * 500.0f * deltaTime;
-		SetTransform(t);
+	SetWorldTransform(t);
+}
+
+void PlayerEntity::OnEvent(Tara::Event& e)
+{
+	//LOG_S(INFO) << "Event received: " << e;
+	Tara::EventFilter filter(e);
+	filter.Call<Tara::KeyPressEvent>(TARA_BIND_FN(PlayerEntity::OnKeyPressEvent));
+}
+
+bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
+{
+	if (m_Traveling) { return false; }
+
+	auto key = e.getKey();
+	Tara::Vector dir = { 0,0,0 };
+	if (key == TARA_KEY_S || key == TARA_KEY_DOWN) {
+		dir.y = -1;
 	}
+	else if (key == TARA_KEY_W || key == TARA_KEY_UP) {
+		dir.y = 1;
+	}
+	else if (key == TARA_KEY_A || key == TARA_KEY_LEFT) {
+		dir.x = -1;
+	}
+	else if (key == TARA_KEY_D || key == TARA_KEY_RIGHT) {
+		dir.x = 1;
+	}
+	else {
+		return false;
+	}
+	dir *= MOVEMENT_DISTANCE;
+	const auto t = GetWorldTransform();
+	m_Origin = t.Position;
+	m_Target = t.Position + dir;
+	m_Traveling = true;
+	LOG_S(INFO) << "Key pressed event handled: " << (char)key;
+	return true;
 }

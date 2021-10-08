@@ -51,6 +51,17 @@ namespace Tara{
         }
     }
 
+    void Entity::SetWorldTransform(const Transform& transform)
+    {
+        if (GetParent().lock()) {
+            auto parentTransform = GetParent().lock()->GetWorldTransform();
+            m_Transform = transform - parentTransform;
+        }
+        else {
+            m_Transform = transform;
+        }
+    }
+
     bool Entity::IsChild(EntityRef ref, bool recursive) const
     {
         if (std::find(m_Children.begin(), m_Children.end(), ref) != m_Children.end()) {
@@ -161,19 +172,27 @@ namespace Tara{
 
     void Entity::Update(float deltaTime)
     {
-        //update children first, then self
+        if (!m_UpdateChildrenFirst) {
+            OnUpdate(deltaTime);
+        }
         for (auto child : m_Children) {
             child->Update(deltaTime);
         }
-        OnUpdate(deltaTime);
+        if (m_UpdateChildrenFirst) {
+            OnUpdate(deltaTime);
+        }
     }
 
     void Entity::Draw(float deltaTime)
     {
-        //draw self first, then children
-        OnDraw( deltaTime);
+        if (!m_DrawChildrenFirst){
+            OnDraw( deltaTime);
+        }
         for (auto child : m_Children) {
             child->Draw(deltaTime);
+        }
+        if (m_DrawChildrenFirst) {
+            OnDraw(deltaTime);
         }
     }
 

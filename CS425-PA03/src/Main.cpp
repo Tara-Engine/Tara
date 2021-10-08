@@ -25,33 +25,31 @@ public:
 		//set BG color
 		Tara::RenderCommand::SetClearColor({0.0f,0.0f,0.0f});
 
-		//make our camera
-		auto cameraEntity = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
-		cameraEntity->SetOrthographicExtent((float)WIDTH / 100.0f); // the /100 is used to counteract the scale of the player
-		//cameraEntity->SetOrthographicExtent(8.0f);
-		m_Camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(cameraEntity->GetCamera());
-		//m_Camera = std::make_shared<Tara::OrthographicCamera>((float)WIDTH);
+		
+		
 
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
-		/*
-		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_DOWN | DOORSTATE_RIGHT, 0);
-		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP   | DOORSTATE_RIGHT, 0);
-		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_DOWN | DOORSTATE_LEFT , 2);
-		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP   | DOORSTATE_LEFT , 0);
-		//*/
-		/*
-		RoomManager::Get()->AddRoom(0, 0,  DOORSTATE_UP | DOORSTATE_LEFT, 1);
-		RoomManager::Get()->AddRoom(0, -1, DOORSTATE_UP | DOORSTATE_LEFT, 2);
-		RoomManager::Get()->AddRoom(1, 0,  DOORSTATE_UP | DOORSTATE_LEFT, 3);
-		RoomManager::Get()->AddRoom(1, -1, DOORSTATE_UP | DOORSTATE_LEFT, 4);
-		//*/
 		RoomManager::Get()->Generate(time(0), 5, 5, 30);
 
 		//create the player
-		auto player = Tara::PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {100,100,1} }, "player", nullptr);
-		player->AddChild(cameraEntity);
+		auto playerTexture = Tara::Texture2D::Create("assets/Particle.png", "playerTexture");
+		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {16*4,16*4,1} }, "player", playerTexture);
+		
+		//make our camera
+		auto cameraEntity = Tara::CameraEntity::Create(
+			player, weak_from_this(), 
+			Tara::Camera::ProjectionType::Ortographic, 
+			{ {0.5f,0.5f,0.0f},{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f} }, 
+			"camera"
+		);
+		cameraEntity->SetOrthographicExtent((float)WIDTH); 
+		cameraEntity->SetUseWorldScale(false); //ignore parent scale for view matrix.
+		m_Camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(cameraEntity->GetCamera());
+		player->SetUpdateChildrenFirst(false);
+		//player->AddChild(cameraEntity);
+		
 		
 	}
 
@@ -72,13 +70,14 @@ public:
 
 	//called when an event happens. Has no need to send events to entities in the layer, that happens automatically.
 	virtual void OnEvent(Tara::Event& e) override {
+		Layer::OnEvent(e); //super call to layer
 		Tara::EventFilter filter(e); //create a filter for the type of event
 		filter.Call<Tara::WindowResizeEvent>(TARA_BIND_FN(GameLayer::OnWindowResizeEvent));
 	}
 
 	//called by OnEvent if the event is a WindowResizeEvent
 	bool OnWindowResizeEvent(Tara::WindowResizeEvent& e) {
-		m_Camera->SetExtent((float)e.getWidth() / 100.0f); //tell the camera we resized, so it can compensate.
+		m_Camera->SetExtent((float)e.getWidth()); //tell the camera we resized, so it can compensate.
 		return false;
 	}
 

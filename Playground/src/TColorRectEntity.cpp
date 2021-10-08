@@ -77,5 +77,5 @@ void TControlableEntity::OnUpdate(float deltaTime)
 
 	auto t = GetRelativeTransform();
 	t.Position += offset * deltaTime * m_Speed;
-	SetTransform(t);
+	SetRelativeTransform(t);
 }

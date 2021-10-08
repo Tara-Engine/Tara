@@ -32,21 +32,21 @@ namespace Tara{
 		Yaw = fmod(Yaw, 180.0f);
 	}
 
-	Rotator Rotator::operator+(const Rotator& other)
+	Rotator Rotator::operator+(const Rotator& other) const
 	{
 		Rotator r = { Roll + other.Roll, Pitch + other.Pitch, Yaw + other.Yaw };
 		r.Clamp();
 		return r;
 	}
 
-	Rotator Rotator::operator-(const Rotator& other)
+	Rotator Rotator::operator-(const Rotator& other) const
 	{
 		Rotator r = { Roll - other.Roll, Pitch - other.Pitch, Yaw - other.Yaw };
 		r.Clamp();
 		return r;
 	}
 
-	Rotator Rotator::operator*(const float& other)
+	Rotator Rotator::operator*(const float& other) const
 	{
 		Rotator r = { Roll * other, Pitch * other, Yaw * other};
 		r.Clamp();
@@ -54,7 +54,7 @@ namespace Tara{
 	}
 
 
-	Rotator Rotator::operator/(const float& other)
+	Rotator Rotator::operator/(const float& other) const
 	{
 		Rotator r = { Roll / other, Pitch / other, Yaw / other };
 		r.Clamp();
@@ -118,13 +118,13 @@ namespace Tara{
 	}
 
 
-	Transform Transform::operator+(const Transform& other)
+	Transform Transform::operator+(const Transform& other) const
 	{
 		return Transform(Position+ Rotation.RotateVector(other.Position) * Scale, Rotation+other.Rotation, Scale*other.Scale);
 	}
 
 
-	Transform Transform::operator-(const Transform& other)
+	Transform Transform::operator-(const Transform& other) const
 	{
 		return Transform(Position - Rotation.Inverse().RotateVector(other.Position) / Scale, Rotation - other.Rotation, Scale / other.Scale);
 	}

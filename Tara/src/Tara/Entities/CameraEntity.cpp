@@ -63,6 +63,13 @@ namespace Tara{
 
 	void CameraEntity::OnUpdate(float deltaTime)
 	{
-		m_Camera->SetTransform(GetWorldTransform());
+		if (m_UseWorldScale){
+			m_Camera->SetTransform(GetWorldTransform());
+		}
+		else {
+			Transform t = GetWorldTransform();
+			t.Scale = GetRelativeTransform().Scale;
+			m_Camera->SetTransform(t);
+		}
 	}
 }
