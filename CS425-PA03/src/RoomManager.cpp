@@ -120,6 +120,9 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 	auto y = rand() % height;
 	uint8_t* doorMatrix = new uint8_t[width * height];
 	// initialize the array to all zeroes
+	//should be done with memset(doorMatrix, 0, width*height);
+	memset(doorMatrix, 0, width * height);
+	/*
 	for (int i = 0; i < width; i++)
 	{
 		for (int j = 0; j < height; j++)
@@ -127,7 +130,9 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 			doorMatrix[i * height + j] = 0;
 		}
 	}
-	printf("Array flushed\n");
+	*/
+	LOG_F(INFO, "Array flushed");
+
 	for (int i = 0; i < steps; i++)
 	{
 		// pick a random direction
@@ -147,7 +152,7 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 					dir = 1;
 			}
 		}
-		printf("(%d,%d) connects", x, y);
+		LOG_F(INFO, "(%d,%d) connects", x, y);
 		// make the active cell link in that direction
 		doorMatrix[x * height + y] |= dir;
 		// mirror the link and move to that cell
@@ -167,7 +172,7 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 			break;
 		}
 		doorMatrix[x * height + y] |= InvertDoorState(dir);
-		printf(" to (%d,%d)\n", x, y);
+		LOG_F(INFO, " to (%d,%d)", x, y);
 	}
 	// TODO: goal tile, spawn tile, variants
 	// push all the rooms
@@ -177,7 +182,7 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 		{
 			if (doorMatrix[x * height + y] != 0)
 			{
-				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & 0b00001111, doorMatrix[x * height + y] > 64 ? 4 : 1);
+				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, doorMatrix[x * height + y] > 64 ? 4 : 1);
 			}
 		}
 	}
