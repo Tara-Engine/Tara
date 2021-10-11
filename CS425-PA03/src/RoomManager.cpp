@@ -118,20 +118,9 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 	srand(seed);
 	auto x = rand() % width;
 	auto y = rand() % height;
-	uint8_t* doorMatrix = new uint8_t[width * height];
+	uint8_t *doorMatrix = new uint8_t[width * height];
 	// initialize the array to all zeroes
-	//should be done with memset(doorMatrix, 0, width*height);
 	memset(doorMatrix, 0, width * height);
-	/*
-	for (int i = 0; i < width; i++)
-	{
-		for (int j = 0; j < height; j++)
-		{
-			doorMatrix[i * height + j] = 0;
-		}
-	}
-	*/
-	LOG_F(INFO, "Array flushed");
 
 	for (int i = 0; i < steps; i++)
 	{
@@ -152,7 +141,6 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 					dir = 1;
 			}
 		}
-		LOG_F(INFO, "(%d,%d) connects", x, y);
 		// make the active cell link in that direction
 		doorMatrix[x * height + y] |= dir;
 		// mirror the link and move to that cell
@@ -172,9 +160,8 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 			break;
 		}
 		doorMatrix[x * height + y] |= InvertDoorState(dir);
-		LOG_F(INFO, " to (%d,%d)", x, y);
 	}
-	// TODO: goal tile, spawn tile, variants
+	// TODO: goal tile, spawn tile
 	// push all the rooms
 	for (int x = 0; x < width; x++)
 	{
@@ -182,7 +169,7 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 		{
 			if (doorMatrix[x * height + y] != 0)
 			{
-				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, doorMatrix[x * height + y] > 64 ? 4 : 1);
+				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, doorMatrix[x * height + y] > 64 ? 4 : ((rand() % 3) + 1));
 			}
 		}
 	}
