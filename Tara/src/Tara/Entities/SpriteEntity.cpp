@@ -23,7 +23,10 @@ namespace Tara {
 	void SpriteEntity::OnDraw(float deltaTime)
 	{
 		if (m_Texture)
-			Renderer::Quad(m_Texture, GetWorldTransform());
+		{
+			Renderer::Quad(GetWorldTransform(), glm::vec4{ 1.0f,1.0f,1.0f,1.0f }, m_Texture);
+			//Renderer::Quad(m_Texture, GetWorldTransform());
+		}
 	}
 
 }

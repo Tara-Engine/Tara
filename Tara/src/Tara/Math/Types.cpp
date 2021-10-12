@@ -89,7 +89,7 @@ namespace Tara{
 	{
 		/*Explanation:
 		* SO, this works in order of operation: Scale first, then rotate, then move.
-		* Rotation happens in the extrinsix order or Roll, then Pitch, then Yaw. Or, around Z, then around X, then around Y.
+		* Rotation happens in the extrinsic order or Roll, then Pitch, then Yaw. Or, around Z, then around X, then around Y.
 		*/
 
 		glm::mat4 scale = glm::scale(glm::mat4(1), Scale);

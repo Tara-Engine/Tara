@@ -47,6 +47,20 @@ namespace Tara {
 		/// <param name="vertexArray"></param>
 		inline static void DrawLines(VertexArrayRef vertexArray) { s_RC->IDrawLines(vertexArray); }
 
+		/// <summary>
+		/// Draw a list of vertecies as points. For use with batch rendering.
+		/// </summary>
+		/// <param name="vertexArray"></param>
+		/// <param name="count"></param>
+		inline static void DrawPointList(VertexArrayRef vertexArray, uint32_t count) { s_RC->IDrawPointList(vertexArray, count); }
+
+		/// <summary>
+		/// Gets the max number of textures that can be sent to the fragment shader.
+		/// </summary>
+		/// <returns>that number.</returns>
+		inline static uint32_t GetMaxTextureSlotsPerShader() {return s_RC->IGetMaxTextureSlotsPerShader();}
+	
+	
 	protected:
 		/// <summary>
 		/// Protected SetClearColor, for underlying implementation to override
@@ -70,6 +84,18 @@ namespace Tara {
 		/// </summary>
 		/// <param name="vertexArray"></param>
 		virtual void IDrawLines(VertexArrayRef vertexArray) = 0;
+
+		/// <summary>
+		/// Protected GetMaxTextureSlotsPerShader, for underlying implementation to override
+		/// </summary>
+		virtual uint32_t IGetMaxTextureSlotsPerShader() = 0;
+
+		/// <summary>
+		/// Protected DrawPointList, for underlying implementation to override
+		/// </summary>
+		/// <param name="vertexArray"></param>
+		/// <param name="count"></param>
+		virtual void IDrawPointList(VertexArrayRef vertexArray, uint32_t count) = 0;
 	private:
 		/// <summary>
 		/// the unique pointer to the underlying RenderCommand instance.

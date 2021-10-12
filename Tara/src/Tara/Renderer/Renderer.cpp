@@ -19,17 +19,9 @@ namespace Tara {
 	static bool s_InitializedQuadDraw = false;
 
 	VertexArrayRef Renderer::s_QuadArray = nullptr;
-	VertexArrayRef Renderer::s_BoxArray = nullptr;
-	ShaderRef Renderer::s_TextureQuadShader = nullptr;
-	ShaderRef Renderer::s_ColorQuadShader = nullptr;
-
-#define VERTEX_ELEMENT_COUNT_QUAD 4 * (2 + 3)
-#define VERTEX_INDEX_COUNT_QUAD 6
-	
-#define VERTEX_ELEMENT_COUNT_BOX 8 * 3
-#define VERTEX_INDEX_COUNT_BOX 8 * 3
-
-
+	ShaderRef Renderer::s_QuadShader = nullptr;
+	uint32_t Renderer::s_MaxTextures = 16;
+	std::vector<Renderer::QuadGroup> Renderer::s_QuadGroups;
 
 	void Renderer::BeginScene(const CameraRef camera)
 	{
@@ -39,120 +31,52 @@ namespace Tara {
 		if (!s_InitializedQuadDraw){
 			s_InitializedQuadDraw = true;
 
+			//Get the max texture slots per shader
+			s_MaxTextures = RenderCommand::GetMaxTextureSlotsPerShader();
+
 			//create vertex array
 			s_QuadArray = VertexArray::Create();
-
-			//data
-			float verticesQuad[VERTEX_ELEMENT_COUNT_QUAD] = {
-				0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //bottom left
-				1.0f, 0.0f, 0.0f, 1.0f, 0.0f, //bottom right
-				1.0f, 1.0f, 0.0f, 1.0f, 1.0f, //top right
-				0.0f, 1.0f, 0.0f, 0.0f, 1.0f  //top left
-			};
-			uint32_t indicesQuad[VERTEX_INDEX_COUNT_QUAD] = {
-					0, 1, 2, 2, 3, 0
-			};
-
-			//add vertex data to array and set layout
-			VertexBufferRef vb_ref = VertexBuffer::Create(verticesQuad, VERTEX_ELEMENT_COUNT_QUAD);
+			
+			//add null vertex data to array and set layout
+			VertexBufferRef vb_ref = VertexBuffer::Create(nullptr, 0);
 			vb_ref->SetLayout({
-				{Tara::Shader::Datatype::Float3, "position"},
-				{Tara::Shader::Datatype::Float2, "uv"}
+				{Tara::Shader::Datatype::Float3, "a_Position", false},
+				{Tara::Shader::Datatype::Float3, "a_Rotation", false},
+				{Tara::Shader::Datatype::Float3, "a_Scale", false},
+				{Tara::Shader::Datatype::Float2, "a_UVmin", false},
+				{Tara::Shader::Datatype::Float2, "a_UVmax", false},
+				{Tara::Shader::Datatype::Float4, "a_Color", false},
+				{Tara::Shader::Datatype::Float,  "a_TextureIndex", false}
 			});
 			s_QuadArray->AddVertexBuffer(vb_ref);
 
-			//add index data to array
-			IndexBufferRef ib_ref = IndexBuffer::Create(indicesQuad, VERTEX_INDEX_COUNT_QUAD);
-			s_QuadArray->SetIndexBuffer(ib_ref);
-			
-			s_BoxArray = VertexArray::Create();
-			float verticesBox[VERTEX_ELEMENT_COUNT_BOX] = {
-				0.0f, 0.0f, 0.0f, //back bottom left
-				1.0f, 0.0f, 0.0f, //back bottom right
-				1.0f, 1.0f, 0.0f, //back top right
-				0.0f, 1.0f, 0.0f, //back top left
-
-				0.0f, 0.0f, 1.0f, //front bottom left
-				1.0f, 0.0f, 1.0f, //front bottom right
-				1.0f, 1.0f, 1.0f, //front top right
-				0.0f, 1.0f, 1.0f, //front top left
-			};
-			uint32_t indicesBox[VERTEX_INDEX_COUNT_BOX] = {
-					0, 1,  1, 2,  2, 3,  3, 0, //back
-					0, 4,  1, 5,  2, 6,  3, 7, //sides
-					4, 5,  5, 6,  6, 7,  7, 4  //front
-			};
-
-			//add vertex data to array and set layout
-			vb_ref = VertexBuffer::Create(verticesBox, VERTEX_ELEMENT_COUNT_BOX);
-			vb_ref->SetLayout({
-				{Tara::Shader::Datatype::Float3, "position"},
-			});
-			s_BoxArray->AddVertexBuffer(vb_ref);
-
-			//add index data to array
-			ib_ref = IndexBuffer::Create(indicesBox, VERTEX_INDEX_COUNT_BOX);
-			s_BoxArray->SetIndexBuffer(ib_ref);
-
-
 			//shaders
-			//These are stored as raw source code strings so that they are available even if there are no shader asset files.
-			s_TextureQuadShader = Tara::Shader::Create(
-				"S_TexturedQuad",
-				Tara::Shader::SourceType::Strings,
-				R"V0G0N(
-				#version 450 core
-				layout(location=0) in vec3 a_Position;
-				layout(location=1) in vec2 a_UV;
-				out vec2 v_UV;
-				uniform mat4 u_MatrixViewProjection;
-				uniform mat4 u_MatrixModel;
-				void main(){
-					v_UV = a_UV;
-					gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
-				}
-				
-				)V0G0N",
-				R"V0G1N(
-				#version 450 core
-				layout(location=0)out vec4 color;
-				uniform sampler2D u_Texture;
-				in vec2 v_UV;
-				void main(){
-					color = texture(u_Texture, v_UV);
-				}
-				)V0G1N"
-			);
-
-
-			s_ColorQuadShader = Tara::Shader::Create(
-				"S_ColoredQuad",
-				Tara::Shader::SourceType::Strings,
-				R"V0G0N(
-				#version 450 core
-				layout(location=0) in vec3 a_Position;
-				uniform mat4 u_MatrixViewProjection;
-				uniform mat4 u_MatrixModel;
-				void main(){
-					gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
-				}
-				
-				)V0G0N",
-				R"V0G1N(
-				#version 450 core
-				layout(location=0)out vec4 color;
-				uniform vec4 u_Color;
-				void main(){
-					color = u_Color;
-				}
-				)V0G1N"
-			);
+			//defined in seperate file for readability here.
+			LoadQuadShader();
 		}
 	}
 
 	void Renderer::EndScene()
 	{
 		//execute batch rendering
+		s_QuadShader->Bind();
+		s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
+		s_QuadArray->Bind();
+		for (const auto& group : s_QuadGroups) {
+			s_QuadArray->GetVertexBuffers()[0]->SetData((float*)group.Quads.data(), group.Quads.size() * 18); //the 18 is not a "magic number", it is the number of floats in a QuadData struct.
+			uint32_t index = 0;
+			for (auto texture : group.TextureNames) {
+				if (texture) {
+					texture->Bind(index);
+					s_QuadShader->Send("u_Texture" + std::to_string(index), (int)index);
+					index++;
+				}
+			}
+			RenderCommand::DrawPointList(s_QuadArray, group.Quads.size());
+			//glDrawArrays(GL_POINTS, 0, m_Quads.size());
+		}
+		s_QuadGroups.clear();
+		//clear camera
 		s_SceneData.camera = nullptr;
 	}
 
@@ -174,36 +98,68 @@ namespace Tara {
 		RenderCommand::DrawLines(vertexArray);
 	}
 
-	void Renderer::Quad(Texture2DRef texture, Transform transform)
+	void Renderer::Quad(Transform transform, glm::vec4 color, Texture2DRef texture, glm::vec2 minUV, glm::vec2 maxUV)
 	{
-		if (s_SceneData.camera == nullptr) {
-			return;
+		//Create the QuadData struct
+		QuadData data = {
+			transform,
+			minUV,
+			maxUV,
+			color,
+			-1 //temp
+		};
+
+		//find the slot to enter it into
+		bool entered = false;
+		for (auto& group : s_QuadGroups) {
+			auto iter = std::find(group.TextureNames.begin(), group.TextureNames.end(), texture);
+			if (iter == group.TextureNames.end()) {
+				if (!texture || group.TextureNames.size() < s_MaxTextures) {
+					//this group is not full, and does not contain this texture, (or, the texture is null)
+					//so add this texture to the group, and then add this quad to the list
+					//after setting its texture index correctly
+					if (texture){
+						data.TextureIndex = (float)group.TextureNames.size(); //the index about to be filled
+						group.TextureNames.push_back(texture); //filled it!
+					}
+					group.Quads.push_back(data);
+					entered = true;
+					break;//no need to continue loop
+				}
+				else {
+					//this group is full and does not contain this texture
+					continue;
+				}
+			}
+			else {
+				//found that texture. Now, add this quad to the list.
+				//also modify the quad texture index
+				if (texture) {
+					uint32_t index = iter - group.TextureNames.begin();
+					data.TextureIndex = index; //the index about to be filled
+				}
+				group.Quads.push_back(data);
+				entered = true;
+				break; //no need to continue loop
+			}
 		}
-		s_TextureQuadShader->Bind();
-		texture->Bind(0);
-		s_TextureQuadShader->Send("u_Texture", 0);
-		Draw(s_QuadArray, s_TextureQuadShader, transform);
+		if (!entered) {
+			//no group can take it, or there are none.
+			//so, create a new group, add the stuff to it, and push it into the list.
+			QuadGroup group;
+			if (texture) {
+				data.TextureIndex = (float)group.TextureNames.size(); //the index about to be filled
+				group.TextureNames.push_back(texture); //filled it!
+			}
+			group.Quads.push_back(data);
+			s_QuadGroups.push_back(group);
+		}
+
 	}
 
-	void Renderer::Quad(glm::vec4 color, Transform transform)
-	{
-		if (s_SceneData.camera == nullptr) {
-			return;
-		}
-		s_ColorQuadShader->Bind();
-		s_ColorQuadShader->Send("u_Color", color);
-		Draw(s_QuadArray, s_ColorQuadShader, transform);
-	}
 
-	void Renderer::DrawBoundingBox(const BoundingBox& box, glm::vec4 color)
-	{
-		s_ColorQuadShader->Bind();
-		s_ColorQuadShader->Send("u_Color", color);
-		s_ColorQuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
-		s_ColorQuadShader->Send("u_MatrixModel", glm::translate(glm::mat4(1), box.Position) *glm::scale(glm::mat4(1), box.Extent));
-		s_BoxArray->Bind();
-		RenderCommand::DrawLines(s_BoxArray);
-	}
+
+	
 
 
 }

@@ -11,6 +11,8 @@ namespace Tara {
 		virtual void IClear() override;
 		virtual void IDraw(VertexArrayRef vertexArray) override;
 		virtual void IDrawLines(VertexArrayRef vertexArray) override;
+		virtual void IDrawPointList(VertexArrayRef vertexArray, uint32_t count) override;
+		virtual uint32_t IGetMaxTextureSlotsPerShader() override;
 	public:
 		static void GLError(
 			uint32_t source,

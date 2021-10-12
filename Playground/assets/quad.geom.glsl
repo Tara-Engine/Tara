@@ -4,7 +4,8 @@ layout (points) in;
 layout (triangle_strip, max_vertices=4) out;
 
 in VS_OUT {
-	vec2  Scale;
+	mat4  Transform;
+	mat4  MatrixMVP;
 	vec2  UVmin;
 	vec2  UVmax;
 	vec4  Color;
@@ -21,36 +22,39 @@ out GEOM_OUT {
 
 void main(){
 	//make a quad here
-	vec4 pos = gl_in[0].gl_Position;
 	v_VertexData.Color = v_QuadData[0].Color;
 	v_VertexData.TextureIndex = v_QuadData[0].TextureIndex;
+	
 	//0
-	gl_Position = pos;
+	gl_Position = v_QuadData[0].MatrixMVP * v_QuadData[0].Transform * vec4(0,0,0,1);
+	//gl_Position = v_QuadData[0].Transform * vec4(0,0,0,1);
 	v_VertexData.UV = v_QuadData[0].UVmin;
-	//v_VertexData.UV = vec2(0.0,0.0);
-	//v_VertexData.TextureIndex = v_QuadData[0].TextureIndex;
 	EmitVertex();
 	
 	//1
-	gl_Position = vec4(pos.x + v_QuadData[0].Scale.x, pos.y, pos.z, pos.w);
+	gl_Position = v_QuadData[0].MatrixMVP * v_QuadData[0].Transform * vec4(1,0,0,1);
+	//gl_Position = v_QuadData[0].Transform * vec4(1,0,0,1);
 	v_VertexData.UV = vec2(v_QuadData[0].UVmax.x, v_QuadData[0].UVmin.y);
-	//v_VertexData.UV = vec2(1.0,0.0);
-	//v_VertexData.TextureIndex = v_QuadData[0].TextureIndex;
 	EmitVertex();
 	
 	//2
-	gl_Position = vec4(pos.x , pos.y+ v_QuadData[0].Scale.y, pos.z, pos.w);
+	gl_Position = v_QuadData[0].MatrixMVP * v_QuadData[0].Transform * vec4(0,1,0,1);
+	//gl_Position = v_QuadData[0].Transform * vec4(0,1,0,1);
 	v_VertexData.UV = vec2(v_QuadData[0].UVmin.x, v_QuadData[0].UVmax.y);
-	//v_VertexData.UV = vec2(0.0,1.0);
-	//v_VertexData.TextureIndex = v_QuadData[0].TextureIndex;
 	EmitVertex();
 	
 	//3
-	gl_Position = vec4(pos.x + v_QuadData[0].Scale.x, pos.y+ v_QuadData[0].Scale.y, pos.z, pos.w);
+	gl_Position = v_QuadData[0].MatrixMVP * v_QuadData[0].Transform * vec4(1,1,0,1);
+	//gl_Position = v_QuadData[0].Transform * vec4(1,1,0,1);
 	v_VertexData.UV = v_QuadData[0].UVmax;
-	//v_VertexData.UV = vec2(1.0,1.0);
-	//v_VertexData.TextureIndex = v_QuadData[0].TextureIndex;
 	EmitVertex();
 	
 	EndPrimitive();
+	
+	
+	//vec4 pos = gl_in[0].gl_Position;
+	//gl_Position = pos;
+	//gl_Position = vec4(pos.x + v_QuadData[0].Scale.x, pos.y, pos.z, pos.w);
+	//gl_Position = vec4(pos.x , pos.y+ v_QuadData[0].Scale.y, pos.z, pos.w);
+	//gl_Position = vec4(pos.x + v_QuadData[0].Scale.x, pos.y+ v_QuadData[0].Scale.y, pos.z, pos.w);
 }

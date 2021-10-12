@@ -63,23 +63,37 @@ namespace Tara {
 		/// </summary>
 		/// <param name="texture">the texture to draw</param>
 		/// <param name="transform">the transform of the quad</param>
-		static void Quad(Texture2DRef texture, Transform transform);
+		static void Quad(Transform transform, glm::vec4 color = { 1.0f,1.0f,1.0f,1.0f }, Texture2DRef texture = nullptr, glm::vec2 minUV = { 0,0 }, glm::vec2 maxUV = {1,1});
 
-		/// <summary>
-		/// draw a colored 1x1 quad
-		/// </summary>
-		/// <param name="color">the color</param>
-		/// <param name="transform">the transform of the quad</param>
-		static void Quad(glm::vec4 color, Transform transform);
 
-		/// <summary>
-		/// Draw a bounding box
-		/// </summary>
-		/// <param name="box">the box to draw</param>
-		/// <param name="color">the color to draw it in</param>
-		static void DrawBoundingBox(const BoundingBox& box, glm::vec4 color = { 0,0,0,1 });
+		//static void Quad(Texture2DRef texture, glm::vec4 color, Transform transform);
+
+		
 
 	private:
+		static void LoadQuadShader();
+
+
+	private:
+
+		/// <summary>
+		/// Structure that holds the information for a single batched quad
+		/// </summary>
+		struct QuadData {
+			Tara::Transform Transform;  //+9 [ 9] floats
+			glm::vec2 UVmin;			//+2 [11] floats
+			glm::vec2 UVmax;			//+2 [13] floats
+			glm::vec4 Color;			//+4 [17] floats
+			float TextureIndex;			//+1 [18] floats
+			QuadData(const Tara::Transform& transform, const glm::vec2& uvmin, const glm::vec2& uvmax, const glm::vec4& color, float textureIndex)
+				: Transform(transform), UVmin(uvmin), UVmax(uvmax), Color(color), TextureIndex(textureIndex)
+			{}
+		};
+
+		struct QuadGroup {
+			std::vector<QuadData> Quads;
+			std::vector<Texture2DRef> TextureNames;
+		};
 
 		/// <summary>
 		/// Structure that holds data about the current scene.
@@ -87,6 +101,8 @@ namespace Tara {
 		struct SceneData {
 			CameraRef camera;
 		};
+
+	private:
 
 		/// <summary>
 		/// Stored rendering backend
@@ -98,10 +114,12 @@ namespace Tara {
 		/// </summary>
 		static SceneData s_SceneData;
 
+		static uint32_t s_MaxTextures;
+
 		static VertexArrayRef s_QuadArray;
-		static VertexArrayRef s_BoxArray;
-		static ShaderRef s_TextureQuadShader;
-		static ShaderRef s_ColorQuadShader;
+		static ShaderRef s_QuadShader;
+
+		static std::vector<QuadGroup> s_QuadGroups;
 	};
 
 }

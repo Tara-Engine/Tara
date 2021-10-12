@@ -67,7 +67,7 @@ public:
 		std::random_device rd;
 		float delta = (extent.Left - extent.Right)/(float)SPRITE_MAX, xpos = extent.Right;
 
-		/*
+		
 		for (int i=0;i<SPRITE_MAX;i++){
 			Tara::Transform t;
 			t.Scale = { 0.2f, 0.2f, 0.2f };
@@ -88,7 +88,7 @@ public:
 			auto sprite = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite");
 			sprite->SetTexture(m_Texture);
 		}
-		*/
+		
 
 		//Noise test
 
@@ -145,6 +145,7 @@ public:
 
 		//call super draw func
 		Tara::Layer::Draw(deltaTime);
+
 		Tara::Renderer::EndScene();
 	}
 	
@@ -187,7 +188,8 @@ private:
 int main(int argc, char** argv) {
 	Tara::Application::Get()->Init(1200, 700, "Tara Playground Application!");
 	//add layers to scene...
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<BatchTestLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<BatchTestLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

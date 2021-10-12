@@ -11,6 +11,8 @@ namespace Tara {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		virtual void SetData(float* data, uint32_t count) override;
 	private:
 		uint32_t m_RendererID;
 	};

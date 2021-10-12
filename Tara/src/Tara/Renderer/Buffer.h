@@ -120,6 +120,13 @@ namespace Tara {
 		/// <returns>BufferLayout gotten, as const ref.</returns>
 		const BufferLayout& GetLayout() const { return m_BufferLayout; }
 
+		/// <summary>
+		/// Set the data in the buffer
+		/// </summary>
+		/// <param name="data">the new data</param>
+		/// <param name="count">the new count, in number of floats</param>
+		virtual void SetData(float* data, uint32_t count) = 0;
+
 	public:
 		/// <summary>
 		/// Create a new VertexBuffer

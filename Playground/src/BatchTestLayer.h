@@ -2,18 +2,30 @@
 #include <Tara.h>
 #include "TColorRectEntity.h"
 
-struct QuadData {
+struct OldQuadData {
 	float x, y;
 	float width, height;
 	float Umin, Vmin, Umax, Vmax;
 	float r, g, b, a;
 	float textureIndex;
-	QuadData(glm::vec2 pos, glm::vec2 scale, glm::vec2 UVmin, glm::vec2 UVmax, glm::vec4 color, float textureIndex)
+	OldQuadData(glm::vec2 pos, glm::vec2 scale, glm::vec2 UVmin, glm::vec2 UVmax, glm::vec4 color, float textureIndex)
 		: x(pos.x), y(pos.y), width(scale.x), height(scale.y), Umin(UVmin.x), Vmin(UVmin.y), Umax(UVmax.x), Vmax(UVmax.y),
 		r(color.r), g(color.g), b(color.b), a(color.a), textureIndex(textureIndex)
 	{}
 };
 
+
+
+struct QuadData {
+	Tara::Transform Transform;  //+9 [ 9] floats
+	glm::vec2 UVmin;			//+2 [11] floats
+	glm::vec2 UVmax;			//+2 [13] floats
+	glm::vec4 Color;			//+4 [17] floats
+	float TextureIndex;			//+1 [18] floats
+	QuadData(const Tara::Transform& transform, const glm::vec2& uvmin, const glm::vec2& uvmax, const glm::vec4& color, float textureIndex)
+		: Transform(transform), UVmin(uvmin), UVmax(uvmax), Color(color), TextureIndex(textureIndex)
+	{}
+};
 
 class BatchTestLayer : public Tara::Layer {
 public:

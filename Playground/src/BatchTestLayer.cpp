@@ -1,7 +1,7 @@
 #include "BatchTestLayer.h"
 #include <glad/glad.h>
 
-#define COMPLEX
+
 
 BatchTestLayer::BatchTestLayer()
 	: m_Player(nullptr)
@@ -28,7 +28,7 @@ void BatchTestLayer::Activate()
 	m_Player->AddChild(m_Camera);
 
 
-#ifdef COMPLEX
+
 	//create a special shader
 	std::unordered_map < Tara::Shader::TargetStage, std::string> sources;
 	sources[Tara::Shader::TargetStage::Vertex] = "assets/quad.vertex.glsl";
@@ -36,33 +36,32 @@ void BatchTestLayer::Activate()
 	sources[Tara::Shader::TargetStage::Pixel] = "assets/quad.frag.glsl";
 	m_GShader = Tara::Shader::Create("geomQuadShader", Tara::Shader::SourceType::TextFiles, sources);
 
+	m_Quads.push_back(QuadData(Tara::Transform( { 0, 0, 0},{0,0,0},{ 1.0f,  1.0f,  1.0f} ), { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,0,0,1 }, -1.0f));
+	m_Quads.push_back(QuadData(Tara::Transform( {-2, 0, 0},{0,0,0},{ 0.5f,  0.75f, 1.0f} ), { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 },  0.0f));
+	m_Quads.push_back(QuadData(Tara::Transform( { 1,-2, 0},{0,0,0},{ 0.75f, 0.75f, 1.0f} ), { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 },  1.0f));
+	m_Quads.push_back(QuadData(Tara::Transform( {-1,-2, 0},{0,0,0},{ 1.0f,  1.0f,  1.0f} ), { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 },  1.0f));
+	m_Quads.push_back(QuadData(Tara::Transform( { 2, 1, 0},{0,0,0},{ 1.0f,  1.0f,  1.0f} ), { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 },  2.0f));
+	
 
-	m_Quads.push_back(QuadData({ 0,0 }, { 1,1 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,0,0,1 }, -1.0f));
-	m_Quads.push_back(QuadData({ -2,0 }, { 0.5,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 0.0f));
-	m_Quads.push_back(QuadData({ 1,-2 }, { 0.75,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 1.0f));
-	m_Quads.push_back(QuadData({ -1,2 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 1.0f));
-	m_Quads.push_back(QuadData({ 2,1 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 2.0f));
+	//m_Quads.push_back(QuadData({ 0,0 }, { 1,1 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,0,0,1 }, -1.0f));
+	//m_Quads.push_back(QuadData({ -2,0 }, { 0.5,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 0.0f));
+	//m_Quads.push_back(QuadData({ 1,-2 }, { 0.75,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 1.0f));
+	//m_Quads.push_back(QuadData({ -1,2 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 1.0f));
+	//m_Quads.push_back(QuadData({ 2,1 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f }, { 1,1,1,1 }, 2.0f));
 
 	//create quad points array
 	m_QuadPoints = Tara::VertexArray::Create();
 	m_QuadPoints->Bind();
 
-	/*
-	QuadData quadData[]{
-		QuadData({ 0,0 }, { 1,1 },       { 0.0f,0.0f }, { 1.0f,1.0f },     { 1,0,0,1 }, -1.0f),
-		QuadData({ -2,0 }, { 0.5,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f },     { 1,1,1,1 },  0.0f),
-		QuadData({ 1,-2 }, { 0.75,0.75 }, { 0.0f,0.0f }, { 1.0f,1.0f },    { 1,1,1,1 },  1.0f),
-		QuadData({ -1,2 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f },    { 1,1,1,1 },  1.0f),
-		QuadData({ 2,1 }, { 1.0,1.0 }, { 0.0f,0.0f }, { 1.0f,1.0f },    { 1,1,1,1 },  2.0f),
-	};
-	*/
-	int floatInQuadData = sizeof(QuadData) / sizeof(float);
+	
+	int floatInQuadData = sizeof(QuadData) / sizeof(float); //18
 	auto quadVertecies = Tara::VertexBuffer::Create((float*)m_Quads.data(), m_Quads.size() * floatInQuadData);
 
 	quadVertecies->Bind();
 	quadVertecies->SetLayout({
-		{Tara::Shader::Datatype::Float2, "a_Position", false},
-		{Tara::Shader::Datatype::Float2, "a_Scale", false},
+		{Tara::Shader::Datatype::Float3, "a_Position", false},
+		{Tara::Shader::Datatype::Float3, "a_Rotation", false},
+		{Tara::Shader::Datatype::Float3, "a_Scale", false},
 		{Tara::Shader::Datatype::Float2, "a_UVmin", false},
 		{Tara::Shader::Datatype::Float2, "a_UVmax", false},
 		{Tara::Shader::Datatype::Float4, "a_Color", false},
@@ -70,57 +69,7 @@ void BatchTestLayer::Activate()
 		});
 	m_QuadPoints->AddVertexBuffer(quadVertecies);
 
-#else
 
-	std::unordered_map < Tara::Shader::TargetStage, std::string> sources;
-	sources[Tara::Shader::TargetStage::Vertex] = "assets/rect.vert.glsl";
-	sources[Tara::Shader::TargetStage::Pixel] = "assets/rect.frag.glsl";
-	m_GShader = Tara::Shader::Create("geomQuadShader", Tara::Shader::SourceType::TextFiles, sources);
-
-	m_QuadPoints = Tara::VertexArray::Create();
-	m_QuadPoints->Bind();
-
-	float vertexData[3 * 4 * (3 + 2 + 1)] = {
-		//POS				  UV            textureIndex
-		 1.0f,  0.0f, 0.0f,   0.0f, 0.0f,   0.0f,
-		 2.0f,  0.0f, 0.0f,   1.0f, 0.0f,   0.0f,
-		 2.0f,  1.0f, 0.0f,   1.0f, 1.0f,   0.0f,
-		 1.0f,  1.0f, 0.0f,   0.0f, 1.0f,   0.0f,
-							 			  
-		-1.0f,  0.0f, 0.0f,   0.0f, 0.0f,   1.0f,
-		 0.0f,  0.0f, 0.0f,   1.0f, 0.0f,   1.0f,
-		 0.0f,  1.0f, 0.0f,   1.0f, 1.0f,   1.0f,
-		-1.0f,  1.0f, 0.0f,   0.0f, 1.0f,   1.0f,
-
-		 1.0f, -1.0f, 0.0f,   0.0f, 0.0f,   1.0f,
-		 0.0f, -1.0f, 0.0f,   1.0f, 0.0f,   1.0f,
-		 0.0f,  0.0f, 0.0f,   1.0f, 1.0f,   1.0f,
-		 1.0f,  0.0f, 0.0f,   0.0f, 1.0f,   1.0f,
-
-	};
-	Tara::VertexBufferRef vb = Tara::VertexBuffer::Create(vertexData, sizeof(vertexData) / sizeof(float));
-	vb->SetLayout({
-		{Tara::Shader::Datatype::Float3, "a_Position", false},
-		{Tara::Shader::Datatype::Float2, "a_UVs", false},
-		{Tara::Shader::Datatype::Float,  "a_TextureIndex", false},
-	});
-	m_QuadPoints->AddVertexBuffer(vb);
-
-	uint32_t indexData[6*3] = {
-		0, 1, 2,
-		2, 3, 0,
-
-		4, 5, 6,
-		6, 7, 4,
-
-		8, 9, 10,
-		10, 11, 8
-	};
-	Tara::IndexBufferRef ib = Tara::IndexBuffer::Create(indexData, sizeof(indexData) / sizeof(uint32_t));
-	m_QuadPoints->SetIndexBuffer(ib);
-
-
-#endif
 }
 
 
@@ -129,29 +78,24 @@ void BatchTestLayer::Draw(float deltaTime)
 {
 	Tara::Renderer::BeginScene(m_Camera->GetCamera());
 
-#ifdef COMPLEX
 	m_Texture->Bind(0);
 	m_Texture2->Bind(1);
 	m_Texture3->Bind(2);
 	m_GShader->Bind();
 	m_GShader->Send("u_MatrixViewProjection", m_Camera->GetCamera()->GetViewProjectionMatrix());
 	m_GShader->Send("u_MatrixModel", glm::mat4(1.0f));
+	
 	//int textures[] = { 0, 1, 2 };
+	//m_GShader->Send("u_Textures", textures, 3);
+	
 	m_GShader->Send("u_Texture0", 0);
 	m_GShader->Send("u_Texture1", 1);
 	m_GShader->Send("u_Texture2", 2);
+
 	m_QuadPoints->Bind();
 	//glPointSize(10);
 	glDrawArrays(GL_POINTS, 0, m_Quads.size());
-#else
-	m_Texture->Bind(0);
-	m_Texture2->Bind(1);
-	m_GShader->Bind();
-	int texutes[] = { 0,1 };
-	m_GShader->Send("u_Textures", texutes, 2);
-	Tara::Renderer::Draw(m_QuadPoints, m_GShader, TRANSFORM_DEFAULT);
 
-#endif
 
 	Tara::Renderer::EndScene();
 }

@@ -42,6 +42,19 @@ namespace Tara{
 		glDrawElements(GL_LINES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 
+	void OpenGLRenderCommand::IDrawPointList(VertexArrayRef vertexArray, uint32_t count)
+	{
+		vertexArray->Bind();
+		glDrawArrays(GL_POINTS, 0, count);
+	}
+
+	uint32_t OpenGLRenderCommand::IGetMaxTextureSlotsPerShader()
+	{
+		int32_t textureUnits;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
+		return (uint32_t)textureUnits;
+	}
+
 	void OpenGLRenderCommand::GLError(
 		uint32_t source,
 		uint32_t type,
