@@ -1,8 +1,8 @@
 #include "RoomEntity.h"
 #include "RoomManager.h"
 
-RoomEntity::RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture, uint32_t doorState, uint32_t perm)
-	: Tara::SpriteEntity(parent, owningLayer, transform, name, texture), m_DoorState(doorState), m_Perm(perm)
+RoomEntity::RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite, uint32_t doorState, uint32_t perm)
+	: Tara::SpriteEntity(parent, owningLayer, transform, name, sprite), m_DoorState(doorState), m_Perm(perm)
 {
 }
 

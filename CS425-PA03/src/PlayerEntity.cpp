@@ -5,14 +5,14 @@
 
 const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
-PlayerEntity::PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture)
-	: SpriteEntity(parent, owningLayer, transform, name, texture), m_Target(transform.Position), m_Origin(transform.Position), m_Timer(0), m_Traveling(false)
+PlayerEntity::PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
+	: SpriteEntity(parent, owningLayer, transform, name, sprite), m_Target(transform.Position), m_Origin(transform.Position), m_Timer(0), m_Traveling(false)
 {}
 
 
-std::shared_ptr<PlayerEntity> PlayerEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture)
+std::shared_ptr<PlayerEntity> PlayerEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
 {
-	std::shared_ptr<PlayerEntity> newEntity = std::make_shared<PlayerEntity>(parent, owningLayer, transform, name, texture);
+	std::shared_ptr<PlayerEntity> newEntity = std::make_shared<PlayerEntity>(parent, owningLayer, transform, name, sprite);
 	//must be done outside of constructor because 
 	//you have to have it fully constructed before getting a shared ptr
 	Entity::Register(newEntity);
@@ -22,9 +22,10 @@ std::shared_ptr<PlayerEntity> PlayerEntity::Create(Tara::EntityNoRef parent, Tar
 
 void PlayerEntity::OnUpdate(float deltaTime)
 {
+	Tara::SpriteEntity::OnUpdate(deltaTime); //call the super OnUppdate function (for animation reasons)
+
 	//apply movement directly to position
 	Tara::Transform  t = GetWorldTransform();
-	
 	if (m_Traveling) {
 		LOG_S(INFO) << "Traveling!";
 		m_Timer += deltaTime;
@@ -38,8 +39,6 @@ void PlayerEntity::OnUpdate(float deltaTime)
 			t.Position = Tara::CubicInterp<Tara::Vector>(m_Origin, m_Target, m_Timer / m_MaxTime);
 		}
 	}
-	//TODO: movement
-
 	SetWorldTransform(t);
 }
 
@@ -78,4 +77,12 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 	m_Traveling = true;
 	LOG_S(INFO) << "Key pressed event handled: " << (char)key;
 	return true;
+}
+
+void PlayerEntity::SetTarget(Tara::Vector target, float travelTime)
+{
+	m_Origin = GetWorldTransform().Position;
+	m_Target = target;
+	m_MaxTime = travelTime;
+	m_Traveling = true;
 }

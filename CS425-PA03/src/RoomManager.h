@@ -48,7 +48,7 @@ public:
 	/// <param name="doorState"></param>
 	/// <param name="perm"></param>
 	/// <returns></returns>
-	static Tara::Texture2DRef RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm);
+	static Tara::SpriteRef RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm);
 
 	/// <summary>
 	/// Initialize the manager

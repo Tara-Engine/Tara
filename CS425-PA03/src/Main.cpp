@@ -35,7 +35,8 @@ public:
 
 		//create the player
 		auto playerTexture = Tara::Texture2D::Create("assets/Particle.png", "playerTexture");
-		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {16*4,16*4,1} }, "player", playerTexture);
+		auto playerSprite = Tara::Sprite::Create(playerTexture, 1, 1, "playerSprite");
+		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {16*4,16*4,1} }, "player", playerSprite);
 		
 		//make our camera
 		auto cameraEntity = Tara::CameraEntity::Create(

@@ -19,7 +19,7 @@ class RoomEntity : public Tara::SpriteEntity {
 public:
 	using RoomEntityRef = std::shared_ptr<RoomEntity>;
 
-	RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture, uint32_t doorState, uint32_t perm);
+	RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite, uint32_t doorState, uint32_t perm);
 	
 	virtual ~RoomEntity() {}
 

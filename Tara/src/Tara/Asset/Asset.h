@@ -10,6 +10,8 @@ namespace Tara {
 		
 		const inline std::string& GetAssetName() { return m_Name; }
 
+		virtual inline bool Save(const std::string& filePath) { LOG_S(WARNING) << "Unable to save asset: " << m_Name; return false; }
+
 	private:
 		const std::string m_Name;
 	};

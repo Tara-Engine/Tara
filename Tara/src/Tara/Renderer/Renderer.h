@@ -63,7 +63,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="texture">the texture to draw</param>
 		/// <param name="transform">the transform of the quad</param>
-		static void Quad(Transform transform, glm::vec4 color = { 1.0f,1.0f,1.0f,1.0f }, Texture2DRef texture = nullptr, glm::vec2 minUV = { 0,0 }, glm::vec2 maxUV = {1,1});
+		static void Quad(const Transform& transform, glm::vec4 color = { 1.0f,1.0f,1.0f,1.0f }, const Texture2DRef& texture = nullptr, glm::vec2 minUV = { 0,0 }, glm::vec2 maxUV = {1,1});
 
 
 		//static void Quad(Texture2DRef texture, glm::vec4 color, Transform transform);

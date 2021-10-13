@@ -42,8 +42,10 @@ public:
 		LOG_S(INFO) << "Testing Layer Activated!";
 
 		//make a texture asset
-		m_Texture = Tara::Texture2D::Create("assets/UV_Checker.png");
-		m_Texture2 = Tara::Texture2D::Create("assets/wall.png");
+		auto textureUVChecker = Tara::Texture2D::Create("assets/UV_Checker.png");
+		auto textureParticle4x1 = Tara::Texture2D::Create("assets/Particle_4x1.png");
+		//auto textureParticle2x2 = Tara::Texture2D::Create("assets/Particle_2x2.png");
+		//auto textureParticle1x4 = Tara::Texture2D::Create("assets/Particle_1x4.png");
 
 		//the number here is width in world units the screen will be wide. Has no effect on window size.
 		//to make in 1:1 with pixels, set it to the width of the window.
@@ -67,6 +69,8 @@ public:
 		std::random_device rd;
 		float delta = (extent.Left - extent.Right)/(float)SPRITE_MAX, xpos = extent.Right;
 
+		auto sprite = Tara::Sprite::Create(textureParticle4x1, 4, 1, "ParticleSprite");
+		sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
 		
 		for (int i=0;i<SPRITE_MAX;i++){
 			Tara::Transform t;
@@ -85,8 +89,10 @@ public:
 				0
 			};
 			xpos += delta;
-			auto sprite = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite");
-			sprite->SetTexture(m_Texture);
+			auto spriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite", sprite);
+			spriteEntity->PlayAnimation("default");
+			//spriteEntity->SetCurrentFrame(rd() % 4);
+			
 		}
 		
 
@@ -138,12 +144,6 @@ public:
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera->GetCamera());
 		
-		
-		/*anatomy of a transform:
-		* { { pos as vec3}, {euler angle rot as rotator}, {scale as vec3} }
-		*/
-
-		//call super draw func
 		Tara::Layer::Draw(deltaTime);
 
 		Tara::Renderer::EndScene();
@@ -168,8 +168,8 @@ public:
 
 private:
 	//TESTING STUFF
-	Tara::Texture2DRef m_Texture;
-	Tara::Texture2DRef m_Texture2;
+	//Tara::Texture2DRef m_Texture;
+	//Tara::Texture2DRef m_Texture2;
 	
 	
 	//Tara::CameraRef m_Camera;

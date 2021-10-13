@@ -11,7 +11,7 @@ class PlayerEntity : public Tara::SpriteEntity {
 
 public:
 	//construtor
-	PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::Texture2DRef texture);
+	PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite);
 
 	/// <summary>
 	/// Create a new Player
@@ -22,7 +22,7 @@ public:
 	/// <param name="name">entity name</param>
 	/// <param name="texture">entity texture</param>
 	/// <returns>a ref to the particle</returns>
-	static std::shared_ptr<PlayerEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", Tara::Texture2DRef texture = nullptr);
+	static std::shared_ptr<PlayerEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", Tara::SpriteRef sprite = nullptr);
 
 	virtual ~PlayerEntity() {};
 	
@@ -49,9 +49,16 @@ public:
 	/// <returns></returns>
 	bool OnKeyPressEvent(Tara::KeyPressEvent& e);
 
+	/// <summary>
+	/// Set the target for the player
+	/// </summary>
+	/// <param name="target">the new target</param>
+	/// <param name="travelTime">the time to reach it</param>
+	void SetTarget(Tara::Vector target, float travelTime = 0.25f);
+
 private:
 	Tara::Vector m_Target, m_Origin;
 	float m_Timer;
-	const float m_MaxTime = 0.25f; // 1/4 second
+	float m_MaxTime = 0.25f; // 1/4 second
 	bool m_Traveling = false;
 };

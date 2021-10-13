@@ -4,7 +4,7 @@
 
 ### Comments
 All documentation comments should be in Visual Studios style (three slashes, ie):
-```
+```C++
 ///<summary>
 ///summary of the thing
 ///</summary>
@@ -17,7 +17,7 @@ All classes, their public functions and members, any free-floating functions, an
 Documentation for platform-specific classes that are subclasses of platform-independant abstract classes is not nesecary.
 
 If code is very easy to understand what is happening (ie, the functions called tell the reader), then there is little need to comment it. an example:
-```
+```C++
 IndexBufferRef train_mesh_ib = IndexBuffer::Create(...);
 train_mesh_va->SetIndexBuffer(train_mesh_ib);
 ```
@@ -40,13 +40,13 @@ Class, Struct, and Enum documentation should be in the appropreate .h file, wher
 
 All major classes should also have a reference type, defined as:
 
-```
+```C++
 using ClassNameRef = std::shared_ptr<ClassName>;
 ```
 
 #### Class Members
 All class members should be in `PascalCase`, with a prefix of "`m_`". Again, they should be descriptive. The vast majority of members should be private, with Getters and Setters, following the convention:
-```
+```C++
 private:
 	float m_ThisVar;
 public:
@@ -81,4 +81,41 @@ As mentioned in the Class area, most classes should have an associated Ref type 
 Non-owning pointers should either be raw pointers, or std::weak_ptr. When passing ownership, either use a move constructor, or, if you are passing ownership of a new item, pass as raw pointer.
 When using std::weak_ptr, if the non-owning reference is common, a new typedef (technically, `using`) of the `std::shared_ptr<Class>` should be made, with the name `ClassNoRef` The "No" stands for Non-Owning. The primary use case is for Entities and Layers.
 
+
+## Assets and similar
+All assets should have a static Create function that can be used to Create from a file or to create from scratch (when appropriate)
+```C++
+static AssetRef Create(whatever is needed, const std::string& name = "default value");
+```
+
+If appropreate, assets should also have a virtual save function, to save to file:
+```C++
+virtual bool Save(const std::string& filepath);
+```
+By default, if the asset cannot be saved (ie, this function not overriden), a warning is printed, and false is returned. 
+
+## Entity creation, saving, and loading
+All entity classes have to have Four functions:
+
+To create a new entity from scratch: (there are various additional paramaters that can be supplied or changed per entity class)
+```C++
+static EntityTypeRef Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform ...);
+```
+
+To load an entity from some json data (not supported yet, planned only)
+```C++
+static EntityTypeRef Load(EntityNoRef parent, LayerNoRef owningLayer, json source);
+```
+
+To save an entity to json data: (not supported yet, planned only)
+```C++
+virtual json Save() override;
+```
+
+Virtual destructor, so children can have a destructor.
+```C++
+virtual ~EntityTypeRef()
+```
+
+There are also several that can be overridden:
 

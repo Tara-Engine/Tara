@@ -98,7 +98,7 @@ namespace Tara {
 		RenderCommand::DrawLines(vertexArray);
 	}
 
-	void Renderer::Quad(Transform transform, glm::vec4 color, Texture2DRef texture, glm::vec2 minUV, glm::vec2 maxUV)
+	void Renderer::Quad(const Transform& transform, glm::vec4 color, const Texture2DRef& texture, glm::vec2 minUV, glm::vec2 maxUV)
 	{
 		//Create the QuadData struct
 		QuadData data = {

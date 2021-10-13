@@ -47,13 +47,13 @@ uint32_t RoomManager::InvertDoorState(uint32_t state)
 }
 
 
-Tara::Texture2DRef RoomManager::RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm)
+Tara::SpriteRef RoomManager::RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm)
 {
 	std::string name = RoomManager::StatesAndPermToString(doorState, perm);
-	auto asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>(name);
+	auto asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>(name);
 	if (!asset) {
 		LOG_S(WARNING) << "Unknown door image get apptempted: " << name;
-		asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Texture2D>("1-D"); //default is 1-D.png, if that fails, then nullptr
+		asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("1-D"); //default is 1-D.png, if that fails, then nullptr
 	}
 	return asset;
 }
@@ -69,7 +69,7 @@ void RoomManager::LoadRoomTextures(){
 	for (int doors = 0x1; doors < 0x10; doors++) {
 		for (int perms = 1; perms < 5; perms++) {
 			std::string name = RoomManager::StatesAndPermToString(doors, perms);
-			Tara::Texture2D::Create(std::string("assets/") + name + ".png", name);
+			Tara::Sprite::Create(Tara::Texture2D::Create(std::string("assets/") + name + ".png", name + "_Texture"), 1, 1, name);
 		}
 	}
 }
