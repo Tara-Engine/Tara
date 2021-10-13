@@ -8,6 +8,9 @@
 /// The Player is also a subclass of SpriteEntity
 /// </summary>
 class PlayerEntity : public Tara::SpriteEntity {
+	enum class Direction : uint8_t {
+		UP, DOWN, LEFT, RIGHT
+	};
 
 public:
 	//construtor
@@ -61,4 +64,5 @@ private:
 	float m_Timer;
 	float m_MaxTime = 0.25f; // 1/4 second
 	bool m_Traveling = false;
+	Direction m_Direction;
 };

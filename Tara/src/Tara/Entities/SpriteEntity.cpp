@@ -6,7 +6,9 @@
 namespace Tara {
 
 	SpriteEntity::SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, SpriteRef sprite)
-		: Entity(parent, owningLayer, transform, name), m_Sprite(sprite), m_CurrentFrame(0), m_CurrentSequence(0,0,0.0f), m_CurrentFrameTimer(0.0f)
+		: Entity(parent, owningLayer, transform, name), m_Sprite(sprite), 
+		m_CurrentFrame(0), m_CurrentSequence(0,0,0.0f), m_CurrentFrameTimer(0.0f), 
+		m_Tint(1.0f,1.0f,1.0f,1.0f), m_FlipBits(0)
 	{}
 
 	std::shared_ptr<SpriteEntity> SpriteEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, SpriteRef sprite)
@@ -18,9 +20,9 @@ namespace Tara {
 
 	void SpriteEntity::OnUpdate(float deltaTime)
 	{
-		if (m_CurrentSequence.FrameRate > 0.0f) {
+		if (m_CurrentSequence.IFrameRate > 0.0f) {
 			m_CurrentFrameTimer += deltaTime;
-			if (m_CurrentFrameTimer > m_CurrentSequence.FrameRate) {
+			if (m_CurrentFrameTimer > m_CurrentSequence.IFrameRate) {
 				m_CurrentFrameTimer = 0.0f;
 				m_CurrentFrame++;
 				if (m_CurrentFrame > m_CurrentSequence.End) {
@@ -34,7 +36,17 @@ namespace Tara {
 	{
 		if (m_Sprite){
 			auto UVs = m_Sprite->GetUVsForFrame(m_CurrentFrame);
-			Renderer::Quad(GetWorldTransform(), glm::vec4{ 1.0f,1.0f,1.0f,1.0f }, m_Sprite->GetTexture(), UVs.first, UVs.second);
+			if (m_FlipBits & SPRITE_FLIP_H) {
+				auto tmp = UVs.first.x;
+				UVs.first.x = UVs.second.x;
+				UVs.second.x = tmp;
+			}
+			if (m_FlipBits & SPRITE_FLIP_V) {
+				auto tmp = UVs.first.y;
+				UVs.first.y = UVs.second.y;
+				UVs.second.y = tmp;
+			}
+			Renderer::Quad(GetWorldTransform(), m_Tint, m_Sprite->GetTexture(), UVs.first, UVs.second);
 		}
 	}
 

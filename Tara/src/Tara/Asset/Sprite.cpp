@@ -59,8 +59,9 @@ namespace Tara {
 	std::pair<glm::vec2, glm::vec2> Sprite::GetUVsForFrame(uint32_t frame) const
 	{
 		auto uvSize = GetFrameSizeUV();
+		//auto invFrame = GetLastFrame() - frame;
 		uint32_t frameX = frame % m_XFrameCount;
-		uint32_t frameY = frame / m_XFrameCount;
+		uint32_t frameY = (m_YFrameCount - 1) - (frame / m_XFrameCount);
 		glm::vec2 uvMin = glm::vec2(uvSize.x * frameX, uvSize.y * frameY);
 		glm::vec2 uvMax = uvMin + uvSize;
 		return std::make_pair(uvMin, uvMax);

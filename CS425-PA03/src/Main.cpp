@@ -34,8 +34,19 @@ public:
 		RoomManager::Get()->Generate(time(0), 5, 5, 30);
 
 		//create the player
-		auto playerTexture = Tara::Texture2D::Create("assets/Particle.png", "playerTexture");
-		auto playerSprite = Tara::Sprite::Create(playerTexture, 1, 1, "playerSprite");
+		//texture and sprite first
+		auto playerTexture = Tara::Texture2D::Create("assets/Character_8x4.png", "playerTexture");
+		auto playerSprite = Tara::Sprite::Create(playerTexture, 8, 4, "playerSprite");
+		//load animations
+		playerSprite->CreateAnimationSequence("idle_down",  1,  3,  2.0f);
+		playerSprite->CreateAnimationSequence("walk_down",  4,  7,  5.0f);
+		playerSprite->CreateAnimationSequence("idle_right", 8,  11, 2.0f);
+		playerSprite->CreateAnimationSequence("walk_right", 12, 15, 5.0f);
+		playerSprite->CreateAnimationSequence("idle_left",  16, 19, 2.0f);
+		playerSprite->CreateAnimationSequence("walk_left",  20, 23, 5.0f);
+		playerSprite->CreateAnimationSequence("idle_up",    24, 27, 2.0f);
+		playerSprite->CreateAnimationSequence("walk_up",    28, 31, 5.0f);
+		//make the player entity
 		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {16*4,16*4,1} }, "player", playerSprite);
 		
 		//make our camera

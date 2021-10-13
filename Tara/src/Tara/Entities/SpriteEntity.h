@@ -3,6 +3,9 @@
 #include "Tara/Core/Entity.h"
 #include "Tara/Asset/Sprite.h"
 
+#define SPRITE_FLIP_H 0x1
+#define SPRITE_FLIP_V 0x2
+//#define SPRITE_FLIP_CORNER 0x4
 
 namespace Tara {
 	class SpriteEntity : public Entity	{
@@ -92,11 +95,42 @@ namespace Tara {
 		/// <param name="name"></param>
 		void PlayAnimation(const std::string& name);
 
+		/// <summary>
+		/// Set the tint of the sprite
+		/// </summary>
+		/// <param name="tint"></param>
+		inline void SetTint(glm::vec4 tint) { m_Tint = tint; }
+
+		/// <summary>
+		/// Set the tint of the sprite
+		/// </summary>
+		/// <param name="r"></param>
+		/// <param name="g"></param>
+		/// <param name="b"></param>
+		/// <param name="a"></param>
+		inline void SetTint(float r, float g, float b, float a = 1.0f) { m_Tint = {r,g,b,a}; }
+
+		/// <summary>
+		/// Get the tint of the sprite
+		/// </summary>
+		/// <returns></returns>
+		inline const glm::vec4& GetTint() const { return m_Tint; }
+
+		/// <summary>
+		/// Set the flip bits
+		/// </summary>
+		/// <param name="flipBits">a series of flip bit macros or'ed together</param>
+		inline void SetFlip(uint8_t flipBits) { m_FlipBits = flipBits; }
+
+		inline const uint8_t GetFlip() const { return m_FlipBits; }
+
 	private:
 		SpriteRef m_Sprite;
 		uint32_t m_CurrentFrame;
 		Sprite::AnimationSequence m_CurrentSequence;
 		float m_CurrentFrameTimer;
+		glm::vec4 m_Tint;
+		uint8_t m_FlipBits;
 	};
 
 	using SpriteEntityRef = std::shared_ptr<SpriteEntity>;

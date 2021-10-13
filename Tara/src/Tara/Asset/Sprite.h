@@ -28,12 +28,12 @@ namespace Tara {
 			/// </summary>
 			uint32_t End;
 			/// <summary>
-			/// The frames per second
+			/// The inverse frames per second (inverse, so, time each frame takes)
 			/// </summary>
-			float FrameRate;
+			float IFrameRate;
 
 			AnimationSequence()
-				: Start(0), End(0), FrameRate(1.0f)
+				: Start(0), End(0), IFrameRate(1.0f)
 			{}
 
 			/// <summary>
@@ -43,7 +43,7 @@ namespace Tara {
 			/// <param name="end">the last frame, inclusive</param>
 			/// <param name="frameRate">the frames per second</param>
 			AnimationSequence(uint32_t start, uint32_t end, float frameRate)
-				: Start(start), End(end), FrameRate(frameRate)
+				: Start(start), End(end), IFrameRate(1/frameRate)
 			{}
 
 			/// <summary>
@@ -144,7 +144,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="seq"></param>
 		/// <returns></returns>
-		inline bool ValidSequence(const AnimationSequence& seq) { return (seq.Start <= seq.End && seq.FrameRate >= 0 && seq.Start >= 0 && seq.End < GetFrameCount()); }
+		inline bool ValidSequence(const AnimationSequence& seq) { return (seq.Start <= seq.End && seq.IFrameRate >= 0 && seq.Start >= 0 && seq.End < GetFrameCount()); }
 
 	private:
 		Texture2DRef m_Texture;

@@ -6,7 +6,9 @@
 const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
 PlayerEntity::PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
-	: SpriteEntity(parent, owningLayer, transform, name, sprite), m_Target(transform.Position), m_Origin(transform.Position), m_Timer(0), m_Traveling(false)
+	: SpriteEntity(parent, owningLayer, transform, name, sprite), 
+	m_Target(transform.Position), m_Origin(transform.Position), m_Timer(0), 
+	m_Traveling(false), m_Direction(Direction::DOWN)
 {}
 
 
@@ -23,6 +25,7 @@ std::shared_ptr<PlayerEntity> PlayerEntity::Create(Tara::EntityNoRef parent, Tar
 void PlayerEntity::OnUpdate(float deltaTime)
 {
 	Tara::SpriteEntity::OnUpdate(deltaTime); //call the super OnUppdate function (for animation reasons)
+	const static std::string qualifiers[] = { "up", "down", "left", "right" };
 
 	//apply movement directly to position
 	Tara::Transform  t = GetWorldTransform();
@@ -34,6 +37,7 @@ void PlayerEntity::OnUpdate(float deltaTime)
 			m_Timer = 0;
 			t.Position = m_Target;
 			m_Origin = m_Target;
+			PlayAnimation(std::string("idle_") + qualifiers[(uint8_t)m_Direction]);
 		}
 		else {
 			t.Position = Tara::CubicInterp<Tara::Vector>(m_Origin, m_Target, m_Timer / m_MaxTime);
@@ -51,6 +55,8 @@ void PlayerEntity::OnEvent(Tara::Event& e)
 
 bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 {
+	//SetCurrentFrame(GetCurrentFrame() + 1);
+	
 	if (m_Traveling) { return false; }
 
 	auto key = e.getKey();
@@ -70,11 +76,9 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 	else {
 		return false;
 	}
-	dir *= MOVEMENT_DISTANCE;
+	dir *= MOVEMENT_DISTANCE * 4.5;
 	const auto t = GetWorldTransform();
-	m_Origin = t.Position;
-	m_Target = t.Position + dir;
-	m_Traveling = true;
+	SetTarget(t.Position + dir, 0.25 * 4.5);
 	LOG_S(INFO) << "Key pressed event handled: " << (char)key;
 	return true;
 }
@@ -85,4 +89,27 @@ void PlayerEntity::SetTarget(Tara::Vector target, float travelTime)
 	m_Target = target;
 	m_MaxTime = travelTime;
 	m_Traveling = true;
+
+	//get direction
+	auto delta = m_Target - m_Origin;
+	if (abs(delta.x) > abs(delta.y)) {
+		if (delta.x > 0) {
+			m_Direction = Direction::RIGHT;
+		}
+		else {
+			m_Direction = Direction::LEFT;
+		}
+	}
+	else {
+		if (delta.y > 0) {
+			m_Direction = Direction::UP;
+		}
+		else {
+			m_Direction = Direction::DOWN;
+		}
+	}
+
+	//update animation
+	const static std::string qualifiers[] = {"up", "down", "left", "right"};
+	PlayAnimation(std::string("walk_") + qualifiers[(uint8_t)m_Direction]);
 }

@@ -43,6 +43,7 @@ public:
 
 		//make a texture asset
 		auto textureUVChecker = Tara::Texture2D::Create("assets/UV_Checker.png");
+		auto textureDirArrows = Tara::Texture2D::Create("assets/DirArrows.png");
 		auto textureParticle4x1 = Tara::Texture2D::Create("assets/Particle_4x1.png");
 		//auto textureParticle2x2 = Tara::Texture2D::Create("assets/Particle_2x2.png");
 		//auto textureParticle1x4 = Tara::Texture2D::Create("assets/Particle_1x4.png");
@@ -69,9 +70,14 @@ public:
 		std::random_device rd;
 		float delta = (extent.Left - extent.Right)/(float)SPRITE_MAX, xpos = extent.Right;
 
-		auto sprite = Tara::Sprite::Create(textureParticle4x1, 4, 1, "ParticleSprite");
-		sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
+		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
+		//sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
 		
+		auto spriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		//spriteEntity->PlayAnimation("default");
+		spriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
+
+		/*
 		for (int i=0;i<SPRITE_MAX;i++){
 			Tara::Transform t;
 			t.Scale = { 0.2f, 0.2f, 0.2f };
@@ -94,7 +100,7 @@ public:
 			//spriteEntity->SetCurrentFrame(rd() % 4);
 			
 		}
-		
+		*/
 
 		//Noise test
 
