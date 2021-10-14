@@ -116,7 +116,7 @@ namespace Tara {
 		/// Set the relative transform of the entity
 		/// </summary>
 		/// <param name="transform">the new transform</param>
-		inline inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
+		inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
 
 		/// <summary>
 		/// set the world transform of an entity

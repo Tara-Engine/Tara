@@ -17,6 +17,8 @@ namespace Tara {
 		OpenGl
 	};
 
+	
+
 	/// <summary>
 	/// Renderer
 	/// Mostly static class that is used for rendering things in worldspace. 
@@ -49,14 +51,6 @@ namespace Tara {
 		/// <param name="shader">the shader to draw with</param>
 		/// <param name="transform">where the vertex array is</param>
 		static void Draw(VertexArrayRef vertexArray, ShaderRef shader, Transform transform);
-
-		/// <summary>
-		/// draw a arbitrary vertex array
-		/// </summary>
-		/// <param name="vertexArray">the vertex array to draw</param>
-		/// <param name="shader">the shader to draw with</param>
-		/// <param name="transform">where the vertex array is</param>
-		static void DrawLines(VertexArrayRef vertexArray, ShaderRef shader, Transform transform);
 
 		/// <summary>
 		/// draw a texture on a 1x1 quad

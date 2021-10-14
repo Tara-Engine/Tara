@@ -72,7 +72,9 @@ namespace Tara {
 					index++;
 				}
 			}
-			RenderCommand::DrawPointList(s_QuadArray, group.Quads.size());
+			RenderCommand::PushDrawType(RenderDrawType::Points);
+			RenderCommand::DrawCount(group.Quads.size());
+			RenderCommand::PopDrawType();
 			//glDrawArrays(GL_POINTS, 0, m_Quads.size());
 		}
 		s_QuadGroups.clear();
@@ -87,15 +89,6 @@ namespace Tara {
 		shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
 		shader->Send("u_MatrixModel", transform.GetTransformMatrix());
 		RenderCommand::Draw(vertexArray);
-	}
-
-	void Renderer::DrawLines(VertexArrayRef vertexArray, ShaderRef shader, Transform transform)
-	{
-		vertexArray->Bind();
-		shader->Bind();
-		shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
-		shader->Send("u_MatrixModel", transform.GetTransformMatrix());
-		RenderCommand::DrawLines(vertexArray);
 	}
 
 	void Renderer::Quad(const Transform& transform, glm::vec4 color, const Texture2DRef& texture, glm::vec2 minUV, glm::vec2 maxUV)

@@ -10,7 +10,8 @@
 namespace Tara {
 	//default::uninitialized pointer
 	std::unique_ptr<RenderCommand> RenderCommand::s_RC = std::unique_ptr<RenderCommand>();
-	
+	std::list<RenderCommand::DrawType> RenderCommand::m_DrawTypeStack;
+
 	//RenderCommand inititalization
 	void RenderCommand::Init()
 	{
@@ -21,6 +22,26 @@ namespace Tara {
 			break;
 		}
 		case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
+		}
+		m_DrawTypeStack.push_front({ RenderDrawType::Triangles, false });
+	}
+
+	void RenderCommand::PushDrawType(RenderDrawType drawType, bool wireframe)
+	{
+		DrawType t = { drawType, wireframe };
+		if (drawType == RenderDrawType::Keep) {
+			t.Type = m_DrawTypeStack.begin()->Type;
+		}
+		m_DrawTypeStack.push_front(t);
+		s_RC->ISetDrawType(drawType, wireframe);
+	}
+
+	void RenderCommand::PopDrawType()
+	{
+		m_DrawTypeStack.pop_front();
+		if (m_DrawTypeStack.size() > 0){
+			auto t = *(m_DrawTypeStack.begin());
+			s_RC->ISetDrawType(t.Type, t.WireFrame);
 		}
 	}
 

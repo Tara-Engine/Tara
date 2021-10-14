@@ -7,6 +7,7 @@
 #include "GLFW/glfw3.h"
 namespace Tara{
 	OpenGLRenderCommand::OpenGLRenderCommand()
+		: m_DrawMode(GL_TRIANGLES)
 	{
 		//load glad functions
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -27,6 +28,26 @@ namespace Tara{
 		glClearColor(r, g, b, 1.0f);
 	}
 
+	void OpenGLRenderCommand::ISetDrawType(RenderDrawType drawType, bool wireframe)
+	{
+		switch (drawType) {
+			case RenderDrawType::Keep:			{break; }//do nothing
+			case RenderDrawType::Points:		{m_DrawMode = GL_POINTS; break; }
+			case RenderDrawType::Lines:			{m_DrawMode = GL_LINES; break; }
+			case RenderDrawType::Triangles:		{m_DrawMode = GL_TRIANGLES; break; }
+			case RenderDrawType::LineStrip:		{m_DrawMode = GL_LINE_STRIP; break; }
+			case RenderDrawType::LineLoop:		{m_DrawMode = GL_LINE_LOOP; break; }
+			case RenderDrawType::TriangleStrip: {m_DrawMode = GL_TRIANGLE_STRIP; break; }
+			case RenderDrawType::TriangleFan:	{m_DrawMode = GL_TRIANGLE_FAN; break; }
+		}
+		if (wireframe) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
+
 	void OpenGLRenderCommand::IClear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT); //TODO: Add depth buffer and everything else needed!
@@ -34,18 +55,12 @@ namespace Tara{
 
 	void OpenGLRenderCommand::IDraw(VertexArrayRef vertexArray)
 	{
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(m_DrawMode, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
 	}
 
-	void OpenGLRenderCommand::IDrawLines(VertexArrayRef vertexArray)
+	void OpenGLRenderCommand::IDrawCount(uint32_t count)
 	{
-		glDrawElements(GL_LINES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
-	}
-
-	void OpenGLRenderCommand::IDrawPointList(VertexArrayRef vertexArray, uint32_t count)
-	{
-		vertexArray->Bind();
-		glDrawArrays(GL_POINTS, 0, count);
+		glDrawArrays(m_DrawMode, 0, count);
 	}
 
 	uint32_t OpenGLRenderCommand::IGetMaxTextureSlotsPerShader()

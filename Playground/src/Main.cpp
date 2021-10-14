@@ -77,54 +77,7 @@ public:
 		//spriteEntity->PlayAnimation("default");
 		spriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
-		/*
-		for (int i=0;i<SPRITE_MAX;i++){
-			Tara::Transform t;
-			t.Scale = { 0.2f, 0.2f, 0.2f };
-			t.Position = {
-
-				//Interpolation Test
-				//xpos,
-				//Tara::Lerp<float>(extent.Top, extent.Bottom, (float)i /( (float)SPRITE_MAX-1)),
-				
-				//Randomness Test
-				Tara::MapRange((float)(rd() % 1000),0,1000,extent.Left,extent.Right-0.2),
-				Tara::MapRange((float)(rd() % 1000),0,1000,extent.Bottom,extent.Top-0.2),
-				
-				//that z value
-				0
-			};
-			xpos += delta;
-			auto spriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite", sprite);
-			spriteEntity->PlayAnimation("default");
-			//spriteEntity->SetCurrentFrame(rd() % 4);
-			
-		}
-		*/
-
-		//Noise test
-
-		//Tara::Noise noise(21, 0.05f, 1.0f, 0.5f, 2);
-		/*
-		for (int x = 0; x < 20; x++) {
-			for (int y = 0; y < 20; y++) {
-				if (noise(x, y) > 0.0) {
-					Tara::Transform t;
-					t.Scale = { 0.2f, 0.2f, 0.2f };
-					t.Position = {
-						//map x and y
-						Tara::MapRange((float)(x),0,19,extent.Left,extent.Right - 0.2),
-						Tara::MapRange((float)(y),0,19,extent.Bottom,extent.Top - 0.2),
-
-						//that z value
-						0
-					};
-					auto sprite = Tara::SpriteEntity::Create(dmce, weak_from_this(), t, "sprite");
-					sprite->SetTexture(m_Texture);
-				}
-			}
-		}
-		*/
+		
 		m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
 		m_Player->SetSpeed(1.5f);
@@ -132,8 +85,30 @@ public:
 		//attach camera to player
 		m_Player->AddChild(m_Camera);
 
+		//Some simple drawing texts
+		std::unordered_map <Tara:: Shader::TargetStage, std::string> map;
+		map[Tara::Shader::TargetStage::Vertex] = "assets/basic.vertex.glsl";
+		map[Tara::Shader::TargetStage::Pixel] = "assets/basic.fragment.glsl";
+		m_SimpleShader = Tara::Shader::Create("simpleShader", Tara::Shader::SourceType::TextFiles, map);
 
-		
+		m_VertexArray = Tara::VertexArray::Create();
+
+		float verts[] = {
+			1.0f, 1.0f, 0.0f,
+			1.0f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.0f
+		};
+		auto vBuf = Tara::VertexBuffer::Create(verts, 9);
+		vBuf->SetLayout({
+			{Tara::Shader::Datatype::Float3, "a_Position", false}
+		});
+		m_VertexArray->AddVertexBuffer(vBuf);
+
+		uint32_t indecies[] = {
+			0, 1, 2
+		};
+		auto iBuf = Tara::IndexBuffer::Create(indecies, 3);
+		m_VertexArray->SetIndexBuffer(iBuf);
 	}
 	
 	virtual void Deactivate() override {
@@ -151,6 +126,10 @@ public:
 		Tara::Renderer::BeginScene(m_Camera->GetCamera());
 		
 		Tara::Layer::Draw(deltaTime);
+
+		Tara::RenderCommand::PushDrawType(Tara::RenderDrawType::LineStrip, false);
+		Tara::Renderer::Draw(m_VertexArray, m_SimpleShader, TRANSFORM_2D(-1, -1, 0, 1, 1));
+		Tara::RenderCommand::PopDrawType();
 
 		Tara::Renderer::EndScene();
 	}
@@ -177,6 +156,8 @@ private:
 	//Tara::Texture2DRef m_Texture;
 	//Tara::Texture2DRef m_Texture2;
 	
+	Tara::ShaderRef m_SimpleShader;
+	Tara::VertexArrayRef m_VertexArray;
 	
 	//Tara::CameraRef m_Camera;
 	

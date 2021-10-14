@@ -4,6 +4,45 @@
 
 namespace Tara {
 	
+
+	/// <summary>
+	/// An Enum of the drawing types available to the render backend
+	/// </summary>
+	enum class RenderDrawType {
+		/// <summary>
+		/// Keep the current drawtype
+		/// </summary>
+		Keep, 
+		/// <summary>
+		/// Draw points at each vertex
+		/// </summary>
+		Points,
+		/// <summary>
+		/// Draw lines between each pair of vertecies
+		/// </summary>
+		Lines,
+		/// <summary>
+		/// Draw triangles with each set of three vertecies
+		/// </summary>
+		Triangles,
+		/// <summary>
+		/// Draw lines connecting the vertecies in drawing order
+		/// </summary>
+		LineStrip,
+		/// <summary>
+		/// Draw lines connecting the vertecies in drawing order, and close the shape
+		/// </summary>
+		LineLoop,
+		/// <summary>
+		/// Draw a triangle strip
+		/// </summary>
+		TriangleStrip,
+		/// <summary>
+		/// Draw a triangle fan
+		/// </summary>
+		TriangleFan
+	};
+
 	/// <summary>
 	/// The RenderCommand class is a (mostly?) static class, providing an interface to a private 
 	/// PlatformRenderCommand instance. (Unique Pointer)
@@ -31,10 +70,24 @@ namespace Tara {
 		/// <param name="g">green component of clear color</param>
 		/// <param name="b">blue component of clear color</param>
 		inline static void SetClearColor(float r, float g, float b) { s_RC->ISetClearColor(r, g, b); }
+		
+		/// <summary>
+		/// Push a new draw type for future draws
+		/// </summary>
+		/// <param name="drawType">the new draw type</param>
+		/// <param name="wireframe">if wireframe should be turned on (false by default)</param>
+		static void PushDrawType(RenderDrawType drawType, bool wireframe = false);
+		
+		/// <summary>
+		/// Pop the current drawType for future draws
+		/// </summary>
+		static void PopDrawType();
+
 		/// <summary>
 		/// clear the screen
 		/// </summary>
 		inline static void Clear() { s_RC->IClear(); }
+		
 		/// <summary>
 		/// Draw the current VertexArray. Does not bind the VertexArray passed to it.
 		/// </summary>
@@ -42,17 +95,11 @@ namespace Tara {
 		inline static void Draw(VertexArrayRef vertexArray) { s_RC->IDraw(vertexArray); }
 
 		/// <summary>
-		/// Draw the current VertexArray using lines. Does not bind the VertexArray passed to it.
+		/// Draw the current VertexArray, but a specific count of vertecies instead of via an IndexBuffer. 
+		/// Does not bind the VertexArray passed to it.
 		/// </summary>
 		/// <param name="vertexArray"></param>
-		inline static void DrawLines(VertexArrayRef vertexArray) { s_RC->IDrawLines(vertexArray); }
-
-		/// <summary>
-		/// Draw a list of vertecies as points. For use with batch rendering.
-		/// </summary>
-		/// <param name="vertexArray"></param>
-		/// <param name="count"></param>
-		inline static void DrawPointList(VertexArrayRef vertexArray, uint32_t count) { s_RC->IDrawPointList(vertexArray, count); }
+		inline static void DrawCount(uint32_t count) { s_RC->IDrawCount(count); }
 
 		/// <summary>
 		/// Gets the max number of textures that can be sent to the fragment shader.
@@ -69,6 +116,14 @@ namespace Tara {
 		/// <param name="g">green component of clear color</param>
 		/// <param name="b">blue component of clear color</param>
 		virtual void ISetClearColor(float r, float g, float b) = 0;
+
+		/// <summary>
+		/// Protected SetDrawType, for underlying implementation to override
+		/// </summary>
+		/// <param name="drawType">the drawtype</param>
+		/// <param name="wireframe">if wireframe should be turned on</param>
+		virtual void ISetDrawType(RenderDrawType drawType, bool wireframe) = 0;
+
 		/// <summary>
 		/// Protected Clear, for underlying implementation to override
 		/// </summary>
@@ -80,27 +135,28 @@ namespace Tara {
 		virtual void IDraw(VertexArrayRef vertexArray) = 0;
 
 		/// <summary>
-		/// Protected DrawLines, for underlying implementation to override
+		/// Protected DrawCount, for underlying implementation to override
 		/// </summary>
 		/// <param name="vertexArray"></param>
-		virtual void IDrawLines(VertexArrayRef vertexArray) = 0;
+		virtual void IDrawCount(uint32_t count) = 0;
 
 		/// <summary>
 		/// Protected GetMaxTextureSlotsPerShader, for underlying implementation to override
 		/// </summary>
 		virtual uint32_t IGetMaxTextureSlotsPerShader() = 0;
 
-		/// <summary>
-		/// Protected DrawPointList, for underlying implementation to override
-		/// </summary>
-		/// <param name="vertexArray"></param>
-		/// <param name="count"></param>
-		virtual void IDrawPointList(VertexArrayRef vertexArray, uint32_t count) = 0;
 	private:
+
+		struct DrawType {
+			RenderDrawType Type;
+			bool WireFrame;
+		};
+
 		/// <summary>
 		/// the unique pointer to the underlying RenderCommand instance.
 		/// </summary>
 		static std::unique_ptr<RenderCommand> s_RC;
+		static std::list<DrawType> m_DrawTypeStack;
 	};
 
 }

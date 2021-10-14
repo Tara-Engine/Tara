@@ -8,10 +8,11 @@ namespace Tara {
 		OpenGLRenderCommand();
 	protected:
 		virtual void ISetClearColor(float r, float g, float b) override;
+		virtual void ISetDrawType(RenderDrawType drawType, bool wireframe) override;
+
 		virtual void IClear() override;
 		virtual void IDraw(VertexArrayRef vertexArray) override;
-		virtual void IDrawLines(VertexArrayRef vertexArray) override;
-		virtual void IDrawPointList(VertexArrayRef vertexArray, uint32_t count) override;
+		virtual void IDrawCount(uint32_t count) override;
 		virtual uint32_t IGetMaxTextureSlotsPerShader() override;
 	public:
 		static void GLError(
@@ -23,6 +24,8 @@ namespace Tara {
 			const char* message,
 			const void* userParam
 		);
+	private:
+		uint32_t m_DrawMode;
 	};
 
 }
