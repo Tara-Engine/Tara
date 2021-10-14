@@ -62,6 +62,39 @@ namespace Tara{
         }
     }
 
+    void Entity::SetWorldPosition(const Vector& pos)
+    {
+        if (GetParent().lock()) {
+            auto parentTransform = GetParent().lock()->GetWorldTransform();
+            m_Transform.Position = pos - parentTransform.Position;
+        }
+        else {
+            m_Transform.Position = pos;
+        }
+    }
+
+    void Entity::SetWorldRotation(const Rotator& rot)
+    {
+        if (GetParent().lock()) {
+            auto parentTransform = GetParent().lock()->GetWorldTransform();
+            m_Transform.Rotation = rot - parentTransform.Rotation;
+        }
+        else {
+            m_Transform.Rotation = rot;
+        }
+    }
+
+    void Entity::SetWorldScale(const Vector& scale)
+    {
+        if (GetParent().lock()) {
+            auto parentTransform = GetParent().lock()->GetWorldTransform();
+            m_Transform.Scale = scale - parentTransform.Scale;
+        }
+        else {
+            m_Transform.Scale = scale;
+        }
+    }
+
     bool Entity::IsChild(EntityRef ref, bool recursive) const
     {
         if (std::find(m_Children.begin(), m_Children.end(), ref) != m_Children.end()) {

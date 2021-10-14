@@ -104,7 +104,7 @@ namespace Tara {
 		/// Get the transform of the Entity relative to parent
 		/// </summary>
 		/// <returns>the current transform</returns>
-		const Transform& GetRelativeTransform() const { return m_Transform; }
+		inline const Transform& GetRelativeTransform() const { return m_Transform; }
 		
 		/// <summary>
 		/// Get the world transform of the Entity
@@ -116,12 +116,84 @@ namespace Tara {
 		/// Set the relative transform of the entity
 		/// </summary>
 		/// <param name="transform">the new transform</param>
-		inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
+		inline inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
 
 		/// <summary>
 		/// set the world transform of an entity
 		/// </summary>
 		void SetWorldTransform(const Transform& transform);
+
+		/// <summary>
+		/// Get the relative position of the Entity
+		/// </summary>
+		/// <returns>Position as a vector</returns>
+		inline const Vector& GetRelativePosition() const { return m_Transform.Position; }
+
+		/// <summary>
+		/// Set the relative position of the Entity
+		/// </summary>
+		/// <param name="pos">the new position, as a vector</param>
+		inline void SetRelativePosition(const Vector& pos) { m_Transform.Position = pos; }
+
+		/// <summary>
+		/// Get the world position of the Entity
+		/// </summary>
+		/// <returns>World position as a vector</returns>
+		inline Vector GetWorldPosition() const { return GetWorldTransform().Position; };
+
+		/// <summary>
+		/// Set the world position of the Entity
+		/// </summary>
+		/// <param name="pos">the new position, as a vector</param>
+		void SetWorldPosition(const Vector& pos);
+
+		/// <summary>
+		/// Get the relative rotation of the Entity
+		/// </summary>
+		/// <returns>The relative rotation, as Rotator</returns>
+		inline const Rotator& GetRelativeRotation() const { return m_Transform.Rotation; }
+
+		/// <summary>
+		/// Set the relative rotation of the Entity
+		/// </summary>
+		/// <param name="rot">the new rotation, as Rotator</param>
+		inline void SetRelativeRotation(const Rotator& rot) { m_Transform.Rotation = rot; }
+
+		/// <summary>
+		/// Get the world rotation of the Entity
+		/// </summary>
+		/// <returns>The relative rotation, as Rotator</returns>
+		inline Rotator GetWorldRotation() const { return GetWorldTransform().Rotation; }
+
+		/// <summary>
+		/// Set the world rotation of the Entity
+		/// </summary>
+		/// <param name="rot">the new rotation, as Rotator</param>
+		void SetWorldRotation(const Rotator& rot);
+
+		/// <summary>
+		/// Get the relative scale of the Entity
+		/// </summary>
+		/// <returns>The relative scale, as Vector</returns>
+		inline const Vector& GetRelativeScale() const { return m_Transform.Scale; }
+
+		/// <summary>
+		/// Set the relative scale of the Entity
+		/// </summary>
+		/// <param name="rot">the new scale, as Vector</param>
+		inline void SetRelativeScale(const Vector& scale) { m_Transform.Scale = scale; }
+
+		/// <summary>
+		/// Get the world scale of the Entity
+		/// </summary>
+		/// <returns>The relative scale, as Vector</returns>
+		inline Vector GetWorldScale() const { return GetWorldTransform().Scale; }
+
+		/// <summary>
+		/// Set the world scale of the Entity
+		/// </summary>
+		/// <param name="rot">the new scale, as Vector</param>
+		void SetWorldScale(const Vector& scale);
 
 		/// <summary>
 		/// Get the name of the entity

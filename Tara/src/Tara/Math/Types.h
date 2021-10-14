@@ -8,8 +8,14 @@
 #include <glm/ext/quaternion_common.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
+//Create the default Transform
+//At origin, unrotatied, unscaled.
+#define TRANSFORM_DEFAULT Tara::Transform{Tara::Vector{0.0f,0.0f,0.0f},Tara::Rotator{0.0f,0.0f,0.0f},Tara::Vector{1.0f,1.0f,1.0f}}
 
-#define TRANSFORM_DEFAULT {{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f}}
+//Create a Transform, in 2D space
+//Params: <x>, <y>, <rot>, <scale x>, <scale y>
+#define TRANSFORM_2D(x,y,rot,sx,sy) Tara::Transform{Tara::Vector{x,y,0.0f},Tara::Rotator{rot,0.0f,0.0f},Tara::Vector{sx,sy,1.0f}}
+
 
 namespace Tara {
 

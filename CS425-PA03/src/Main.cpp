@@ -25,9 +25,6 @@ public:
 		//set BG color
 		Tara::RenderCommand::SetClearColor({0.0f,0.0f,0.0f});
 
-		
-		
-
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
@@ -47,13 +44,13 @@ public:
 		playerSprite->CreateAnimationSequence("idle_up",    24, 27, 2.0f);
 		playerSprite->CreateAnimationSequence("walk_up",    28, 31, 5.0f);
 		//make the player entity
-		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), { {0,0,0},{0,0,0}, {16*4,16*4,1} }, "player", playerSprite);
+		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(0,0,0,16*4,16*4), "player", playerSprite);
 		
 		//make our camera
 		auto cameraEntity = Tara::CameraEntity::Create(
 			player, weak_from_this(), 
 			Tara::Camera::ProjectionType::Ortographic, 
-			{ {0.5f,0.5f,0.0f},{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f} }, 
+			TRANSFORM_2D(0.5f,0.5f,0,1,1),
 			"camera"
 		);
 		cameraEntity->SetOrthographicExtent((float)WIDTH); 
