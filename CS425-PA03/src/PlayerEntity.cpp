@@ -68,22 +68,22 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 	auto centered = RoomManager::IsCentered(pos);
 	auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
 	if (key == TARA_KEY_S || key == TARA_KEY_DOWN) {
-		if (!room || !centered.second || room->GetDoorState() & DOORSTATE_DOWN) {
+		if (centered.first && (!room || !centered.second|| room->GetDoorState() & DOORSTATE_DOWN)) {
 			dir.y = -1;
 		}
 	}
 	else if (key == TARA_KEY_W || key == TARA_KEY_UP) {
-		if (!room || !centered.second || room->GetDoorState() & DOORSTATE_UP) {
+		if (centered.first && (!room || !centered.second || room->GetDoorState() & DOORSTATE_UP)) {
 			dir.y = 1;
 		}
 	}
 	else if (key == TARA_KEY_A || key == TARA_KEY_LEFT) {
-		if (!room || !centered.first || room->GetDoorState() & DOORSTATE_LEFT) {
+		if (centered.second && (!room || !centered.first || room->GetDoorState() & DOORSTATE_LEFT)) {
 			dir.x = -1;
 		}
 	}
 	else if (key == TARA_KEY_D || key == TARA_KEY_RIGHT) {
-		if (!room || !centered.first || room->GetDoorState() & DOORSTATE_RIGHT) {
+		if (centered.second && (!room || !centered.first || room->GetDoorState() & DOORSTATE_RIGHT)) {
 			dir.x = 1;
 		}
 	}
