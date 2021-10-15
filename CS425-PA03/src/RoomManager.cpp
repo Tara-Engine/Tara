@@ -304,6 +304,8 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 			}
 		}
 	}
+	delete[] distMatrix;//Don't forget to do this!
+	delete[] doorMatrix;//
 	return cellQueue; // head is start, tail is goal
 }
 
