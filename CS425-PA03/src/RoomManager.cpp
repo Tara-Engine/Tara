@@ -52,7 +52,7 @@ Tara::SpriteRef RoomManager::RoomTextureFromDoorsAndPerm(uint32_t doorState, uin
 	std::string name = RoomManager::StatesAndPermToString(doorState, perm);
 	auto asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>(name);
 	if (!asset) {
-		LOG_S(WARNING) << "Unknown door image get apptempted: " << name;
+		LOG_S(WARNING) << "Unknown door image get attempted: " << name;
 		asset = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("1-D"); //default is 1-D.png, if that fails, then nullptr
 	}
 	return asset;
@@ -212,7 +212,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		if (cellX < 0) {cellX = 0;}
 		if (doorMatrix[cell] == 0)
 		{
-			int dir = 1 << (rand() % 4);
+			int dir = 1;
 			bool oob = true;
 			while (oob) {
 				switch (dir)
@@ -231,7 +231,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 					break;
 				}
 				auto cell2 = cellX * height + cellY;
-				if (cell2 > -1 && cell2 < doorMatrix.size() && doorMatrix[cell2])
+				if (cellX >= 0 && cellX < width && cellY >= 0 && cellY < height && doorMatrix[cell2])
 				{
 					// create a new room and make that the goal
 					doorMatrix[cell] |= dir;
@@ -242,7 +242,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 				}
 				dir <<= 1;
 				if (dir > 8)
-					dir = 1;
+					oob = false;
 			}
 		}
 		else if (doorMatrix[cell] == DOORSTATE_UP || doorMatrix[cell] == DOORSTATE_DOWN || doorMatrix[cell] == DOORSTATE_LEFT || doorMatrix[cell] == DOORSTATE_RIGHT)
@@ -255,7 +255,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 	// make a matrix of distance from the goal cell
 	//int32_t *distMatrix = new int32_t[width * height];
 	//memset(distMatrix, -2, width * height);
-	auto distMatrix = std::vector<int32_t>(width * height, -2);
+	auto distMatrix = std::vector<int32_t>(width * height, 999);
 	distMatrix[goal] = 0;
 	std::list<int32_t> cellQueue = std::list<int32_t>();
 	cellQueue.push_back(goal);
@@ -266,17 +266,17 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		cellQueue.pop_front();
 		int32_t cellY = cell % width;
 		int32_t cellX = (cell - cellY) / height;
-		int32_t up = (cellX - 1) * height + cellY;
-		int32_t down = (cellX + 1) * height + cellY;
-		int32_t left = cellX * height + (cellY - 1);
-		int32_t right = cellX * height + (cellY + 1);
-		if (up > -1 && up < doorMatrix.size() && doorMatrix[up] && (distMatrix[up] != depth - 1))
+		int32_t up = cellX * height + (cellY - 1);
+		int32_t down = cellX * height + (cellY + 1);
+		int32_t left = (cellX - 1) * height + cellY;
+		int32_t right = (cellX + 1) * height + cellY;
+		if (cellY > 1 && (doorMatrix[up] & DOORSTATE_DOWN) && (distMatrix[up] > depth))
 			distMatrix[up] = depth;
-		if (down > -1 && down < doorMatrix.size() && doorMatrix[down] && (distMatrix[down] != depth - 1))
+		if (cellY < height - 1 && (doorMatrix[down] & DOORSTATE_UP) && (distMatrix[down] > depth))
 			distMatrix[down] = depth;
-		if (left > -1 && left < doorMatrix.size() && doorMatrix[left] && (distMatrix[left] != depth - 1))
+		if (cellX > 1 && (doorMatrix[left] & DOORSTATE_RIGHT) && (distMatrix[left] > depth))
 			distMatrix[left] = depth;
-		if (right > -1 && right < doorMatrix.size() && doorMatrix[right] && (distMatrix[right] != depth - 1))
+		if (cellX < height - 1 && (doorMatrix[right] & DOORSTATE_LEFT) && (distMatrix[right] > depth))
 			distMatrix[right] = depth;
 		if (cellQueue.empty())
 		{
@@ -294,8 +294,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		depth = 3;
 	for (int i = 0; i < width * height; i++)
 	{
-		if (distMatrix[i] >= depth)
-			printf("%d is a spawn candidate\n", i);
+		if (distMatrix[i] >= depth && distMatrix[i] != 999)
 			cellQueue.push_back(i);
 	}
 	int clears = rand() % cellQueue.size();
@@ -307,24 +306,24 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 	// build a linked list of rooms designating a path from start to goal
 	cellQueue.clear();
 	cellQueue.push_back(start);
-	depth = distMatrix[start];
-	while (depth > 0)
+	depth = distMatrix[start] - 1;
+	while (depth >= 0)
 	{
 		// TODO: make this direction random?
 		int32_t cell = cellQueue.back();
-		int32_t cellX = cell % width;
-		int32_t cellY = (cell - cellX) / height;
-		int32_t up = (cellX - 1) * height + cellY;
-		int32_t down = (cellX + 1) * height + cellY;
-		int32_t left = cellX * height + (cellY - 1);
-		int32_t right = cellX * height + (cellY + 1);
-		if (up > -1 && up < distMatrix.size() && distMatrix[up] == depth - 1)
+		int32_t cellY = cell % width;
+		int32_t cellX = (cell - cellY) / height;
+		int32_t up = cellX * height + (cellY - 1);
+		int32_t down = cellX * height + (cellY + 1);
+		int32_t left = (cellX - 1) * height + cellY;
+		int32_t right = (cellX + 1) * height + cellY;
+		if (cellY > 1 && distMatrix[up] == depth)
 			cellQueue.push_back(up);
-		else if (down > -1 && down < distMatrix.size() && distMatrix[down] == depth - 1)
+		else if (cellY < height - 1 && distMatrix[down] == depth)
 			cellQueue.push_back(down);
-		else if (left > -1 && left < distMatrix.size() && distMatrix[left] == depth - 1)
+		else if (cellX > 1 && distMatrix[left] == depth)
 			cellQueue.push_back(left);
-		else if (right > -1 && right < distMatrix.size())// process of elimination
+		else if (cellX < height - 1)// process of elimination
 			cellQueue.push_back(right);
 		depth--;
 	}
