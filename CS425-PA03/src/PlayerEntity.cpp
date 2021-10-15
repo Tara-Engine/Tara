@@ -1,7 +1,10 @@
 #include "PlayerEntity.h"
-#include "Tara/Renderer/Renderer.h"
-#include "Tara/Input/Input.h"
-#include "Tara/Input/Mappings.h"
+
+//#include "Tara/Renderer/Renderer.h"
+//#include "Tara/Input/Input.h"
+//#include "Tara/Input/Mappings.h"
+
+#include "RoomManager.h"
 
 const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
@@ -30,7 +33,6 @@ void PlayerEntity::OnUpdate(float deltaTime)
 	//apply movement directly to position
 	Tara::Transform  t = GetWorldTransform();
 	if (m_Traveling) {
-		LOG_S(INFO) << "Traveling!";
 		m_Timer += deltaTime;
 		if (m_Timer >= m_MaxTime) {
 			m_Traveling = false;
@@ -42,6 +44,7 @@ void PlayerEntity::OnUpdate(float deltaTime)
 		else {
 			t.Position = Tara::CubicInterp<Tara::Vector>(m_Origin, m_Target, m_Timer / m_MaxTime);
 		}
+		
 	}
 	SetWorldTransform(t);
 }
@@ -58,23 +61,38 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 	//SetCurrentFrame(GetCurrentFrame() + 1);
 	
 	if (m_Traveling) { return false; }
-
+	auto pos = glm::vec2(GetWorldPosition());
 	auto key = e.getKey();
 	Tara::Vector dir = { 0,0,0 };
+	auto roomPos = RoomManager::WorldCoordToRoomCoord(pos);
+	auto centered = RoomManager::IsCentered(pos);
+	auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
 	if (key == TARA_KEY_S || key == TARA_KEY_DOWN) {
-		dir.y = -1;
+		if (!room || !centered.second || room->GetDoorState() & DOORSTATE_DOWN) {
+			dir.y = -1;
+		}
 	}
 	else if (key == TARA_KEY_W || key == TARA_KEY_UP) {
-		dir.y = 1;
+		if (!room || !centered.second || room->GetDoorState() & DOORSTATE_UP) {
+			dir.y = 1;
+		}
 	}
 	else if (key == TARA_KEY_A || key == TARA_KEY_LEFT) {
-		dir.x = -1;
+		if (!room || !centered.first || room->GetDoorState() & DOORSTATE_LEFT) {
+			dir.x = -1;
+		}
 	}
 	else if (key == TARA_KEY_D || key == TARA_KEY_RIGHT) {
-		dir.x = 1;
+		if (!room || !centered.first || room->GetDoorState() & DOORSTATE_RIGHT) {
+			dir.x = 1;
+		}
 	}
 	else {
 		return false;
+	}
+	if (dir.x == 0 && dir.y == 0) {
+		//skip movement
+		return true;
 	}
 	dir *= MOVEMENT_DISTANCE * 4.5;
 	const auto t = GetWorldTransform();
@@ -85,6 +103,7 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 
 void PlayerEntity::SetTarget(Tara::Vector target, float travelTime)
 {
+	LOG_S(INFO) << "Traveling! {" << target.x << "," << target.y << "}";
 	m_Origin = GetWorldTransform().Position;
 	m_Target = target;
 	m_MaxTime = travelTime;

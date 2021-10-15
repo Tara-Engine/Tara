@@ -51,6 +51,28 @@ public:
 	static Tara::SpriteRef RoomTextureFromDoorsAndPerm(uint32_t doorState, uint32_t perm);
 
 	/// <summary>
+	/// Turn world coordinates into room coordinates
+	/// </summary>
+	/// <param name="worldCoord"></param>
+	/// <returns></returns>
+	static glm::ivec2 WorldCoordToRoomCoord(glm::vec2 worldCoord);
+
+	/// <summary>
+	/// turn room coordinates into world coordinates
+	/// The coordinates are centered. on the room, for sprites
+	/// </summary>
+	/// <param name="roomCoord"></param>
+	/// <returns></returns>
+	static glm::vec2 RoomCoordToWorldCoord(glm::ivec2 roomCoord);
+
+	/// <summary>
+	/// check if a world position is centered
+	/// </summary>
+	/// <param name="pos"></param>
+	/// <returns></returns>
+	static std::pair<bool, bool> IsCentered(glm::vec2 pos);
+
+	/// <summary>
 	/// Initialize the manager
 	/// </summary>
 	/// <param name="defaultParent">the default parent for rooms</param>

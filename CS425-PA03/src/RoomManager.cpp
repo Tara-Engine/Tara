@@ -58,6 +58,36 @@ Tara::SpriteRef RoomManager::RoomTextureFromDoorsAndPerm(uint32_t doorState, uin
 	return asset;
 }
 
+glm::ivec2 RoomManager::WorldCoordToRoomCoord(glm::vec2 worldCoord)
+{
+	//int32_t x = (int32_t)worldCoord.x - (int32_t)worldCoord.x % (int32_t)ROOM_SCALE;
+	//int32_t y = (int32_t)worldCoord.y - (int32_t)worldCoord.y % (int32_t)ROOM_SCALE;
+	return glm::ivec2(worldCoord.x/ROOM_SCALE, worldCoord.y/ROOM_SCALE-1);
+}
+
+
+glm::vec2 RoomManager::RoomCoordToWorldCoord(glm::ivec2 roomCoord)
+{
+	glm::vec2 pos = { roomCoord.x * ROOM_SCALE, roomCoord.y * ROOM_SCALE}; //player pos in Map coordinates
+	//center the position, and horizontal adjust for cell grid allignment. Y is slightly misalligned for visuals.
+	pos += glm::vec2{ (ROOM_SCALE / 2 - +ROOM_SCALE / 18), -(ROOM_SCALE / 2) };
+	return pos;
+}
+
+std::pair<bool, bool> RoomManager::IsCentered(glm::vec2 pos)
+{
+	auto result = std::make_pair(false, false);
+	float center = abs(fmod(pos.x, ROOM_SCALE) / ROOM_SCALE);
+	if (center > 0.4 && center < 0.6)
+		result.first = true;
+	center = abs(fmod(pos.y, ROOM_SCALE) / ROOM_SCALE);
+	if (center > 0.4 && center < 0.6)
+		result.second = true;
+
+	return result;
+}
+
+
 
 void RoomManager::Init(Tara::EntityNoRef defaultParent, Tara::LayerNoRef defaultLayer)
 {
@@ -118,9 +148,11 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 	srand(seed);
 	auto x = rand() % width;
 	auto y = rand() % height;
-	uint8_t *doorMatrix = new uint8_t[width * height];
+	auto doorMatrix = std::vector<uint8_t>(width * height, 0);
+	//doorMatrix.reserve();
+	//uint8_t *doorMatrix = new uint8_t[width * height];
 	// initialize the array to all zeroes
-	memset(doorMatrix, 0, width * height);
+	//memset(doorMatrix.data(), 0, width * height);
 
 	for (int i = 0; i < steps; i++)
 	{
@@ -177,6 +209,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		cellList.erase(cellList.begin() + index);
 		int32_t cellY = cell % width;
 		int32_t cellX = (cell - cellY) / height;
+		if (cellX < 0) {cellX = 0;}
 		if (doorMatrix[cell] == 0)
 		{
 			int dir = 1 << (rand() % 4);
@@ -197,12 +230,13 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 					cellX++;
 					break;
 				}
-				if (doorMatrix[cellX * height + cellY])
+				auto cell2 = cellX * height + cellY;
+				if (cell2 > -1 && cell2 < doorMatrix.size() && doorMatrix[cell2])
 				{
 					// create a new room and make that the goal
 					doorMatrix[cell] |= dir;
 					doorMatrix[cell] |= 0x80;
-					doorMatrix[cellX * height + cellY] |= InvertDoorState(dir);
+					doorMatrix[cell2] |= InvertDoorState(dir);
 					oob = false;
 					goal = cell;
 				}
@@ -219,8 +253,9 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		}
 	}
 	// make a matrix of distance from the goal cell
-	int32_t *distMatrix = new int32_t[width * height];
-	memset(distMatrix, -2, width * height);
+	//int32_t *distMatrix = new int32_t[width * height];
+	//memset(distMatrix, -2, width * height);
+	auto distMatrix = std::vector<int32_t>(width * height, -2);
 	distMatrix[goal] = 0;
 	std::list<int32_t> cellQueue = std::list<int32_t>();
 	cellQueue.push_back(goal);
@@ -235,13 +270,13 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		int32_t down = (cellX + 1) * height + cellY;
 		int32_t left = cellX * height + (cellY - 1);
 		int32_t right = cellX * height + (cellY + 1);
-		if (doorMatrix[up] && (distMatrix[up] != depth - 1))
+		if (up > -1 && up < doorMatrix.size() && doorMatrix[up] && (distMatrix[up] != depth - 1))
 			distMatrix[up] = depth;
-		if (doorMatrix[down] && (distMatrix[down] != depth - 1))
+		if (down > -1 && down < doorMatrix.size() && doorMatrix[down] && (distMatrix[down] != depth - 1))
 			distMatrix[down] = depth;
-		if (doorMatrix[left] && (distMatrix[left] != depth - 1))
+		if (left > -1 && left < doorMatrix.size() && doorMatrix[left] && (distMatrix[left] != depth - 1))
 			distMatrix[left] = depth;
-		if (doorMatrix[right] && (distMatrix[right] != depth - 1))
+		if (right > -1 && right < doorMatrix.size() && doorMatrix[right] && (distMatrix[right] != depth - 1))
 			distMatrix[right] = depth;
 		if (cellQueue.empty())
 		{
@@ -283,13 +318,13 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		int32_t down = (cellX + 1) * height + cellY;
 		int32_t left = cellX * height + (cellY - 1);
 		int32_t right = cellX * height + (cellY + 1);
-		if (distMatrix[up] == depth - 1)
+		if (up > -1 && up < distMatrix.size() && distMatrix[up] == depth - 1)
 			cellQueue.push_back(up);
-		else if (distMatrix[down] == depth - 1)
+		else if (down > -1 && down < distMatrix.size() && distMatrix[down] == depth - 1)
 			cellQueue.push_back(down);
-		else if (distMatrix[left] == depth - 1)
+		else if (left > -1 && left < distMatrix.size() && distMatrix[left] == depth - 1)
 			cellQueue.push_back(left);
-		else // process of elimination
+		else if (right > -1 && right < distMatrix.size())// process of elimination
 			cellQueue.push_back(right);
 		depth--;
 	}
@@ -304,8 +339,8 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 			}
 		}
 	}
-	delete[] distMatrix;//Don't forget to do this!
-	delete[] doorMatrix;//
+	//delete distMatrix;//Don't forget to do this!
+	//delete doorMatrix;//
 	return cellQueue; // head is start, tail is goal
 }
 
