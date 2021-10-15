@@ -1,4 +1,5 @@
 #include "RoomManager.h"
+#include <bitset>
 
 static const uint32_t ROOMSIZE_PX = 144; //pixel size of original room images
 static const float ROOM_SCALE = ROOMSIZE_PX * 4.0f;
@@ -270,11 +271,11 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		int32_t down = cellX * height + (cellY + 1);
 		int32_t left = (cellX - 1) * height + cellY;
 		int32_t right = (cellX + 1) * height + cellY;
-		if (cellY > 1 && (doorMatrix[up] & DOORSTATE_DOWN) && (distMatrix[up] > depth))
+		if (cellY > 0 && (doorMatrix[up] & DOORSTATE_DOWN) && (distMatrix[up] > depth))
 			distMatrix[up] = depth;
 		if (cellY < height - 1 && (doorMatrix[down] & DOORSTATE_UP) && (distMatrix[down] > depth))
 			distMatrix[down] = depth;
-		if (cellX > 1 && (doorMatrix[left] & DOORSTATE_RIGHT) && (distMatrix[left] > depth))
+		if (cellX > 0 && (doorMatrix[left] & DOORSTATE_RIGHT) && (distMatrix[left] > depth))
 			distMatrix[left] = depth;
 		if (cellX < height - 1 && (doorMatrix[right] & DOORSTATE_LEFT) && (distMatrix[right] > depth))
 			distMatrix[right] = depth;
@@ -288,8 +289,15 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 			depth++;
 		}
 	}
+	// clean up after the 999 placeholders
+	for (int i = 0; i < width * height; i++)
+	{
+		if (distMatrix[i] == 999)
+			distMatrix[i] = -1;
+	}
 	// collect cells of adequate distance and pick one for the start cell
 	cellQueue.clear(); // shouldn't be needed but just in case
+	depth = *(std::max_element(std::begin(distMatrix), std::end(distMatrix)));
 	if (depth > 3)
 		depth = 3;
 	for (int i = 0; i < width * height; i++)
@@ -317,11 +325,11 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		int32_t down = cellX * height + (cellY + 1);
 		int32_t left = (cellX - 1) * height + cellY;
 		int32_t right = (cellX + 1) * height + cellY;
-		if (cellY > 1 && distMatrix[up] == depth)
+		if (cellY > 0 && distMatrix[up] == depth)
 			cellQueue.push_back(up);
 		else if (cellY < height - 1 && distMatrix[down] == depth)
 			cellQueue.push_back(down);
-		else if (cellX > 1 && distMatrix[left] == depth)
+		else if (cellX > 0 && distMatrix[left] == depth)
 			cellQueue.push_back(left);
 		else if (cellX < height - 1)// process of elimination
 			cellQueue.push_back(right);
@@ -334,7 +342,12 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		{
 			if (doorMatrix[x * height + y])
 			{
-				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, doorMatrix[x * height + y] & 0x80 ? 4 : ((rand() % 3) + 1));
+				auto state = (rand() % 3) + 1;
+				if (std::find(cellQueue.begin(), cellQueue.end(), x * height + y) == cellQueue.end() && (rand() % 100 < 25) && (std::bitset<8>(doorMatrix[x * height + y] & DOORSTATE_ALL).count() > 1))
+					state = 4;
+				if (doorMatrix[x * height + y] & 0x80)
+					state = 4;
+				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, state);
 			}
 		}
 	}
