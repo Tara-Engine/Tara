@@ -7,6 +7,8 @@
 #include "Platform/OpenGL/OpenGLTexture2D.h"
 
 namespace Tara{
+    Texture::Filtering Texture::s_DefaultTextureFiltering = Texture::Filtering::Nearest;
+
     Texture2DRef Texture2D::Create(const std::string& path, const std::string& name)
     {
         std::string lName = name;

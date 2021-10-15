@@ -24,6 +24,8 @@ public:
 	virtual void Activate() override {
 		//set BG color
 		Tara::RenderCommand::SetClearColor({0.0f,0.0f,0.0f});
+		//set default texture filtering mode
+		Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Nearest);
 
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());

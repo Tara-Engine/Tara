@@ -41,9 +41,14 @@ public:
 	virtual void Activate() override {
 		LOG_S(INFO) << "Testing Layer Activated!";
 
+		//Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Linear);
+		Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Nearest);
+
 		//make a texture asset
 		auto textureUVChecker = Tara::Texture2D::Create("assets/UV_Checker.png");
 		auto textureDirArrows = Tara::Texture2D::Create("assets/DirArrows.png");
+		textureDirArrows->SetFiltering(Tara::Texture::Filtering::Linear);
+
 		auto textureParticle4x1 = Tara::Texture2D::Create("assets/Particle_4x1.png");
 		//auto textureParticle2x2 = Tara::Texture2D::Create("assets/Particle_2x2.png");
 		//auto textureParticle1x4 = Tara::Texture2D::Create("assets/Particle_1x4.png");

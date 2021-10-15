@@ -9,6 +9,12 @@ namespace Tara {
 	/// </summary>
 	class Texture : public Asset {
 	public:
+		/// <summary>
+		/// Enum for texture filtering modes
+		/// </summary>
+		enum class Filtering : uint8_t {Nearest,Linear};
+	
+	public:
 		Texture(const std::string& name) : Asset(name){}
 		virtual ~Texture() = default;
 		/// <summary>
@@ -26,6 +32,18 @@ namespace Tara {
 		/// </summary>
 		/// <param slot="index">slot to use</param>
 		virtual void Bind(int slot = 0) const = 0;
+
+		/// <summary>
+		/// Set the texture filtering mode
+		/// </summary>
+		/// <param name="filter">the new filtering mode</param>
+		virtual void SetFiltering(Filtering filter) = 0;
+
+	public:
+		inline static void SetDefaultTextureFiltering(Filtering filter) { s_DefaultTextureFiltering = filter; }
+
+	protected:
+		static Filtering s_DefaultTextureFiltering;
 	};
 
 	/// <summary>
@@ -36,6 +54,8 @@ namespace Tara {
 	public:
 		Texture2D(const std::string& name) : Texture(name) {}
 		virtual ~Texture2D() = default;
+
+		
 
 		/// <summary>
 		/// Create a new Texture2D
