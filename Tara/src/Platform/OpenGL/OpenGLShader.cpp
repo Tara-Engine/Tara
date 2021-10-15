@@ -219,8 +219,8 @@ namespace Tara{
 
 		//detatch and delete shaders
 		for (uint8_t s = 0; s < index; s++) {
-			//glDetachShader(program, shader_IDs[s]);
-			//glDeleteShader(shader_IDs[s]);
+			glDetachShader(program, shader_IDs[s]);
+			glDeleteShader(shader_IDs[s]);
 		}
 		LOG_S(INFO) << "Shader created";
 		m_RendererID = program;

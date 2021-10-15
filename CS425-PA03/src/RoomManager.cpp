@@ -113,7 +113,7 @@ RoomEntityRef RoomManager::GetRoom(int32_t x, int32_t y)
 *				TODO SECTION					 *
 **************************************************/
 
-void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t steps)
+std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t steps)
 {
 	srand(seed);
 	auto x = rand() % width;
@@ -161,17 +161,149 @@ void RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t
 		}
 		doorMatrix[x * height + y] |= InvertDoorState(dir);
 	}
-	// TODO: goal tile, spawn tile
-	// push all the rooms
+	// pick a goal cell
+	// if a dead end cell is selected, convert it to goal
+	// if a cell bordering at least one other is selected, pick one of those to connect to and create the goal
+	std::vector<int32_t> cellList = std::vector<int32_t>();
+	for (int i = 0; i < width * height; i++)
+	{
+		cellList.push_back(i);
+	}
+	int32_t goal = -1;
+	while (goal == -1)
+	{
+		int32_t index = rand() % cellList.size();
+		int32_t cell = cellList[index];
+		cellList.erase(cellList.begin() + index);
+		int32_t cellY = cell % width;
+		int32_t cellX = (cell - cellY) / height;
+		if (doorMatrix[cell] == 0)
+		{
+			int dir = 1 << (rand() % 4);
+			bool oob = true;
+			while (oob) {
+				switch (dir)
+				{
+				case DOORSTATE_UP:
+					cellY--;
+					break;
+				case DOORSTATE_DOWN:
+					cellY++;
+					break;
+				case DOORSTATE_LEFT:
+					cellX--;
+					break;
+				case DOORSTATE_RIGHT:
+					cellX++;
+					break;
+				}
+				if (doorMatrix[cellX * height + cellY])
+				{
+					// create a new room and make that the goal
+					doorMatrix[cell] |= dir;
+					doorMatrix[cell] |= 0x80;
+					doorMatrix[cellX * height + cellY] |= InvertDoorState(dir);
+					oob = false;
+					goal = cell;
+				}
+				dir <<= 1;
+				if (dir > 8)
+					dir = 1;
+			}
+		}
+		else if (doorMatrix[cell] == DOORSTATE_UP || doorMatrix[cell] == DOORSTATE_DOWN || doorMatrix[cell] == DOORSTATE_LEFT || doorMatrix[cell] == DOORSTATE_RIGHT)
+		{
+			// turn an existing dead end into the goal
+			doorMatrix[cell] |= 0x80;
+			goal = cell;
+		}
+	}
+	// make a matrix of distance from the goal cell
+	int32_t *distMatrix = new int32_t[width * height];
+	memset(distMatrix, -2, width * height);
+	distMatrix[goal] = 0;
+	std::list<int32_t> cellQueue = std::list<int32_t>();
+	cellQueue.push_back(goal);
+	int32_t depth = 1;
+	while (!cellQueue.empty() && depth < 25)
+	{
+		int32_t cell = cellQueue.front();
+		cellQueue.pop_front();
+		int32_t cellY = cell % width;
+		int32_t cellX = (cell - cellY) / height;
+		int32_t up = (cellX - 1) * height + cellY;
+		int32_t down = (cellX + 1) * height + cellY;
+		int32_t left = cellX * height + (cellY - 1);
+		int32_t right = cellX * height + (cellY + 1);
+		if (doorMatrix[up] && (distMatrix[up] != depth - 1))
+			distMatrix[up] = depth;
+		if (doorMatrix[down] && (distMatrix[down] != depth - 1))
+			distMatrix[down] = depth;
+		if (doorMatrix[left] && (distMatrix[left] != depth - 1))
+			distMatrix[left] = depth;
+		if (doorMatrix[right] && (distMatrix[right] != depth - 1))
+			distMatrix[right] = depth;
+		if (cellQueue.empty())
+		{
+			for (int i = 0; i < width * height; i++)
+			{
+				if (distMatrix[i] == depth)
+					cellQueue.push_back(i);
+			}
+			depth++;
+		}
+	}
+	// collect cells of adequate distance and pick one for the start cell
+	cellQueue.clear(); // shouldn't be needed but just in case
+	if (depth > 3)
+		depth = 3;
+	for (int i = 0; i < width * height; i++)
+	{
+		if (distMatrix[i] >= depth)
+			printf("%d is a spawn candidate\n", i);
+			cellQueue.push_back(i);
+	}
+	int clears = rand() % cellQueue.size();
+	for (int i = 0; i < clears; i++)
+	{
+		cellQueue.pop_front();
+	}
+	int32_t start = cellQueue.front();
+	// build a linked list of rooms designating a path from start to goal
+	cellQueue.clear();
+	cellQueue.push_back(start);
+	depth = distMatrix[start];
+	while (depth > 0)
+	{
+		// TODO: make this direction random?
+		int32_t cell = cellQueue.back();
+		int32_t cellX = cell % width;
+		int32_t cellY = (cell - cellX) / height;
+		int32_t up = (cellX - 1) * height + cellY;
+		int32_t down = (cellX + 1) * height + cellY;
+		int32_t left = cellX * height + (cellY - 1);
+		int32_t right = cellX * height + (cellY + 1);
+		if (distMatrix[up] == depth - 1)
+			cellQueue.push_back(up);
+		else if (distMatrix[down] == depth - 1)
+			cellQueue.push_back(down);
+		else if (distMatrix[left] == depth - 1)
+			cellQueue.push_back(left);
+		else // process of elimination
+			cellQueue.push_back(right);
+		depth--;
+	}
+	// push all the rooms to the actual room manager
 	for (int x = 0; x < width; x++)
 	{
 		for (int y = 0; y < height; y++)
 		{
-			if (doorMatrix[x * height + y] != 0)
+			if (doorMatrix[x * height + y])
 			{
-				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, doorMatrix[x * height + y] > 64 ? 4 : ((rand() % 3) + 1));
+				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, doorMatrix[x * height + y] & 0x80 ? 4 : ((rand() % 3) + 1));
 			}
 		}
 	}
+	return cellQueue; // head is start, tail is goal
 }
 
