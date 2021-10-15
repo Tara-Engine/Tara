@@ -33,7 +33,7 @@ public:
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
-		auto path = RoomManager::Get()->Generate(time(0), 5, 5, 30);
+		auto path = RoomManager::Get()->Generate(time(0), MAP_SIZE, MAP_SIZE, 30);
 		
 		//create the player
 		//texture and sprite first
@@ -51,16 +51,19 @@ public:
 		//make the player entity
 		int32_t originY = (*path.begin()) % MAP_SIZE;
 		int32_t originX = (*path.begin() - originY) / MAP_SIZE;
-		if (RoomManager::Get()->GetRoom(originX, originY)) {
-			LOG_S(INFO) << "ROOM EXISTS AT ORIGIN";
+		
+		/*if (RoomManager::Get()->GetRoom(originX, -originY)) {
+			LOG_S(INFO) << "Room exists at origin: {"<<originX<<","<<-originY<<"}";
 		}
 		else {
 			LOG_S(WARNING) << "ROOM DOES NOT EXISTS AT ORIGIN";
-		}
+		}*/
 
 		glm::vec2 playerPos = RoomManager::RoomCoordToWorldCoord({ originX, -originY });
-		LOG_S(INFO) << "Player Origin after Scale: {" << playerPos.x << "," << playerPos.y << "}";
-		//playerPos += glm::vec2{(ROOM_SCALE / 2 - +ROOM_SCALE / 18), -(ROOM_SCALE / 2)};//center the player, and horizontal adjust for cell grid allignment. Y is slightly misalligned for visuals.
+		//glm::ivec2 spawnRoom = RoomManager::WorldCoordToRoomCoord(playerPos);
+		//LOG_S(INFO) << "Player spawn room: {" << spawnRoom.x << "," << spawnRoom.y << "}";
+
+		//LOG_S(INFO) << "Player Origin after Scale: {" << playerPos.x << "," << playerPos.y << "}";
 		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
 		
 		//make our camera

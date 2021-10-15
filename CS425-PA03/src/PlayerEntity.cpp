@@ -67,6 +67,11 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 	auto roomPos = RoomManager::WorldCoordToRoomCoord(pos);
 	auto centered = RoomManager::IsCentered(pos);
 	auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
+	
+	if (key == TARA_KEY_E) {
+		LOG_S(INFO) << "CURRENT ROOM: {" << roomPos.x << "," << roomPos.y << "}";
+	}
+	
 	if (key == TARA_KEY_S || key == TARA_KEY_DOWN) {
 		if (centered.first && (!room || !centered.second|| room->GetDoorState() & DOORSTATE_DOWN)) {
 			dir.y = -1;
@@ -97,13 +102,13 @@ bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 	dir *= MOVEMENT_DISTANCE * 4.5;
 	const auto t = GetWorldTransform();
 	SetTarget(t.Position + dir, 0.25 * 4.5);
-	LOG_S(INFO) << "Key pressed event handled: " << (char)key;
+	//LOG_S(INFO) << "Key pressed event handled: " << (char)key;
 	return true;
 }
 
 void PlayerEntity::SetTarget(Tara::Vector target, float travelTime)
 {
-	LOG_S(INFO) << "Traveling! {" << target.x << "," << target.y << "}";
+	//LOG_S(INFO) << "Traveling! {" << target.x << "," << target.y << "}";
 	m_Origin = GetWorldTransform().Position;
 	m_Target = target;
 	m_MaxTime = travelTime;

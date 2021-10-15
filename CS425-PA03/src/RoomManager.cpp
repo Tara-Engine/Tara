@@ -71,7 +71,7 @@ glm::vec2 RoomManager::RoomCoordToWorldCoord(glm::ivec2 roomCoord)
 {
 	glm::vec2 pos = { roomCoord.x * ROOM_SCALE, roomCoord.y * ROOM_SCALE}; //player pos in Map coordinates
 	//center the position, and horizontal adjust for cell grid allignment. Y is slightly misalligned for visuals.
-	pos += glm::vec2{ (ROOM_SCALE / 2 - +ROOM_SCALE / 18), -(ROOM_SCALE / 2) };
+	pos += glm::vec2{ ((ROOM_SCALE / 2) - (ROOM_SCALE / 18)), (ROOM_SCALE / 2) };
 	return pos;
 }
 
