@@ -59,10 +59,22 @@ public:
 	/// <param name="travelTime">the time to reach it</param>
 	void SetTarget(Tara::Vector target, float travelTime = 0.25f);
 
+	/// <summary>
+	/// get if the player is alive
+	/// </summary>
+	/// <returns></returns>
+	inline bool GetAlive() const { return m_Alive; }
+
+	/// <summary>
+	/// Set if the player is alive
+	/// </summary>
+	/// <param name="alive"></param>
+	inline void SetAlive(bool alive) { m_Alive = alive; }
 private:
 	Tara::Vector m_Target, m_Origin;
 	float m_Timer;
 	float m_MaxTime = 0.25f; // 1/4 second
 	bool m_Traveling = false;
 	Direction m_Direction;
+	bool m_Alive = true;
 };

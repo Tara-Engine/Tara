@@ -37,6 +37,7 @@ public:
 		
 		//create the player
 		//texture and sprite first
+		m_DeathTexture = Tara::Texture2D::Create("assets/DeathLogo.png", "deathLogo");
 		auto playerTexture = Tara::Texture2D::Create("assets/Character_8x4.png", "playerTexture");
 		auto playerSprite = Tara::Sprite::Create(playerTexture, 8, 4, "playerSprite");
 		//load animations
@@ -64,11 +65,11 @@ public:
 		//LOG_S(INFO) << "Player spawn room: {" << spawnRoom.x << "," << spawnRoom.y << "}";
 
 		//LOG_S(INFO) << "Player Origin after Scale: {" << playerPos.x << "," << playerPos.y << "}";
-		auto player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
+		m_Player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
 		
 		//make our camera
 		auto cameraEntity = Tara::CameraEntity::Create(
-			player, weak_from_this(), 
+			m_Player, weak_from_this(),
 			Tara::Camera::ProjectionType::Ortographic, 
 			TRANSFORM_2D(0.5f,0.5f,0,1,1),
 			"camera"
@@ -76,8 +77,8 @@ public:
 		cameraEntity->SetOrthographicExtent((float)WIDTH); 
 		cameraEntity->SetUseWorldScale(false); //ignore parent scale for view matrix.
 		m_Camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(cameraEntity->GetCamera());
-		player->SetUpdateChildrenFirst(false);
-		//player->AddChild(cameraEntity);
+		m_Player->SetUpdateChildrenFirst(false);
+		//m_Player->AddChild(cameraEntity);
 		
 		
 	}
@@ -94,6 +95,12 @@ public:
 		//begin a scene using our camera, call the parent draw function (which draws the entities) and end the scene
 		Tara::Renderer::BeginScene(m_Camera);
 		Tara::Layer::Draw(deltaTime);
+		if (!m_Player->GetAlive()) {
+			auto t = m_Player->GetWorldTransform();
+			t.Scale = { 1000, 454 ,1 };
+			t.Position -= t.Scale / 2.0f;
+			Tara::Renderer::Quad(t, { 1,1,1,1 }, m_DeathTexture);
+		}
 		Tara::Renderer::EndScene();
 	}
 
@@ -112,7 +119,8 @@ public:
 
 private:
 	std::shared_ptr<Tara::OrthographicCamera> m_Camera;
-	
+	std::shared_ptr <PlayerEntity> m_Player;
+	Tara::Texture2DRef m_DeathTexture;
 };
 
 

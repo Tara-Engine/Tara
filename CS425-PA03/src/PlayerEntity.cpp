@@ -40,6 +40,18 @@ void PlayerEntity::OnUpdate(float deltaTime)
 			t.Position = m_Target;
 			m_Origin = m_Target;
 			PlayAnimation(std::string("idle_") + qualifiers[(uint8_t)m_Direction]);
+
+			//get room and check for death
+			auto pos = glm::vec2(GetWorldPosition());
+			auto roomPos = RoomManager::WorldCoordToRoomCoord(pos);
+			auto centered = RoomManager::IsCentered(pos);
+			auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
+			if (room && centered.first && centered.second) {
+				if (room->GetPerm() == 4 && !Tara::PowOfTwo(room->GetDoorState())) {
+					LOG_S(INFO) << "Player has Died!";
+					SetAlive(false);
+				}
+			}
 		}
 		else {
 			t.Position = Tara::CubicInterp<Tara::Vector>(m_Origin, m_Target, m_Timer / m_MaxTime);
@@ -58,9 +70,7 @@ void PlayerEntity::OnEvent(Tara::Event& e)
 
 bool PlayerEntity::OnKeyPressEvent(Tara::KeyPressEvent& e)
 {
-	//SetCurrentFrame(GetCurrentFrame() + 1);
-	
-	if (m_Traveling) { return false; }
+	if (m_Traveling || !m_Alive) { return false; }
 	auto pos = glm::vec2(GetWorldPosition());
 	auto key = e.getKey();
 	Tara::Vector dir = { 0,0,0 };

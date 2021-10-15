@@ -1,7 +1,19 @@
 #pragma once
 
+
+
 namespace Tara {
 	
+	/// <summary>
+	/// Check if an Integer is a power of 2 (ie, 1 bit is true, the rest false)
+	/// </summary>
+	/// <param name="x"></param>
+	/// <returns></returns>
+	inline int PowOfTwo(int x) {
+		return ((x != 0) && !(x & (x - 1)));
+	}
+
+
 	/// <summary>
 	/// Map a value in one range to another range
 	/// </summary>
