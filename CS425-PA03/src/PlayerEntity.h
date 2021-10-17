@@ -75,6 +75,8 @@ public:
 	/// Set player back to spawn
 	/// </summary>
 	void Respawn();
+
+
 private:
 	Tara::Vector m_Target, m_Origin, m_Spawn;
 	float m_Timer;

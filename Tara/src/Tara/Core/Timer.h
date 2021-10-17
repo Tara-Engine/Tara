@@ -27,4 +27,11 @@ namespace Tara {
 		//va_end(args);
 	}
 
+	/*
+	template <typename Callable> void After(Callable&& callable, float seconds) {
+		std::future<void> future = std::async(std::launch::deferred, std::move(callable));
+		AfterCallable* c = new AfterCallable(seconds, std::move(future));
+		Application::Get()->After(c);
+	}
+	*/
 }

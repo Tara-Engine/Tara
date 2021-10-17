@@ -51,6 +51,8 @@ void PlayerEntity::OnUpdate(float deltaTime)
 					LOG_S(INFO) << "Player has Died!";
 					SetAlive(false);
 					// TODO: put a Tara::After for respawn here
+					//Tara::After([](PlayerEntity* ptr) {ptr->Respawn(); }, 1.0f, this); //silly solution
+					Tara::After(std::bind(&PlayerEntity::Respawn, this), 1.0f, this);
 				}
 			}
 		}
@@ -146,6 +148,7 @@ void PlayerEntity::SetTarget(Tara::Vector target, float travelTime)
 
 	//update animation
 	const static std::string qualifiers[] = {"up", "down", "left", "right"};
+	
 	PlayAnimation(std::string("walk_") + qualifiers[(uint8_t)m_Direction]);
 }
 
@@ -153,5 +156,6 @@ void PlayerEntity::Respawn()
 {
 	m_Origin = m_Spawn;
 	m_Target = m_Spawn;
+	SetWorldPosition(m_Spawn);
 	SetAlive(true);
 }

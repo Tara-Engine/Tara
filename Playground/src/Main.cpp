@@ -148,11 +148,13 @@ public:
 
 	bool OnKeyPressedEvent(Tara::KeyPressEvent& e) {
 		LOG_S(INFO) << "Key pressed called!";
-		Tara::After([](std::shared_ptr<TControlableEntity> player) {
-			player->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
-			LOG_S(INFO) <<"After function executed"; 
-		}, 1.0f, m_Player);
+		Tara::After(std::bind(&TestingLayer::test, this, m_Player), 1.0f);
 		return false;
+	}
+
+	void test(std::shared_ptr<TControlableEntity> player) {
+		player->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
+		LOG_S(INFO) << "After function executed";
 	}
 
 	bool OnMousePressedEvent(Tara::MouseButtonPressEvent& e) {
