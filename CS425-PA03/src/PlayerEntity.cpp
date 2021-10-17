@@ -6,6 +6,9 @@
 
 #include "RoomManager.h"
 
+//world regen func
+void Regenerate(Tara::LayerNoRef layer);
+
 const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
 PlayerEntity::PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
@@ -47,12 +50,16 @@ void PlayerEntity::OnUpdate(float deltaTime)
 			auto centered = RoomManager::IsCentered(pos);
 			auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
 			if (room && centered.first && centered.second) {
-				if (room->GetPerm() == 4 && !Tara::PowOfTwo(room->GetDoorState())) {
-					LOG_S(INFO) << "Player has Died!";
-					SetAlive(false);
-					// TODO: put a Tara::After for respawn here
-					//Tara::After([](PlayerEntity* ptr) {ptr->Respawn(); }, 1.0f, this); //silly solution
-					Tara::After(std::bind(&PlayerEntity::Respawn, this), 1.0f, this);
+				if (room->GetPerm() == 4){ 
+					if (Tara::PowOfTwo(room->GetDoorState())) {
+						//regenerate!
+						Tara::After([](Tara::LayerNoRef layer) {Regenerate(layer); }, 1.0, GetOwningLayer());
+					}
+					else{
+						LOG_S(INFO) << "Player has Died!";
+						SetAlive(false);
+						Tara::After(std::bind(&PlayerEntity::Respawn, this), 1.0f, this);
+					}
 				}
 			}
 		}

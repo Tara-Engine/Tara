@@ -12,6 +12,9 @@ const static int32_t MAP_SIZE = 5;
 static const uint32_t ROOMSIZE_PX = 144; //pixel size of original room images
 static const float ROOM_SCALE = ROOMSIZE_PX * 4.0f;
 
+//world regen func
+void Regenerate(Tara::LayerNoRef layer);
+
 //The layer that everything is living in. Layers are seperate, ie, there is no collision or overlaps between them. So, everything lives on one.
 class GameLayer : public Tara::Layer {
 public:
@@ -21,6 +24,7 @@ public:
 
 	~GameLayer() {
 		Deactivate();
+		LOG_S(INFO)<< "Layer destructor called.";
 	}
 
 	//this function is called when the layer is loaded to the screen. OpenGL context is guaranteed to be made, and engine systems initialized
@@ -38,17 +42,20 @@ public:
 		//create the player
 		//texture and sprite first
 		m_DeathTexture = Tara::Texture2D::Create("assets/DeathLogo.png", "deathLogo");
-		auto playerTexture = Tara::Texture2D::Create("assets/Character_8x4.png", "playerTexture");
-		auto playerSprite = Tara::Sprite::Create(playerTexture, 8, 4, "playerSprite");
-		//load animations
-		playerSprite->CreateAnimationSequence("idle_down",  1,  3,  2.0f);
-		playerSprite->CreateAnimationSequence("walk_down",  4,  7,  5.0f);
-		playerSprite->CreateAnimationSequence("idle_right", 8,  11, 2.0f);
-		playerSprite->CreateAnimationSequence("walk_right", 12, 15, 5.0f);
-		playerSprite->CreateAnimationSequence("idle_left",  16, 19, 2.0f);
-		playerSprite->CreateAnimationSequence("walk_left",  20, 23, 5.0f);
-		playerSprite->CreateAnimationSequence("idle_up",    24, 27, 2.0f);
-		playerSprite->CreateAnimationSequence("walk_up",    28, 31, 5.0f);
+		auto playerSprite = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("playerSprite");
+		if (!playerSprite){
+			auto playerTexture = Tara::Texture2D::Create("assets/Character_8x4.png", "playerTexture");
+			playerSprite = Tara::Sprite::Create(playerTexture, 8, 4, "playerSprite");
+			//load animations
+			playerSprite->CreateAnimationSequence("idle_down",  1,  3,  2.0f);
+			playerSprite->CreateAnimationSequence("walk_down",  4,  7,  5.0f);
+			playerSprite->CreateAnimationSequence("idle_right", 8,  11, 2.0f);
+			playerSprite->CreateAnimationSequence("walk_right", 12, 15, 5.0f);
+			playerSprite->CreateAnimationSequence("idle_left",  16, 19, 2.0f);
+			playerSprite->CreateAnimationSequence("walk_left",  20, 23, 5.0f);
+			playerSprite->CreateAnimationSequence("idle_up",    24, 27, 2.0f);
+			playerSprite->CreateAnimationSequence("walk_up",    28, 31, 5.0f);
+		}
 		//make the player entity
 		int32_t originY = (*path.begin()) % MAP_SIZE;
 		int32_t originX = (*path.begin() - originY) / MAP_SIZE;
@@ -74,7 +81,7 @@ public:
 			TRANSFORM_2D(0.5f,0.5f,0,1,1),
 			"camera"
 		);
-		cameraEntity->SetOrthographicExtent((float)WIDTH); 
+		cameraEntity->SetOrthographicExtent((float)Tara::Application::Get()->GetWindow()->GetWidth()); 
 		cameraEntity->SetUseWorldScale(false); //ignore parent scale for view matrix.
 		m_Camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(cameraEntity->GetCamera());
 		m_Player->SetUpdateChildrenFirst(false);
@@ -123,6 +130,14 @@ private:
 	Tara::Texture2DRef m_DeathTexture;
 };
 
+void Regenerate(Tara::LayerNoRef layer) {
+	LOG_S(INFO) << "World Rengeneration!";
+	RoomManager::Get()->ClearAll();
+	if (layer.lock()) {
+		Tara::Application::Get()->GetScene()->RemoveLayer(layer.lock());
+	}
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<GameLayer>());
+}
 
 int main(int argc, char** argv) {
 	//Initialize the application

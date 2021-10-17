@@ -61,7 +61,13 @@ namespace Tara {
 		/// <returns>true if layer pushed correctly</returns>
 		bool PushOverlay(LayerRef layer);
 
-		
+		/// <summary>
+		/// Remove a layer from the stack
+		/// </summary>
+		/// <param name="layer">the layer to remove</param>
+		/// <returns>true if removed</returns>
+		bool RemoveLayer(LayerRef layer);
+
 
 	private:
 

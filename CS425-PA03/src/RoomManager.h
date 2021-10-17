@@ -19,6 +19,12 @@ public:
 	RoomManager(RoomManager const&) = delete;
 	void operator=(RoomManager const&) = delete;
 
+	/// <summary>
+	/// Initialize the manager
+	/// </summary>
+	/// <param name="defaultParent">the default parent for rooms</param>
+	/// <param name="defaultLayer">the default layer for rooms</param>
+	void Init(Tara::EntityNoRef defaultParent, Tara::LayerNoRef defaultLayer);
 
 	/// <summary>
 	/// Singleton Getter
@@ -72,12 +78,7 @@ public:
 	/// <returns></returns>
 	static std::pair<bool, bool> IsCentered(glm::vec2 pos);
 
-	/// <summary>
-	/// Initialize the manager
-	/// </summary>
-	/// <param name="defaultParent">the default parent for rooms</param>
-	/// <param name="defaultLayer">the default layer for rooms</param>
-	void Init(Tara::EntityNoRef defaultParent, Tara::LayerNoRef defaultLayer);
+	
 
 	/// <summary>
 	/// Load the textures for all room permutations;
@@ -103,7 +104,13 @@ public:
 	/// <returns>the room. May be nullptr</returns>
 	RoomEntityRef GetRoom(int32_t x, int32_t y);
 	
+
 	std::list<int32_t> Generate(uint32_t seed, int32_t width, int32_t height, int32_t steps); 
+
+	/// <summary>
+	/// clear all rooms
+	/// </summary>
+	void ClearAll();
 
 private:
 	

@@ -352,3 +352,10 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 	return cellQueue; // head is start, tail is goal
 }
 
+void RoomManager::ClearAll()
+{
+	m_Rooms.clear();
+	m_DefaultParent.reset();
+	m_DefaultLayer.reset();
+}
+

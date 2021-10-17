@@ -23,6 +23,7 @@ namespace Tara {
 
 	void Scene::Update(float deltaTime)
 	{
+		//LOG_S(INFO) << "Scene: Layercount:" << m_Layers.size();
 		for (auto& layer : m_Layers) {
 			layer->Update(deltaTime);
 			layer->RunOverlapChecks();
@@ -65,6 +66,23 @@ namespace Tara {
 	{
 		m_Overlays.push_back(layer);
 		layer->Activate();
+		return false;
+	}
+
+	bool Scene::RemoveLayer(LayerRef layer)
+	{
+		auto result = std::find(m_Layers.begin(), m_Layers.end(), layer);
+		if (result != m_Layers.end()) {
+			(*result)->Deactivate();
+			m_Layers.erase(result);
+			return true;
+		}
+		result = std::find(m_Overlays.begin(), m_Overlays.end(), layer);
+		if (result != m_Overlays.end()) {
+			(*result)->Deactivate();
+			m_Overlays.erase(result);
+			return true;
+		}
 		return false;
 	}
 
