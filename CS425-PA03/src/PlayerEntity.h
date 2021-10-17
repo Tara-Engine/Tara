@@ -70,8 +70,13 @@ public:
 	/// </summary>
 	/// <param name="alive"></param>
 	inline void SetAlive(bool alive) { m_Alive = alive; }
+
+	/// <summary>
+	/// Set player back to spawn
+	/// </summary>
+	void Respawn();
 private:
-	Tara::Vector m_Target, m_Origin;
+	Tara::Vector m_Target, m_Origin, m_Spawn;
 	float m_Timer;
 	float m_MaxTime = 0.25f; // 1/4 second
 	bool m_Traveling = false;

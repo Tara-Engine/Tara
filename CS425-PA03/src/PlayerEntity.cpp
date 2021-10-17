@@ -10,8 +10,8 @@ const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
 PlayerEntity::PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
 	: SpriteEntity(parent, owningLayer, transform, name, sprite), 
-	m_Target(transform.Position), m_Origin(transform.Position), m_Timer(0), 
-	m_Traveling(false), m_Direction(Direction::DOWN)
+	m_Target(transform.Position), m_Origin(transform.Position), m_Spawn(transform.Position),
+	m_Timer(0), m_Traveling(false), m_Direction(Direction::DOWN)
 {}
 
 
@@ -50,6 +50,7 @@ void PlayerEntity::OnUpdate(float deltaTime)
 				if (room->GetPerm() == 4 && !Tara::PowOfTwo(room->GetDoorState())) {
 					LOG_S(INFO) << "Player has Died!";
 					SetAlive(false);
+					// TODO: put a Tara::After for respawn here
 				}
 			}
 		}
@@ -146,4 +147,11 @@ void PlayerEntity::SetTarget(Tara::Vector target, float travelTime)
 	//update animation
 	const static std::string qualifiers[] = {"up", "down", "left", "right"};
 	PlayAnimation(std::string("walk_") + qualifiers[(uint8_t)m_Direction]);
+}
+
+void PlayerEntity::Respawn()
+{
+	m_Origin = m_Spawn;
+	m_Target = m_Spawn;
+	SetAlive(true);
 }

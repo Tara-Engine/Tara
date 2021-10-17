@@ -140,10 +140,6 @@ RoomEntityRef RoomManager::GetRoom(int32_t x, int32_t y)
 	return nullptr;
 }
 
-/*************************************************
-*				TODO SECTION					 *
-**************************************************/
-
 std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t steps)
 {
 	srand(seed);
