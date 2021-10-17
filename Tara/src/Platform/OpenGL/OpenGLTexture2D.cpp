@@ -11,7 +11,7 @@ namespace Tara{
 		: Texture2D(name), m_Path(path), m_RendererID(0), m_Width(0), m_Height(0)
 	{
 		loadFromFile();
-		LOG_S(INFO) << "Image Loaded from File: " << path;
+		LOG_S(1) << "Image Loaded from File: " << path;
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()

@@ -25,6 +25,7 @@
 #include "Tara/Core/Window.h"
 #include "Tara/Core/Application.h"
 #include "Tara/Core/Entity.h"
+#include "Tara/Core/Timer.h"
 
 //Assets
 #include "Tara/Asset/AssetLibrary.h"

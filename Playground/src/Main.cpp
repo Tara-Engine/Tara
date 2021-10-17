@@ -143,6 +143,16 @@ public:
 		//LOG_S(INFO) << "TestingLayer::OnEvent!";
 		Tara::EventFilter filter(e);
 		filter.Call<Tara::MouseButtonPressEvent>(TARA_BIND_FN(TestingLayer::OnMousePressedEvent));
+		filter.Call<Tara::KeyPressEvent>(TARA_BIND_FN(TestingLayer::OnKeyPressedEvent));
+	}
+
+	bool OnKeyPressedEvent(Tara::KeyPressEvent& e) {
+		LOG_S(INFO) << "Key pressed called!";
+		Tara::After([](std::shared_ptr<TControlableEntity> player) {
+			player->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
+			LOG_S(INFO) <<"After function executed"; 
+		}, 1.0f, m_Player);
+		return false;
 	}
 
 	bool OnMousePressedEvent(Tara::MouseButtonPressEvent& e) {

@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Tara/Renderer/RenderCommand.h"
+#include "Tara/Core/Timer.h"
 
 //TODO: Remove from this file
 #include "glad/glad.h"
@@ -80,6 +81,22 @@ namespace Tara {
 		m_Window->OnUpdate();
 		//then, update the scene
 		m_Scene->Update(deltaTime);
+
+		//deal with after functions
+		//AfterCallable* c = m_AfterCallableList;
+		auto c = m_AfterCallableList.begin();
+		while (c != m_AfterCallableList.end()) {
+			//LOG_S(INFO) << "Update of callback list item!";
+			(*c)->secondsRemaining -= deltaTime;
+			if ((*c)->secondsRemaining <= 0.0f) {
+				//call and remove
+				(*c)->callable.get(); //async wait for. since using deferred, this will be the first time it is called.
+				m_AfterCallableList.erase(c++);
+			}
+			else {
+				++c;
+			}
+		}
 	}
 
 	void Application::PollEvents()
@@ -109,6 +126,11 @@ namespace Tara {
 		}
 		m_Scene->OnEvent(e);
 		return false;
+	}
+
+	void Application::After(AfterCallable* c)
+	{
+		m_AfterCallableList.push_back(c);
 	}
 
 

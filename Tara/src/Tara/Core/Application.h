@@ -9,6 +9,10 @@
 
 namespace Tara {
 
+
+	struct AfterCallable;
+
+
 	/// <summary>
 	/// Application Class (Singleton)
 	/// </summary>
@@ -88,12 +92,16 @@ namespace Tara {
 		/// </summary>
 		/// <returns>delta time, in seconds</returns>
 		inline float GetDeltaTime() const { return m_DeltaTime; }
+
+		void After(AfterCallable* c);
+
 	private:
 		bool m_Running;
 		WindowRef m_Window;
 		SceneRef m_Scene;
 		float m_LastFrameTime;
 		float m_DeltaTime;
+		std::list<AfterCallable*> m_AfterCallableList;
 	};
 
 }
