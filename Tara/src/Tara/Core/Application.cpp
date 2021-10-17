@@ -91,7 +91,9 @@ namespace Tara {
 			if ((*c)->secondsRemaining <= 0.0f) {
 				//call and remove
 				(*c)->callable.get(); //async wait for. since using deferred, this will be the first time it is called.
+				auto ptr = (*c);
 				m_AfterCallableList.erase(c++);
+				delete ptr;
 			}
 			else {
 				++c;
