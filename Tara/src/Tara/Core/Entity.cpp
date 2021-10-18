@@ -40,6 +40,17 @@ namespace Tara{
         }
     }
 
+    void Entity::ReceiveEvent(Event& e)
+    {
+        OnEvent(e);
+        for (auto comp : m_Components) {
+            if (!(comp->GetListeningForEvents() && (e.GetCategoryFlags() & EventCategoryNative))) { //if both the entity and the component are listening for native window events, don't forward
+                comp->ReceiveEvent(e);
+            }
+        }
+
+    }
+
     Transform Entity::GetWorldTransform() const
     {
         if (GetParent().lock()) {
@@ -211,6 +222,9 @@ namespace Tara{
         for (auto child : m_Children) {
             child->Update(deltaTime);
         }
+        for (auto component : m_Components) {
+            component->OnUpdate(deltaTime);
+        }
         if (m_UpdateChildrenFirst) {
             OnUpdate(deltaTime);
         }
@@ -237,6 +251,69 @@ namespace Tara{
                 child->DebugLogAllChildren(true, indentLevel + 1);
             }
             
+        }
+    }
+
+
+    bool Entity::AddComponent(ComponentRef component)
+    {
+        if (IsComponent(component)) {
+            return false;
+        }
+        else {
+            if (!component->GetParent().lock()) { //no parent. make this parent
+                component->SetParent(weak_from_this());
+            }
+            else if (component->GetParent().lock() != shared_from_this()) { //this is not parent. remove from old.
+                component->GetParent().lock()->RemoveComponentByRef(component);
+                component->SetParent(weak_from_this());
+            }
+            //now add to self
+            m_Components.push_back(component);
+            return true;
+        }
+    }
+
+    bool Entity::IsComponent(ComponentRef ref) const
+    {
+        auto iter = std::find(m_Components.begin(), m_Components.end(), ref);
+        return iter != m_Components.end();
+    }
+
+    ComponentRef Entity::GetFirstComponentOfName(const std::string& name) const
+    {
+        for (auto comp : m_Components) {
+            if (comp->GetName() == name) {
+                return comp;
+            }
+        }
+        return nullptr;
+    }
+
+    ComponentRef Entity::RemoveComponentByName(const std::string& name)
+    {
+        ComponentRef component = nullptr;
+        for (auto comp : m_Components) {
+            if (comp->GetName() == name) {
+                component = comp;
+            }
+        }
+        if (component) {
+            m_Components.remove(component);
+            component->SetParent(EntityNoRef());
+        }
+        return component;
+    }
+
+    bool Entity::RemoveComponentByRef(ComponentRef ref)
+    {
+        if (IsComponent(ref)) {
+            m_Components.remove(ref);
+            ref->SetParent(EntityNoRef());
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

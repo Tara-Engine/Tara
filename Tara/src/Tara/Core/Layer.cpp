@@ -42,7 +42,7 @@ namespace Tara{
 			auto lockedListener = listener.lock();
 			if (lockedListener) {
 				//valid non-null listener
-				lockedListener->OnEvent(e);
+				lockedListener->ReceiveEvent(e);
 			}
 			else {
 				//add to removable list (don't want to remove now b/c of possible issues)

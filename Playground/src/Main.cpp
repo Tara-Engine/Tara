@@ -13,6 +13,7 @@ OpenGL include - BAD - used for developing new features ONLY
 
 //testing types
 #include "TColorRectEntity.h"
+#include "TOrthoCameraControllerComponent.h"
 #include "BatchTestLayer.h"
 #define SPRITE_MAX 100
 
@@ -83,12 +84,23 @@ public:
 		spriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
-		m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+		m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
-		m_Player->SetSpeed(1.5f);
+		
+		
+		
+		//auto player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+		//player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
+		//player->SetSpeed(1.5f);
+		//m_Player = player;
 
 		//attach camera to player
 		m_Player->AddChild(m_Camera);
+
+		//Controller Component
+		auto controller = TOrthoCameraControllerComponent::Create(spriteEntity, "PlayerController");
+		controller->SetSpeed(1.5f);
+		
 
 		//Some simple drawing texts
 		std::unordered_map <Tara:: Shader::TargetStage, std::string> map;
@@ -132,27 +144,30 @@ public:
 		
 		Tara::Layer::Draw(deltaTime);
 
-		Tara::RenderCommand::PushDrawType(Tara::RenderDrawType::LineStrip, false);
-		Tara::Renderer::Draw(m_VertexArray, m_SimpleShader, TRANSFORM_2D(-1, -1, 0, 1, 1));
-		Tara::RenderCommand::PopDrawType();
+		//Tara::RenderCommand::PushDrawType(Tara::RenderDrawType::LineStrip, false);
+		//Tara::Renderer::Draw(m_VertexArray, m_SimpleShader, TRANSFORM_2D(-1, -1, 0, 1, 1));
+		//Tara::RenderCommand::PopDrawType();
 
 		Tara::Renderer::EndScene();
 	}
 	
 	virtual void OnEvent(Tara::Event& e) override {
 		//LOG_S(INFO) << "TestingLayer::OnEvent!";
+		Layer::OnEvent(e); //parent call
+
+
 		Tara::EventFilter filter(e);
 		filter.Call<Tara::MouseButtonPressEvent>(TARA_BIND_FN(TestingLayer::OnMousePressedEvent));
 		filter.Call<Tara::KeyPressEvent>(TARA_BIND_FN(TestingLayer::OnKeyPressedEvent));
 	}
 
 	bool OnKeyPressedEvent(Tara::KeyPressEvent& e) {
-		LOG_S(INFO) << "Key pressed called!";
-		Tara::After(std::bind(&TestingLayer::test, this, m_Player), 1.0f);
+		//LOG_S(INFO) << "Key pressed called!";
+		//Tara::After(std::bind(&TestingLayer::test, this, m_Player), 1.0f);
 		return false;
 	}
 
-	void test(std::shared_ptr<TControlableEntity> player) {
+	void test(std::shared_ptr<TColorRectEntity> player) {
 		player->SetColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 		LOG_S(INFO) << "After function executed";
 	}
@@ -181,7 +196,7 @@ private:
 	float m_PlayerSpeed = 1.0f;
 
 	Tara::CameraEntityRef m_Camera;
-	std::shared_ptr<TControlableEntity> m_Player;
+	std::shared_ptr<TColorRectEntity> m_Player;
 	float m_TimeCounter = 0;
 
 	Tara::ShaderRef m_GShader;

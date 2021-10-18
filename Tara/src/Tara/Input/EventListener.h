@@ -14,7 +14,14 @@ namespace Tara {
 		/// Handle the event.
 		/// </summary>
 		/// <param name="e">the event to handle</param>
-		virtual void OnEvent(Event& e) {}
+		inline virtual void OnEvent(Event& e) {}
+
+		/// <summary>
+		/// Receive the event. By default, just sends to OnEvent(). 
+		/// Some subclasses may have more features though.
+		/// </summary>
+		/// <param name="e">The event</param>
+		inline virtual void ReceiveEvent(Event& e) { OnEvent(e); }
 
 		/// <summary>
 		/// Enable/Disable Listening for native window events

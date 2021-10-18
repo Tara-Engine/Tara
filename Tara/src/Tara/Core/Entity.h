@@ -5,6 +5,8 @@
 #include "Tara/Math/Types.h"
 #include "Tara/Math/BoundingBox.h"
 #include "Tara/Input/EventListener.h"
+#include "Tara/Input/Event.h"
+#include "Tara/Core/Component.h"
 
 namespace Tara {
 
@@ -15,7 +17,7 @@ namespace Tara {
 	/// Base class for all entities in the game. 
 	/// Entities are game objects that have a location in the world.
 	/// </summary>
-	class Entity : public std::enable_shared_from_this<Entity>, public EventListener {
+	class Entity : public EventListener, public std::enable_shared_from_this<Entity> {
 		/// <summary>
 		/// So that Layer can access protected functions from Entity.
 		/// </summary>
@@ -94,6 +96,12 @@ namespace Tara {
 		/// </summary>
 		/// <returns>the bounding box</returns>
 		inline virtual BoundingBox GetSpecificBoundingBox() const { return { 0,0,0,-1,-1,-1 }; }
+
+		/// <summary>
+		/// Forward events to 
+		/// </summary>
+		/// <param name="e"></param>
+		virtual void ReceiveEvent(Event& e) override;
 
 	public:
 		/***********************************************************************************
@@ -201,6 +209,11 @@ namespace Tara {
 		/// <returns>the name as string</returns>
 		const std::string& GetName() const { return m_Name; }
 
+
+		/***********************************************************************************
+		*                      Relationship Utility Funcions                               *
+		************************************************************************************/
+
 		/// <summary>
 		/// Check if a particular entity reference is a child.
 		/// </summary>
@@ -249,34 +262,19 @@ namespace Tara {
 		/// </summary>
 		/// <returns>The parent</returns>
 		EntityNoRef GetParent() const { return m_Parent; }
-
 		
-		
-		/// <summary>
-		/// Debug function, logs the name of every child to the output
-		/// </summary>
-		/// <param name="recursive">if it should be done recursively.</param>
-		/// <param name="indentLevel">Internal Use Only</param>
-		void DebugLogAllChildren(bool recursive = false, int indentLevel = 0) const;
-
-		/// <summary>
-		/// Get the bounding box around this and all children entities.
-		/// </summary>
-		/// <returns></returns>
-		BoundingBox GetFullBoundingBox() const;
-
-		/// <summary>
-		/// Enable/Disable Listening for application window native events
-		/// </summary>
-		/// <param name="enabled"></param>
-		virtual void ListenForEvents(bool enable = true) final override;
-
 		/// <summary>
 		/// Get a weak ref to the owning layer
 		/// </summary>
 		/// <returns>a weak ref to the owning layer</returns>
 		inline std::weak_ptr<Layer> GetOwningLayer() const { return m_OwningLayer; }
 
+		/// <summary>
+		/// Debug function, logs the name of every child to the output
+		/// </summary>
+		/// <param name="recursive">if it should be done recursively.</param>
+		/// <param name="indentLevel">Internal Use Only</param>
+		void DebugLogAllChildren(bool recursive = false, int indentLevel = 0) const;
 
 		/// <summary>
 		/// Set if the chilren of this entity should be updated first
@@ -301,6 +299,74 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		inline bool GetDrawChildrenFirst() const { return m_DrawChildrenFirst; }
+
+		/***********************************************************************************
+		*                          Component Utility Funcions                              *
+		************************************************************************************/
+
+		/// <summary>
+		/// Add a component
+		/// </summary>
+		/// <param name="component"></param>
+		/// <returns></returns>
+		bool AddComponent(ComponentRef component);
+
+		/// <summary>
+		/// Check if a component belongs to this entity
+		/// </summary>
+		/// <param name="ref">the component to check</param>
+		/// <returns>true if it belongs, false otherwise</returns>
+		bool IsComponent(ComponentRef ref) const;
+
+		/// <summary>
+		/// Get the first component that has the supplied name, if any
+		/// </summary>
+		/// <param name="name">the name</param>
+		/// <returns>the first component with that name, or nullptr if none have it</returns>
+		ComponentRef GetFirstComponentOfName(const std::string& name) const;
+
+		/// <summary>
+		/// Get the first component of a specific subclass of component, if any.
+		/// </summary>
+		/// <typeparam name="ComponentType">the subclass of component</typeparam>
+		/// <returns>the first component of that subclass if any, or nullptr if none found</returns>
+		template<typename ComponentType> std::shared_ptr<ComponentType> GetFirstCompontentOfType() const;
+
+		/// <summary>
+		/// Remove a component that has a specific name
+		/// </summary>
+		/// <param name="name">the name to remove</param>
+		/// <returns>A reference to the removed component if one was removed, nullptr otherwise</returns>
+		ComponentRef RemoveComponentByName(const std::string& name);
+
+		/// <summary>
+		/// Remove a component by reference
+		/// </summary>
+		/// <param name="ref">the reference to that component</param>
+		/// <returns>True if the component was remove, false otherwise</returns>
+		bool RemoveComponentByRef(ComponentRef ref);
+
+
+		/***********************************************************************************
+		*                      Physics and Event Utility Funcions                          *
+		************************************************************************************/
+
+		/// <summary>
+		/// Get the bounding box around this and all children entities.
+		/// </summary>
+		/// <returns></returns>
+		BoundingBox GetFullBoundingBox() const;
+
+		/// <summary>
+		/// Enable/Disable Listening for application window native events
+		/// </summary>
+		/// <param name="enabled"></param>
+		virtual void ListenForEvents(bool enable = true) final override;
+
+		
+
+
+		
 
 
 protected:
@@ -375,6 +441,7 @@ protected:
 		const std::weak_ptr<Layer> m_OwningLayer;
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
+		std::list<ComponentRef> m_Components;
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
 	};
@@ -390,6 +457,19 @@ protected:
 	/// Entities are game objects that have a location in the world.
 	/// </summary>
 	using EntityNoRef = std::weak_ptr<Entity>;
+
+
+	template<typename ComponentType>
+	inline std::shared_ptr<ComponentType> Entity::GetFirstCompontentOfType() const
+	{
+		for (auto comp : m_Components) {
+			auto subtype = std::dynamic_pointer_cast<ComponentType>(comp);
+			if (subtype) {
+				return subtype;
+			}
+		}
+		return nullptr;
+	}
 
 }
 
