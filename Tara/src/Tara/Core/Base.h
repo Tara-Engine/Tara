@@ -43,3 +43,8 @@ that should be in every file
 //used to bind event functions
 #define TARA_BIND_FN(x) std::bind(&x, this, std::placeholders::_1)
 
+//defining reftypes
+#define REFTYPE(name) class name; \
+	using name##Ref = std::shared_ptr<##name>;
+
+#define NOREFTYPE(name) using name##NoRef = std::weak_ptr<##name>;

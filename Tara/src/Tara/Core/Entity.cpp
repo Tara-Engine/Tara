@@ -5,7 +5,7 @@
 #include "Tara/Input/Manifold.h"
 
 namespace Tara{
-    Entity::Entity(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform, std::string name)
+    Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
         :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform)
     {
 
@@ -22,7 +22,7 @@ namespace Tara{
         */
     }
 
-    EntityRef Entity::Create(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform, std::string name)
+    EntityRef Entity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
     {
         EntityRef newEntity = std::make_shared<Entity>(parent, owningLayer, transform, name);
         Register(newEntity);

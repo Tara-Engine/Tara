@@ -7,14 +7,14 @@
 /// <summary>
 /// The Player is also a subclass of SpriteEntity
 /// </summary>
-class PlayerEntity : public Tara::SpriteEntity {
+class PawnEntity : public Tara::SpriteEntity {
 	enum class Direction : uint8_t {
 		UP, DOWN, LEFT, RIGHT
 	};
 
 public:
 	//construtor
-	PlayerEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite);
+	PawnEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite);
 
 	/// <summary>
 	/// Create a new Player
@@ -25,9 +25,9 @@ public:
 	/// <param name="name">entity name</param>
 	/// <param name="texture">entity texture</param>
 	/// <returns>a ref to the particle</returns>
-	static std::shared_ptr<PlayerEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", Tara::SpriteRef sprite = nullptr);
+	static std::shared_ptr<PawnEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", Tara::SpriteRef sprite = nullptr);
 
-	virtual ~PlayerEntity() {};
+	virtual ~PawnEntity() {};
 	
 	/// <summary>
 	/// Called every frame in the Update stage. 
@@ -36,21 +36,6 @@ public:
 	/// </summary>
 	/// <param name="deltaTime"></param>
 	virtual void OnUpdate(float deltaTime) override;
-
-	//virtual void OnDraw(float deltaTime) override; //No need to override, handled by SpriteEntity
-
-	/// <summary>
-	/// An event is delivered to the entity
-	/// </summary>
-	/// <param name="e"></param>
-	virtual void OnEvent(Tara::Event& e) override;
-
-	/// <summary>
-	/// A key press event
-	/// </summary>
-	/// <param name="e"></param>
-	/// <returns></returns>
-	bool OnKeyPressEvent(Tara::KeyPressEvent& e);
 
 	/// <summary>
 	/// Set the target for the player
@@ -75,7 +60,8 @@ public:
 	/// Set player back to spawn
 	/// </summary>
 	void Respawn();
-
+	 
+	virtual bool GetTraveling() const { return m_Traveling; }
 
 private:
 	Tara::Vector m_Target, m_Origin, m_Spawn;

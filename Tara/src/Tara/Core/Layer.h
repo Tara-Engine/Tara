@@ -9,6 +9,8 @@ namespace Tara {
 
 	struct Manifold;
 
+	REFTYPE(Layer)
+
 	/// <summary>
 	/// Layer Class. Layers are "Draw slices" of a scene. 
 	/// This class should be subclassed to make a custom application, and 
@@ -142,23 +144,6 @@ namespace Tara {
 
 		std::list<Manifold> m_FrameManifoldQueue;
 	};
-
-	/// <summary>
-	/// Reference to the Layer Class. Layers are "Draw slices" of a scene. 
-	/// This class should be subclassed to make a custom application, and 
-	/// a instance of that subclass pushed to a scene.
-	/// </summary>
-	using LayerRef = std::shared_ptr<Layer>;
-	
-	/// <summary>
-	/// Non-Owning Reference to the Layer Class. Layers are "Draw slices" of a scene. 
-	/// This class should be subclassed to make a custom application, and 
-	/// a instance of that subclass pushed to a scene.
-	/// </summary>
-	using LayerNoRef = std::weak_ptr<Layer>;
-
-
-
 
 
 	/****************************************************************

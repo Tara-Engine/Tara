@@ -1,7 +1,8 @@
 
 #include <Tara.h>
-#include "PlayerEntity.h"
+#include "PawnEntity.h"
 #include "RoomManager.h"
+#include "PlayerControllerComponent.h"
 
 //initial screen size
 const static int WIDTH = 1200;
@@ -72,7 +73,7 @@ public:
 		//LOG_S(INFO) << "Player spawn room: {" << spawnRoom.x << "," << spawnRoom.y << "}";
 
 		//LOG_S(INFO) << "Player Origin after Scale: {" << playerPos.x << "," << playerPos.y << "}";
-		m_Player = PlayerEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
+		m_Player = PawnEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
 		
 		//make our camera
 		auto cameraEntity = Tara::CameraEntity::Create(
@@ -87,6 +88,8 @@ public:
 		m_Player->SetUpdateChildrenFirst(false);
 		//m_Player->AddChild(cameraEntity);
 		
+		//Make a copy of this for the AIControllerComponent. But only leave 1 uncommented
+		PlayerControllerComponent::Create(m_Player, "playerController");
 		
 	}
 
@@ -126,7 +129,7 @@ public:
 
 private:
 	std::shared_ptr<Tara::OrthographicCamera> m_Camera;
-	std::shared_ptr <PlayerEntity> m_Player;
+	std::shared_ptr <PawnEntity> m_Player;
 	Tara::Texture2DRef m_DeathTexture;
 };
 

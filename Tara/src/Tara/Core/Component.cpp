@@ -3,11 +3,11 @@
 #include "Tara/Core/Entity.h"
 #include "Tara/Core/Layer.h"
 namespace Tara{
-	Component::Component(std::weak_ptr<Entity> parent, const std::string& name)
+	Component::Component(EntityNoRef parent, const std::string& name)
 		: m_Name(name), m_Parent(parent)
 	{}
 
-	ComponentRef Component::Create(std::weak_ptr<Entity> parent, const std::string& name){
+	ComponentRef Component::Create(EntityNoRef parent, const std::string& name){
 		std::shared_ptr<Component> component = std::make_shared<Component>(parent, name);
 		Register(component);
 		return component;

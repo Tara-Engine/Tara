@@ -10,7 +10,12 @@
 
 namespace Tara {
 
-	class Layer;
+	REFTYPE(Layer);
+	NOREFTYPE(Layer);
+
+	REFTYPE(Entity);
+	NOREFTYPE(Entity);
+
 	struct Manifold;
 
 	/// <summary>
@@ -22,20 +27,6 @@ namespace Tara {
 		/// So that Layer can access protected functions from Entity.
 		/// </summary>
 		friend class Layer;
-		
-		
-
-	public: //so as to not break subclasses
-
-		/// <summary>
-		/// Reference to entity
-		/// </summary>
-		using EntityRef = std::shared_ptr<Entity>;
-		
-		/// <summary>
-		/// non-owning (No) refrerence to entity
-		/// </summary>
-		using EntityNoRef = std::weak_ptr<Entity>;
 		
 
 	public:
@@ -50,7 +41,7 @@ namespace Tara {
 		/// they way to contstruct them is the Create static function. Thus, this is protected
 		/// </summary>
 		/// <param name="name">the name of the entity</param>
-		Entity(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform,  std::string name);
+		Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform,  std::string name);
 
 		/// <summary>
 		/// Create a new entity
@@ -60,7 +51,7 @@ namespace Tara {
 		/// <param name="transform">the transform, defaults to origin, no rot, and a scale of 1</param>
 		/// <param name="name">the name</param>
 		/// <returns>A reference to the new entity</returns>
-		static EntityRef Create(EntityNoRef parent, std::weak_ptr<Layer> owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "Entity");
+		static EntityRef Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "Entity");
 
 		/// <summary>
 		/// Register an externally created entity. This adds it to the parent, etc.
@@ -438,25 +429,13 @@ protected:
 	private:
 		const std::string m_Name;
 		Transform m_Transform;
-		const std::weak_ptr<Layer> m_OwningLayer;
+		const LayerNoRef m_OwningLayer;
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
 		std::list<ComponentRef> m_Components;
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
 	};
-
-	/// <summary>
-	/// Reference to the base class for all entities in the game. 
-	/// Entities are game objects that have a location in the world.
-	/// </summary>
-	using EntityRef = std::shared_ptr<Entity>;
-
-	/// <summary>
-	/// non-owning (No) Reference to the base class for all entities in the game. 
-	/// Entities are game objects that have a location in the world.
-	/// </summary>
-	using EntityNoRef = std::weak_ptr<Entity>;
 
 
 	template<typename ComponentType>

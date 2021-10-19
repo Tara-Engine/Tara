@@ -4,8 +4,15 @@
 
 
 namespace Tara {
-	class Layer;
-	class Entity;
+	REFTYPE(Layer);
+	NOREFTYPE(Layer);
+
+	REFTYPE(Entity);
+	NOREFTYPE(Entity);
+
+	REFTYPE(Component);
+	NOREFTYPE(Component);
+
 
 	/// <summary>
 	/// The Component class is designed be the root class of all components.
@@ -19,23 +26,12 @@ namespace Tara {
 
 	public:
 		/// <summary>
-		/// Reference to component
-		/// </summary>
-		using ComponentRef = std::shared_ptr<Component>;
-
-		/// <summary>
-		/// non-owning (No) refrerence to component
-		/// </summary>
-		using ComponentNoRef = std::weak_ptr<Component>;
-
-	public:
-		/// <summary>
 		/// Create a new component. Should not be called directly. Use static Create(...) instead.
 		/// </summary>
 		/// <param name="parent">The owning Entity</param>
 		/// <param name="owningLayer">The owning Layer</param>
 		/// <param name="name">The name</param>
-		Component(std::weak_ptr<Entity> parent, const std::string& name);
+		Component(EntityNoRef parent, const std::string& name);
 
 		/// <summary>
 		/// Virtual destructor
@@ -48,7 +44,7 @@ namespace Tara {
 		/// <param name="parent">the parent entity of the component</param>
 		/// <param name="name">The name of the component</param>
 		/// <returns></returns>
-		static ComponentRef Create(std::weak_ptr<Entity> parent, const std::string& name);
+		static ComponentRef Create(EntityNoRef parent, const std::string& name);
 
 		/// <summary>
 		/// Register a new component (does the actual attaching)
@@ -94,16 +90,8 @@ namespace Tara {
 
 	private:
 		const std::string m_Name;
-		std::weak_ptr<Entity> m_Parent;
+		EntityNoRef m_Parent;
 	};
 
-	/// <summary>
-	/// Reference to component
-	/// </summary>
-	using ComponentRef = std::shared_ptr<Component>;
 
-	/// <summary>
-	/// non-owning (No) refrerence to component
-	/// </summary>
-	using ComponentNoRef = std::weak_ptr<Component>;
 }
