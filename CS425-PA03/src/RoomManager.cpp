@@ -142,6 +142,7 @@ RoomEntityRef RoomManager::GetRoom(int32_t x, int32_t y)
 
 std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t height, int32_t steps)
 {
+	LOG_S(INFO) << "Room Generator Seed: " << seed;
 	srand(seed);
 	auto x = rand() % width;
 	auto y = rand() % height;

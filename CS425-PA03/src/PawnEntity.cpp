@@ -55,10 +55,12 @@ void PawnEntity::OnUpdate(float deltaTime)
 						//regenerate!
 						Tara::After([](Tara::LayerNoRef layer) {Regenerate(layer); }, 1.0, GetOwningLayer());
 					}
-					else{
+					else {
 						LOG_S(INFO) << "Player has Died!";
 						SetAlive(false);
-						Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
+						if (!GetImmortal()){ //only respawn if not immortal
+							Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
+						}
 					}
 				}
 			}

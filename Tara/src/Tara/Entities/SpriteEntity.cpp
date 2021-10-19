@@ -56,6 +56,9 @@ namespace Tara {
 		if (anim) {
 			SetCurrentSequence(*anim);
 		}
+		else {
+			LOG_S(WARNING) << "Animation: \"" << name << "\" not available for this sprite.";
+		}
 	}
 
 }

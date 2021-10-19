@@ -1,4 +1,5 @@
 
+#include <random>
 #include <Tara.h>
 #include "PawnEntity.h"
 #include "RoomManager.h"
@@ -40,15 +41,14 @@ public:
 		RoomManager::Get()->LoadRoomTextures();
 		auto path = RoomManager::Get()->Generate(time(0), MAP_SIZE, MAP_SIZE, 30);
 		
-		//create the player
-		//texture and sprite first
+		//textures and sprites
 		m_DeathTexture = Tara::Texture2D::Create("assets/DeathLogo.png", "deathLogo");
 		auto playerSprite = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("playerSprite");
-		if (!playerSprite){
+		if (!playerSprite){ //only do this if the sprite does not exist in the AssetLibrary (ie, this only happens once)
 			auto playerTexture = Tara::Texture2D::Create("assets/Character_8x4.png", "playerTexture");
 			playerSprite = Tara::Sprite::Create(playerTexture, 8, 4, "playerSprite");
 			//load animations
-			playerSprite->CreateAnimationSequence("idle_down",  1,  3,  2.0f);
+			playerSprite->CreateAnimationSequence("idle_down",  0,  3,  2.0f);
 			playerSprite->CreateAnimationSequence("walk_down",  4,  7,  5.0f);
 			playerSprite->CreateAnimationSequence("idle_right", 8,  11, 2.0f);
 			playerSprite->CreateAnimationSequence("walk_right", 12, 15, 5.0f);
@@ -57,22 +57,22 @@ public:
 			playerSprite->CreateAnimationSequence("idle_up",    24, 27, 2.0f);
 			playerSprite->CreateAnimationSequence("walk_up",    28, 31, 5.0f);
 		}
+		auto enemySprite = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("enemySprite");
+		if (!enemySprite) {
+			auto enemyTexture = Tara::Texture2D::Create("assets/Particle_5x2.png", "enemyTexture");
+			enemySprite = Tara::Sprite::Create(enemyTexture, 5, 2, "enemySprite");
+			//load animations
+			if (!enemySprite->CreateAnimationSequence("all", 0, 9, 15.0f)) {
+				LOG_S(WARNING) << "Enemy anim sequence creation failed!";
+			}
+		}
+
+
 		//make the player entity
 		int32_t originY = (*path.begin()) % MAP_SIZE;
 		int32_t originX = (*path.begin() - originY) / MAP_SIZE;
-		
-		/*if (RoomManager::Get()->GetRoom(originX, -originY)) {
-			LOG_S(INFO) << "Room exists at origin: {"<<originX<<","<<-originY<<"}";
-		}
-		else {
-			LOG_S(WARNING) << "ROOM DOES NOT EXISTS AT ORIGIN";
-		}*/
 
 		glm::vec2 playerPos = RoomManager::RoomCoordToWorldCoord({ originX, -originY });
-		//glm::ivec2 spawnRoom = RoomManager::WorldCoordToRoomCoord(playerPos);
-		//LOG_S(INFO) << "Player spawn room: {" << spawnRoom.x << "," << spawnRoom.y << "}";
-
-		//LOG_S(INFO) << "Player Origin after Scale: {" << playerPos.x << "," << playerPos.y << "}";
 		m_Player = PawnEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
 		
 		//make our camera
@@ -90,7 +90,20 @@ public:
 		
 		//Make a copy of this for the AIControllerComponent. But only leave 1 uncommented
 		PlayerControllerComponent::Create(m_Player, "playerController");
+		//m_Player->SetImmortal(true);//test immortality
 		
+
+		//Enemy
+		auto rd = std::random_device();
+		while (!m_Enemy) {
+			int rx = rd() % MAP_SIZE;
+			int ry = rd() % MAP_SIZE;
+			if (true) {
+				glm::vec2 pos = RoomManager::RoomCoordToWorldCoord({ originX, -originY });
+				m_Enemy = PawnEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(pos.x, pos.y, 0, 16 * 4, 16 * 4), "player", enemySprite);
+				m_Enemy->PlayAnimation("all");
+			}
+		}
 	}
 
 	virtual void Deactivate() override {
@@ -130,6 +143,7 @@ public:
 private:
 	std::shared_ptr<Tara::OrthographicCamera> m_Camera;
 	std::shared_ptr <PawnEntity> m_Player;
+	std::shared_ptr <PawnEntity> m_Enemy;
 	Tara::Texture2DRef m_DeathTexture;
 };
 

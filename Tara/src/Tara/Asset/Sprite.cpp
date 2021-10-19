@@ -23,6 +23,7 @@ namespace Tara {
 	{
 		auto loc = m_Sequences.find(name);
 		if (loc != m_Sequences.end()) {
+			LOG_S(WARNING) << "Animation sequence: \"" << name << "\" already exists for this sprite!";
 			return false;
 		}
 		AnimationSequence seq(start, end, frameRate);
@@ -30,6 +31,7 @@ namespace Tara {
 			m_Sequences[name] = seq;
 			return true;
 		}
+		LOG_S(WARNING) << "Animation sequence: \"" << name << "\" not a valid sequence for this sprite!";
 		return false;
 	}
 
