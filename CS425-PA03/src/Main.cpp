@@ -4,6 +4,7 @@
 #include "PawnEntity.h"
 #include "RoomManager.h"
 #include "PlayerControllerComponent.h"
+#include "EnemyControllerComponent.h"
 
 //initial screen size
 const static int WIDTH = 1200;
@@ -97,11 +98,13 @@ public:
 		auto rd = std::random_device();
 		while (!m_Enemy) {
 			int rx = rd() % MAP_SIZE;
-			int ry = rd() % MAP_SIZE;
-			if (true) {
-				glm::vec2 pos = RoomManager::RoomCoordToWorldCoord({ originX, -originY });
+			int ry = -(rd() % MAP_SIZE);
+			if (RoomManager::Get()->GetRoom(rx, ry)) {
+				glm::vec2 pos = RoomManager::RoomCoordToWorldCoord({ rx, ry });
 				m_Enemy = PawnEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(pos.x, pos.y, 0, 16 * 4, 16 * 4), "player", enemySprite);
 				m_Enemy->PlayAnimation("all");
+				m_Enemy->SetImmortal(true);
+				EnemyControllerComponent::Create(m_Enemy, "enemyController");
 			}
 		}
 	}

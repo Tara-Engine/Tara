@@ -14,5 +14,9 @@ public:
 
 	virtual void OnEvent(Tara::Event& e) override;
 
+	virtual void OnUpdate(float deltaTime) override;
+
 	bool OnKeyPressEvent(Tara::KeyPressEvent& e);
+private:
+	bool m_SendingToNextLevel = false;
 };

@@ -49,19 +49,12 @@ void PawnEntity::OnUpdate(float deltaTime)
 			auto roomPos = RoomManager::WorldCoordToRoomCoord(pos);
 			auto centered = RoomManager::IsCentered(pos);
 			auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
-			if (room && centered.first && centered.second) {
-				if (room->GetPerm() == 4){ 
-					if (Tara::PowOfTwo(room->GetDoorState())) {
-						//regenerate!
-						Tara::After([](Tara::LayerNoRef layer) {Regenerate(layer); }, 1.0, GetOwningLayer());
-					}
-					else {
-						LOG_S(INFO) << "Player has Died!";
-						SetAlive(false);
-						if (!GetImmortal()){ //only respawn if not immortal
-							Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
-						}
-					}
+			//if room is real, player is centered on room, the permutation is 4, and its not a dead end, then die!
+			if (room && centered.first && centered.second && room->GetPerm() == 4 && !Tara::PowOfTwo(room->GetDoorState())) {
+				LOG_S(INFO) << "Pawn \"" << GetName() << "\" has Died!";
+				SetAlive(false);
+				if (!GetImmortal()){ //only respawn if not immortal
+					Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
 				}
 			}
 		}
