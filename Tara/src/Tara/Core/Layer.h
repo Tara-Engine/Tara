@@ -84,6 +84,13 @@ namespace Tara {
 		bool EnableListener(EventListenerNoRef ref, bool enable = true);
 
 		/// <summary>
+		/// Mark an entity destroyed. This does not destroy it, but just loggs it for destrution when all strong refs are gone.
+		/// No strong refs should remain in tree. Random things that have a strong ref should be eliminated if possible.
+		/// </summary>
+		/// <param name="ref"></param>
+		void MarkDestroyed(EntityNoRef ref);
+
+		/// <summary>
 		/// Run the overlap checks for this layer.
 		/// Do not call manually, it is called by Scene
 		/// </summary>
@@ -139,6 +146,7 @@ namespace Tara {
 	private:
 
 		std::list<EntityRef> m_Entities;
+		std::list<EntityNoRef> m_DestroyedEntities;
 
 		std::list<EventListenerNoRef> m_Listeners;
 

@@ -24,6 +24,19 @@ namespace Tara{
 		for (auto entity : m_Entities) {
 			entity->Update(deltaTime);
 		}
+		uint32_t cleanCount = 0;
+		for (auto it = m_DestroyedEntities.begin(); it != m_DestroyedEntities.end();) {
+			if (!it->lock()){
+				cleanCount++;
+				m_DestroyedEntities.erase(it++);
+			}
+			else {
+				it++;
+			}
+		}
+		if (cleanCount > 0) {
+			LOG_S(INFO) << "Entities Cleaned since last frame: " << cleanCount;
+		}
 	}
 
 	void Layer::Draw(float deltaTime)
@@ -93,6 +106,11 @@ namespace Tara{
 		return true;
 	}
 
+
+	void Layer::MarkDestroyed(EntityNoRef ref)
+	{
+		m_DestroyedEntities.push_back(ref);
+	}
 
 	void Layer::RunOverlapChecks()
 	{

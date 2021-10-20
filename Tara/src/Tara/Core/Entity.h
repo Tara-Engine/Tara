@@ -8,6 +8,8 @@
 #include "Tara/Input/Event.h"
 #include "Tara/Core/Component.h"
 
+#define ENTITY_EXISTS(x) if (!Exists()) {return x;}
+
 namespace Tara {
 
 	REFTYPE(Layer);
@@ -338,6 +340,13 @@ namespace Tara {
 		bool RemoveComponentByRef(ComponentRef ref);
 
 
+		/// <summary>
+		/// Destroy this entity. 
+		/// This by default will make all chilren root entities. If something else is desired, do it manually first.
+		/// Will not remove the ref you currently have, so you have to do that too.
+		/// </summary>
+		void Destroy();
+
 		/***********************************************************************************
 		*                      Physics and Event Utility Funcions                          *
 		************************************************************************************/
@@ -380,7 +389,12 @@ protected:
 		/// <returns>the list of children</returns>
 		const std::list<EntityRef>& GetChildren() const { return m_Children; }
 
-		
+		/// <summary>
+		/// used for checking if this entity is a real entity, or if its a ghost, zombie entity.
+		/// </summary>
+		/// <returns></returns>
+		inline bool Exists() const { if (!m_Exists) { LOG_S(ERROR) << "Attempting to access a deleted Entity!"; } return m_Exists; }
+
 	public: //must be public to properly inherit
 
 		/// <summary>
@@ -435,12 +449,14 @@ protected:
 		std::list<ComponentRef> m_Components;
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
+		bool m_Exists = true;
 	};
 
 
 	template<typename ComponentType>
 	inline std::shared_ptr<ComponentType> Entity::GetFirstCompontentOfType() const
 	{
+		ENTITY_EXISTS(nullptr);
 		for (auto comp : m_Components) {
 			auto subtype = std::dynamic_pointer_cast<ComponentType>(comp);
 			if (subtype) {
