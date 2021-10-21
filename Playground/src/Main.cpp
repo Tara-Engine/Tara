@@ -79,9 +79,9 @@ public:
 		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
 		//sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
 		
-		auto spriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		m_TempSpriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
 		//spriteEntity->PlayAnimation("default");
-		spriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
+		m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
 		m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
@@ -98,9 +98,12 @@ public:
 		m_Player->AddChild(m_Camera);
 
 		//Controller Component
-		auto controller = TOrthoCameraControllerComponent::Create(spriteEntity, "PlayerController");
+		auto controller = TOrthoCameraControllerComponent::Create(m_Player, "PlayerController");
 		controller->SetSpeed(1.5f);
 		
+		//delete testing
+		m_Player->AddChild(m_TempSpriteEntity);
+		//m_TempSpriteEntity->AddChild(m_Player);
 
 		//Some simple drawing texts
 		std::unordered_map <Tara:: Shader::TargetStage, std::string> map;
@@ -164,6 +167,10 @@ public:
 	bool OnKeyPressedEvent(Tara::KeyPressEvent& e) {
 		//LOG_S(INFO) << "Key pressed called!";
 		//Tara::After(std::bind(&TestingLayer::test, this, m_Player), 1.0f);
+		if (m_TempSpriteEntity){
+			m_TempSpriteEntity->Destroy();
+			m_TempSpriteEntity.reset();
+		}
 		return false;
 	}
 
@@ -197,6 +204,7 @@ private:
 
 	Tara::CameraEntityRef m_Camera;
 	std::shared_ptr<TColorRectEntity> m_Player;
+	Tara::SpriteEntityRef m_TempSpriteEntity;
 	float m_TimeCounter = 0;
 
 	Tara::ShaderRef m_GShader;

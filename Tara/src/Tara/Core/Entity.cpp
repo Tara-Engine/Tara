@@ -4,6 +4,8 @@
 #include "Tara/Input/ApplicationEvents.h"
 #include "Tara/Input/Manifold.h"
 
+
+
 namespace Tara{
     Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
         :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform)
@@ -42,6 +44,7 @@ namespace Tara{
 
     void Entity::ReceiveEvent(Event& e)
     {
+        ENTITY_EXISTS();
         OnEvent(e);
         for (auto comp : m_Components) {
             if (!(comp->GetListeningForEvents() && (e.GetCategoryFlags() & EventCategoryNative))) { //if both the entity and the component are listening for native window events, don't forward
@@ -53,6 +56,7 @@ namespace Tara{
 
     Transform Entity::GetWorldTransform() const
     {
+        ENTITY_EXISTS(TRANSFORM_DEFAULT);
         if (GetParent().lock()) {
             auto parentTransform = GetParent().lock()->GetWorldTransform();
             return parentTransform + m_Transform;
@@ -64,6 +68,7 @@ namespace Tara{
 
     void Entity::SetWorldTransform(const Transform& transform)
     {
+        ENTITY_EXISTS();
         if (GetParent().lock()) {
             auto parentTransform = GetParent().lock()->GetWorldTransform();
             m_Transform = transform - parentTransform;
@@ -75,6 +80,7 @@ namespace Tara{
 
     void Entity::SetWorldPosition(const Vector& pos)
     {
+        ENTITY_EXISTS();
         if (GetParent().lock()) {
             auto parentTransform = GetParent().lock()->GetWorldTransform();
             m_Transform.Position = pos - parentTransform.Position;
@@ -86,6 +92,7 @@ namespace Tara{
 
     void Entity::SetWorldRotation(const Rotator& rot)
     {
+        ENTITY_EXISTS();
         if (GetParent().lock()) {
             auto parentTransform = GetParent().lock()->GetWorldTransform();
             m_Transform.Rotation = rot - parentTransform.Rotation;
@@ -97,6 +104,7 @@ namespace Tara{
 
     void Entity::SetWorldScale(const Vector& scale)
     {
+        ENTITY_EXISTS();
         if (GetParent().lock()) {
             auto parentTransform = GetParent().lock()->GetWorldTransform();
             m_Transform.Scale = scale - parentTransform.Scale;
@@ -106,8 +114,32 @@ namespace Tara{
         }
     }
 
+    void Entity::Destroy()
+    {
+        ENTITY_EXISTS();
+        LOG_S(INFO) << "Entity destroyed. Should be cleaned soon.";
+        m_Exists = false;
+        auto sthis = shared_from_this();
+        //first, remove from hirarchy entirely (not root, not child)
+        if (m_Parent.lock()) {
+            m_Parent.lock()->RemoveChildByRef(sthis, false);
+        }
+        if (m_OwningLayer.lock()->IsEntityRoot(sthis)) {
+            m_OwningLayer.lock()->RemoveEntity(sthis);
+        }
+        //take care of childrend
+        while(m_Children.size() > 0){
+            auto child = m_Children.front();
+            RemoveChildByRef(child, true);
+        }
+        //mark destroyed for the layer's cleanup policies
+        m_OwningLayer.lock()->MarkDestroyed(weak_from_this());
+    }
+
+
     bool Entity::IsChild(EntityRef ref, bool recursive) const
     {
+        ENTITY_EXISTS(false);
         if (std::find(m_Children.begin(), m_Children.end(), ref) != m_Children.end()) {
             return true;
         }
@@ -126,6 +158,7 @@ namespace Tara{
 
     EntityRef Entity::GetFirstChildOfName(const std::string& name) const
     {
+        ENTITY_EXISTS(nullptr);
         for (auto child : m_Children) {
             if (child->GetName() == name) {
                 return child;
@@ -136,6 +169,7 @@ namespace Tara{
 
     EntityRef Entity::RemoveChildByName(const std::string& name)
     {
+        ENTITY_EXISTS(nullptr);
         for (auto child : m_Children) {
             if (child->GetName() == name) {
                 if (RemoveChildByRef(child)) {
@@ -152,6 +186,7 @@ namespace Tara{
     //TODO: add parenting child to level
     bool Entity::RemoveChildByRef(EntityRef ref, bool setToLayer)
     {
+        ENTITY_EXISTS(false);
         if (&*(ref->GetParent().lock()) == this) {
             ref->SetParent(std::weak_ptr<Entity>());
             m_Children.remove(ref);
@@ -169,6 +204,7 @@ namespace Tara{
     //TODO: remove from current parent or level
     bool Entity::AddChild(EntityRef ref)
     {
+        ENTITY_EXISTS(false);
         //early out if ref is already a immedate child
         if (IsChild(ref)) {
             return false;
@@ -198,6 +234,7 @@ namespace Tara{
 
     bool Entity::SwapParent(EntityNoRef newParent)
     {
+        ENTITY_EXISTS(false);
         //check if newParent can be parent
         if (IsChild(newParent.lock(), true)) {
             return false;
@@ -216,6 +253,7 @@ namespace Tara{
 
     void Entity::Update(float deltaTime)
     {
+        ENTITY_EXISTS();
         if (!m_UpdateChildrenFirst) {
             OnUpdate(deltaTime);
         }
@@ -232,6 +270,7 @@ namespace Tara{
 
     void Entity::Draw(float deltaTime)
     {
+        ENTITY_EXISTS();
         if (!m_DrawChildrenFirst){
             OnDraw( deltaTime);
         }
@@ -257,6 +296,7 @@ namespace Tara{
 
     bool Entity::AddComponent(ComponentRef component)
     {
+        ENTITY_EXISTS(false);
         if (IsComponent(component)) {
             return false;
         }
@@ -276,12 +316,14 @@ namespace Tara{
 
     bool Entity::IsComponent(ComponentRef ref) const
     {
+        ENTITY_EXISTS(false);
         auto iter = std::find(m_Components.begin(), m_Components.end(), ref);
         return iter != m_Components.end();
     }
 
     ComponentRef Entity::GetFirstComponentOfName(const std::string& name) const
     {
+        ENTITY_EXISTS(nullptr);
         for (auto comp : m_Components) {
             if (comp->GetName() == name) {
                 return comp;
@@ -292,6 +334,7 @@ namespace Tara{
 
     ComponentRef Entity::RemoveComponentByName(const std::string& name)
     {
+        ENTITY_EXISTS(nullptr);
         ComponentRef component = nullptr;
         for (auto comp : m_Components) {
             if (comp->GetName() == name) {
@@ -307,6 +350,7 @@ namespace Tara{
 
     bool Entity::RemoveComponentByRef(ComponentRef ref)
     {
+        ENTITY_EXISTS(false);
         if (IsComponent(ref)) {
             m_Components.remove(ref);
             ref->SetParent(EntityNoRef());
@@ -317,8 +361,11 @@ namespace Tara{
         }
     }
 
+    
+
     BoundingBox Entity::GetFullBoundingBox() const
     {
+        ENTITY_EXISTS(BoundingBox());
         BoundingBox box = GetSpecificBoundingBox();
         for (auto child : m_Children) {
             box = box + child->GetFullBoundingBox(); //not += because that is not overloaded.
@@ -328,6 +375,7 @@ namespace Tara{
 
     void Entity::ListenForEvents(bool enable)
     {
+        ENTITY_EXISTS();
         m_OwningLayer.lock()->EnableListener(weak_from_this(), enable);
         SetListeningForEvents(enable);
     }
@@ -336,6 +384,7 @@ namespace Tara{
 
     void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
     {
+        ENTITY_EXISTS();
         if (newParent.lock() == nullptr) {
             LOG_S(INFO) << "Entity::SetParent clearing the parent.";
             m_Parent = EntityNoRef();
@@ -352,6 +401,7 @@ namespace Tara{
 
     void Entity::SelfOverlapChecks()
     {
+        ENTITY_EXISTS();
         std::list<std::pair<EntityRef, EntityRef>> overlapQueue;
 
         for (auto iter1 = m_Children.begin(); iter1 != m_Children.end(); iter1++) {
@@ -385,6 +435,7 @@ namespace Tara{
 
     void Entity::OtherOverlapChecks(EntityRef other)
     {
+        ENTITY_EXISTS();
         //IF the core AABB of self and other overlap, THEN generate overlap event
         if (GetSpecificBoundingBox().Overlaping(other->GetSpecificBoundingBox())) {
             Manifold m(shared_from_this(), other);
@@ -461,6 +512,7 @@ namespace Tara{
 
     void Entity::GetAllChildrenInBox(const BoundingBox& box, std::list<EntityRef>& list)
     {
+        ENTITY_EXISTS();
         for (auto child : m_Children) {
             if (box.Overlaping(child->GetFullBoundingBox())) {
                 if (box.Overlaping(child->GetSpecificBoundingBox())) {
@@ -474,6 +526,7 @@ namespace Tara{
     
     void Entity::GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list)
     {
+        ENTITY_EXISTS();
         for (auto child : m_Children) {
             if (child->GetFullBoundingBox().OverlappingSphere(origin, radius)) {
                 if (child->GetSpecificBoundingBox().OverlappingSphere(origin, radius)) {

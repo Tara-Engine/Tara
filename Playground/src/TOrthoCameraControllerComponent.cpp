@@ -40,7 +40,7 @@ void TOrthoCameraControllerComponent::OnUpdate(float deltaTime)
 
 void TOrthoCameraControllerComponent::OnEvent(Tara::Event& e)
 {
-	LOG_S(INFO) << "Event called!";
+	//LOG_S(INFO) << "Event called!";
 	Tara::EventFilter filter(e);
 	filter.Call<Tara::KeyPressEvent>(TARA_BIND_FN(TOrthoCameraControllerComponent::OnKeyPressEvent));
 }
