@@ -3,14 +3,6 @@
 
 namespace Tara{
 
-    DynamicMultiChildEntityRef DynamicMultiChildEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Tara::Transform transform, std::string name)
-    {
-        DynamicMultiChildEntityRef newEntity = std::make_shared<DynamicMultiChildEntity>(parent, owningLayer, transform, name);
-        Entity::Register(newEntity);
-        return newEntity;
-    }
-
-
     void DynamicMultiChildEntity::SelfOverlapChecks()
     {
         //so, not only do all entities need to have their own self called,

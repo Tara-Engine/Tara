@@ -39,14 +39,6 @@ namespace Tara {
 		virtual ~Component() {}
 
 		/// <summary>
-		/// Create a new component.
-		/// </summary>
-		/// <param name="parent">the parent entity of the component</param>
-		/// <param name="name">The name of the component</param>
-		/// <returns></returns>
-		static ComponentRef Create(EntityNoRef parent, const std::string& name);
-
-		/// <summary>
 		/// Register a new component (does the actual attaching)
 		/// </summary>
 		/// <param name="component"></param>
@@ -58,6 +50,12 @@ namespace Tara {
 		/// <param name="enable"></param>
 		virtual void ListenForEvents(bool enable = true) override;
 	public:
+
+		/// <summary>
+		/// A function called after this Component is added to its parent
+		/// </summary>
+		inline virtual void OnBeginPlay() {}
+
 		/// <summary>
 		/// Component Update function. Run every frame by parent entity
 		/// </summary>
@@ -93,5 +91,18 @@ namespace Tara {
 		EntityNoRef m_Parent;
 	};
 
-
+	/// <summary>
+	/// Create a new component
+	/// </summary>
+	/// <typeparam name="ComponentType">The subclass of component to create</typeparam>
+	/// <typeparam name="...VA_ARGS">Varaible arguments</typeparam>
+	/// <param name="...args">the arguments to that class's constrcutor</param>
+	/// <returns>A reference to that Component</returns>
+	template<class ComponentType, typename... VA_ARGS>
+	inline std::shared_ptr<ComponentType> CreateComponent(VA_ARGS&&... args) {
+		std::shared_ptr<ComponentType> entity = std::make_shared<ComponentType>(std::forward<VA_ARGS>(args)...);
+		Component::Register(entity);
+		entity->OnBeginPlay();
+		return entity;
+	}
 }

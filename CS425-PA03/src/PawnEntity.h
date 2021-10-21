@@ -13,19 +13,15 @@ class PawnEntity : public Tara::SpriteEntity {
 	};
 
 public:
-	//construtor
-	PawnEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite);
-
 	/// <summary>
-	/// Create a new Pawn
+	/// Construct a new pawn entity
 	/// </summary>
-	/// <param name="parent">parent entity</param>
-	/// <param name="owningLayer">owning layer</param>
-	/// <param name="transform">initial transform</param>
-	/// <param name="name">entity name</param>
-	/// <param name="texture">entity texture</param>
-	/// <returns>a ref to the particle</returns>
-	static std::shared_ptr<PawnEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", Tara::SpriteRef sprite = nullptr);
+	/// <param name="parent">the parent entity</param>
+	/// <param name="owningLayer">the owning layer</param>
+	/// <param name="transform">the local transform (optional)</param>
+	/// <param name="name">the name (optional)</param>
+	/// <param name="sprite">sprite (optional)</param>
+	PawnEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "PawnEntity", Tara::SpriteRef sprite = nullptr);
 
 	virtual ~PawnEntity() {};
 	

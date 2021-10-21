@@ -5,35 +5,25 @@
 
 namespace Tara {
 	
+	REFTYPE(CameraEntity)
+	NOREFTYPE(CameraEntity)
+
 	/// <summary>
 	/// A Entity used to hold and control a camera in the world
 	/// Dynamically changes the underlying camera type based on the selected projection type
 	/// </summary>
 	class CameraEntity : public Entity {
 	public:
-		using CameraEntityRef = std::shared_ptr<CameraEntity>;
-	public:
 		/// <summary>
 		/// Constructor for a CameraEntiy
-		/// Note: you should use the static Create function instead, to get full funcionality.
+		/// Note: you should use the Tara::CreateEntity function instead, to get full funcionality.
 		/// </summary>
 		/// <param name="parent">the parent entity</param>
 		/// <param name="owningLayer">the owning layer</param>
 		/// <param name="projectionType">the projection type of the camera</param>
 		/// <param name="transform">the transform of the camera</param>
 		/// <param name="name">the name of the camera</param>
-		CameraEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Camera::ProjectionType projectionType, Tara::Transform transform, std::string name);
-
-		/// <summary>
-		/// Create a new CameraEntity
-		/// </summary>
-		/// <param name="parent">the parent entity</param>
-		/// <param name="owningLayer">the owning layer</param>
-		/// <param name="projectionType">the projection type of the camera</param>
-		/// <param name="transform">the transform of the camera</param>
-		/// <param name="name">the name of the camera</param>
-		/// <returns>the new CameraEntity, as a reference</returns>
-		static CameraEntityRef Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Camera::ProjectionType projectionType, Tara::Transform transform, std::string name);
+		CameraEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Camera::ProjectionType projectionType, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "CameraEntity");
 
 		/// <summary>
 		/// Get the projection type of the current camera
@@ -109,9 +99,4 @@ namespace Tara {
 		bool m_UseWorldScale = false;
 	};
 	
-	/// <summary>
-	/// A Reference to a CameraEntity, an Entity used to hold and control a camera in the world
-	/// Dynamically changes the underlying camera type based on the selected projection type
-	/// </summary>
-	using CameraEntityRef = std::shared_ptr<CameraEntity>;
 }

@@ -9,14 +9,6 @@ namespace Tara{
 		SetProjectionType(projectionType);
 	}
 
-
-	CameraEntityRef CameraEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Camera::ProjectionType projectionType, Tara::Transform transform, std::string name)
-	{
-		CameraEntityRef ref = std::make_shared<CameraEntity>(parent, owningLayer, projectionType, transform, name);
-		Entity::Register(ref);
-		return ref;
-	}
-
 	void CameraEntity::SetProjectionType(Camera::ProjectionType type)
 	{
 		//if the same, don't do anything

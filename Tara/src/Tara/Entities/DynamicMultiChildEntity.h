@@ -4,13 +4,15 @@
 
 namespace Tara {
 
+	REFTYPE(DynamicMultiChildEntity)
+	NOREFTYPE(DynamicMultiChildEntity)
+
 	/// <summary>
 	/// DynamicMultiChildEntity is an entity designed to optimize collision among its children and between its children and other entities. 
 	/// It does this by using an internal AABB tree data structure to handle the transforms.
 	/// </summary>
 	class DynamicMultiChildEntity : public Entity {
 	public:
-		using DynamicMultiChildEntityRef = std::shared_ptr<DynamicMultiChildEntity>;
 
 		/// <summary>
 		/// Basic Constructor
@@ -19,19 +21,9 @@ namespace Tara {
 		/// <param name="owningLayer">the owning layer</param>
 		/// <param name="transform">the transform</param>
 		/// <param name="name">the name</param>
-		DynamicMultiChildEntity(EntityNoRef parent, LayerNoRef owningLayer, Tara::Transform transform, std::string name)
+		DynamicMultiChildEntity(EntityNoRef parent, LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "DynamicMultiChildEntity")
 			:Entity(parent, owningLayer, transform, name), m_Tree(nullptr)
 		{}
-
-		/// <summary>
-		/// Create a DynamicMultiChildEntity
-		/// </summary>
-		/// <param name="parent">parent entity</param>
-		/// <param name="owningLayer">the owning layer</param>
-		/// <param name="transform">the transform, usually default</param>
-		/// <param name="name">the name, usually default</param>
-		/// <returns></returns>
-		static DynamicMultiChildEntityRef Create(EntityNoRef parent, LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "DynamicMultiChildEntity");
 
 		virtual ~DynamicMultiChildEntity(){
 			if (m_Tree) { delete m_Tree; m_Tree = nullptr; }
@@ -145,13 +137,8 @@ namespace Tara {
 		};
 
 	private:
-
-
-
-	private:
 		Node* m_Tree;
 
 	};
 
-	using DynamicMultiChildEntityRef = std::shared_ptr<DynamicMultiChildEntity>;
 }

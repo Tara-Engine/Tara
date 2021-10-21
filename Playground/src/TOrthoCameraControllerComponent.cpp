@@ -9,14 +9,6 @@ TOrthoCameraControllerComponent::~TOrthoCameraControllerComponent()
 	LOG_S(INFO) << "Controller component destroyed!";
 }
 
-TOrthoCameraControllerComponentRef TOrthoCameraControllerComponent::Create(Tara::EntityNoRef parent, const std::string & name)
-{
-	auto comp = std::make_shared<TOrthoCameraControllerComponent>(parent, name);
-	Register(comp);
-	comp->ListenForEvents(true);
-	return comp;
-}
-
 void TOrthoCameraControllerComponent::OnUpdate(float deltaTime)
 {
 	Tara::Vector offset = { 0.0f,0.0f,0.0f };

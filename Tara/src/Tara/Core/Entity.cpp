@@ -12,25 +12,7 @@ namespace Tara{
     Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
         :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform)
     {
-
         CHECK_NOTNULL_F(m_OwningLayer.lock(), "the owning layer of a newly created entity should never be null!");
-        
-        /*
-        //entities cannot add themselves to their parent or the layer, as they have ... issues with shared pointers
-        if (m_Parent.lock()) {
-            m_Parent.lock()->AddChild(shared_from_this());
-        }
-        else {
-            m_OwningLayer.lock()->AddEntity(shared_from_this());
-        }
-        */
-    }
-
-    EntityRef Entity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
-    {
-        EntityRef newEntity = std::make_shared<Entity>(parent, owningLayer, transform, name);
-        Register(newEntity);
-        return newEntity;
     }
 
     void Entity::Register(EntityRef ref)

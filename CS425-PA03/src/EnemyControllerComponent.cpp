@@ -9,14 +9,6 @@ EnemyControllerComponent::EnemyControllerComponent(Tara::EntityNoRef parent, con
 	: Tara::Component(parent, name)
 {}
 
-EnemyControllerComponentRef EnemyControllerComponent::Create(Tara::EntityNoRef parent, const std::string & name)
-{
-	EnemyControllerComponentRef component = std::make_shared<EnemyControllerComponent>(parent, name);
-	Register(component);
-	return component; 
-}
-
-
 void EnemyControllerComponent::OnUpdate(float deltaTime)
 {
 	auto parent = std::dynamic_pointer_cast<PawnEntity>(GetParent().lock()); //OK becase will be cleaned up and end of func call

@@ -17,17 +17,6 @@ PawnEntity::PawnEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, T
 	m_Timer(0), m_Traveling(false), m_Direction(Direction::DOWN)
 {}
 
-
-std::shared_ptr<PawnEntity> PawnEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
-{
-	std::shared_ptr<PawnEntity> newEntity = std::make_shared<PawnEntity>(parent, owningLayer, transform, name, sprite);
-	//must be done outside of constructor because 
-	//you have to have it fully constructed before getting a shared ptr
-	Entity::Register(newEntity);
-	newEntity->ListenForEvents(true); //listen for window events
-	return newEntity;
-}
-
 void PawnEntity::OnUpdate(float deltaTime)
 {
 	Tara::SpriteEntity::OnUpdate(deltaTime); //call the super OnUppdate function (for animation reasons)

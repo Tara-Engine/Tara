@@ -6,12 +6,12 @@
 class TColorRectEntity : public Tara::Entity {
 
 public:
-	TColorRectEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name);
-
-	static std::shared_ptr<TColorRectEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "TColorRectEntity");
+	TColorRectEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "TColorRectEntity");
 
 public:
 	virtual ~TColorRectEntity();
+
+	virtual void OnBeginPlay() override;
 
 	virtual void OnUpdate(float deltaTime) override;
 
@@ -31,17 +31,3 @@ private:
 	glm::vec4 m_Color;
 };
 
-class TControlableEntity : public TColorRectEntity {
-public:
-	TControlableEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name);
-	static std::shared_ptr<TControlableEntity> Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "TControlableEntity");
-	virtual ~TControlableEntity();
-
-	virtual void OnUpdate(float deltaTime) override;
-
-	inline void SetSpeed(float s) { m_Speed = s; }
-	inline float GetSpeed() const { return m_Speed; }
-
-private:
-	float m_Speed;
-};

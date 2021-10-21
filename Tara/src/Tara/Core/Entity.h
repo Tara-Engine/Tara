@@ -42,18 +42,11 @@ namespace Tara {
 		/// Since entities cannot add themselves to their parents or the layer (due to shared pointer strangeness)
 		/// they way to contstruct them is the Create static function. Thus, this is protected
 		/// </summary>
-		/// <param name="name">the name of the entity</param>
-		Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform,  std::string name);
-
-		/// <summary>
-		/// Create a new entity
-		/// </summary>
 		/// <param name="parent">the parent entity, may be null</param>
 		/// <param name="owningLayer">the owning layer, may not be null</param>
 		/// <param name="transform">the transform, defaults to origin, no rot, and a scale of 1</param>
 		/// <param name="name">the name</param>
-		/// <returns>A reference to the new entity</returns>
-		static EntityRef Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "Entity");
+		Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform,  std::string name);
 
 		/// <summary>
 		/// Register an externally created entity. This adds it to the parent, etc.
@@ -71,6 +64,11 @@ namespace Tara {
 		/***********************************************************************************
 		*                          Overridable Functions                                   *
 		************************************************************************************/
+
+		/// <summary>
+		/// A function called after this entity is added to the hirarchy
+		/// </summary>
+		inline virtual void OnBeginPlay() {}
 
 		/// <summary>
 		/// The overridable update function. This should be overriden for all subclasses
@@ -452,6 +450,20 @@ protected:
 		bool m_Exists = true;
 	};
 
+	/// <summary>
+	/// Create a new entity
+	/// </summary>
+	/// <typeparam name="EntityType">The subclass of Entity to make</typeparam>
+	/// <typeparam name="...VA_ARGS">The variable args for its constructor</typeparam>
+	/// <param name="...args">the arguments to the subclass's constructor</param>
+	/// <returns>A reference to the created Entity</returns>
+	template<class EntityType, typename... VA_ARGS>
+	inline std::shared_ptr<EntityType> CreateEntity(VA_ARGS&&... args) {
+		std::shared_ptr<EntityType> entity = std::make_shared<EntityType>(std::forward<VA_ARGS>(args)...);
+		Entity::Register(entity);
+		entity->OnBeginPlay();
+		return entity;
+	}
 
 	template<typename ComponentType>
 	inline std::shared_ptr<ComponentType> Entity::GetFirstCompontentOfType() const

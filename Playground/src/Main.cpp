@@ -57,7 +57,9 @@ public:
 		//the number here is width in world units the screen will be wide. Has no effect on window size.
 		//to make in 1:1 with pixels, set it to the width of the window.
 		
-		m_Camera = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
+		//m_Camera = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
+		m_Camera = Tara::CreateEntity<Tara::CameraEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
+		
 		m_Camera->SetOrthographicExtent(8.0f);
 		std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
@@ -70,7 +72,8 @@ public:
 		}
 
 		
-		auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
+		//auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
+		auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
 
 		auto extent = camera->GetExtent();
 		std::random_device rd;
@@ -79,12 +82,14 @@ public:
 		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
 		//sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
 		
-		m_TempSpriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		//m_TempSpriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		m_TempSpriteEntity = Tara::CreateEntity<Tara::SpriteEntity>(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
 		//spriteEntity->PlayAnimation("default");
 		m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
-		m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+		//m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+		m_Player = Tara::CreateEntity<TColorRectEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
 		
 		
@@ -98,14 +103,15 @@ public:
 		m_Player->AddChild(m_Camera);
 
 		//Controller Component
-		auto controller = TOrthoCameraControllerComponent::Create(m_Player, "PlayerController");
+		auto controller = Tara::CreateComponent<TOrthoCameraControllerComponent>(m_Player, "PlayerController");
 		controller->SetSpeed(1.5f);
 		
 		//delete testing
-		m_Player->AddChild(m_TempSpriteEntity);
+		//m_Player->AddChild(m_TempSpriteEntity);
 		//m_TempSpriteEntity->AddChild(m_Player);
 
 		//Some simple drawing texts
+		/*
 		std::unordered_map <Tara:: Shader::TargetStage, std::string> map;
 		map[Tara::Shader::TargetStage::Vertex] = "assets/basic.vertex.glsl";
 		map[Tara::Shader::TargetStage::Pixel] = "assets/basic.fragment.glsl";
@@ -129,6 +135,7 @@ public:
 		};
 		auto iBuf = Tara::IndexBuffer::Create(indecies, 3);
 		m_VertexArray->SetIndexBuffer(iBuf);
+		*/
 	}
 	
 	virtual void Deactivate() override {
@@ -167,10 +174,11 @@ public:
 	bool OnKeyPressedEvent(Tara::KeyPressEvent& e) {
 		//LOG_S(INFO) << "Key pressed called!";
 		//Tara::After(std::bind(&TestingLayer::test, this, m_Player), 1.0f);
-		if (m_TempSpriteEntity){
-			m_TempSpriteEntity->Destroy();
-			m_TempSpriteEntity.reset();
-		}
+		
+		//if (m_TempSpriteEntity){
+		//	m_TempSpriteEntity->Destroy();
+		//	m_TempSpriteEntity.reset();
+		//}
 		return false;
 	}
 

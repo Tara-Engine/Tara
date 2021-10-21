@@ -8,29 +8,23 @@
 //#define SPRITE_FLIP_CORNER 0x4
 
 namespace Tara {
+
+	REFTYPE(SpriteEntity);
+	NOREFTYPE(SpriteEntity);
+
 	class SpriteEntity : public Entity	{
 
 	public:
 		/// <summary>
-		/// Construct a new sprite entity. Should not normally be called manually
+		/// Construct a new sprite entity. Should not normally be called manually, use Tara::CreateEntity<Tara::SpriteEntity> instead
 		/// </summary>
 		/// <param name="parent">The parent entity</param>
 		/// <param name="owningLayer">The owning layer</param>
 		/// <param name="transform">the transform (defaults to the world origin)</param>
 		/// <param name="name">the entity's name (defaults to "SpriteEntity")</param>
 		/// <param name="texture">the Sprite to render (defults to nullptr)</param>
-		SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, SpriteRef sprite);
+		SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", SpriteRef sprite = nullptr);
 
-		/// <summary>
-		/// Create a new sprite entity
-		/// </summary>
-		/// <param name="parent">The parent entity</param>
-		/// <param name="owningLayer">The owning layer</param>
-		/// <param name="transform">the transform (defaults to the world origin)</param>
-		/// <param name="name">the entity's name (defaults to "SpriteEntity")</param>
-		/// <param name="texture">the Sprite to render (defults to nullptr)</param>
-		/// <returns>the new entity</returns>
-		static std::shared_ptr<SpriteEntity> Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", SpriteRef texture = nullptr);
 
 	public:
 		virtual ~SpriteEntity() {};
@@ -122,6 +116,10 @@ namespace Tara {
 		/// <param name="flipBits">a series of flip bit macros or'ed together</param>
 		inline void SetFlip(uint8_t flipBits) { m_FlipBits = flipBits; }
 
+		/// <summary>
+		/// Get the flip bits
+		/// </summary>
+		/// <returns>the flit bits</returns>
 		inline const uint8_t GetFlip() const { return m_FlipBits; }
 
 	private:
@@ -132,6 +130,4 @@ namespace Tara {
 		glm::vec4 m_Tint;
 		uint8_t m_FlipBits;
 	};
-
-	using SpriteEntityRef = std::shared_ptr<SpriteEntity>;
 }

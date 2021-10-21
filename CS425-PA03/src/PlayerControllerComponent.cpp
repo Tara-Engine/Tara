@@ -11,11 +11,9 @@ PlayerControllerComponent::PlayerControllerComponent(Tara::EntityNoRef parent, c
 	: Tara::Component(parent, name)
 {}
 
-PlayerControllerComponentRef PlayerControllerComponent::Create(Tara::EntityNoRef parent, const std::string & name)
+void PlayerControllerComponent::OnBeginPlay()
 {
-	PlayerControllerComponentRef component = std::make_shared<PlayerControllerComponent>(parent, name);
-	Register(component);
-	return component;
+	ListenForEvents(true);
 }
 
 void PlayerControllerComponent::OnEvent(Tara::Event& e)

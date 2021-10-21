@@ -12,8 +12,7 @@ public:
 
 	virtual ~TOrthoCameraControllerComponent();
 
-	static TOrthoCameraControllerComponentRef Create(Tara::EntityNoRef parent, const std::string& name);
-
+	inline virtual void OnBeginPlay() override { ListenForEvents(true);} //enable window event listening
 
 	virtual void OnUpdate(float deltaTime) override;
 

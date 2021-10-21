@@ -4,15 +4,13 @@ TColorRectEntity::TColorRectEntity(Tara::EntityNoRef parent, Tara::LayerNoRef ow
 	: Entity(parent, owningLayer, transform, name), m_Color(1.0f, 1.0f, 1.0f, 1.0f)
 {}
 
-std::shared_ptr<TColorRectEntity> TColorRectEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name)
-{
-	std::shared_ptr<TColorRectEntity> newEntity = std::make_shared<TColorRectEntity>(parent, owningLayer, transform, name);
-	Tara::Entity::Register(newEntity);
-	return newEntity;
-}
-
 TColorRectEntity::~TColorRectEntity()
 {
+}
+
+void TColorRectEntity::OnBeginPlay()
+{
+	LOG_S(INFO) << "TColorRectEntity OnBeginPlay() called!";
 }
 
 void TColorRectEntity::OnUpdate(float deltaTime)
@@ -31,7 +29,7 @@ void TColorRectEntity::OnDraw(float deltaTime)
 
 void TColorRectEntity::OnEvent(Tara::Event& e)
 {
-	LOG_S(INFO) << e.ToString();
+	//LOG_S(INFO) << e.ToString();
 	Tara::EventFilter filter(e);
 	filter.Call<Tara::OverlapEvent>(TARA_BIND_FN(TColorRectEntity::OnOverlapEvent));
 }
@@ -42,41 +40,3 @@ bool TColorRectEntity::OnOverlapEvent(Tara::OverlapEvent& e)
 	return false;
 }
 
-
-TControlableEntity::TControlableEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name)
-	:TColorRectEntity(parent, owningLayer, transform, name), m_Speed(1.0f)
-{
-}
-
-std::shared_ptr<TControlableEntity> TControlableEntity::Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name)
-{
-	std::shared_ptr<TControlableEntity> newEntity = std::make_shared<TControlableEntity>(parent, owningLayer, transform, name);
-	Tara::Entity::Register(newEntity);
-	newEntity->ListenForEvents(true);
-	return newEntity;
-}
-
-TControlableEntity::~TControlableEntity()
-{
-}
-
-void TControlableEntity::OnUpdate(float deltaTime)
-{
-	Tara::Vector offset = { 0.0f,0.0f,0.0f };
-	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_S)) {
-		offset.y -= 1;
-	}
-	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_W)) {
-		offset.y += 1;
-	}
-	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_A)) {
-		offset.x -= 1;
-	}
-	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_D)) {
-		offset.x += 1;
-	}
-
-	auto t = GetRelativeTransform();
-	t.Position += offset * deltaTime * m_Speed;
-	SetRelativeTransform(t);
-}

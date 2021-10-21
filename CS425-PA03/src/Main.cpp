@@ -74,10 +74,10 @@ public:
 		int32_t originX = (*path.begin() - originY) / MAP_SIZE;
 
 		glm::vec2 playerPos = RoomManager::RoomCoordToWorldCoord({ originX, -originY });
-		m_Player = PawnEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
+		m_Player = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(playerPos.x, playerPos.y,0,16*4,16*4), "player", playerSprite);
 		
 		//make our camera
-		auto cameraEntity = Tara::CameraEntity::Create(
+		auto cameraEntity = Tara::CreateEntity<Tara::CameraEntity>(
 			m_Player, weak_from_this(),
 			Tara::Camera::ProjectionType::Ortographic, 
 			TRANSFORM_2D(0.5f,0.5f,0,1,1),
@@ -90,7 +90,7 @@ public:
 		//m_Player->AddChild(cameraEntity);
 		
 		//Make a copy of this for the AIControllerComponent. But only leave 1 uncommented
-		PlayerControllerComponent::Create(m_Player, "playerController");
+		Tara::CreateComponent<PlayerControllerComponent>(m_Player, "playerController");
 		//m_Player->SetImmortal(true);//test immortality
 		
 
@@ -101,10 +101,10 @@ public:
 			int ry = -(rd() % MAP_SIZE);
 			if (RoomManager::Get()->GetRoom(rx, ry)) {
 				glm::vec2 pos = RoomManager::RoomCoordToWorldCoord({ rx, ry });
-				m_Enemy = PawnEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(pos.x, pos.y, 0, 16 * 4, 16 * 4), "player", enemySprite);
+				m_Enemy = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(pos.x, pos.y, 0, 16 * 4, 16 * 4), "player", enemySprite);
 				m_Enemy->PlayAnimation("all");
 				m_Enemy->SetImmortal(true);
-				EnemyControllerComponent::Create(m_Enemy, "enemyController");
+				Tara::CreateComponent<EnemyControllerComponent>(m_Enemy, "enemyController");
 			}
 		}
 	}

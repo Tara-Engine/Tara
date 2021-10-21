@@ -4,7 +4,7 @@
 
 
 BatchTestLayer::BatchTestLayer()
-	: m_Player(nullptr)
+	 /*: m_Player(nullptr)*/
 {}
 
 void BatchTestLayer::Activate()
@@ -16,16 +16,16 @@ void BatchTestLayer::Activate()
 	m_Texture2 = Tara::Texture2D::Create("assets/wall.png");
 	m_Texture3 = Tara::Texture2D::Create("assets/Particle.png");
 
-	m_Camera = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
+	m_Camera = Tara::CreateEntity<Tara::CameraEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
 	m_Camera->SetOrthographicExtent(8.0f);
 	std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
 
-	m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
-	m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
-	m_Player->SetSpeed(1.5f);
+	//m_Player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+	//m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
+	//m_Player->SetSpeed(1.5f);
 
 	//attach camera to player
-	m_Player->AddChild(m_Camera);
+	//m_Player->AddChild(m_Camera);
 
 
 

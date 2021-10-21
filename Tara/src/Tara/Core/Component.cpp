@@ -7,12 +7,6 @@ namespace Tara{
 		: m_Name(name), m_Parent(parent)
 	{}
 
-	ComponentRef Component::Create(EntityNoRef parent, const std::string& name){
-		std::shared_ptr<Component> component = std::make_shared<Component>(parent, name);
-		Register(component);
-		return component;
-	}
-
 	void Component::Register(ComponentRef component){
 		component->GetParent().lock()->AddComponent(component);
 	}

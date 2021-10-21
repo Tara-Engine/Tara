@@ -52,7 +52,7 @@ private:
 	float m_PlayerSpeed = 1.0f;
 
 	Tara::CameraEntityRef m_Camera;
-	std::shared_ptr<TControlableEntity> m_Player;
+	//std::shared_ptr<TControlableEntity> m_Player;
 	
 
 	Tara::ShaderRef m_GShader;

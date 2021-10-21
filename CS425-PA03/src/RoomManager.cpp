@@ -116,14 +116,16 @@ bool RoomManager::AddRoom(int32_t x, int32_t y, uint32_t doors, uint32_t perm)
 		//the room already exists
 		return false;
 	}
-	auto room = RoomEntity::Create(
+	auto room = Tara::CreateEntity<RoomEntity>(
 		m_DefaultParent, m_DefaultLayer, 
-		doors, perm, 
+		doors, perm,
 		Tara::Transform(
 			Tara::Vector( x * ROOM_SCALE, y * ROOM_SCALE, 0.0f ), 
 			Tara::Rotator(0.0f, 0.0f, 0.0f), 
 			Tara::Vector(ROOM_SCALE, ROOM_SCALE, 1.0f)
-		)
+		),
+		"RoomEntity",
+		RoomManager::RoomTextureFromDoorsAndPerm(doors, perm)
 	);
 	m_Rooms[loc] = room;
 	return true;

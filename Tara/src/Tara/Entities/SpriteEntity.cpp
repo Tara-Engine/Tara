@@ -11,13 +11,6 @@ namespace Tara {
 		m_Tint(1.0f,1.0f,1.0f,1.0f), m_FlipBits(0)
 	{}
 
-	std::shared_ptr<SpriteEntity> SpriteEntity::Create(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, SpriteRef sprite)
-	{
-		std::shared_ptr<SpriteEntity> newEntity = std::make_shared<SpriteEntity>(parent, owningLayer, transform, name, sprite);
-		Entity::Register(newEntity);
-		return newEntity;
-	}
-
 	void SpriteEntity::OnUpdate(float deltaTime)
 	{
 		if (m_CurrentSequence.IFrameRate > 0.0f) {

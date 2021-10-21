@@ -19,23 +19,19 @@ class RoomEntity : public Tara::SpriteEntity {
 public:
 	using RoomEntityRef = std::shared_ptr<RoomEntity>;
 
-	RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite, uint32_t doorState, uint32_t perm);
-	
-	virtual ~RoomEntity() {}
-
 	/// <summary>
-	/// Create a new Room
+	/// 
 	/// </summary>
 	/// <param name="parent">The parent</param>
 	/// <param name="owningLayer">The owning layer</param>
-	/// <param name="doorStates">bitfield of the door states</param>
-	/// <param name="perm">permutation number (0-4, 0 being random) </param>
-	/// <param name="transform">the world transform (optional)</param>
+	/// <param name="doorState">bitfield of the door state</param>
+	/// <param name="perm">permutation number (1-4)</param>
+	/// <param name="transform">the local transform (optional)</param>
 	/// <param name="name">the name (optional)</param>
-	/// <returns></returns>
-	static RoomEntityRef Create(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, uint32_t doorState, uint32_t perm, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "RoomEntity");
-
+	/// <param name="sprite">the sprite (optional)</param>
+	RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, uint32_t doorState, uint32_t perm, Tara::Transform transform = TRANSFORM_DEFAULT, std::string name = "RoomEntity", Tara::SpriteRef sprite = nullptr);
 	
+	virtual ~RoomEntity() {}	
 
 	/// <summary>
 	/// Get the door state
