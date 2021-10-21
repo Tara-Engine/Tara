@@ -4,7 +4,9 @@
 #include "Tara/Input/ApplicationEvents.h"
 #include "Tara/Input/Manifold.h"
 
-
+#pragma warning( push )
+#pragma warning( disable : 4003 ) 
+//disable MSVC warning C4003. It has to do with not enough params in a function-like macro, which is being done intentionally here.
 
 namespace Tara{
     Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
@@ -192,7 +194,13 @@ namespace Tara{
             m_Children.remove(ref);
             if (setToLayer) {
                 m_OwningLayer.lock()->AddEntity(ref);
+                //event to child, only if setToLayer is true. Otherwhise, whatever called this will handle it.
+                ParentSwapedEvent parentSwappedEvent(weak_from_this(), EntityNoRef());
+                ref->ReceiveEvent(parentSwappedEvent);
             }
+            //send event to parent (self)
+            ChildRemovedEvent childRemoveEvent(weak_from_this(), ref);
+            ReceiveEvent(childRemoveEvent);
             return true;
         }
         else {
@@ -223,12 +231,19 @@ namespace Tara{
         if (ref->GetParent().lock()) {
             //if has a parent, swap
             ref->SwapParent(weak_from_this());
+            //parent swap event handled
         }
         else {
             //else, just add to this
             ref->SetParent(weak_from_this(), true);
             m_Children.push_back(ref);
+            //Parent Swap event
+            ParentSwapedEvent parentSwappedEvent(EntityNoRef(), weak_from_this());
+            ref->ReceiveEvent(parentSwappedEvent);
         }
+        //Child Added Event
+        ChildAddedEvent childAddedEvent(weak_from_this(), ref);
+        ReceiveEvent(childAddedEvent);
         return true;
     }
 
@@ -239,13 +254,17 @@ namespace Tara{
         if (IsChild(newParent.lock(), true)) {
             return false;
         }
-        
+        auto parentCopy = m_Parent;
         //remove the entity from old parent
-        m_Parent.lock()->RemoveChildByRef(shared_from_this(), false);
+        m_Parent.lock()->RemoveChildByRef(shared_from_this(), false); //handles ChildRemovedEvent
 
         //add to new parent
         SetParent(newParent, true);
         newParent.lock()->m_Children.push_back(shared_from_this());
+        
+        //parent swappedEvent
+        ParentSwapedEvent parentSwappedEvent(parentCopy, newParent);
+        ReceiveEvent(parentSwappedEvent);
         return false;
     }
 
@@ -310,6 +329,9 @@ namespace Tara{
             }
             //now add to self
             m_Components.push_back(component);
+            //event
+            ComponentAddedEvent e(weak_from_this(), component);
+            ReceiveEvent(e);
             return true;
         }
     }
@@ -344,6 +366,8 @@ namespace Tara{
         if (component) {
             m_Components.remove(component);
             component->SetParent(EntityNoRef());
+            ComponentRemovedEvent e(weak_from_this(), component);
+            ReceiveEvent(e);
         }
         return component;
     }
@@ -353,6 +377,8 @@ namespace Tara{
         ENTITY_EXISTS(false);
         if (IsComponent(ref)) {
             m_Components.remove(ref);
+            ComponentRemovedEvent e(weak_from_this(), ref);
+            ReceiveEvent(e);
             ref->SetParent(EntityNoRef());
             return true;
         }
@@ -539,3 +565,5 @@ namespace Tara{
 
 
 }
+
+#pragma warning( pop )

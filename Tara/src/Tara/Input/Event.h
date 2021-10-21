@@ -11,8 +11,9 @@ namespace Tara {
 		WindowClose, WindowResize, 
 		KeyPress, KeyRelease, KeyType,
 		MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
-		Overlap
-		//TODO: collision, hit, etc. Application Events
+		Overlap, 
+		ChildAdded, ChildRemoved, ParentChanged, ComponentAdded, ComponentRemoved
+		//TODO: other Application Events
 	};
 
 	/// <summary>
@@ -27,6 +28,7 @@ namespace Tara {
 		EventCategoryMouse		 = BIT(4),
 		EventCategoryMouseButton = BIT(5),
 		EventCategoryOverlap	 = BIT(6),
+		EventCategoryHirarchy	 = BIT(7),
 		//TODO: Categories of application events
 	};
 
