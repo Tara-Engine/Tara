@@ -78,6 +78,9 @@ public:
 	/// <returns></returns>
 	static std::pair<bool, bool> IsCentered(glm::vec2 pos);
 
+	inline int32_t GetWidth() { return m_Width; };
+	inline int32_t GetHeight() { return m_Height; };
+	inline glm::vec2 GetGoal() { return m_Goal; };
 	
 
 	/// <summary>
@@ -123,6 +126,8 @@ private:
 	};
 
 	std::unordered_map<std::pair<uint32_t,uint32_t>, RoomEntityRef, pair_hash> m_Rooms;
+	int32_t m_Width, m_Height;
+	glm::vec2 m_Goal;
 
 	Tara::EntityNoRef m_DefaultParent;
 	Tara::LayerNoRef m_DefaultLayer;

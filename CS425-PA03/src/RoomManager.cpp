@@ -144,6 +144,8 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 {
 	LOG_S(INFO) << "Room Generator Seed: " << seed;
 	srand(seed);
+	m_Width = width;
+	m_Height = height;
 	auto x = rand() % width;
 	auto y = rand() % height;
 	auto doorMatrix = std::vector<uint8_t>(width * height, 0);
@@ -250,6 +252,7 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 			goal = cell;
 		}
 	}
+	m_Goal = glm::vec2((goal - (goal % width)) / height, (goal % width) * -1);
 	// make a matrix of distance from the goal cell
 	//int32_t *distMatrix = new int32_t[width * height];
 	//memset(distMatrix, -2, width * height);
