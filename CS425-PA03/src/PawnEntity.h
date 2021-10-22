@@ -62,12 +62,27 @@ public:
 	/// <param name="alive"></param>
 	inline void SetImmortal(bool immortal) { m_Immortal = immortal; m_Alive |= immortal; }
 
+	/// <summary>
+	/// Get the pawn's direction
+	/// </summary>
+	/// <returns></returns>
+	inline Direction GetDirection() const { return m_Direction; }
+
+	/// <summary>
+	/// Set the pawn's direction
+	/// </summary>
+	/// <param name="dir"></param>
+	inline void SetDirection(Direction dir) { m_Direction = dir; }
 
 	/// <summary>
 	/// Set Pawn back to spawn
 	/// </summary>
 	void Respawn();
 	 
+	/// <summary>
+	/// Check if pawn is traveling
+	/// </summary>
+	/// <returns></returns>
 	virtual bool GetTraveling() const { return m_Traveling; }
 
 private:
