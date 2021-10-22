@@ -60,12 +60,17 @@ public:
 		}
 		auto enemySprite = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("enemySprite");
 		if (!enemySprite) {
-			auto enemyTexture = Tara::Texture2D::Create("assets/Particle_5x2.png", "enemyTexture");
-			enemySprite = Tara::Sprite::Create(enemyTexture, 5, 2, "enemySprite");
+			auto enemyTexture = Tara::Texture2D::Create("assets/Particle_10x5.png", "enemyTexture");
+			enemySprite = Tara::Sprite::Create(enemyTexture, 10, 5, "enemySprite");
 			//load animations
-			if (!enemySprite->CreateAnimationSequence("all", 0, 9, 15.0f)) {
-				LOG_S(WARNING) << "Enemy anim sequence creation failed!";
-			}
+			enemySprite->CreateAnimationSequence("walk_down",    0, 9, 15.0f);
+			enemySprite->CreateAnimationSequence("walk_right", 10, 19, 15.0f);
+			enemySprite->CreateAnimationSequence("walk_left",  20, 29, 15.0f);
+			enemySprite->CreateAnimationSequence("walk_up",  30, 39, 15.0f);
+			enemySprite->CreateAnimationSequence("idle_down",  40, 43, 15.0f);
+			enemySprite->CreateAnimationSequence("idle_right",  40, 43, 15.0f);
+			enemySprite->CreateAnimationSequence("idle_left",  40, 43, 15.0f);
+			enemySprite->CreateAnimationSequence("idle_up",  40, 43, 15.0f);
 		}
 
 
