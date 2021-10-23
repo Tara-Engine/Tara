@@ -100,6 +100,8 @@ namespace Tara {
 	/// <returns>A reference to that Component</returns>
 	template<class ComponentType, typename... VA_ARGS>
 	inline std::shared_ptr<ComponentType> CreateComponent(VA_ARGS&&... args) {
+		static_assert(std::is_base_of<Component, ComponentType>::value, "Error: Tara::CreateComponent:: Provided class is not a subclass of Tara::Component");
+		static_assert(std::is_constructible<ComponentType, VA_ARGS...>::value, "Error: Tara::CreateComponent:: cannot compile due to paramaters passed not matching constructor of that component type!");
 		std::shared_ptr<ComponentType> entity = std::make_shared<ComponentType>(std::forward<VA_ARGS>(args)...);
 		Component::Register(entity);
 		entity->OnBeginPlay();

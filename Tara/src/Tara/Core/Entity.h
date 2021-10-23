@@ -459,6 +459,8 @@ protected:
 	/// <returns>A reference to the created Entity</returns>
 	template<class EntityType, typename... VA_ARGS>
 	inline std::shared_ptr<EntityType> CreateEntity(VA_ARGS&&... args) {
+		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::CreateEntity:: Provided class is not a subclass of Tara::Entity");
+		static_assert(std::is_constructible<EntityType, VA_ARGS...>::value, "Error: Tara::CreateEntity:: cannot compile due to paramaters passed not matching constructor of that entity type!");
 		std::shared_ptr<EntityType> entity = std::make_shared<EntityType>(std::forward<VA_ARGS>(args)...);
 		Entity::Register(entity);
 		entity->OnBeginPlay();
