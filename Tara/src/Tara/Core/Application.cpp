@@ -5,10 +5,11 @@
 
 #include "Tara/Renderer/RenderCommand.h"
 #include "Tara/Core/Timer.h"
+#include "Tara/Utility/Profiler.h"
 
 //TODO: Remove from this file
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+//#include "glad/glad.h"
+//#include "GLFW/glfw3.h"
 
 namespace Tara {
 
@@ -72,11 +73,13 @@ namespace Tara {
 				m_Running = false;
 				exit(-1);
 			}
-		} 
+		}
+		Profiler::Dump(0);
 	}
 
 	void Application::Update(float deltaTime)
 	{
+		SCOPE_PROFILE("Update");
 		//update the window first, to cause all event states to update
 		m_Window->OnUpdate();
 		//then, update the scene
@@ -111,6 +114,7 @@ namespace Tara {
 
 	void Application::Render(float deltaTime)
 	{
+		SCOPE_PROFILE("Render");
 		//clear window
 		
 		RenderCommand::Clear();
@@ -123,6 +127,7 @@ namespace Tara {
 	//TODO: remove from here and add to InputManager static class
 	bool Application::EventCallback(Event& e)
 	{
+		SCOPE_PROFILE("WindowEvent");
 		if (e.GetEventClass() == EventClass::WindowClose) {
 			m_Running = false;
 		}

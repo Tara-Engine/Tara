@@ -42,5 +42,9 @@
 #include "Tara/Entities/CameraEntity.h"
 #include "Tara/Entities/DynamicMultiChildEntity.h"
 
+//Utilities
+#include "Tara/Utility/Timer.h"
+#include "Tara/Utility/Profiler.h"
+
 #define LOGURU_WITH_STREAMS 1
 #include "loguru.hpp"

@@ -143,7 +143,8 @@ public:
 	}
 
 	virtual void Update(float deltaTime) override {
-
+		//SCOPE_PROFILE("Update");
+		//Tara::Timer timer("UpdateTimer");
 		//call super update function
 		Tara::Layer::Update(deltaTime);
 
