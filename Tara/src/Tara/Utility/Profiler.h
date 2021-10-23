@@ -2,7 +2,11 @@
 #include "tarapch.h"
 #include "Tara/Utility/Timer.h"
 
+#ifdef TARA_PROFILING_ENABLED
 #define SCOPE_PROFILE(name) Tara::Timer timer##__LINE__(name, [&](const char* n, float t){Tara::Profiler::Log(__FILE__, n, t);})
+#else
+#define SCOPE_PROFILE(name)
+#endif
 
 namespace Tara {
 	/// <summary>

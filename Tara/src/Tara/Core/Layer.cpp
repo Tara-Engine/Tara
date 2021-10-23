@@ -50,22 +50,25 @@ namespace Tara{
 	{
 		//LOG_S(INFO) << "Layer OnEvent called!";
 		std::list<EventListenerNoRef> removable;
-		for (auto listener : m_Listeners) {
+		//for (auto listener : m_Listeners) {
+		for (auto listener = m_Listeners.begin(); listener != m_Listeners.end(); listener++) {
 			//LOG_S(INFO) << "Event listener OnEvent called!";
-			auto lockedListener = listener.lock();
+			auto lockedListener = listener->lock();
+			//auto lockedListener = listener.lock();
 			if (lockedListener) {
 				//valid non-null listener
 				lockedListener->ReceiveEvent(e);
 			}
 			else {
 				//add to removable list (don't want to remove now b/c of possible issues)
-				removable.push_back(listener);
+				m_Listeners.erase(listener--);
+				//removable.push_back(listener);
 			}
 		}
 		//remove any that are no longer valid
-		for (auto listener : removable) {
-			m_Listeners.remove(listener);
-		}
+		//for (auto listener : removable) {
+		//	m_Listeners.remove(listener);
+		//}
 	}
 
 	bool Layer::AddEntity(EntityRef ref)
@@ -82,7 +85,8 @@ namespace Tara{
 		if (!IsEntityRoot(ref)) {
 			return false;
 		}
-		m_Entities.remove(ref);
+		std::remove(m_Entities.begin(), m_Entities.end(), ref);
+		//m_Listeners.remove(ref);
 		return true;
 	}
 
@@ -101,7 +105,8 @@ namespace Tara{
 			}
 		}
 		else {
-			m_Listeners.remove(ref);
+			std::remove(m_Entities.begin(), m_Entities.end(), ref);
+			//m_Listeners.remove(ref);
 		}
 		return true;
 	}

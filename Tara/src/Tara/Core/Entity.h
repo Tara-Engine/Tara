@@ -10,6 +10,9 @@
 
 #define ENTITY_EXISTS(x) if (!Exists()) {return x;}
 
+//#define LISTTYPE std::list
+#define LISTTYPE std::vector
+
 namespace Tara {
 
 	REFTYPE(Layer);
@@ -385,7 +388,7 @@ protected:
 		/// Get a const ref to the list of children
 		/// </summary>
 		/// <returns>the list of children</returns>
-		const std::list<EntityRef>& GetChildren() const { return m_Children; }
+		const LISTTYPE<EntityRef>& GetChildren() const { return m_Children; }
 
 		/// <summary>
 		/// used for checking if this entity is a real entity, or if its a ghost, zombie entity.
@@ -443,8 +446,8 @@ protected:
 		Transform m_Transform;
 		const LayerNoRef m_OwningLayer;
 		EntityNoRef m_Parent;
-		std::list<EntityRef> m_Children;
-		std::list<ComponentRef> m_Components;
+		LISTTYPE<EntityRef> m_Children;
+		LISTTYPE<ComponentRef> m_Components;
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
 		bool m_Exists = true;
@@ -482,3 +485,4 @@ protected:
 
 }
 
+#undef LISTTYPE

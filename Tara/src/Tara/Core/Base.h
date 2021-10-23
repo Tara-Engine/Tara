@@ -5,6 +5,10 @@ some future - proofing for the engine,
 if I decide to support multiple platforms
 */
 
+#ifdef DEBUG
+#define TARA_PROFILING_ENABLED
+#endif
+
 #ifdef _WIN32
 	#ifdef _WIN64
 		#define TARA_PLATFORM_WINDOWS

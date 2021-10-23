@@ -173,7 +173,8 @@ namespace Tara{
         ENTITY_EXISTS(false);
         if (&*(ref->GetParent().lock()) == this) {
             ref->SetParent(std::weak_ptr<Entity>());
-            m_Children.remove(ref);
+            //m_Children.remove(ref);
+            std::remove(m_Children.begin(), m_Children.end(), ref);
             if (setToLayer) {
                 m_OwningLayer.lock()->AddEntity(ref);
                 //event to child, only if setToLayer is true. Otherwhise, whatever called this will handle it.
@@ -346,7 +347,8 @@ namespace Tara{
             }
         }
         if (component) {
-            m_Components.remove(component);
+            //m_Components.remove(component);
+            std::remove(m_Components.begin(), m_Components.end(), component);
             component->SetParent(EntityNoRef());
             ComponentRemovedEvent e(weak_from_this(), component);
             ReceiveEvent(e);
@@ -358,7 +360,8 @@ namespace Tara{
     {
         ENTITY_EXISTS(false);
         if (IsComponent(ref)) {
-            m_Components.remove(ref);
+            //m_Components.remove(ref);
+            std::remove(m_Components.begin(), m_Components.end(), ref);
             ComponentRemovedEvent e(weak_from_this(), ref);
             ReceiveEvent(e);
             ref->SetParent(EntityNoRef());

@@ -32,6 +32,7 @@ public:
 
 	//this function is called when the layer is loaded to the screen. OpenGL context is guaranteed to be made, and engine systems initialized
 	virtual void Activate() override {
+		SCOPE_PROFILE("LayerLoading");
 		//set BG color
 		Tara::RenderCommand::SetClearColor({0.0f,0.0f,0.0f});
 		//set default texture filtering mode

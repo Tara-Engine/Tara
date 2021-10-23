@@ -74,7 +74,9 @@ namespace Tara {
 				exit(-1);
 			}
 		}
+#ifdef TARA_PROFILING_ENABLED
 		Profiler::Dump(0);
+#endif
 	}
 
 	void Application::Update(float deltaTime)
