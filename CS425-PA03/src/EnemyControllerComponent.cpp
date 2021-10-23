@@ -66,8 +66,8 @@ Tara::Vector EnemyControllerComponent::GetAStarDirection(int32_t x, int32_t y)
 	{
 		if (visited.count(target) != 0)
 		{
+			visited[target].push_back(target); // needed since traceback doesn't include target cell
 			auto iter = visited[target].begin();
-			// TODO: somehow this always stops one cell short of its destination
 			if (iter != visited[target].end())
 			{
 				iter++;
