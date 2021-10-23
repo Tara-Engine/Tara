@@ -297,6 +297,16 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		if (distMatrix[i] == 999)
 			distMatrix[i] = -1;
 	}
+	for (int i = 0; i < height; i++)
+	{
+		std::string line = "";
+		for (int j = 0; j < width; j++)
+		{
+			line += std::to_string(distMatrix[j * height + i]);
+			line += (std::string)",";
+		}
+		LOG_S(INFO) << line;
+	}
 	// collect cells of adequate distance and pick one for the start cell
 	cellQueue.clear(); // shouldn't be needed but just in case
 	depth = *(std::max_element(std::begin(distMatrix), std::end(distMatrix)));
@@ -327,11 +337,11 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 		int32_t down = cellX * height + (cellY + 1);
 		int32_t left = (cellX - 1) * height + cellY;
 		int32_t right = (cellX + 1) * height + cellY;
-		if (cellY > 0 && distMatrix[up] == depth)
+		if (cellY > 0 && distMatrix[up] == depth && doorMatrix[cell] & DOORSTATE_UP)
 			cellQueue.push_back(up);
-		else if (cellY < height - 1 && distMatrix[down] == depth)
+		else if (cellY < height - 1 && distMatrix[down] == depth && doorMatrix[cell] & DOORSTATE_DOWN)
 			cellQueue.push_back(down);
-		else if (cellX > 0 && distMatrix[left] == depth)
+		else if (cellX > 0 && distMatrix[left] == depth && doorMatrix[cell] & DOORSTATE_LEFT)
 			cellQueue.push_back(left);
 		else if (cellX < height - 1)// process of elimination
 			cellQueue.push_back(right);
@@ -352,6 +362,11 @@ std::list<int32_t> RoomManager::Generate(uint32_t seed, int32_t width, int32_t h
 				RoomManager::AddRoom(x, -y, doorMatrix[x * height + y] & DOORSTATE_ALL, state);
 			}
 		}
+	}
+	for (auto cell : cellQueue)
+	{
+		LOG_S(INFO) << ((cell - (cell % width)) / height) << "," << (cell % width) << " is on the path";
+		//LOG_S(INFO) << cell << " is on the path";
 	}
 	//delete distMatrix;//Don't forget to do this!
 	//delete doorMatrix;//
