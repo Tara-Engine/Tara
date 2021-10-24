@@ -1,13 +1,14 @@
 #pragma once
 #include <Tara.h>
 #include "RoomEntity.h"
+#include "PawnEntity.h"
 
 REFTYPE(EnemyControllerComponent)
 //NOREFTYPE(EnemyControllerComponent)
 
 class EnemyControllerComponent : public Tara::Component {
 public:
-	EnemyControllerComponent(Tara::EntityNoRef parent, const std::string& name);
+	EnemyControllerComponent(Tara::EntityNoRef parent, const std::string& name, PawnEntityNoRef player);
 
 	virtual ~EnemyControllerComponent() {}
 
@@ -16,6 +17,9 @@ public:
 	Tara::Vector GetAStarDirection(int32_t x, int32_t y);
 
 private:
+	PawnEntityNoRef m_Player;
+	Tara::Vector m_LastDir;
+
 	struct ZComparator
 	{
 		bool operator() (const glm::vec3& a, const glm::vec3& b)

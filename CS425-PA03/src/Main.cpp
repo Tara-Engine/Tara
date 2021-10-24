@@ -111,7 +111,7 @@ public:
 				m_Enemy = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(pos.x, pos.y, 0, 16 * 4, 16 * 4), "player", enemySprite);
 				m_Enemy->PlayAnimation("all");
 				m_Enemy->SetImmortal(true);
-				Tara::CreateComponent<EnemyControllerComponent>(m_Enemy, "enemyController");
+				Tara::CreateComponent<EnemyControllerComponent>(m_Enemy, "enemyController", m_Player);
 			}
 		}
 	}
