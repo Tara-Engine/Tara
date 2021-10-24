@@ -2,7 +2,8 @@
 #include <Tara.h>
 
 
-
+REFTYPE(PawnEntity)
+NOREFTYPE(PawnEntity)
 
 /// <summary>
 /// The Pawn is also a subclass of SpriteEntity
