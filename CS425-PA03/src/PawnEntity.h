@@ -83,7 +83,12 @@ public:
 	/// Check if pawn is traveling
 	/// </summary>
 	/// <returns></returns>
-	virtual bool GetTraveling() const { return m_Traveling; }
+	inline bool GetTraveling() const { return m_Traveling; }
+
+	/// <summary>
+	/// Kill the pawn
+	/// </summary>
+	void Kill();
 
 private:
 	Tara::Vector m_Target, m_Origin, m_Spawn;

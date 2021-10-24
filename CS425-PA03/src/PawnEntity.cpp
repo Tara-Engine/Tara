@@ -40,11 +40,7 @@ void PawnEntity::OnUpdate(float deltaTime)
 			auto room = RoomManager::Get()->GetRoom(roomPos.x, roomPos.y);
 			//if room is real, player is centered on room, the permutation is 4, and its not a dead end, then die!
 			if (room && centered.first && centered.second && room->GetPerm() == 4 && !Tara::PowOfTwo(room->GetDoorState())) {
-				LOG_S(INFO) << "Pawn \"" << GetName() << "\" has Died!";
-				SetAlive(false);
-				if (!GetImmortal()){ //only respawn if not immortal
-					Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
-				}
+				Kill();
 			}
 		}
 		else {
@@ -95,4 +91,13 @@ void PawnEntity::Respawn()
 	m_Target = m_Spawn;
 	SetWorldPosition(m_Spawn);
 	SetAlive(true);
+}
+
+void PawnEntity::Kill()
+{
+	LOG_S(INFO) << "Pawn \"" << GetName() << "\" has Died!";
+	SetAlive(false);
+	if (!GetImmortal()) { //only respawn if not immortal
+		Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
+	}
 }

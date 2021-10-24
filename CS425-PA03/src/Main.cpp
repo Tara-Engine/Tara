@@ -105,7 +105,8 @@ public:
 		while (!m_Enemy) {
 			int rx = rd() % MAP_SIZE;
 			int ry = -(rd() % MAP_SIZE);
-			if (RoomManager::Get()->GetRoom(rx, ry)) {
+			auto room = RoomManager::Get()->GetRoom(rx, ry);
+			if (room && !Tara::PowOfTwo(room->GetDoorState())) { //the room is real and not a dead end
 				glm::vec2 pos = RoomManager::RoomCoordToWorldCoord({ rx, ry });
 				m_Enemy = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(pos.x, pos.y, 0, 16 * 4, 16 * 4), "player", enemySprite);
 				m_Enemy->PlayAnimation("all");
@@ -121,6 +122,12 @@ public:
 
 	virtual void Update(float deltaTime) override {
 		Tara::Layer::Update(deltaTime);
+		//deal with player and enemy colliding
+		//here, for simplicity. They already both have renferences in this context.
+		//if (m_Player->GetAlive() && glm::length(m_Player->GetWorldPosition() - m_Enemy->GetWorldPosition()) < ROOM_SCALE / 9) {
+		//	LOG_S(INFO) << "Distance: " << glm::length(m_Player->GetWorldPosition() - m_Enemy->GetWorldPosition());
+		//	//m_Player->Kill();
+		//}
 	}
 
 	virtual void Draw(float deltaTime) override {
