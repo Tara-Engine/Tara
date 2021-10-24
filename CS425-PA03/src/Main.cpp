@@ -124,16 +124,16 @@ public:
 		Tara::Layer::Update(deltaTime);
 		//deal with player and enemy colliding
 		//here, for simplicity. They already both have renferences in this context.
-		//if (m_Player->GetAlive() && glm::length(m_Player->GetWorldPosition() - m_Enemy->GetWorldPosition()) < ROOM_SCALE / 9) {
-		//	LOG_S(INFO) << "Distance: " << glm::length(m_Player->GetWorldPosition() - m_Enemy->GetWorldPosition());
-		//	//m_Player->Kill();
-		//}
+		if (m_Player->GetAlive() && glm::distance(m_Player->GetWorldPosition(), m_Enemy->GetWorldPosition()) < ROOM_SCALE / 9) {
+			m_Player->Kill();
+		}
 	}
 
 	virtual void Draw(float deltaTime) override {
 		//begin a scene using our camera, call the parent draw function (which draws the entities) and end the scene
 		Tara::Renderer::BeginScene(m_Camera);
 		Tara::Layer::Draw(deltaTime);
+		//draw the death texture if the player is dead.
 		if (!m_Player->GetAlive()) {
 			auto t = m_Player->GetWorldTransform();
 			t.Scale = { 1000, 454 ,1 };
