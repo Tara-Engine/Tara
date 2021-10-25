@@ -5,9 +5,6 @@
 #include "Tara/Input/EventListener.h"
 #include "Tara/Input/Manifold.h"
 
-//#define LISTTYPE std::list
-#define LISTTYPE std::vector
-
 namespace Tara {
 
 	struct Manifold;
@@ -140,7 +137,7 @@ namespace Tara {
 		/// Get a const ref to the list of entities that are root in this layer
 		/// </summary>
 		/// <returns>const ref to list of entities that are root in this layer</returns>
-		const LISTTYPE<EntityRef>& GetEntityList() const { return m_Entities; }
+		const std::list<EntityRef>& GetEntityList() const { return m_Entities; }
 
 
 	private:
@@ -148,10 +145,10 @@ namespace Tara {
 
 	private:
 
-		LISTTYPE<EntityRef> m_Entities;
+		std::list<EntityRef> m_Entities;
 		std::list<EntityNoRef> m_DestroyedEntities;
 
-		LISTTYPE<EventListenerNoRef> m_Listeners;
+		std::list<EventListenerNoRef> m_Listeners;
 
 		std::list<Manifold> m_FrameManifoldQueue;
 	};

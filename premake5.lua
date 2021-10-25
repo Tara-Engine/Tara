@@ -22,11 +22,13 @@ IncludeDir = {
 	loguru = "Vendor/loguru",
 	glm = "Vendor/glm",
 	stb = "Vendor/stb",
-	json = "Vendor/json/single_include"
+	json = "Vendor/json/single_include",
+	lua = "Vendor/lua",
+	sol = "Vendor/sol2/include",
 }
 --"sdl" = "Vendor/sdl/include",
 group("dependancies")
-	include("Vendor/glad")
+--	include("Vendor/glad")
 	include("Vendor")
 
 
@@ -65,6 +67,8 @@ project("Tara")
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.json}",
+		"%{IncludeDir.lua}",
+		"%{IncludeDir.sol}",
 	})
 	
 	
@@ -72,6 +76,7 @@ project("Tara")
 		"glfw",
 		"glad",
 		"loguru",
+		"lua",
 	})
 	
 	defines({
@@ -137,6 +142,8 @@ project("Playground")
 		"%{IncludeDir.loguru}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.json}",
+		"%{IncludeDir.lua}",
+		"%{IncludeDir.sol}",
 	})
 	
 	
@@ -145,6 +152,7 @@ project("Playground")
 		"glfw",
 		"glad",
 		"loguru",
+		"lua",
 	})
 	
 	filter("system:Windows")
@@ -206,6 +214,8 @@ project("CS425-PA03")
 		"%{IncludeDir.loguru}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.json}",
+		"%{IncludeDir.lua}",
+		"%{IncludeDir.sol}",
 	})
 	
 	
@@ -214,6 +224,7 @@ project("CS425-PA03")
 		"glfw",
 		"glad",
 		"loguru",
+		"lua",
 	})
 	
 	filter("system:Windows")

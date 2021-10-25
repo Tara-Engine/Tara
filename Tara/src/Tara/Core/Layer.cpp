@@ -22,7 +22,9 @@ namespace Tara{
 	void Layer::Update(float deltaTime)
 	{
 		for (auto entity : m_Entities) {
-			entity->Update(deltaTime);
+			if (entity) {
+				entity->Update(deltaTime);
+			}
 		}
 		uint32_t cleanCount = 0;
 		for (auto it = m_DestroyedEntities.begin(); it != m_DestroyedEntities.end();) {
@@ -42,7 +44,9 @@ namespace Tara{
 	void Layer::Draw(float deltaTime)
 	{
 		for (auto entity : m_Entities) {
-			entity->Draw(deltaTime);
+			if (entity) {
+				entity->Draw(deltaTime);
+			}
 		}
 	}
 
@@ -50,25 +54,22 @@ namespace Tara{
 	{
 		//LOG_S(INFO) << "Layer OnEvent called!";
 		std::list<EventListenerNoRef> removable;
-		//for (auto listener : m_Listeners) {
-		for (auto listener = m_Listeners.begin(); listener != m_Listeners.end(); listener++) {
+		for (auto listener : m_Listeners) {
 			//LOG_S(INFO) << "Event listener OnEvent called!";
-			auto lockedListener = listener->lock();
-			//auto lockedListener = listener.lock();
+			auto lockedListener = listener.lock();
 			if (lockedListener) {
 				//valid non-null listener
 				lockedListener->ReceiveEvent(e);
 			}
 			else {
 				//add to removable list (don't want to remove now b/c of possible issues)
-				m_Listeners.erase(listener--);
-				//removable.push_back(listener);
+				removable.push_back(listener);
 			}
 		}
 		//remove any that are no longer valid
-		//for (auto listener : removable) {
-		//	m_Listeners.remove(listener);
-		//}
+		for (auto listener : removable) {
+			m_Listeners.remove(listener);
+		}
 	}
 
 	bool Layer::AddEntity(EntityRef ref)
@@ -85,8 +86,7 @@ namespace Tara{
 		if (!IsEntityRoot(ref)) {
 			return false;
 		}
-		std::remove(m_Entities.begin(), m_Entities.end(), ref);
-		//m_Listeners.remove(ref);
+		m_Entities.remove(ref);
 		return true;
 	}
 
@@ -105,8 +105,7 @@ namespace Tara{
 			}
 		}
 		else {
-			std::remove(m_Entities.begin(), m_Entities.end(), ref);
-			//m_Listeners.remove(ref);
+			m_Listeners.remove(ref);
 		}
 		return true;
 	}

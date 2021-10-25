@@ -5,6 +5,7 @@ A Tara application, for testing purposes.
 #include <random>
 
 #include <Tara.h>
+#include <sol/sol.hpp>
 
 /*
 OpenGL include - BAD - used for developing new features ONLY
@@ -41,6 +42,15 @@ public:
 	/// </summary>
 	virtual void Activate() override {
 		LOG_S(INFO) << "Testing Layer Activated!";
+
+		//lua test
+		//todo:: remove
+		//sol::state lua;
+		//lua.open_libraries(sol::lib::base, sol::lib::package);
+		//lua.script("print('Hello From Lua!')");
+
+
+
 
 		//Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Linear);
 		Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Nearest);

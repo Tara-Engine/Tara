@@ -35,11 +35,14 @@ project("loguru")
 	--CONFIGURATION
 	filter ("configurations:Debug")
 		runtime "Debug"
+		defines("DEBUG")
 		symbols "on"
 
 	filter ("configurations:Release")
 		runtime "Release"
+		defines("NDBUG")
 		optimize "on"
+	
 	
 
 	filter("")
@@ -115,12 +118,125 @@ project("glfw")
 	filter("")
 	
 	--CONFIGURATION
-	filter("configurations:Debug")
+	filter ("configurations:Debug")
 		runtime "Debug"
+		defines("DEBUG")
 		symbols "on"
 
-	filter("configurations:Release")
+	filter ("configurations:Release")
 		runtime "Release"
+		defines("NDBUG")
 		optimize "on"
+	
 		
 	filter("")
+
+
+project("glad")
+	location("glad")
+	kind "StaticLib"
+	language "C"
+	staticruntime "Off"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin/int/" .. outputdir .. "/%{prj.name}")
+	
+	
+	files({
+		"glad/inlcude/glad/glad.h",
+		"glad/include/KHR/khrplatform.h",
+		"glad/src/glad.c",
+	})
+	
+	includedirs({
+		"glad/include"
+	})
+	
+	filter ("configurations:Debug")
+		runtime "Debug"
+		defines("DEBUG")
+		symbols "on"
+
+	filter ("configurations:Release")
+		runtime "Release"
+		defines("NDBUG")
+		optimize "on"
+	
+	
+
+	filter("")
+
+	filter("system:windows")
+		systemversion("latest")
+	
+	filter("system:Linux")
+		systemversion("latest")
+
+
+project("lua")
+	location("lua")
+	kind("StaticLib")
+	language("C")
+	staticruntime("Off")
+	
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin/int/" .. outputdir .. "/%{prj.name}")
+	
+	
+	files({
+		"lua/lapi.c",
+		"lua/lauxlib.c",
+		"lua/lbaselib.c",
+		"lua/lcode.c",
+		"lua/lcorolib.c",
+		"lua/lctype.c",
+		"lua/ldblib.c",
+		"lua/ldebug.c",
+		"lua/ldo.c",
+		"lua/ldump.c",
+		"lua/lfunc.c",
+		"lua/lgc.c",
+		"lua/linit.c",
+		"lua/liolib.c",
+		"lua/llex.c",
+		"lua/lmathlib.c",
+		"lua/lmem.c",
+		"lua/loadlib.c",
+		"lua/lobject.c",
+		"lua/lopcodes.c",
+		"lua/loslib.c",
+		"lua/lparser.c",
+		"lua/lstate.c",
+		"lua/lstring.c",
+		"lua/lstrlib.c",
+		"lua/ltable.c",
+		"lua/ltablib.c",
+		"lua/ltests.c",
+		"lua/ltm.c",
+		"lua/lundump.c",
+		"lua/lutf8lib.c",
+		"lua/lvm.c",
+		"lua/lzio.c",
+	})
+	
+	includedirs({
+		"lua"
+	})
+	
+	filter ("configurations:Debug")
+		runtime "Debug"
+		defines("DEBUG")
+		symbols "on"
+
+	filter ("configurations:Release")
+		runtime "Release"
+		defines("NDBUG")
+		optimize "on"
+
+	filter("")
+
+	filter("system:windows")
+		systemversion("latest")
+	
+	filter("system:Linux")
+		systemversion("latest")
