@@ -15,4 +15,10 @@ namespace Tara{
 		m_Parent.lock()->GetOwningLayer().lock()->EnableListener(weak_from_this(), enable);
 	}
 
+	void Component::RegisterLuaType(sol::state& lua)
+	{
+		sol::usertype<Component> type = lua.new_usertype<Component>("Component"); //no constructors. for now.
+		ExtendLuaType<Component>(type);
+	}
+
 }

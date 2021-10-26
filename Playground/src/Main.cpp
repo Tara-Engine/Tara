@@ -5,7 +5,6 @@ A Tara application, for testing purposes.
 #include <random>
 
 #include <Tara.h>
-#include <sol/sol.hpp>
 
 /*
 OpenGL include - BAD - used for developing new features ONLY
@@ -43,15 +42,6 @@ public:
 	virtual void Activate() override {
 		LOG_S(INFO) << "Testing Layer Activated!";
 
-		//lua test
-		//todo:: remove
-		//sol::state lua;
-		//lua.open_libraries(sol::lib::base, sol::lib::package);
-		//lua.script("print('Hello From Lua!')");
-
-
-
-
 		//Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Linear);
 		Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Nearest);
 
@@ -69,7 +59,6 @@ public:
 		
 		//m_Camera = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
 		m_Camera = Tara::CreateEntity<Tara::CameraEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
-		
 		m_Camera->SetOrthographicExtent(8.0f);
 		std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
@@ -116,36 +105,9 @@ public:
 		auto controller = Tara::CreateComponent<TOrthoCameraControllerComponent>(m_Player, "PlayerController");
 		controller->SetSpeed(1.5f);
 		
-		//delete testing
-		//m_Player->AddChild(m_TempSpriteEntity);
-		//m_TempSpriteEntity->AddChild(m_Player);
-
-		//Some simple drawing texts
-		/*
-		std::unordered_map <Tara:: Shader::TargetStage, std::string> map;
-		map[Tara::Shader::TargetStage::Vertex] = "assets/basic.vertex.glsl";
-		map[Tara::Shader::TargetStage::Pixel] = "assets/basic.fragment.glsl";
-		m_SimpleShader = Tara::Shader::Create("simpleShader", Tara::Shader::SourceType::TextFiles, map);
-
-		m_VertexArray = Tara::VertexArray::Create();
-
-		float verts[] = {
-			1.0f, 1.0f, 0.0f,
-			1.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 0.0f
-		};
-		auto vBuf = Tara::VertexBuffer::Create(verts, 9);
-		vBuf->SetLayout({
-			{Tara::Shader::Datatype::Float3, "a_Position", false}
-		});
-		m_VertexArray->AddVertexBuffer(vBuf);
-
-		uint32_t indecies[] = {
-			0, 1, 2
-		};
-		auto iBuf = Tara::IndexBuffer::Create(indecies, 3);
-		m_VertexArray->SetIndexBuffer(iBuf);
-		*/
+		
+		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
+		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
 	}
 	
 	virtual void Deactivate() override {

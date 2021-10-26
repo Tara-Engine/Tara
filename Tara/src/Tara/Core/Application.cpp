@@ -4,8 +4,9 @@
 #include <iostream>
 
 #include "Tara/Renderer/RenderCommand.h"
-#include "Tara/Core/Timer.h"
+#include "Tara/Utility/After.h"
 #include "Tara/Utility/Profiler.h"
+#include "Tara/Core/Script.h"
 
 //TODO: Remove from this file
 //#include "glad/glad.h"
@@ -42,12 +43,18 @@ namespace Tara {
 
 	void Application::Init(uint32_t x, uint32_t y, const std::string& title)
 	{
+		//make a window and init the Input system
 		m_Window = Window::Create(x, y, title);
 		m_Window->SetNativeEventCallback(TARA_BIND_FN(Application::EventCallback));
 		Input::Init(m_Window);
 
+		//Init the RenderCommand 
 		RenderCommand::Init();
 		RenderCommand::SetClearColor(0.0f, 0.0f, 0.0f); //Default value
+		
+		//Init the LuaScript system
+		Script::Get()->Init();
+
 		//make a default scene
 		m_Scene = std::make_shared<Scene>();
 	}

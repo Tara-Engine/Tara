@@ -25,7 +25,7 @@
 #include "Tara/Core/Window.h"
 #include "Tara/Core/Application.h"
 #include "Tara/Core/Entity.h"
-#include "Tara/Core/Timer.h"
+#include "Tara/Core/Script.h"
 
 //Assets
 #include "Tara/Asset/AssetLibrary.h"
@@ -42,7 +42,11 @@
 #include "Tara/Entities/CameraEntity.h"
 #include "Tara/Entities/DynamicMultiChildEntity.h"
 
+//Components
+#include "Tara/Components/ScriptComponent.h"
+
 //Utilities
+#include "Tara/Utility/After.h"
 #include "Tara/Utility/Timer.h"
 #include "Tara/Utility/Profiler.h"
 
