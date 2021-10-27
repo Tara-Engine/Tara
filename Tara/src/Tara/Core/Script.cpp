@@ -30,7 +30,8 @@ namespace Tara{
 
 	void Script::ReloadDefaultLibrary()
 	{
-		auto results = Script::Get()->GetState().safe_script_file(m_DefaultLibPath + "/init.lua");
+		m_LuaState["LibraryPath"] = m_DefaultLibPath;
+		auto results = m_LuaState.safe_script_file(m_DefaultLibPath + "/init.lua");
 		if (!results.valid()) {
 			sol::error err = results;
 			LOG_S(ERROR) << "Error loading default library: \n" << err.what() << R"(

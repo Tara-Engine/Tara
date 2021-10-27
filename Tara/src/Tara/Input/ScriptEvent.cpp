@@ -63,8 +63,8 @@ namespace Tara{
 		filter.Call<KeyTypeEvent>([&table](KeyTypeEvent& ee) {
 			table["Key"] = (int)ee.GetKey();
 			table["Mods"] = (int)ee.GetMods();
-			char c = (char)ee.GetKey();
-			table["Char"] = std::string(&c);
+			char c[2] = { (char)ee.GetKey(), '\0' };
+			table["Char"] = std::string(c);
 			return false;
 			});
 
