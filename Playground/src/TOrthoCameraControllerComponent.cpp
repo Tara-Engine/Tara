@@ -39,7 +39,7 @@ void TOrthoCameraControllerComponent::OnEvent(Tara::Event& e)
 
 bool TOrthoCameraControllerComponent::OnKeyPressEvent(Tara::KeyPressEvent& e)
 {
-	if (e.getKey() == TARA_KEY_Q) {
+	if (e.GetKey() == TARA_KEY_Q) {
 		LOG_S(INFO) << "Removing controller from parent";
 		GetParent().lock()->RemoveComponentByRef(shared_from_this());
 	}

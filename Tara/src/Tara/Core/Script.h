@@ -34,7 +34,24 @@ namespace Tara {
 		/// Get a reference to the lua state
 		/// </summary>
 		/// <returns></returns>
-		inline sol::state& GetState() { return lua; }
+		inline sol::state& GetState() { return m_LuaState; }
+
+		/// <summary>
+		/// set the default path to lua libraries
+		/// </summary>
+		/// <param name="path"></param>
+		inline void SetDefaultLibraryPath(const std::string& path) { m_DefaultLibPath = path; }
+
+		/// <summary>
+		/// Get the default path to lua libraries
+		/// </summary>
+		/// <returns></returns>
+		inline const std::string& GetDefaultLibraryPath() { return m_DefaultLibPath; }
+
+		/// <summary>
+		/// Reload lua libraries
+		/// </summary>
+		void ReloadDefaultLibrary();
 
 		/// <summary>
 		/// Register a class, if you can. Otherwise, compile error!
@@ -44,7 +61,8 @@ namespace Tara {
 		template<class T> static void RegisterType(const std::string& name);
 
 	private:
-		sol::state lua;
+		sol::state m_LuaState;
+		std::string m_DefaultLibPath;
 	};
 
 

@@ -44,7 +44,7 @@ namespace Tara{
 	{
 		if (m_OnEventCallbackFunction.valid()) {
 			Script::Get()->GetState()["CurrentComponent"] = std::dynamic_pointer_cast<ScriptComponent>(shared_from_this());
-			auto results = m_OnEventCallbackFunction(e);
+			auto results = m_OnEventCallbackFunction(Event::GetScriptEvent(e));
 			if (!results.valid()) {
 				sol::error err = results;
 				LOG_S(ERROR) << "Error in Lua Script [OnEvent]: " << err.what();

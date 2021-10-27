@@ -161,7 +161,7 @@ public:
 	}
 
 	bool OnMousePressedEvent(Tara::MouseButtonPressEvent& e) {
-		if (e.getButton() == TARA_MOUSE_BUTTON_3) {
+		if (e.GetButton() == TARA_MOUSE_BUTTON_3) {
 			for (auto entity : GetEntityList()) {
 				LOG_S(INFO) << entity->GetName() << "{" << (entity->GetParent().lock() == nullptr) << "}";
 				entity->DebugLogAllChildren(true, 1);
@@ -194,6 +194,7 @@ private:
 
 
 int main(int argc, char** argv) {
+	Tara::Script::Get()->SetDefaultLibraryPath("../Tara/lua");
 	Tara::Application::Get()->Init(1200, 700, "Tara Playground Application!");
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<BatchTestLayer>());

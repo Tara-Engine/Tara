@@ -48,7 +48,7 @@ bool PlayerControllerComponent::OnKeyPressEvent(Tara::KeyPressEvent& e)
 
 	if (parent->GetTraveling() || !parent->GetAlive()) { return false; }
 	auto pos = glm::vec2(parent->GetWorldPosition());
-	auto key = e.getKey();
+	auto key = e.GetKey();
 	Tara::Vector dir = { 0,0,0 };
 	auto roomPos = RoomManager::WorldCoordToRoomCoord(pos);
 	auto centered = RoomManager::IsCentered(pos);

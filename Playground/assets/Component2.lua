@@ -16,5 +16,5 @@ local function func4()
 end
 
 CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
-	func4() 
+	--func4() 
 end)

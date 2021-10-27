@@ -152,7 +152,7 @@ public:
 
 	//called by OnEvent if the event is a WindowResizeEvent
 	bool OnWindowResizeEvent(Tara::WindowResizeEvent& e) {
-		m_Camera->SetExtent((float)e.getWidth()); //tell the camera we resized, so it can compensate.
+		m_Camera->SetExtent((float)e.GetWidth()); //tell the camera we resized, so it can compensate.
 		return false;
 	}
 

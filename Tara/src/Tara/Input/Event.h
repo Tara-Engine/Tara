@@ -1,5 +1,8 @@
 #pragma once
 #include "tarapch.h"
+#include <sol/sol.hpp>
+
+
 
 namespace Tara {
 
@@ -39,12 +42,16 @@ namespace Tara {
 
 #define EVENT_CLASS_CATEGORY(category) virtual uint16_t GetCategoryFlags() const override { return category; }
 
+
 	/// <summary>
 	/// Event base class, all events are passed around as this.
 	/// </summary>
 	class Event {
 		//so that the EventFilter can view Event's private and protected members
 		friend class EventFilter; 
+	public:
+		static sol::table GetScriptEvent(Event& e);
+
 	public:
 		/// <summary>
 		/// Get the class of the event
@@ -171,8 +178,8 @@ namespace Tara {
 		WindowResizeEvent(uint32_t width, uint32_t height)
 			: m_Width(width), m_Height(height) {}
 
-		inline uint32_t getWidth() const { return m_Width; }
-		inline uint32_t getHeight() const { return m_Height; }
+		inline uint32_t GetWidth() const { return m_Width; }
+		inline uint32_t GetHeight() const { return m_Height; }
 
 		virtual std::string ToString() const override {
 			std::stringstream ss;
@@ -195,8 +202,8 @@ namespace Tara {
 	public:
 		KeyEvent(int32_t key, int32_t mods)
 			: m_Key(key), m_Mods(mods) {}
-		inline int32_t getKey() const { return m_Key; }
-		inline int32_t getMods() const { return m_Mods; }
+		inline int32_t GetKey() const { return m_Key; }
+		inline int32_t GetMods() const { return m_Mods; }
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
 		int32_t m_Key, m_Mods;
@@ -210,7 +217,7 @@ namespace Tara {
 	public:
 		KeyPressEvent(int32_t key, int32_t mods, int32_t repeatCount)
 			: KeyEvent(key, mods), m_RepeatCount(repeatCount) {}
-		inline int32_t getRepeatCount() const { return m_RepeatCount; }
+		inline int32_t GetRepeatCount() const { return m_RepeatCount; }
 		virtual std::string ToString() const override {
 			std::stringstream ss;
 			ss << GetName() << " [Key:" << m_Key << " Mods:" << m_Mods << " Repeats:" << m_RepeatCount << "]";
@@ -261,7 +268,7 @@ namespace Tara {
 	public:
 		MouseButtonEvent(int32_t button)
 			: m_Button(button) {}
-		inline int32_t getButton() const { return m_Button; }
+		inline int32_t GetButton() const { return m_Button; }
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput)
 	protected:
 		int32_t m_Button;
