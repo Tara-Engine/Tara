@@ -3,6 +3,7 @@
 
 #include "Tara/Core/Component.h"
 #include "Tara/Components/ScriptComponent.h"
+#include "Tara/Core/Entity.h"
 
 namespace Tara{
 	Script::Script()
@@ -24,8 +25,9 @@ namespace Tara{
 		ReloadDefaultLibrary();
 
 		//load engine default types
-		RegisterType<Component>("Component");
-		RegisterType<ScriptComponent>("ScriptComponent");
+		RegisterType<Component>("Tara::Component");
+		RegisterType<ScriptComponent>("Tara::ScriptComponent");
+		RegisterType<Entity>("Tara::Entity");
 	}
 
 	void Script::ReloadDefaultLibrary()

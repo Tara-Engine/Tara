@@ -79,6 +79,7 @@ namespace Tara {
 	inline void ScriptComponent::ExtendLuaType(sol::usertype<T>& type)
 	{
 		static_assert(std::is_base_of<ScriptComponent, T>::value, "Error: Tara::ScriptComponent::ExtendLuaType:: Provided class is not a subclass of Tara::ScriptComponent");
+		//Component::ExtendLuaType<ScriptComponent>(type);
 		type["SetOnUpdateCallbackFunction"] = &ScriptComponent::SetOnUpdateCallbackFunction;
 		type["SetOnEventCallbackFunction"] = &ScriptComponent::SetOnEventCallbackFunction;
 	}

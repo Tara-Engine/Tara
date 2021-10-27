@@ -20,6 +20,16 @@ namespace Tara{
 		
 		//run the script as a file
 		Script::Get()->GetState()["CurrentComponent"] = std::dynamic_pointer_cast<ScriptComponent>(shared_from_this());
+		//Script::Get()->GetState()["CurrentComponent"] = shared_from_this();
+		
+
+		//auto comp = std::make_shared<int>(1);
+		//sol::usertype<int> t = Script::Get()->GetState().new_usertype<int>("inttype");
+		//t["is"] = &is_check<int>;
+		
+		//Script::Get()->GetState()["CurrentComponent"] = comp;
+		
+		
 		auto results = Script::Get()->GetState().safe_script_file(m_Path);
 		if (!results.valid()) {
 			sol::error err = results;
@@ -64,8 +74,7 @@ namespace Tara{
 
 	void ScriptComponent::RegisterLuaType(sol::state& lua)
 	{
-		sol::usertype<ScriptComponent> type = lua.new_usertype<ScriptComponent>("ScriptComponent"); //no constructors. for now.
-		Component::ExtendLuaType<ScriptComponent>(type);
+		sol::usertype<ScriptComponent> type = lua.new_usertype<ScriptComponent>("ScriptComponent", sol::base_classes, sol::bases<Component>()); //MUST manually list all base classes!
 		ScriptComponent::ExtendLuaType<ScriptComponent>(type);
 	}
 

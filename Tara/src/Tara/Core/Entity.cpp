@@ -388,6 +388,8 @@ namespace Tara{
         SetListeningForEvents(enable);
     }
 
+
+
  
 
     void Entity::SetParent(EntityNoRef newParent, bool ignoreChecks)
@@ -545,6 +547,14 @@ namespace Tara{
         }
     }
 
+
+
+
+    void Entity::RegisterLuaType(sol::state& lua)
+    {
+        sol::usertype<Entity> type = lua.new_usertype<Entity>("Entity"); //no constructors. for now.
+        ExtendLuaType<Entity>(type);
+    }
 
 }
 

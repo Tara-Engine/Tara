@@ -1,4 +1,4 @@
-
+--[[
 local function func1()
 	print(CurrentComponent:GetName() ..  " Update (2)!")
 end
@@ -18,3 +18,4 @@ end
 CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
 	--func4() 
 end)
+--]]
