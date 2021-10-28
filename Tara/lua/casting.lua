@@ -1,5 +1,8 @@
 
 function Cast(typename, object)
+	if (not typename or not object) then
+		return nil
+	end
 	local sucess
 	local result
 	if (typename.__type.is(object)) then

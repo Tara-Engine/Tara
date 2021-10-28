@@ -31,6 +31,7 @@ namespace Tara{
 		RegisterType<ScriptComponent>("Tara::ScriptComponent");
 		RegisterType<Entity>("Tara::Entity");
 		RegisterType<CameraEntity>("Tara::CameraEntity");
+		RegisterType<SpriteEntity>("Tara::SpriteEntity");
 	}
 
 	void Script::ReloadDefaultLibrary()

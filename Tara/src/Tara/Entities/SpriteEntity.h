@@ -122,6 +122,20 @@ namespace Tara {
 		/// <returns>the flit bits</returns>
 		inline const uint8_t GetFlip() const { return m_FlipBits; }
 
+	public:
+		//lua stuff
+		void __SCRIPT__SetCurrentSequence(sol::object seq);
+		sol::table __SCRIPT__GetCurrentSequence() const;
+		void __SCRIPT__SetTint(sol::object r, sol::object g, sol::object b, sol::object a);
+		void __SCRIPT__SetFlip(sol::object one, sol::object two);
+		std::tuple<bool, bool> __SCRIPT__GetFlip() const;
+
+		/// <summary>
+		/// Register the lua type
+		/// </summary>
+		/// <param name="lua"></param>
+		static void RegisterLuaType(sol::state& lua);
+
 	private:
 		SpriteRef m_Sprite;
 		uint32_t m_CurrentFrame;

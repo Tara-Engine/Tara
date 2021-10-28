@@ -1,30 +1,19 @@
---[[
-local function func1()
-	print(CurrentComponent:GetName() ..  " Update (2)!")
-end
 
-local function func2()
-	func1()
-end
-
-local function func3()
-	func2()
-end
-
-local function func4()
-	func3()
-end
-
-CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
-	--func4() 
+CurrentComponent:ListenForEvents(true)
+CurrentComponent:SetOnEventCallbackFunction(function(event)
+	--print(event.Type)
+	if (event.Type == "MouseButtonPress") then
+		--print(inspect(_G))
+		local parent = Cast(SpriteEntity, CurrentComponent:GetParent())
+		if (parent) then
+			print("Tinting!")
+			color = {1,1,1,1}
+			color[1] = math.random()
+			color[2] = math.random()
+			color[3] = math.random()
+			parent:SetTint(color)
+		else
+			print("Parent is not a Sprite! Parent:" .. CurrentComponent:GetParent():GetName())
+		end
+	end
 end)
---]]
-
-
-
-print(CurrentComponent:GetParent():GetName())
-
-
---CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
---	
---end)
