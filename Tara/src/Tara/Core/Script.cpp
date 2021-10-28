@@ -4,6 +4,8 @@
 #include "Tara/Core/Component.h"
 #include "Tara/Components/ScriptComponent.h"
 #include "Tara/Core/Entity.h"
+#include "Tara/Entities/CameraEntity.h"
+#include "Tara/Entities/SpriteEntity.h"
 
 namespace Tara{
 	Script::Script()
@@ -28,6 +30,7 @@ namespace Tara{
 		RegisterType<Component>("Tara::Component");
 		RegisterType<ScriptComponent>("Tara::ScriptComponent");
 		RegisterType<Entity>("Tara::Entity");
+		RegisterType<CameraEntity>("Tara::CameraEntity");
 	}
 
 	void Script::ReloadDefaultLibrary()

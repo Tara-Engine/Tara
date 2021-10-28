@@ -4,6 +4,7 @@
 #include <sol/sol.hpp>
 
 #define CONNECT_FUNCTION(classname, funcname) type[#funcname] = &##classname##::##funcname
+#define CONNECT_FUNCTION_OVERRIDE(classname, funcname) type[#funcname] = &##classname##::__SCRIPT__##funcname
 
 namespace Tara {
 

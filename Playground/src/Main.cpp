@@ -107,7 +107,7 @@ public:
 		
 		
 		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
-		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
+		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/Component2.lua", "LuaComponent2");
 	}
 	
 	virtual void Deactivate() override {

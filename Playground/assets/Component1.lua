@@ -9,6 +9,7 @@ end)
 
 --print(inspect(Entity))
 
+--[[
 print(Component.__type.is(CurrentComponent))
 
 local script = Cast(ScriptComponent, CurrentComponent)
@@ -27,6 +28,7 @@ if (e) then
 else
 	print("yay")
 end
+--]]
 
 --[[
 CurrentComponent:ListenForEvents(true)

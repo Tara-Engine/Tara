@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "CameraEntity.h"
+#include "Tara/Core/Script.h"
 
 namespace Tara{
 
@@ -63,5 +64,43 @@ namespace Tara{
 			t.Scale = GetRelativeTransform().Scale;
 			m_Camera->SetTransform(t);
 		}
+	}
+
+	void CameraEntity::__SCRIPT__SetProjectionType(const char* type)
+	{
+		Camera::ProjectionType proj = Camera::ProjectionType::None;
+		if (type == "Ortographic") { proj = Camera::ProjectionType::Ortographic; }
+		if (type == "Perspective") { proj = Camera::ProjectionType::Perspective; }
+		if (type == "Screen") { proj = Camera::ProjectionType::Screen; }
+		SetProjectionType(proj);
+	}
+
+	std::string CameraEntity::__SCRIPT__GetProjectionType() const
+	{
+		auto proj = GetProjectionType();
+		switch (proj) {
+		case Camera::ProjectionType::Ortographic: {return "Ortographic"; }
+		case Camera::ProjectionType::Perspective: {return "Perspective"; }
+		case Camera::ProjectionType::Screen: {return "Screen"; }
+		default: {return "None"; }
+		}
+	}
+
+	void CameraEntity::__SCRIPT__SetOrthographicExtent(sol::object extent)
+	{
+		LOG_S(WARNING) << "Lua version of CamaeraEntity::SetOrthographicExtent not implemented yet.";
+	}
+
+
+	void CameraEntity::RegisterLuaType(sol::state& lua)
+	{
+		sol::usertype<CameraEntity> type = lua.new_usertype<CameraEntity>("CameraEntity", sol::base_classes, sol::bases<Entity>());
+		CONNECT_FUNCTION(CameraEntity, SetUseWorldScale);
+		CONNECT_FUNCTION(CameraEntity, GetUseWorldScale);
+		CONNECT_FUNCTION_OVERRIDE(CameraEntity, GetProjectionType);
+		CONNECT_FUNCTION_OVERRIDE(CameraEntity, SetProjectionType);
+		CONNECT_FUNCTION_OVERRIDE(CameraEntity, SetOrthographicExtent);
+
+
 	}
 }

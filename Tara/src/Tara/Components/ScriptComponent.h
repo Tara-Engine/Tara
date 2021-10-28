@@ -60,28 +60,11 @@ namespace Tara {
 		/// <param name="lua">the lua state</param>
 		static void RegisterLuaType(sol::state& lua);
 
-		/// <summary>
-		/// Make a passed WPI lua usertype access the functions from ScriptComponent. Should be called from this class and any subclasses in their RegisterLuaType functions.
-		/// </summary>
-		/// <typeparam name="T">the actual type being turned into a lua usertype</typeparam>
-		/// <param name="type">the WIP lua usertype</param>
-		template<class T> static void ExtendLuaType(sol::usertype<T>& type);
-
 	private:
 		const std::string m_Path;
 		sol::safe_function m_OnUpdateCallbackFunction;
 		sol::safe_function m_OnEventCallbackFunction;
 	};
 
-
-
-	template<class T>
-	inline void ScriptComponent::ExtendLuaType(sol::usertype<T>& type)
-	{
-		static_assert(std::is_base_of<ScriptComponent, T>::value, "Error: Tara::ScriptComponent::ExtendLuaType:: Provided class is not a subclass of Tara::ScriptComponent");
-		//Component::ExtendLuaType<ScriptComponent>(type);
-		type["SetOnUpdateCallbackFunction"] = &ScriptComponent::SetOnUpdateCallbackFunction;
-		type["SetOnEventCallbackFunction"] = &ScriptComponent::SetOnEventCallbackFunction;
-	}
 
 }

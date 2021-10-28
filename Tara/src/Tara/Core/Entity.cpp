@@ -3,6 +3,7 @@
 #include "Tara/Core/Layer.h"
 #include "Tara/Input/ApplicationEvents.h"
 #include "Tara/Input/Manifold.h"
+#include "Tara/Core/Script.h"
 
 #pragma warning( push )
 #pragma warning( disable : 4003 ) 
@@ -553,7 +554,55 @@ namespace Tara{
     void Entity::RegisterLuaType(sol::state& lua)
     {
         sol::usertype<Entity> type = lua.new_usertype<Entity>("Entity"); //no constructors. for now.
-        ExtendLuaType<Entity>(type);
+        
+        //TODO: make lua-specific versions
+        CONNECT_FUNCTION(Entity, GetSpecificBoundingBox);
+        CONNECT_FUNCTION(Entity, GetFullBoundingBox);
+
+        CONNECT_FUNCTION(Entity, GetRelativeTransform);
+        CONNECT_FUNCTION(Entity, GetWorldTransform);
+        CONNECT_FUNCTION(Entity, SetRelativeTransform);
+        CONNECT_FUNCTION(Entity, SetWorldTransform);
+        
+        CONNECT_FUNCTION(Entity, GetRelativePosition);
+        CONNECT_FUNCTION(Entity, SetRelativePosition);
+        CONNECT_FUNCTION(Entity, GetWorldPosition);
+        CONNECT_FUNCTION(Entity, SetWorldPosition);
+        
+        CONNECT_FUNCTION(Entity, GetRelativeRotation);
+        CONNECT_FUNCTION(Entity, SetRelativeRotation);
+        CONNECT_FUNCTION(Entity, GetWorldRotation);
+        CONNECT_FUNCTION(Entity, SetWorldRotation);
+        
+        CONNECT_FUNCTION(Entity, GetRelativeScale);
+        CONNECT_FUNCTION(Entity, SetRelativeScale);
+        CONNECT_FUNCTION(Entity, GetWorldScale);
+        CONNECT_FUNCTION(Entity, SetWorldScale);
+
+
+        CONNECT_FUNCTION(Entity, GetName);
+        CONNECT_FUNCTION(Entity, IsChild);
+        CONNECT_FUNCTION(Entity, GetFirstChildOfName);
+        CONNECT_FUNCTION(Entity, RemoveChildByName);
+        CONNECT_FUNCTION(Entity, RemoveChildByRef);
+        CONNECT_FUNCTION(Entity, AddChild);
+        CONNECT_FUNCTION(Entity, SwapParent);
+        
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetParent);
+        
+        CONNECT_FUNCTION(Entity, GetOwningLayer);
+        CONNECT_FUNCTION(Entity, DebugLogAllChildren);
+        CONNECT_FUNCTION(Entity, SetUpdateChildrenFirst);
+        CONNECT_FUNCTION(Entity, GetUpdateChildrenFirst);
+        CONNECT_FUNCTION(Entity, SetDrawChildrenFirst);
+        CONNECT_FUNCTION(Entity, GetDrawChildrenFirst);
+        CONNECT_FUNCTION(Entity, AddComponent);
+        CONNECT_FUNCTION(Entity, IsComponent);
+        CONNECT_FUNCTION(Entity, GetFirstComponentOfName);
+        CONNECT_FUNCTION(Entity, RemoveComponentByName);
+        CONNECT_FUNCTION(Entity, RemoveComponentByRef);
+        CONNECT_FUNCTION(Entity, Destroy);
+        CONNECT_FUNCTION(Entity, ListenForEvents);
     }
 
 }

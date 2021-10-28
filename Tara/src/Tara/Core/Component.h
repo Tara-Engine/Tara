@@ -80,7 +80,15 @@ namespace Tara {
 		/// Get the parent of the Componment
 		/// </summary>
 		/// <returns>the parent</returns>
-		inline const std::weak_ptr<Entity>& GetParent() const { return m_Parent; }
+		inline const EntityNoRef& GetParent() const { return m_Parent; }
+
+		/// <summary>
+		/// Script version of GetParent. DO NOT CALL FROM C++
+		/// </summary>
+		/// <returns></returns>
+		inline const EntityRef& __SCRIPT__GetParent() const { return GetParent().lock(); }
+
+
 
 	public:
 		/// <summary>
@@ -88,13 +96,6 @@ namespace Tara {
 		/// </summary>
 		/// <param name="lua"></param>
 		static void RegisterLuaType(sol::state& lua);
-
-		/// <summary>
-		/// Extend a subclass of Component with all Component's features
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="type"></param>
-		template<class T> static void ExtendLuaType(sol::usertype<T>& type);
 
 	private:
 
@@ -123,14 +124,4 @@ namespace Tara {
 	}
 
 
-
-	template<class T>
-	inline void Component::ExtendLuaType(sol::usertype<T>& type)
-	{
-		static_assert(std::is_base_of<Component, T>::value, "Error: Tara::Component::ExtendLuaType:: Provided class is not a subclass of Tara::Component");
-		type["ListenForEvents"] = &Component::ListenForEvents;
-		type["GetName"] = &Component::GetName;
-		type["GetParent"] = &Component::GetParent;
-		type["GetListeningForEvents"] = &Component::GetListeningForEvents;
-	}
 }

@@ -82,6 +82,20 @@ namespace Tara {
 		/// <param name="deltaTime"></param>
 		virtual void OnUpdate(float deltaTime) override;
 
+
+	public:
+		//Lua Stuff
+
+		void __SCRIPT__SetProjectionType(const char* type);
+		std::string __SCRIPT__GetProjectionType() const;
+		void __SCRIPT__SetOrthographicExtent(sol::object extent);
+
+		/// <summary>
+		/// Register the lua type
+		/// </summary>
+		/// <param name="lua"></param>
+		static void RegisterLuaType(sol::state& lua);
+
 	private:
 		/// <summary>
 		/// the internal camera

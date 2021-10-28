@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "ScriptComponent.h"
+#include "Tara/Core/Entity.h"
 
 namespace Tara{
 
@@ -34,6 +35,7 @@ namespace Tara{
 		if (!results.valid()) {
 			sol::error err = results;
 			LOG_S(ERROR) << "Error in Lua Script: " << err.what();
+			LOG_S(ERROR) << loguru::stacktrace().c_str();
 		}
 		//Script::Get()->GetState()["CurrentComponent"] = nullptr;
 	}
@@ -74,8 +76,9 @@ namespace Tara{
 
 	void ScriptComponent::RegisterLuaType(sol::state& lua)
 	{
-		sol::usertype<ScriptComponent> type = lua.new_usertype<ScriptComponent>("ScriptComponent", sol::base_classes, sol::bases<Component>()); //MUST manually list all base classes!
-		ScriptComponent::ExtendLuaType<ScriptComponent>(type);
+		sol::usertype<ScriptComponent> type = lua.new_usertype<ScriptComponent>("ScriptComponent", sol::base_classes, sol::bases<Component>()); //MUST manually list all base classes!		
+		CONNECT_FUNCTION(ScriptComponent, SetOnUpdateCallbackFunction);
+		CONNECT_FUNCTION(ScriptComponent, SetOnEventCallbackFunction);
 	}
 
 

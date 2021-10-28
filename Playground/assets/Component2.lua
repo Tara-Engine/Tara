@@ -19,3 +19,12 @@ CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
 	--func4() 
 end)
 --]]
+
+
+
+print(CurrentComponent:GetParent():GetName())
+
+
+--CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
+--	
+--end)

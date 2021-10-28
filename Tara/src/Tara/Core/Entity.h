@@ -7,7 +7,7 @@
 #include "Tara/Input/EventListener.h"
 #include "Tara/Input/Event.h"
 #include "Tara/Core/Component.h"
-#include "Tara/Core/Script.h"
+#include <sol/sol.hpp>
 
 #define ENTITY_EXISTS(x) if (!Exists()) {return x;}
 
@@ -258,6 +258,8 @@ namespace Tara {
 		/// <returns>The parent</returns>
 		EntityNoRef GetParent() const { return m_Parent; }
 		
+		
+		
 		/// <summary>
 		/// Get a weak ref to the owning layer
 		/// </summary>
@@ -431,18 +433,13 @@ protected:
 	public:
 		//Lua Stuff
 
+		EntityRef __SCRIPT__GetParent() const { return GetParent().lock(); }
+
 		/// <summary>
 		/// Register the lua type
 		/// </summary>
 		/// <param name="lua"></param>
 		static void RegisterLuaType(sol::state& lua);
-
-		/// <summary>
-		/// Extend a subclass of Component with all Component's features
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="type"></param>
-		template<class T> static void ExtendLuaType(sol::usertype<T>& type);
 
 	private:
 		/// <summary>
@@ -494,51 +491,7 @@ protected:
 		return nullptr;
 	}
 
-	template<class T>
-	inline void Entity::ExtendLuaType(sol::usertype<T>& type)
-	{
-		CONNECT_FUNCTION(Entity, GetSpecificBoundingBox);
-		CONNECT_FUNCTION(Entity, GetRelativeTransform);
-		CONNECT_FUNCTION(Entity, GetWorldTransform);
-		CONNECT_FUNCTION(Entity, SetRelativeTransform);
-		CONNECT_FUNCTION(Entity, SetWorldTransform);
-		CONNECT_FUNCTION(Entity, GetRelativePosition);
-		CONNECT_FUNCTION(Entity, SetRelativePosition);
-		CONNECT_FUNCTION(Entity, GetWorldPosition);
-		CONNECT_FUNCTION(Entity, SetWorldPosition);
-		CONNECT_FUNCTION(Entity, GetRelativeRotation);
-		CONNECT_FUNCTION(Entity, SetRelativeRotation);
-		CONNECT_FUNCTION(Entity, GetWorldRotation);
-		CONNECT_FUNCTION(Entity, SetWorldRotation);
-		CONNECT_FUNCTION(Entity, GetRelativeScale);
-		CONNECT_FUNCTION(Entity, SetRelativeScale);
-		CONNECT_FUNCTION(Entity, GetWorldScale);
-		CONNECT_FUNCTION(Entity, SetWorldScale);
 
-
-		CONNECT_FUNCTION(Entity, GetName);
-		CONNECT_FUNCTION(Entity, IsChild);
-		CONNECT_FUNCTION(Entity, GetFirstChildOfName);
-		CONNECT_FUNCTION(Entity, RemoveChildByName);
-		CONNECT_FUNCTION(Entity, RemoveChildByRef);
-		CONNECT_FUNCTION(Entity, AddChild);
-		CONNECT_FUNCTION(Entity, SwapParent);
-		CONNECT_FUNCTION(Entity, GetParent);
-		CONNECT_FUNCTION(Entity, GetOwningLayer);
-		CONNECT_FUNCTION(Entity, DebugLogAllChildren);
-		CONNECT_FUNCTION(Entity, SetUpdateChildrenFirst);
-		CONNECT_FUNCTION(Entity, GetUpdateChildrenFirst);
-		CONNECT_FUNCTION(Entity, SetDrawChildrenFirst);
-		CONNECT_FUNCTION(Entity, GetDrawChildrenFirst);
-		CONNECT_FUNCTION(Entity, AddComponent);
-		CONNECT_FUNCTION(Entity, IsComponent);
-		CONNECT_FUNCTION(Entity, GetFirstComponentOfName);
-		CONNECT_FUNCTION(Entity, RemoveComponentByName);
-		CONNECT_FUNCTION(Entity, RemoveComponentByRef);
-		CONNECT_FUNCTION(Entity, Destroy);
-		CONNECT_FUNCTION(Entity, GetFullBoundingBox);
-		CONNECT_FUNCTION(Entity, ListenForEvents);
-	}
 
 }
 
