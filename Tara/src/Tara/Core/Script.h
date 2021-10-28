@@ -67,9 +67,12 @@ namespace Tara {
 		/// <param name=""></param>
 		template<class T> static void RegisterType(const std::string& name);
 
-
+		//casting strangeness
 		template<class T> static std::shared_ptr<T> CastComponent(ComponentRef ref);
+		template<class T> static ComponentRef UpCastComponent(std::shared_ptr<T> ref);
+		
 		template<class T> static std::shared_ptr<T> CastEntity(EntityRef ref);
+		template<class T> static EntityRef UpCastEntity(std::shared_ptr<T> ref);
 
 	private:
 		sol::state m_LuaState;
@@ -89,9 +92,11 @@ namespace Tara {
 		LOG_S(INFO) << "Lua casting func: " << ("CastTo" + name);
 		if constexpr (std::is_base_of<Component, T>::value) {
 			Script::Get()->GetState()["CastTo"+name] = &Script::CastComponent<T>;
+			Script::Get()->GetState()["UpCast"+name] = &Script::UpCastComponent<T>;
 		}
 		if constexpr(std::is_base_of<Entity, T>::value) {
 			Script::Get()->GetState()["CastTo" + name] = &Script::CastEntity<T>;
+			Script::Get()->GetState()["UpCast" + name] = &Script::UpCastEntity<T>;
 		}
 
 	}
@@ -114,6 +119,13 @@ namespace Tara {
 	}
 
 	template<class T>
+	inline ComponentRef Script::UpCastComponent(std::shared_ptr<T> ref) {
+		static_assert(std::is_base_of<Component, T>::value, "Error: Tara::Script::UpCastComponent:: Provided class is not a subclass of Tara::Component");
+		LOG_S(INFO) << "C++ performing upcast from ComponentRef subclass to ComponentRef itself";
+		return std::dynamic_pointer_cast<Component>(ref);
+	}
+
+	template<class T>
 	inline std::shared_ptr<T> Script::CastEntity(EntityRef ref) {
 		static_assert(std::is_base_of<Entity, T>::value, "Error: Tara::Script::CastEntity:: Provided class is not a subclass of Tara::Entity");
 		auto c = std::dynamic_pointer_cast<T>(ref);
@@ -123,5 +135,12 @@ namespace Tara {
 		else {
 			return nullptr;
 		}
+	}
+
+	template<class T>
+	inline EntityRef Script::UpCastEntity(std::shared_ptr<T> ref) {
+		static_assert(std::is_base_of<Entity, T>::value, "Error: Tara::Script::UpCastEntity:: Provided class is not a subclass of Tara::Entity");
+		LOG_S(INFO) << "C++ performing upcast from ComponentRef subclass to ComponentRef itself";
+		return std::dynamic_pointer_cast<Entity>(ref);
 	}
 }

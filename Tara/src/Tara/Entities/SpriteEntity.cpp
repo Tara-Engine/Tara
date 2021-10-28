@@ -92,8 +92,11 @@ namespace Tara {
 				SetTint(color);
 				return;
 			}
-			if (r.is<float>()) {
+			else if (r.is<float>()) {
 				color.r = r.as<float>();
+			}
+			else {
+				LOG_S(ERROR) << "Lua: Called ScriptEntity::SetTint with invalid first value. use a table or a series of values";
 			}
 		}
 		if (g.valid() && g.is<float>()) {
@@ -138,7 +141,7 @@ namespace Tara {
 
 	void SpriteEntity::RegisterLuaType(sol::state& lua)
 	{
-		sol::usertype<SpriteEntity> type = lua.new_usertype<SpriteEntity>("SpriteEntity", sol::base_classes, sol::bases<Entity>()); //no constructors. for now.
+		sol::usertype<SpriteEntity> type = lua.new_usertype<SpriteEntity>("SpriteEntity", sol::base_classes, sol::bases<Entity>());
 		CONNECT_FUNCTION(SpriteEntity, SetSprite);
 		CONNECT_FUNCTION(SpriteEntity, GetSprite);
 		CONNECT_FUNCTION(SpriteEntity, SetCurrentFrame);

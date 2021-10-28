@@ -1,22 +1,33 @@
 
+local function UpCast(object)
+	local sucess
+	local result
+	sucess, result = xpcall(function() 
+		local castName = "UpCast" .. getmetatable(object).__type.name
+		local v = _G[castName](object)
+		return v
+	end, debug.traceback)
+	if (sucess) then
+		--print(result)
+		return result
+	else
+		--print(result)
+		return nil
+	end
+	
+end
+
 function Cast(typename, object)
 	if (not typename or not object) then
 		return nil
 	end
 	local sucess
 	local result
-	if (typename.__type.is(object)) then
-		--print("already that!")
-		return object
-	end
-	--the CastToX::XX functions DO NOT accept anything but Component and Entity.
-	if (Component.__type.is(object)) then
-		--print("fixing Component ref")
-		object = Cast(Component, object)
-	end
-	if (Entity.__type.is(object)) then
-		--print("fixing Entity ref")
-		object = Cast(Entity, object)
+	
+	object = UpCast(object)
+	if (object == nil) then
+		--print("Nil from upcast")
+		return nil
 	end
 	
 	sucess, result = xpcall(function() 
@@ -31,7 +42,7 @@ function Cast(typename, object)
 		--print(result)
 		return result
 	else
-		--print(result)
+		print(result)
 		--print("nil is returned")
 		return nil
 	end

@@ -31,8 +31,8 @@
 //library stuff
 #define LOGURU_WITH_STREAMS 1
 #include "loguru.hpp"
-
 #include "glm/glm.hpp"
+#include <sol/sol.hpp>
 
 //tara stuff
 #include "Tara/Core/Base.h"

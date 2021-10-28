@@ -52,3 +52,5 @@
 
 #define LOGURU_WITH_STREAMS 1
 #include "loguru.hpp"
+//sol
+#include <sol/sol.hpp>

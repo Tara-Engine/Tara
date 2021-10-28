@@ -13,6 +13,7 @@ OpenGL include - BAD - used for developing new features ONLY
 
 //testing types
 #include "TColorRectEntity.h"
+#include "PawnEntity.h"
 #include "TOrthoCameraControllerComponent.h"
 #include "BatchTestLayer.h"
 #define SPRITE_MAX 100
@@ -82,7 +83,7 @@ public:
 		//sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
 		
 		//m_TempSpriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
-		m_TempSpriteEntity = Tara::CreateEntity<Tara::SpriteEntity>(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
 		//spriteEntity->PlayAnimation("default");
 		m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
@@ -196,6 +197,9 @@ private:
 int main(int argc, char** argv) {
 	Tara::Script::Get()->SetDefaultLibraryPath("../Tara/lua");
 	Tara::Application::Get()->Init(1200, 700, "Tara Playground Application!");
+	//init stuff we have to do
+	Tara::Script::RegisterType<PawnEntity>("PawnEntity"); //register PawnEntity
+
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<BatchTestLayer>());
 	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
