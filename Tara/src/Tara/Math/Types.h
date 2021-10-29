@@ -7,6 +7,7 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/ext/quaternion_common.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <sol/sol.hpp>
 
 //Create the default Transform
 //At origin, unrotatied, unscaled.
@@ -18,13 +19,122 @@
 
 
 namespace Tara {
+	///using Vector = glm::vec3;
 
 	
 	/// <summary>
 	/// Vector type: 3 floats
 	/// </summary>
-	using Vector = glm::vec3;
-	
+	struct Vector {
+		float x, y, z;
+
+		Vector(float x = 0.0f) : x(x), y(x), z(x) {}
+
+		Vector(float x, float y, float z) : x(x), y(y), z(z) {}
+		Vector(double x, double y, double z) : x((float)x), y((float)y), z((float)z) {}
+
+		Vector(int32_t x, int32_t y, int32_t z) : x((float)x), y((float)y), z((float)z) {}
+		
+		Vector(float x, int32_t y, int32_t z) : x(x), y((float)y), z((float)z) {}
+		Vector(int32_t x, float y, int32_t z) : x((float)x), y(y), z((float)z) {}
+		Vector(int32_t x, int32_t y, float z) : x((float)x), y((float)y), z(z) {}
+
+		Vector(float x, float y, int32_t z) : x(x), y(y), z((float)z) {}
+		Vector(int32_t x, float y, float z) : x((float)x), y(y), z(z) {}
+		Vector(float x, int32_t y, float z) : x(x), y((float)y), z(z) {}
+
+
+		Vector(glm::vec3 v) :x(v.x), y(v.y), z(v.z) {}
+
+		Vector(glm::vec4 v) :x(v.x), y(v.y), z(v.z) {}
+
+		Vector(sol::table);
+
+		Vector operator+(const Vector& other) const;
+		Vector operator-(const Vector& other) const;
+		Vector operator*(const Vector& other) const;
+		Vector operator/(const Vector& other) const;
+
+		Vector operator+(const glm::vec3& other) const;
+		Vector operator-(const glm::vec3& other) const;
+		Vector operator*(const glm::vec3& other) const;
+		Vector operator/(const glm::vec3& other) const;
+
+		Vector operator+(const float& other) const;
+		Vector operator-(const float& other) const;
+		Vector operator*(const float& other) const;
+		Vector operator/(const float& other) const;
+
+		Vector operator+(const double& other) const;
+		Vector operator-(const double& other) const;
+		Vector operator*(const double& other) const;
+		Vector operator/(const double& other) const;
+
+		Vector operator+(const int32_t& other) const;
+		Vector operator-(const int32_t& other) const;
+		Vector operator*(const int32_t& other) const;
+		Vector operator/(const int32_t& other) const;
+
+		Vector& operator+=(const Vector& other);
+		Vector& operator-=(const Vector& other);
+		Vector& operator*=(const Vector& other);
+		Vector& operator/=(const Vector& other);
+
+		Vector& operator+=(const glm::vec3& other);
+		Vector& operator-=(const glm::vec3& other);
+		Vector& operator*=(const glm::vec3& other);
+		Vector& operator/=(const glm::vec3& other);
+
+		Vector& operator+=(const float& other);
+		Vector& operator-=(const float& other);
+		Vector& operator*=(const float& other);
+		Vector& operator/=(const float& other);
+
+		Vector& operator+=(const double& other);
+		Vector& operator-=(const double& other);
+		Vector& operator*=(const double& other);
+		Vector& operator/=(const double& other);
+
+		Vector& operator+=(const int32_t& other);
+		Vector& operator-=(const int32_t& other);
+		Vector& operator*=(const int32_t& other);
+		Vector& operator/=(const int32_t& other);
+
+		bool operator==(const Vector& other) const;
+		bool operator!=(const Vector& other) const;
+		Vector operator-() const;
+
+		operator glm::vec1() const;
+		operator glm::vec2() const;
+		operator glm::vec3() const;
+		operator glm::vec4() const;
+		operator glm::ivec1() const;
+		operator glm::ivec2() const;
+		operator glm::ivec3() const;
+		operator glm::ivec4() const;
+
+
+		float Dot(const Vector& other) const;
+		static float Dot(const Vector& a, const Vector& b);
+
+		Vector Cross(const Vector& other) const;
+		static Vector Cross(const Vector& a, const Vector& b);
+
+		float Length() const;
+		float LengthSq() const;
+		float Distance(const Vector& other) const;
+		static float Distance(const Vector& a, const Vector& b);
+		float DistanceSq(const Vector& other) const;
+		static float DistanceSq(const Vector& a, const Vector& b);
+
+		/// <summary>
+		/// Get a lua type from a rotator
+		/// </summary>
+		/// <returns></returns>
+		sol::table ToScriptTable() const;
+	};
+
+
 	/// <summary>
 	/// Rotator type: roll, pitch, yaw.
 	/// Roll is spinning around the "Forward" direction (z)
@@ -41,7 +151,9 @@ namespace Tara {
 		/// <param name="roll">degree in roll (around z)</param>
 		/// <param name="pitch">degree in pitch (around x)</param>
 		/// <param name="yaw">degreee is yaw (around y)</param>
-		Rotator(float roll, float pitch, float yaw) : Roll(roll), Pitch(pitch), Yaw(yaw) {
+		Rotator(float roll, float pitch, float yaw) 
+			: Roll(roll), Pitch(pitch), Yaw(yaw) 
+		{
 			Clamp();
 		}
 		/// <summary>
@@ -49,7 +161,9 @@ namespace Tara {
 		/// Note that the order is different from normal creation!
 		/// </summary>
 		/// <param name="vec">the Vector specifiying the angles around the axis</param>
-		Rotator(glm::vec3 vec) : Roll(vec.z), Pitch(vec.x), Yaw(vec.y) {
+		Rotator(glm::vec3 vec) 
+			: Roll(vec.z), Pitch(vec.x), Yaw(vec.y) 
+		{
 			Clamp();
 		}
 
@@ -59,6 +173,11 @@ namespace Tara {
 		/// <param name="q">the quatenion</param>
 		Rotator(glm::quat q);
 		
+		/// <summary>
+		/// Construct a rotator from the equivilent lua type
+		/// </summary>
+		/// <param name="t"></param>
+		Rotator(sol::table t);
 
 		/// <summary>
 		/// clamp the angles in the rotator to be -180 to 180
@@ -106,9 +225,19 @@ namespace Tara {
 		/// <returns></returns>
 		Vector RotateVector(const Vector& vec) const;
 
+		/// <summary>
+		/// get the inverse of a rotator
+		/// </summary>
+		/// <returns></returns>
 		inline Rotator Inverse() const {
 			return Rotator{ -Roll, -Pitch, -Yaw };
 		};
+
+		/// <summary>
+		/// Get a lua type from a rotator
+		/// </summary>
+		/// <returns></returns>
+		sol::table ToScriptTable() const;
 	};
 
 	/// <summary>
@@ -132,6 +261,12 @@ namespace Tara {
 		{}
 
 		/// <summary>
+		/// Construct a transform from a lua script
+		/// </summary>
+		/// <param name="t"></param>
+		Transform(sol::table t);
+
+		/// <summary>
 		/// Get the transform matrix of the transform
 		/// </summary>
 		/// <returns>a 4x4 matrix (glm style)</returns>
@@ -150,6 +285,12 @@ namespace Tara {
 		/// <param name="other">the transform to remove from the current one</param>
 		/// <returns>tje resulting new transform</returns>
 		Transform operator- (const Transform& other) const;
+
+		/// <summary>
+		/// Get a lua type from a rotator
+		/// </summary>
+		/// <returns></returns>
+		sol::table ToScriptTable() const;
 	};
 
 	

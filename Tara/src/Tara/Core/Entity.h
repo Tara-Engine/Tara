@@ -432,7 +432,22 @@ protected:
 
 	public:
 		//Lua Stuff
-
+		inline sol::table __SCRIPT__GetRelativeTransform()	const		{ return GetRelativeTransform().ToScriptTable(); }
+		inline sol::table __SCRIPT__GetWorldTransform()	const			{ return GetWorldTransform().ToScriptTable(); }
+		inline void __SCRIPT__SetRelativeTransform(sol::table t)		{ SetRelativeTransform(Transform(t)); }
+		inline void __SCRIPT__SetWorldTransform(sol::table t)			{ SetWorldTransform(Transform(t)); };
+		inline sol::table __SCRIPT__GetRelativePosition() const			{ return GetRelativePosition().ToScriptTable(); }
+		inline sol::table __SCRIPT__GetWorldPosition() const			{ return GetWorldPosition().ToScriptTable(); };
+		inline void __SCRIPT__SetRelativePosition(sol::table t)			{ SetRelativePosition(Vector(t)); }
+		inline void __SCRIPT__SetWorldPosition(sol::table t)			{ SetWorldPosition(Vector(t)); }
+		inline sol::table __SCRIPT__GetRelativeRotation() const			{ return GetRelativeRotation().ToScriptTable(); }
+		inline sol::table __SCRIPT__GetWorldRotation() const			{ return GetWorldRotation().ToScriptTable(); }
+		inline void __SCRIPT__SetRelativeRotation(sol::table t)			{ SetRelativeRotation(Rotator(t)); }
+		inline void __SCRIPT__SetWorldRotation(sol::table t)			{ SetWorldRotation(Rotator(t)); }
+		inline sol::table __SCRIPT__GetRelativeScale() const			{ return GetRelativeScale().ToScriptTable(); }
+		inline sol::table __SCRIPT__GetWorldScale() const				{ return GetWorldScale().ToScriptTable(); }
+		inline void __SCRIPT__SetRelativeScale(sol::table t)			{ SetRelativeScale(Vector(t)); }
+		inline void __SCRIPT__SetWorldScale(sol::table t)				{ SetWorldScale(Vector(t)); }
 		EntityRef __SCRIPT__GetParent() const { return GetParent().lock(); }
 
 		/// <summary>

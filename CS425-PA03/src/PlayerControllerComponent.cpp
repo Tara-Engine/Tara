@@ -85,7 +85,7 @@ bool PlayerControllerComponent::OnKeyPressEvent(Tara::KeyPressEvent& e)
 		//skip movement
 		return true;
 	}
-	dir *= MOVEMENT_DISTANCE * 4.5; //move 4.5 tiles
+	dir *= MOVEMENT_DISTANCE * 4.5f; //move 4.5 tiles
 	parent->SetTarget(parent->GetWorldPosition() + dir, 0.25 * 4.5);
 	//LOG_S(INFO) << "Key pressed event handled: " << (char)key;
 	return true;

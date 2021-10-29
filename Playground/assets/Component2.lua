@@ -24,5 +24,14 @@ CurrentComponent:SetOnEventCallbackFunction(function(event)
 		else
 			print("Parent is not a Sprite! Parent:" .. CurrentComponent:GetParent():GetName())
 		end
+	elseif (event.Type == "KeyPress") then
+		print(inspect(CurrentComponent:GetParent():GetRelativeTransform()))
+		local v = {
+			x = math.random(-1, 1),
+			y = math.random(-1, 1),
+			z = math.random(-1, 1),
+		}
+		CurrentComponent:GetParent():SetRelativePosition(v)
+		
 	end
 end)

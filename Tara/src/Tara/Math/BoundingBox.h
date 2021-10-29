@@ -13,11 +13,11 @@ namespace Tara {
 			/// <summary>
 			/// the origin of the box
 			/// </summary>
-			glm::vec3 Position;
+			Vector Position;
 			/// <summary>
 			/// the size of the box
 			/// </summary>
-			glm::vec3 Extent;
+			Vector Extent;
 		};
 		struct {
 			/// <summary>

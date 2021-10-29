@@ -31,7 +31,10 @@
 //library stuff
 #define LOGURU_WITH_STREAMS 1
 #include "loguru.hpp"
+
 #include "glm/glm.hpp"
+
+#define SOL_NO_EXCEPTIONS 1
 #include <sol/sol.hpp>
 
 //tara stuff

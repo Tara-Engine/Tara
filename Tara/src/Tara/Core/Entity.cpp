@@ -559,25 +559,22 @@ namespace Tara{
         CONNECT_FUNCTION(Entity, GetSpecificBoundingBox);
         CONNECT_FUNCTION(Entity, GetFullBoundingBox);
 
-        CONNECT_FUNCTION(Entity, GetRelativeTransform);
-        CONNECT_FUNCTION(Entity, GetWorldTransform);
-        CONNECT_FUNCTION(Entity, SetRelativeTransform);
-        CONNECT_FUNCTION(Entity, SetWorldTransform);
-        
-        CONNECT_FUNCTION(Entity, GetRelativePosition);
-        CONNECT_FUNCTION(Entity, SetRelativePosition);
-        CONNECT_FUNCTION(Entity, GetWorldPosition);
-        CONNECT_FUNCTION(Entity, SetWorldPosition);
-        
-        CONNECT_FUNCTION(Entity, GetRelativeRotation);
-        CONNECT_FUNCTION(Entity, SetRelativeRotation);
-        CONNECT_FUNCTION(Entity, GetWorldRotation);
-        CONNECT_FUNCTION(Entity, SetWorldRotation);
-        
-        CONNECT_FUNCTION(Entity, GetRelativeScale);
-        CONNECT_FUNCTION(Entity, SetRelativeScale);
-        CONNECT_FUNCTION(Entity, GetWorldScale);
-        CONNECT_FUNCTION(Entity, SetWorldScale);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativeTransform);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldTransform);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativeTransform);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldTransform);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativePosition);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativePosition);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldPosition);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldPosition);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativeRotation);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativeRotation);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldRotation);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldRotation);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativeScale);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativeScale);
+        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldScale);
+        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldScale);
 
 
         CONNECT_FUNCTION(Entity, GetName);

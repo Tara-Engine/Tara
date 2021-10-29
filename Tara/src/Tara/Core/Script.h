@@ -1,7 +1,6 @@
 #pragma once
 #include "tarapch.h"
-#define SOL_NO_EXCEPTIONS 1
-#include <sol/sol.hpp>
+
 
 #define CONNECT_FUNCTION(classname, funcname) type[#funcname] = &##classname##::##funcname
 #define CONNECT_FUNCTION_OVERRIDE(classname, funcname) type[#funcname] = &##classname##::__SCRIPT__##funcname
