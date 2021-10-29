@@ -175,8 +175,13 @@ void Regenerate(Tara::LayerNoRef layer) {
 int main(int argc, char** argv) {
 	//Initialize the application
 	Tara::Application::Get()->Init(WIDTH, HEIGHT, "CS425 PA03");
+	
+	//lua types
+	Tara::Script::RegisterType<PawnEntity>("PawnEntity");
+	
 	//add layers to scene
 	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<GameLayer>());
+	
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

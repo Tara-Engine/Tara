@@ -91,6 +91,19 @@ public:
 	/// </summary>
 	void Kill();
 
+public:
+	//lua stuff
+	void __SCRIPT__SetTarget(sol::table vector, float time = 0.25f);
+	void __SCRIPT__SetDirection(std::string dir);
+	std::string __SCRIPT__GetDirection() const;
+
+
+	/// <summary>
+	/// Register the lua type
+	/// </summary>
+	/// <param name="lua"></param>
+	static void RegisterLuaType(sol::state& lua);
+
 private:
 	Tara::Vector m_Target, m_Origin, m_Spawn;
 	float m_Timer;

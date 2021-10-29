@@ -101,3 +101,61 @@ void PawnEntity::Kill()
 		Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
 	}
 }
+
+void PawnEntity::__SCRIPT__SetTarget(sol::table vector, float time)
+{
+	if (vector.valid()) {
+		Tara::Vector v;
+		v.x = vector.get_or("x", 0.0f);
+		v.y = vector.get_or("y", 0.0f);
+		v.z = vector.get_or("z", 0.0f);
+		SetTarget(v, time);
+	}
+	else {
+		LOG_S(ERROR) << "Lua: PawnEntity::SetTarget needs a vector as first paramater";
+	}
+}
+//UP, DOWN, LEFT, RIGHT
+void PawnEntity::__SCRIPT__SetDirection(std::string dir)
+{
+	Direction d = Direction::UP;
+	if (dir == "UP") {
+		d = Direction::UP;
+	}
+	else if (dir == "DOWN") {
+		d = Direction::DOWN;
+	}
+	else if (dir == "LEFT") {
+		d = Direction::LEFT;
+	}
+	else if (dir == "RIGHT") {
+		d = Direction::RIGHT;
+	}
+	SetDirection(d);
+}
+
+std::string PawnEntity::__SCRIPT__GetDirection() const
+{
+	switch (GetDirection()) {
+	case Direction::UP:		return "UP";
+	case Direction::DOWN:	return "DOWN";
+	case Direction::LEFT:	return "LEFT";
+	case Direction::RIGHT:	return "RIGHT";
+	}
+	return "UP";
+}
+
+void PawnEntity::RegisterLuaType(sol::state& lua)
+{
+	sol::usertype<PawnEntity> type = lua.new_usertype<PawnEntity>("PawnEntity", sol::base_classes, sol::bases<Tara::Entity, Tara::SpriteEntity>());
+	CONNECT_FUNCTION(PawnEntity, GetAlive);
+	CONNECT_FUNCTION(PawnEntity, SetAlive);
+	CONNECT_FUNCTION(PawnEntity, GetImmortal);
+	CONNECT_FUNCTION(PawnEntity, SetImmortal);
+	CONNECT_FUNCTION(PawnEntity, Respawn);
+	CONNECT_FUNCTION(PawnEntity, GetTraveling);
+	CONNECT_FUNCTION(PawnEntity, Kill);
+	CONNECT_FUNCTION_OVERRIDE(PawnEntity, SetTarget);
+	CONNECT_FUNCTION_OVERRIDE(PawnEntity, GetDirection);
+	CONNECT_FUNCTION_OVERRIDE(PawnEntity, SetDirection);
+}
