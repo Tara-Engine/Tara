@@ -86,7 +86,7 @@ namespace Tara {
 		/// Script version of GetParent. DO NOT CALL FROM C++
 		/// </summary>
 		/// <returns></returns>
-		inline const EntityRef& __SCRIPT__GetParent() const { return GetParent().lock(); }
+		inline const EntityRef __SCRIPT__GetParent() const { return GetParent().lock(); }
 
 
 

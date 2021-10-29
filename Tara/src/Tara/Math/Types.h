@@ -28,27 +28,56 @@ namespace Tara {
 	struct Vector {
 		float x, y, z;
 
-		Vector(float x = 0.0f) : x(x), y(x), z(x) {}
+		//small size constructors
 
-		Vector(float x, float y, float z) : x(x), y(y), z(z) {}
-		Vector(double x, double y, double z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector() : x(0.0f), y(0.0f), z(0.0f) {}
+		constexpr Vector(float x) : x(x), y(x), z(x) {}
+		constexpr Vector(double x) : x((float)x), y((float)x), z((float)x) {}
+		constexpr Vector(int32_t x) : x((float)x), y((float)x), z((float)x) {}
 
-		Vector(int32_t x, int32_t y, int32_t z) : x((float)x), y((float)y), z((float)z) {}
+		//Constructors for literally every combination of float, double, and int. Not sure if there is a better way to do this
+
+		constexpr Vector(float x, float y, float z) : x(x), y(y), z(z) {}
+		constexpr Vector(float x, float y, int32_t z) : x(x), y(y), z((float)z) {}
+		constexpr Vector(float x, float y, double z) : x(x), y(y), z((float)z) {}
+		constexpr Vector(float x, double y, float z) : x(x), y((float)y), z(z) {}
+		constexpr Vector(float x, double y, double z) : x(x), y((float)y), z((float)z) {}
+		constexpr Vector(float x, double y, int32_t z) : x(x), y((float)y), z((float)z) {}
+		constexpr Vector(float x, int32_t y, float z) : x(x), y((float)y), z(z) {}
+		constexpr Vector(float x, int32_t y, double z) : x(x), y((float)y), z((float)z) {}
+		constexpr Vector(float x, int32_t y, int32_t z) : x(x), y((float)y), z((float)z) {}
+		constexpr Vector(double x, float y, float z) : x((float)x), y(y), z(z) {}
+		constexpr Vector(double x, float y, double z) : x((float)x), y(y), z((float)z) {}
+		constexpr Vector(double x, float y, int32_t z) : x((float)x), y(y), z((float)z) {}
+		constexpr Vector(double x, double y, float z) : x((float)x), y((float)y), z(z) {}
+		constexpr Vector(double x, double y, double z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(double x, double y, int z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(double x, int32_t y, float z) : x((float)x), y((float)y), z(z) {}
+		constexpr Vector(double x, int32_t y, double z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(double x, int32_t y, int z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(int32_t x, float y, float z) : x((float)x), y(y), z(z) {}
+		constexpr Vector(int32_t x, float y, double z) : x((float)x), y(y), z((float)z) {}
+		constexpr Vector(int32_t x, float y, int32_t z) : x((float)x), y(y), z((float)z) {}
+		constexpr Vector(int32_t x, double y, float z) : x((float)x), y((float)y), z(z) {}
+		constexpr Vector(int32_t x, double y, double z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(int32_t x, double y, int z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(int32_t x, int32_t y, float z) : x((float)x), y((float)y), z(z) {}
+		constexpr Vector(int32_t x, int32_t y, double z) : x((float)x), y((float)y), z((float)z) {}
+		constexpr Vector(int32_t x, int32_t y, int z) : x((float)x), y((float)y), z((float)z) {}
+
+		//from vectors
+
+		constexpr Vector(glm::vec2 v, float z) :x(v.x), y(v.y), z(z) {}
+		constexpr Vector(glm::vec2 v, double z) :x(v.x), y(v.y), z((float)z) {}
+		constexpr Vector(glm::vec2 v, int32_t z) :x(v.x), y(v.y), z((float)z) {}
+		constexpr Vector(glm::vec3 v) :x(v.x), y(v.y), z(v.z) {}
+		constexpr Vector(glm::vec4 v) :x(v.x), y(v.y), z(v.z) {}
 		
-		Vector(float x, int32_t y, int32_t z) : x(x), y((float)y), z((float)z) {}
-		Vector(int32_t x, float y, int32_t z) : x((float)x), y(y), z((float)z) {}
-		Vector(int32_t x, int32_t y, float z) : x((float)x), y((float)y), z(z) {}
-
-		Vector(float x, float y, int32_t z) : x(x), y(y), z((float)z) {}
-		Vector(int32_t x, float y, float z) : x((float)x), y(y), z(z) {}
-		Vector(float x, int32_t y, float z) : x(x), y((float)y), z(z) {}
-
-
-		Vector(glm::vec3 v) :x(v.x), y(v.y), z(v.z) {}
-
-		Vector(glm::vec4 v) :x(v.x), y(v.y), z(v.z) {}
+		//from lua table
 
 		Vector(sol::table);
+
+		//math operators
 
 		Vector operator+(const Vector& other) const;
 		Vector operator-(const Vector& other) const;
@@ -100,9 +129,16 @@ namespace Tara {
 		Vector& operator*=(const int32_t& other);
 		Vector& operator/=(const int32_t& other);
 
+		//comparison operators
+
 		bool operator==(const Vector& other) const;
 		bool operator!=(const Vector& other) const;
+		
+		//unary operators
+		
 		Vector operator-() const;
+
+		//casting operators
 
 		operator glm::vec1() const;
 		operator glm::vec2() const;
@@ -113,19 +149,84 @@ namespace Tara {
 		operator glm::ivec3() const;
 		operator glm::ivec4() const;
 
+		//math functions
 
+		/// <summary>
+		/// Dot product between this vector and another
+		/// </summary>
+		/// <param name="other">the other vector</param>
+		/// <returns>dot product</returns>
 		float Dot(const Vector& other) const;
+
+		/// <summary>
+		/// Dot product between two Vectors
+		/// </summary>
+		/// <param name="a">The first vector</param>
+		/// <param name="b">The second vector</param>
+		/// <returns>the dot product</returns>
 		static float Dot(const Vector& a, const Vector& b);
 
+		/// <summary>
+		/// Cross product between this vector and another
+		/// </summary>
+		/// <param name="other">the other vector</param>
+		/// <returns>Cross product</returns>
 		Vector Cross(const Vector& other) const;
+
+		/// <summary>
+		/// Cross product between two vectors
+		/// </summary>
+		/// <param name="a">the first vector</param>
+		/// <param name="b">the second vector</param>
+		/// <returns>the cross product</returns>
 		static Vector Cross(const Vector& a, const Vector& b);
 
+		/// <summary>
+		/// Get the lengh of a vector
+		/// </summary>
+		/// <returns>the length</returns>
 		float Length() const;
+		/// <summary>
+		/// Get the squared length of a vector. Faster than the regular length.
+		/// </summary>
+		/// <returns>the squared length</returns>
 		float LengthSq() const;
+
+		/// <summary>
+		/// Get the distance between this vector and another
+		/// </summary>
+		/// <param name="other">the other vector</param>
+		/// <returns>the distance</returns>
 		float Distance(const Vector& other) const;
+
+		/// <summary>
+		/// Get the distance between two vectors
+		/// </summary>
+		/// <param name="a">the first vector</param>
+		/// <param name="b">the second vector</param>
+		/// <returns>the distance</returns>
 		static float Distance(const Vector& a, const Vector& b);
+		
+		/// <summary>
+		/// Get the squared distance between this vector and another. Faster than the regular distance.
+		/// </summary>
+		/// <param name="other">the other vector</param>
+		/// <returns>the squared distance</returns>
 		float DistanceSq(const Vector& other) const;
+		
+		/// <summary>
+		/// Get the squared distance between two vectors. Faster than the regular distance.
+		/// </summary>
+		/// <param name="a">the first vector</param>
+		/// <param name="b">the second vector</param>
+		/// <returns>the squared distance</returns>
 		static float DistanceSq(const Vector& a, const Vector& b);
+
+		/// <summary>
+		/// Normalize this vector, or, make its lenght 1 without changing direction
+		/// </summary>
+		/// <returns>reference to this vector</returns>
+		Vector& Normalize();
 
 		/// <summary>
 		/// Get a lua type from a rotator

@@ -130,6 +130,7 @@ std::string PawnEntity::__SCRIPT__GetDirection() const
 	case Direction::LEFT:	return "LEFT";
 	case Direction::RIGHT:	return "RIGHT";
 	}
+	return "UP";
 }
 
 void PawnEntity::RegisterLuaType(sol::state& lua)

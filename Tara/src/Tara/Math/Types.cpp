@@ -386,6 +386,12 @@ namespace Tara{
 		return (a - b).LengthSq();
 	}
 
+	Vector& Vector::Normalize()
+	{
+		*this /= Length();
+		return *this;
+	}
+
 	sol::table Vector::ToScriptTable() const
 	{
 		//TODO: when lua side library for tables, complete, replace this
