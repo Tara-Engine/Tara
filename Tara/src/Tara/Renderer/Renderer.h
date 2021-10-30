@@ -5,7 +5,7 @@
 #include "Tara/Renderer/Camera.h"
 #include "Tara/Math/Types.h"
 #include "Tara/Renderer/Texture.h"
-#include "Tara/Math/BoundingBox.h"
+#include "Tara/Asset/Font.h"
 
 namespace Tara {
 
@@ -59,9 +59,16 @@ namespace Tara {
 		/// <param name="transform">the transform of the quad</param>
 		static void Quad(const Transform& transform, glm::vec4 color = { 1.0f,1.0f,1.0f,1.0f }, const Texture2DRef& texture = nullptr, glm::vec2 minUV = { 0,0 }, glm::vec2 maxUV = {1,1});
 
-
-		//static void Quad(Texture2DRef texture, glm::vec4 color, Transform transform);
-
+		/// <summary>
+		/// Render text. If this is being done every frame with unchanging text, it may be more efficent to instead get the rect data from the font directly, and cache it.
+		/// IE, this is a quick and lazy function, or for text that changes every frame.
+		/// </summary>
+		/// <param name="transform">the transform to draw the text at</param>
+		/// <param name="text">the text to draw</param>
+		/// <param name="font">the font to draw with</param>
+		/// <param name="color">the color of the text. defaults to white</param>
+		static void Text(const Transform& transform, const std::string& text, FontRef font, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
+		
 		
 
 	private:

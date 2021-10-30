@@ -46,6 +46,9 @@ public:
 		//Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Linear);
 		Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Nearest);
 
+
+		font = Tara::Font::Create("assets/arial.ttf", 1024, 96, "arial");
+
 		//make a texture asset
 		auto textureUVChecker = Tara::Texture2D::Create("assets/UV_Checker.png");
 		auto textureDirArrows = Tara::Texture2D::Create("assets/DirArrows.png");
@@ -92,8 +95,9 @@ public:
 		m_Player = Tara::CreateEntity<TColorRectEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
 		
-		
-		
+		auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?", TRANSFORM_2D(-1, 0, 0, 1, 1));
+		textEntity->SetColor({ 1,0,0,1 });
+
 		//auto player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		//player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
 		//player->SetSpeed(1.5f);
@@ -128,6 +132,10 @@ public:
 		
 		Tara::Layer::Draw(deltaTime);
 
+		Tara::Renderer::Text(TRANSFORM_2D(1, 1, 0, 1, 1), "Hello World", font);
+		//Tara::Renderer::Quad(TRANSFORM_2D(1, 1, 0, 2, 2), { 1,1,1,1 }, font->GetTexture());
+		
+		
 		//Tara::RenderCommand::PushDrawType(Tara::RenderDrawType::LineStrip, false);
 		//Tara::Renderer::Draw(m_VertexArray, m_SimpleShader, TRANSFORM_2D(-1, -1, 0, 1, 1));
 		//Tara::RenderCommand::PopDrawType();
@@ -180,6 +188,7 @@ private:
 	Tara::ShaderRef m_SimpleShader;
 	Tara::VertexArrayRef m_VertexArray;
 	
+	Tara::FontRef font;
 	//Tara::CameraRef m_Camera;
 	
 	float m_PlayerSpeed = 1.0f;

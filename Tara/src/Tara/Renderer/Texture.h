@@ -4,6 +4,9 @@
 
 namespace Tara {
 
+	REFTYPE(Textuyre)
+	REFTYPE(Texture2D)
+
 	/// <summary>
 	/// Texture Base Class. All textures are this class
 	/// </summary>
@@ -50,7 +53,6 @@ namespace Tara {
 	/// 2D Image Texture, as loaded from a file
 	/// </summary>
 	class Texture2D : public Texture {
-		using Texture2DRef = std::shared_ptr<Texture2D>;
 	public:
 		Texture2D(const std::string& name) : Texture(name) {}
 		virtual ~Texture2D() = default;
@@ -65,14 +67,17 @@ namespace Tara {
 		/// <param name="path">the path to the texture</param>
 		/// <returns>Reference to the new texture</returns>
 		static Texture2DRef Create(const std::string& path, const std::string& name = "");
+
+		/// <summary>
+		/// Create a new Texture2D from a byte array. After this call, the byte array is safe to clean up.
+		/// </summary>
+		/// <param name="bytes">a pointer to the array of bytes</param>
+		/// <param name="width">the width of the texture in pixels</param>
+		/// <param name="height">the height of the texture in pixels</param>
+		/// <param name="bytesPerPixel">the bytes per pixel, AND the number of channels. must be in the range [1,4]</param>
+		/// <param name="name">the name of the asset</param>
+		/// <returns>Reference to the new texture</returns>
+		static Texture2DRef Create(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name);
 	};
 
-	/// <summary>
-	/// Texture Base Class Reference. All textures are this class
-	/// </summary>
-	using TextureRef = std::shared_ptr<Texture>;
-	/// <summary>
-	/// Reference to a 2D Image Texture, as loaded from a file
-	/// </summary>
-	using Texture2DRef = std::shared_ptr<Texture2D>;
 }

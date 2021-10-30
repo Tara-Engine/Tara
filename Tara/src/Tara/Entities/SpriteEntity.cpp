@@ -108,6 +108,7 @@ namespace Tara {
 		if (a.valid() && a.is<float>()) {
 			color.a = a.as<float>();
 		}
+		SetTint(color);
 	}
 
 	void SpriteEntity::__SCRIPT__SetFlip(sol::object one, sol::object two)

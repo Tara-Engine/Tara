@@ -151,7 +151,16 @@ namespace Tara {
 	}
 
 
-
+	void Tara::Renderer::Text(const Transform& transform, const std::string& text, FontRef font, glm::vec4 color)
+	{
+		std::vector<Transform> transforms;
+		std::vector<glm::vec2> uvMin;
+		std::vector<glm::vec2> uvMax;
+		font->GetTextQuads(text, transforms, uvMin, uvMax);
+		for (int i = 0; i < text.size(); i++) {
+			Quad(transform + transforms[i], color, font->GetTexture(), uvMin[i], uvMax[i]);
+		}
+	}
 	
 
 

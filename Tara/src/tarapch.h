@@ -25,7 +25,7 @@
 
 //include Windows.h if we are on windows
 #ifdef _WIN32
-#include <Windows.h>
+//#include <Windows.h>
 #endif
 
 //library stuff

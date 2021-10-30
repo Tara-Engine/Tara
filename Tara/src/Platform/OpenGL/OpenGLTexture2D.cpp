@@ -10,8 +10,14 @@ namespace Tara{
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, const std::string& name)
 		: Texture2D(name), m_Path(path), m_RendererID(0), m_Width(0), m_Height(0)
 	{
-		loadFromFile();
+		LoadFromFile();
 		LOG_S(1) << "Image Loaded from File: " << path;
+	}
+
+	OpenGLTexture2D::OpenGLTexture2D(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name)
+		: Texture2D(name), m_Path(""), m_RendererID(0), m_Width(width), m_Height(height)
+	{
+		LoadFromArray(bytes, bytesPerPixel);
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
@@ -38,7 +44,7 @@ namespace Tara{
 		}
 	}
 
-	void OpenGLTexture2D::loadFromFile()
+	void OpenGLTexture2D::LoadFromFile()
 	{
 		int32_t width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
@@ -48,8 +54,13 @@ namespace Tara{
 		m_Width = width;
 		m_Height = height;
 
+		LoadFromArray(imageData, channels);
+
+		stbi_image_free(imageData);
+	}
+	void OpenGLTexture2D::LoadFromArray(const uint8_t* imageData, uint32_t channels)
+	{
 		GLenum internalFormat = 0, dataFormat = 0;
-		
 
 		switch (channels) {
 		case 1: {
@@ -83,10 +94,7 @@ namespace Tara{
 		}
 		glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 
-		//TODO: make these setting that can be changed!
-		//glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		//glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		if (Texture::s_DefaultTextureFiltering == Texture::Filtering::Nearest){
+		if (Texture::s_DefaultTextureFiltering == Texture::Filtering::Nearest) {
 			glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		}
@@ -95,17 +103,21 @@ namespace Tara{
 			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}
 
+		//if a single chanel texture, make that chanel Alpha, and the color white
+		if (channels == 1) {
+			GLint swizzleMask[] = { GL_ONE, GL_ONE, GL_ONE, GL_RED };
+			glTextureParameteriv(m_RendererID, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
+		}
+
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glTextureSubImage2D(
 			m_RendererID,
-			0,0,0,
+			0, 0, 0,
 			m_Width, m_Height,
 			dataFormat, GL_UNSIGNED_BYTE,
 			imageData
 		);
-
-		stbi_image_free(imageData);
 	}
 }

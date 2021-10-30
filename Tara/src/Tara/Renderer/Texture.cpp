@@ -14,7 +14,7 @@ namespace Tara{
         std::string lName = name;
         if (name == "") { lName = GetAssetNameFromPath(path); }
         Texture2DRef ref;
-        ref = AssetLibrary::Get()->GetAssetIf<Texture2D>(name);
+        ref = AssetLibrary::Get()->GetAssetIf<Texture2D>(lName);
         if (ref == nullptr){
             try {
                 switch (Renderer::GetRenderBackend()) { //GetAssetNameFromPath(path)
@@ -28,6 +28,20 @@ namespace Tara{
                 LOG_S(ERROR) << "File Loading Error: " << e.what();
                 return nullptr;
             }
+        }
+        return ref;
+    }
+    Texture2DRef Texture2D::Create(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name)
+    {
+        Texture2DRef ref;
+        ref = AssetLibrary::Get()->GetAssetIf<Texture2D>(name);
+        if (ref == nullptr) {
+            switch (Renderer::GetRenderBackend()) { //GetAssetNameFromPath(path)
+            case RenderBackend::OpenGl: ref = std::make_shared<OpenGLTexture2D>(bytes, width, height, bytesPerPixel, name); break;
+
+            case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
+            }
+            AssetLibrary::Get()->RegisterAsset(ref);
         }
         return ref;
     }

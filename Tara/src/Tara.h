@@ -30,6 +30,7 @@
 //Assets
 #include "Tara/Asset/AssetLibrary.h"
 #include "Tara/Asset/Asset.h"
+#include "Tara/Asset/Font.h"
 
 //math
 #include "Tara/Math/Types.h"
@@ -41,6 +42,7 @@
 #include "Tara/Entities/SpriteEntity.h"
 #include "Tara/Entities/CameraEntity.h"
 #include "Tara/Entities/DynamicMultiChildEntity.h"
+#include "Tara/Entities/TextEntity.h"
 
 //Components
 #include "Tara/Components/ScriptComponent.h"
