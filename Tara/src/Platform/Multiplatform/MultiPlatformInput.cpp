@@ -17,11 +17,11 @@ namespace Tara {
         return (glfwGetMouseButton(m_WindowHandle, button) == GLFW_PRESS);
     }
 
-    std::pair<uint32_t, uint32_t> MultiPlatformInput::GetMousePos() const
+    glm::vec2 MultiPlatformInput::GetMousePos() const
     {
         double xPos, yPos;
         glfwGetCursorPos(m_WindowHandle, &xPos, &yPos);
-        return std::pair<uint32_t, uint32_t>((uint32_t)xPos, (uint32_t)yPos);
+        return glm::vec2{ (float)xPos, (float)yPos };
     }
 
     void MultiPlatformInput::Initialize(WindowRef ref)

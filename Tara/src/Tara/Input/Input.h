@@ -66,53 +66,50 @@ namespace Tara {
 		/// Get the current mouse pos as a pair
 		/// </summary>
 		/// <returns>mouse pos as a pair</returns>
-		virtual std::pair<uint32_t, uint32_t>GetMousePos() const = 0;
+		virtual glm::vec2 GetMousePos() const = 0;
 		/// <summary>
 		/// Get the current mouse X pos
 		/// </summary>
 		/// <returns>current mouse X pos as unsigned int</returns>
-		inline uint32_t GetMouseX() const { auto p = GetMousePos(); return p.first; }
+		inline float GetMouseX() const { auto p = GetMousePos(); return p.x; }
 		/// <summary>
 		/// Get the current mouse Y pos
 		/// </summary>
 		/// <returns>current mouse Y pos as unsigned int</returns>
-		inline uint32_t GetMouseY() const { auto p = GetMousePos(); return p.second; }
+		inline float GetMouseY() const { auto p = GetMousePos(); return p.y; }
 		/// <summary>
 		/// Get the previous mouse pos as a pair
 		/// </summary>
 		/// <returns>previous mouse pos as a pair</returns>
-		inline std::pair<uint32_t, uint32_t> GetPrevMousePos() const { return m_PrevMousePos; }
+		inline glm::vec2 GetPrevMousePos() const { return m_PrevMousePos; }
 		/// <summary>
 		/// Get the previous mouse X pos
 		/// </summary>
 		/// <returns>previous mouse X pos as unsigned int</returns>
-		inline uint32_t GetPrevMouseX() const { return m_PrevMousePos.first; }
+		inline float GetPrevMouseX() const { return m_PrevMousePos.x; }
 		/// <summary>
 		/// Get the previous mouse Y pos
 		/// </summary>
 		/// <returns>previous mouse Y pos as unsigned int</returns>
-		inline uint32_t GetPrevMouseY() const { return m_PrevMousePos.second; }
+		inline float GetPrevMouseY() const { return m_PrevMousePos.y; }
 		/// <summary>
 		/// Get the change in mouse position last frame (mouse delta) as a pair
 		/// </summary>
 		/// <returns>mouse delta as a pair</returns>
-		inline std::pair<uint32_t, uint32_t> GetMouseDelta() const { 
+		inline glm::vec2 GetMouseDelta() const { 
 			auto p = GetMousePos(); 
-			return std::pair<uint32_t, uint32_t>{
-				p.first - m_PrevMousePos.first, 
-				p.second - m_PrevMousePos.second
-			}; 
+			return p - m_PrevMousePos;
 		}
 		/// <summary>
 		/// Get the change in mouse X position last frame
 		/// </summary>
 		/// <returns>mouse delta X as a unsigned int</returns>
-		inline uint32_t GetMouseDeltaX() const { auto p = GetMouseDelta(); return p.first; }
+		inline float GetMouseDeltaX() const { auto p = GetMouseDelta(); return p.x; }
 		/// <summary>
 		/// Get the change in mouse Y position last frame
 		/// </summary>
 		/// <returns>mouse delta Y as a unsigned int</returns>
-		inline uint32_t GetMouseDeltaY() const { auto p = GetMouseDelta(); return p.second; }
+		inline float GetMouseDeltaY() const { auto p = GetMouseDelta(); return p.y; }
 
 		//TODO: add gamepad stuff here. Eventually
 	protected:
@@ -133,7 +130,7 @@ namespace Tara {
 		/// <summary>
 		/// a pair to store prev mouse pos
 		/// </summary>
-		std::pair<uint32_t, uint32_t> m_PrevMousePos;
+		glm::vec2 m_PrevMousePos;
 	};
 
 }

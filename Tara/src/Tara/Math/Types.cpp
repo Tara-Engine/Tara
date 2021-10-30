@@ -526,31 +526,20 @@ namespace Tara{
 		/*Explanation:
 		* SO, this works in order of operation: Scale first, then rotate, then move.
 		* Rotation happens in the extrinsic order or Roll, then Pitch, then Yaw. Or, around Z, then around X, then around Y.
+		* Multiplication happens in the opposite order.
 		*/
 
 		glm::mat4 scale = glm::scale(glm::mat4(1), (glm::vec3)Scale);
 		
-		glm::mat4 rot = glm::rotate(
-			glm::rotate(
-				glm::rotate(
-					glm::mat4(1), 
-					glm::radians(Rotation.Roll), 
-					{ 0.0f, 0.0f, 1.0f }
-				), 
-				glm::radians(Rotation.Pitch),
-				{ 1.0f, 0.0f, 0.0f }
-			), 
-			glm::radians(Rotation.Yaw),
-			{ 0.0f, 1.0f, 0.0f }
-		);
+		glm::mat4 rot = 
+			glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.Yaw), glm::vec3(0, 1, 0)) *
+			glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.Pitch), glm::vec3(1, 0, 0)) *
+			glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.Roll), glm::vec3(0, 0, 1));
+
 		
 		glm::mat4 pos = glm::translate(glm::mat4(1), (glm::vec3)Position);
 		
-
 		return pos * rot * scale;
-
-		//whole nasty thing in one line. (except its somehow broken, causing scale to move things too.)
-		//return glm::translate(glm::rotate(glm::rotate(glm::rotate(glm::scale(glm::mat4(1), Scale),Rotation.Roll,{ 0.0f, 0.0f, 1.0f }),Rotation.Pitch,{ 1.0f, 0.0f, 0.0f }),Rotation.Yaw,{ 0.0f, 1.0f, 0.0f }), Position);
 	}
 
 

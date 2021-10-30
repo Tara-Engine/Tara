@@ -59,6 +59,12 @@ namespace Tara {
 		void SetOrthographicExtent(float width);
 
 		/// <summary>
+		/// When in perspective mode, set the perspective FOV
+		/// </summary>
+		/// <param name="fov"></param>
+		void SetPerspectiveFOV(float fov);
+
+		/// <summary>
 		/// Set if the camera should use the world scale for its projection matrix
 		/// </summary>
 		/// <param name="v"></param>
@@ -82,6 +88,17 @@ namespace Tara {
 		/// <param name="deltaTime"></param>
 		virtual void OnUpdate(float deltaTime) override;
 
+		/// <summary>
+		/// overriden begin play function, to enable events
+		/// </summary>
+		virtual void OnBeginPlay() override;
+
+		/// <summary>
+		/// Overriden event function, to update the render area
+		/// </summary>
+		/// <param name="e"></param>
+		virtual void OnEvent(Event& e) override;
+
 
 	public:
 		//Lua Stuff
@@ -97,19 +114,9 @@ namespace Tara {
 		static void RegisterLuaType(sol::state& lua);
 
 	private:
-		/// <summary>
-		/// the internal camera
-		/// </summary>
 		CameraRef m_Camera;
-
-		/// <summary>
-		/// Orhtographic - specific
-		/// </summary>
 		OrthographicCamera::OrthoExtent m_OrthoExtent;
-
-		/// <summary>
-		/// Use the world scale of the camera for the projection matrix
-		/// </summary>
+		float m_PerspectiveFOV;
 		bool m_UseWorldScale = false;
 	};
 	

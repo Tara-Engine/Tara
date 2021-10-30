@@ -1,9 +1,37 @@
 #include "tarapch.h"
 #include "Camera.h"
-
+#include "Tara/Math/Functions.h"
 #include "Tara/Core/Application.h"
 
 namespace Tara {
+
+	std::pair<Vector, Vector> Camera::GetRayFromScreenCoordinate(float x, float y)
+	{
+		//this is for orthographic camera only
+		float wWidth = (float)Application::Get()->GetWindow()->GetWidth();
+		float wHeight = (float)Application::Get()->GetWindow()->GetHeight();
+		//Get the positions in the viewing volume of -1 to 1
+		float vx = MapRange((float)x, 0.0f, wWidth, -1.0f, 1.0f);
+		float vy = MapRange((float)y, 0.0f, wHeight, 1.0f, -1.0f); //y is inverted between pixel space and view space
+		
+		//make a vec4 for matrix operations
+		glm::vec4 viewPlanePos = { vx, vy, 0.0f, 1.0f }; 
+		
+		//Get the transform matrix, for use later
+		auto tMatrix = m_Transform.GetTransformMatrix(); 
+		
+		//transform the vector to be relative to the camera location in the world. 
+		Vector origin(tMatrix * glm::inverse(m_ProjectionMatrix) * viewPlanePos); 
+
+		//now, get the offset.
+		//just get the forward vector of the camera (since its basic orthographic)
+		Vector offset = m_Transform.Rotation.GetForwardVector().Normalize(); 
+
+		//Return the pair of start and end of the ray
+		return std::make_pair(origin, offset);
+	}
+
+
 	OrthographicCamera::OrthographicCamera(float width)
 			: Camera(ProjectionType::Ortographic), m_Extent(-(width/2), width/2), m_MaintainAspectRatio(true)
 	{
@@ -69,4 +97,62 @@ namespace Tara {
 			m_Extent.Near, m_Extent.Far
 		);
 	}
+	
+
+	PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio)
+		: Camera(ProjectionType::Perspective), m_FOV(fov), m_AspectRatio(aspectRatio)
+	{
+		
+		UpdateProjectionMatrix();
+	}
+
+	void PerspectiveCamera::UpdateRenderArea(uint32_t width, uint32_t height)
+	{
+		auto& window = Application::Get()->GetWindow();
+		m_AspectRatio = (float)window->GetWidth() / (float)window->GetHeight();
+		UpdateProjectionMatrix();
+	}
+
+	std::pair<Vector, Vector> PerspectiveCamera::GetRayFromScreenCoordinate(float x, float y)
+	{
+		//Here is the version for perspective cameras
+		float wWidth = (float)Application::Get()->GetWindow()->GetWidth();
+		float wHeight = (float)Application::Get()->GetWindow()->GetHeight();
+		//Get the positions in the viewing volume of -1 to 1
+		float vx = MapRange((float)x, 0.0f, wWidth, -1.0f, 1.0f);
+		float vy = MapRange((float)y, 0.0f, wHeight, 1.0f, -1.0f); //y is inverted between pixel space and view space
+
+		//make a vec4 for matrix operations
+		glm::vec4 viewPlanePos = { vx, vy, 0.0f, 1.0f };
+
+		//Get the transform matrix, for use later
+		auto tMatrix = m_Transform.GetTransformMatrix();
+
+		//transform the vector to be relative to the camera location in the world. 
+		//TODO: make this robust enough to work for all camera types without overriding! (currently only works for orthographic types.)
+		Vector offset(tMatrix * glm::inverse(m_ProjectionMatrix) * viewPlanePos);
+		offset.Normalize();
+		//now, get the offset.
+		//just get the forward vector of the camera (since its basic orthographic)
+		//TODO: make this robust enough for all camera types without overriding!
+		//Vector offset = m_Transform.Rotation.GetForwardVector().Normalize();
+
+		//Return the pair of start and end of the ray
+		return std::make_pair(m_Transform.Position, offset);
+	}
+
+	void PerspectiveCamera::UpdateProjectionMatrix()
+	{
+		//check if the aspect ratio is set to dynamically generate
+		if (m_AspectRatio < 0) {
+			//if so, get from window
+			auto& window = Application::Get()->GetWindow();
+			m_AspectRatio = (float)window->GetWidth() / (float)window->GetHeight();
+		}
+		//TODO: add methods to set near and far clipping plane
+		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, -1.0f, 1.0f);
+	}
+
+
+
 }

@@ -14,7 +14,7 @@ namespace Tara {
 		virtual bool IsKeyPressed(int32_t key) const override;
 		virtual bool IsMouseDown(int32_t button) const override;
 		//MousePos
-		virtual std::pair<uint32_t, uint32_t>GetMousePos() const override;
+		virtual glm::vec2 GetMousePos() const override;
 
 	private:
 		

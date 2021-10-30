@@ -3,6 +3,10 @@
 
 namespace Tara {
 
+	REFTYPE(Camera)
+	REFTYPE(OrthographicCamera)
+	REFTYPE(PerspectiveCamera)
+
 	/// <summary>
 	/// Camera Base Class
 	/// This class is subclasses to make each camera type
@@ -48,7 +52,6 @@ namespace Tara {
 		/// </summary>
 		/// <param name="rot">the new rotation</param>
 		void SetRotation(Rotator rot) { m_Transform.Rotation = rot; }
-
 		/// <summary>
 		/// Get the world Transform of a camera
 		/// </summary>
@@ -69,7 +72,6 @@ namespace Tara {
 		/// </summary>
 		/// <returns>the propjection type</returns>
 		Camera::ProjectionType GetProjectionType() const { return m_Type; }
-
 		/// <summary>
 		/// Get the projection matrix of the camera
 		/// </summary>
@@ -85,29 +87,27 @@ namespace Tara {
 		/// </summary>
 		/// <returns>projection*view matrix, column-major</returns>
 		virtual glm::mat4 GetViewProjectionMatrix() const {return m_ProjectionMatrix * glm::inverse(m_Transform.GetTransformMatrix());};
-
 		/// <summary>
 		/// Update the camera for a new size of area being rendererd to
 		/// </summary>
 		/// <param name="width">width of area</param>
 		/// <param name="height">height of area</param>
 		inline virtual void UpdateRenderArea(uint32_t width, uint32_t height) { return; }
+		
+		/// <summary>
+		/// Given a location on the screen, make a unit ray into the world, relative to the same space as the camera sees it.
+		/// </summary>
+		/// <param name="x">the X pixel location on the screen</param>
+		/// <param name="y">the Y pixel location on the screen</param>
+		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y);
 
 	protected:
 		inline virtual void UpdateProjectionMatrix() { return; }
 
 	protected:
-		/// <summary>
-		/// The camera's transform. Scale should be ignored.
-		/// </summary>
 		Transform m_Transform;
-		/// <summary>
-		/// The camera's projection type
-		/// </summary>
 		const ProjectionType m_Type;
-		/// <summary>
-		/// the camera's projection matrix
-		/// </summary>
 		glm::mat4 m_ProjectionMatrix;
 	};
 
@@ -159,7 +159,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="width">width of area</param>
 		/// <param name="height">height of area</param>
-		inline virtual void UpdateRenderArea(uint32_t width, uint32_t height) override;
+		virtual void UpdateRenderArea(uint32_t width, uint32_t height) override;
 
 	protected:
 		/// <summary>
@@ -168,16 +168,65 @@ namespace Tara {
 		virtual void UpdateProjectionMatrix() override;
 
 	private:
-		/// <summary>
-		/// The camera extent
-		/// </summary>
 		OrthoExtent m_Extent;
-		/// <summary>
-		/// if the aspect ratio should be maintained.
-		/// </summary>
 		bool m_MaintainAspectRatio;
 	};
 
+	/// <summary>
+	/// A persective camera for all your 3D needs
+	/// </summary>
+	class PerspectiveCamera : public Camera {
+	public:
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="fov">the field of view</param>
+		/// <param name="aspectRatio">the aspect ratio of the renderTarget</param>
+		PerspectiveCamera(float fov, float aspectRatio = -1.0f);
 
-	using CameraRef = std::shared_ptr<Camera>;
+		/// <summary>
+		/// Get the field of view
+		/// </summary>
+		/// <returns></returns>
+		inline float GetFOV() const { return m_FOV; }
+
+		/// <summary>
+		/// Set the field of view. Triggers a projection matrix update, so, might be slower than expected.
+		/// </summary>
+		/// <param name="fov"></param>
+		inline void SetFOV(float fov) { m_FOV = fov; UpdateProjectionMatrix(); }
+
+		/// <summary>
+		/// Get the aspect ratio
+		/// </summary>
+		/// <returns></returns>
+		inline float GetAspectRatio() const { return m_AspectRatio; }
+
+		/// <summary>
+		/// Set the aspect ratio. use a negative to calculate from current RenderTarget. Triggers a projection matrix update, so, might be slower than expected.
+		/// </summary>
+		/// <param name="aspect"></param>
+		inline void SetAspectRatio(float aspect) { m_AspectRatio = aspect; UpdateProjectionMatrix(); }
+
+		/// <summary>
+		/// Update the size of the area being rendered to (chages the apsect ratio). Triggers a projection matrix update, so, might be slower than expected.
+		/// </summary>
+		/// <param name="width">the new width</param>
+		/// <param name="height">the new hight</param>
+		virtual void UpdateRenderArea(uint32_t width, uint32_t height) override;
+
+		/// <summary>
+		/// Given a location on the screen, make a unit ray into the world, relative to the same space as the camera sees it.
+		/// </summary>
+		/// <param name="x">the X pixel location on the screen</param>
+		/// <param name="y">the Y pixel location on the screen</param>
+		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) override;
+	protected:
+		virtual void UpdateProjectionMatrix() override;
+
+	private:
+		float m_FOV;
+		float m_AspectRatio;
+	};
 }

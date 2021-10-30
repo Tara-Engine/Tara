@@ -327,6 +327,24 @@ namespace Tara {
 		Vector RotateVector(const Vector& vec) const;
 
 		/// <summary>
+		/// Get the forward vector from the rotation
+		/// </summary>
+		/// <returns>the forward vector</returns>
+		inline Vector GetForwardVector() const { return RotateVector({0.0f, 0.0f, 1.0f}); }
+
+		/// <summary>
+		/// Get the right vector from the rotation 
+		/// </summary>
+		/// <returns>the right vector</returns>
+		inline Vector GetRightVector() const { return RotateVector({ 1.0f, 0.0f, 0.0f }); }
+
+		/// <summary>
+		/// Get the up vector from the rotation
+		/// </summary>
+		/// <returns></returns>
+		inline Vector GetUpVector() const { return RotateVector({ 0.0f, 1.0f, 0.0f }); }
+
+		/// <summary>
 		/// get the inverse of a rotator
 		/// </summary>
 		/// <returns></returns>
