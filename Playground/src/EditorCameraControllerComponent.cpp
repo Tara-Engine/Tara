@@ -68,10 +68,10 @@ void EditorCameraControllerComponent::OnEvent(Tara::Event& e)
 	Tara::EventFilter filter(e);
 	filter.Call<Tara::MouseScrollEvent>([this](Tara::MouseScrollEvent& ee) {
 		if (ee.GetYOffset() > 0) {
-			this->SetSpeed(this->GetSpeed() * 1.5);
+			this->SetSpeed(this->GetSpeed() * 1.5f);
 		}
 		else {
-			this->SetSpeed(this->GetSpeed() / 1.5);
+			this->SetSpeed(this->GetSpeed() / 1.5f);
 		}
 		return false;
 	});

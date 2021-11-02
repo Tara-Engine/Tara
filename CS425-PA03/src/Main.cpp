@@ -41,7 +41,7 @@ public:
 		//very important to initialize first!
 		RoomManager::Get()->Init(Tara::EntityNoRef(), weak_from_this());
 		RoomManager::Get()->LoadRoomTextures();
-		auto path = RoomManager::Get()->Generate(time(0), MAP_SIZE, MAP_SIZE, 30);
+		auto path = RoomManager::Get()->Generate((uint32_t)time(0), MAP_SIZE, MAP_SIZE, 30);
 		
 		//textures and sprites
 		m_DeathTexture = Tara::Texture2D::Create("assets/DeathLogo.png", "deathLogo");
@@ -104,7 +104,7 @@ public:
 		auto rd = std::random_device();
 		while (!m_Enemy) {
 			int rx = rd() % MAP_SIZE;
-			int ry = -(rd() % MAP_SIZE);
+			int ry = -((int)(rd() % MAP_SIZE));
 			auto room = RoomManager::Get()->GetRoom(rx, ry);
 			if (room && !Tara::PowOfTwo(room->GetDoorState())) { //the room is real and not a dead end
 				glm::vec2 pos = RoomManager::RoomCoordToWorldCoord({ rx, ry });

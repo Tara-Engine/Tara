@@ -35,6 +35,7 @@
 * 1: Using it in a C++ space (ie, it should be based on a class)
 * 2: Allowing for random seeding and octaves
 * 3: Making it easier to use in Tara and part of the Tara namespace
+* 4: C++ specific warning corrections (ie, adding an "f" to the end of some float literals and the like)
 * All in all, the changes were mostly just wrapping it in a class and making the perutation array non-static
 */
 #include <random>
@@ -85,7 +86,7 @@ namespace Tara {
 		float noise = 0;
 		float amp = m_Amplitude;
 		float freq = m_Frequency;
-		for (int i = 0; i < m_Octaves; i++) {
+		for (uint32_t i = 0; i < m_Octaves; i++) {
 			noise += get(x * freq) * amp;
 			amp *= m_Persistance;
 			freq *= 2;
@@ -98,7 +99,7 @@ namespace Tara {
 		float noise = 0;
 		float amp = m_Amplitude;
 		float freq = m_Frequency;
-		for (int i = 0; i < m_Octaves; i++) {
+		for (uint32_t i = 0; i < m_Octaves; i++) {
 			noise += get(x * freq, y * freq) * amp;
 			amp *= m_Persistance;
 			freq *= 2;
@@ -111,7 +112,7 @@ namespace Tara {
 		float noise = 0;
 		float amp = m_Amplitude;
 		float freq = m_Frequency;
-		for (int i = 0; i < m_Octaves; i++) {
+		for (uint32_t i = 0; i < m_Octaves; i++) {
 			noise += get(x * freq, y * freq, z * freq) * amp;
 			amp *= m_Persistance;
 			freq *= 2;
@@ -124,7 +125,7 @@ namespace Tara {
 		float noise = 0;
 		float amp = m_Amplitude;
 		float freq = m_Frequency;
-		for (int i = 0; i < m_Octaves; i++) {
+		for (uint32_t i = 0; i < m_Octaves; i++) {
 			noise += get(x * freq, y * freq, z * freq, w * freq) * amp;
 			amp *= m_Persistance;
 			freq *= 2;
@@ -165,8 +166,8 @@ namespace Tara {
 
 	float Noise::get(float x, float y)
 	{
-#define F2 0.366025403 // F2 = 0.5*(sqrt(3.0)-1.0)
-#define G2 0.211324865 // G2 = (3.0-Math.sqrt(3.0))/6.0
+#define F2 0.366025403f // F2 = 0.5*(sqrt(3.0)-1.0)
+#define G2 0.211324865f // G2 = (3.0-Math.sqrt(3.0))/6.0
 
 		float n0, n1, n2; // Noise contributions from the three corners
 
@@ -232,8 +233,8 @@ namespace Tara {
 	float Noise::get(float x, float y, float z)
 	{
 		// Simple skewing factors for the 3D case
-#define F3 0.333333333
-#define G3 0.166666667
+#define F3 0.333333333f
+#define G3 0.166666667f
 
 		float n0, n1, n2, n3; // Noise contributions from the four corners
 
@@ -332,8 +333,8 @@ namespace Tara {
 	{
 
 		// The skewing and unskewing factors are hairy again for the 4D case
-#define F4 0.309016994 // F4 = (Math.sqrt(5.0)-1.0)/4.0
-#define G4 0.138196601 // G4 = (5.0-Math.sqrt(5.0))/20.0
+#define F4 0.309016994f // F4 = (Math.sqrt(5.0)-1.0)/4.0
+#define G4 0.138196601f // G4 = (5.0-Math.sqrt(5.0))/20.0
 
 		float n0, n1, n2, n3, n4; // Noise contributions from the five corners
 

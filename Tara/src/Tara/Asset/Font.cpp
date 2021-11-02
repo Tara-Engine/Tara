@@ -62,7 +62,8 @@ namespace Tara{
 		uint8_t* pixels;
 
 		//read file size
-		FILE* fontFile = fopen(m_Path.c_str(), "rb");
+		FILE* fontFile = new FILE();
+		fopen_s(&fontFile, m_Path.c_str(), "rb");
 		fseek(fontFile, 0, SEEK_END);
 		size = ftell(fontFile);
 		fseek(fontFile, 0, SEEK_SET);
@@ -71,9 +72,9 @@ namespace Tara{
 		if (!fileBuffer) { LOG_S(ERROR) << "Failed to read file due to memory limitations!"; return; }
 		fread(fileBuffer, size, 1, fontFile); 
 		fclose(fontFile);
-
+		free(fontFile);
 		//create pizels array
-		pixels = (uint8_t*)malloc(m_ImageSize * m_ImageSize);
+		pixels = (uint8_t*)malloc((long)m_ImageSize * (long)m_ImageSize);
 
 		//begin pack
 		stbtt_pack_context packContext;
@@ -82,7 +83,7 @@ namespace Tara{
 		//we want nice looking fonts!
 		stbtt_PackSetOversampling(&packContext, 2, 2);
 		//pack stuff!
-		stbtt_PackFontRange(&packContext, fileBuffer, 0, m_CharacterHeightPx, 32, 95, m_CharacterData+32);
+		stbtt_PackFontRange(&packContext, fileBuffer, 0, (float)m_CharacterHeightPx, 32, 95, m_CharacterData+32);
 		stbtt_PackEnd(&packContext);
 		
 		//free file buffer, no longer needed

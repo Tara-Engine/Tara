@@ -63,7 +63,7 @@ namespace Tara {
 		s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
 		s_QuadArray->Bind();
 		for (const auto& group : s_QuadGroups) {
-			s_QuadArray->GetVertexBuffers()[0]->SetData((float*)group.Quads.data(), group.Quads.size() * 18); //the 18 is not a "magic number", it is the number of floats in a QuadData struct.
+			s_QuadArray->GetVertexBuffers()[0]->SetData((float*)group.Quads.data(), (uint32_t)group.Quads.size() * 18); //the 18 is not a "magic number", it is the number of floats in a QuadData struct.
 			uint32_t index = 0;
 			for (auto texture : group.TextureNames) {
 				if (texture) {
@@ -73,7 +73,7 @@ namespace Tara {
 				}
 			}
 			RenderCommand::PushDrawType(RenderDrawType::Points);
-			RenderCommand::DrawCount(group.Quads.size());
+			RenderCommand::DrawCount((uint32_t)group.Quads.size());
 			RenderCommand::PopDrawType();
 			//glDrawArrays(GL_POINTS, 0, m_Quads.size());
 		}
@@ -128,7 +128,7 @@ namespace Tara {
 				//found that texture. Now, add this quad to the list.
 				//also modify the quad texture index
 				if (texture) {
-					uint32_t index = iter - group.TextureNames.begin();
+					float index = (float)(iter - group.TextureNames.begin());
 					data.TextureIndex = index; //the index about to be filled
 				}
 				group.Quads.push_back(data);
