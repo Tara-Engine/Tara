@@ -9,6 +9,8 @@ public:
 
 	virtual void OnUpdate(float deltaTime) override;
 
+	virtual void OnEvent(Tara::Event& e) override;
+
 	inline float GetSpeed() const { return m_Speed; }
 
 	inline void SetSpeed(float speed) { m_Speed = speed; }

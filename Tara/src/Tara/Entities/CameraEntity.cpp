@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "CameraEntity.h"
+#include "Tara/Core/Layer.h"
 #include "Tara/Core/Script.h"
 
 namespace Tara{

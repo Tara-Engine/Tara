@@ -1,6 +1,6 @@
 #include "tarapch.h"
 #include "Layer.h"
-
+#include "Tara/Renderer/Renderer.h"
 
 namespace Tara{
 	Layer::Layer()
@@ -43,10 +43,17 @@ namespace Tara{
 
 	void Layer::Draw(float deltaTime)
 	{
+		if (m_LayerCamera) {
+			Tara::Renderer::BeginScene(m_LayerCamera->GetCamera());
+		}
+		//m_LayerCamera
 		for (auto entity : m_Entities) {
 			if (entity) {
 				entity->Draw(deltaTime);
 			}
+		}
+		if (m_LayerCamera) {
+			Tara::Renderer::EndScene();
 		}
 	}
 

@@ -1,6 +1,5 @@
 #pragma once
 #include "Tara/Core/Entity.h"
-#include "Tara/Core/Layer.h"
 #include "Tara/Renderer/Camera.h"
 
 namespace Tara {

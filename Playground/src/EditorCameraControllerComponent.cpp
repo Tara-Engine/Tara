@@ -32,18 +32,16 @@ void EditorCameraControllerComponent::OnUpdate(float deltaTime)
 	}
 	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_Q)) {
 		//move Up (orthogonal)
-		offset += Tara::Vector(0.0f, 1.0f, 0.0f);
+		offset -= Tara::Vector(0.0f, 1.0f, 0.0f);
 	}
 	if (Tara::Input::Get()->IsKeyPressed(TARA_KEY_E)) {
 		//move down (orthogonal)
-		offset -= Tara::Vector(0.0f, 1.0f, 0.0f);
+		offset += Tara::Vector(0.0f, 1.0f, 0.0f);
 	}
 	if (offset != Tara::Vector(0, 0, 0)) {
 		offset.Normalize();
 		auto pos = GetParent().lock()->GetWorldPosition();
 		pos += (offset * m_Speed * deltaTime);
-		//LOG_S(INFO) << "Camera offset: {" << offset.x << ", " << offset.y << ", " << offset.z << "}";
-		//LOG_S(INFO) << "Camera pos: {" << pos.x << ", " << pos.y << ", " << pos.z << "}";
 		GetParent().lock()->SetWorldPosition(pos);
 	}
 
@@ -52,16 +50,29 @@ void EditorCameraControllerComponent::OnUpdate(float deltaTime)
 	if (Tara::Input::Get()->IsMouseDown(TARA_MOUSE_BUTTON_2)) {
 		auto rawMouseNow = Tara::Input::Get()->GetMousePos();
 		glm::vec2 dMouse = (prevMousePos - rawMouseNow) / m_MouseSensitivity;
-		LOG_S(INFO) << "Camera Rotation: {" << parentRotation.Roll << ", " << parentRotation.Pitch << ", " << parentRotation.Yaw << "}";
-		//dMouse.x *= -1;
-		//LOG_S(INFO) << "Mouse Offset: {" << dMouse.x << "," << dMouse.y << "}";
 		float pitch = parentRotation.Pitch + dMouse.y;
 		pitch = (pitch > 90) ? 90 : ((pitch < -90) ? -90 : pitch);
 		Tara::Rotator newRot{ 0.0f, pitch, parentRotation.Yaw + dMouse.x };
+
+
 		GetParent().lock()->SetWorldRotation(newRot);
 		prevMousePos = rawMouseNow;
 	}
 	else {
 		prevMousePos = Tara::Input::Get()->GetMousePos();
 	}
+}
+
+void EditorCameraControllerComponent::OnEvent(Tara::Event& e)
+{
+	Tara::EventFilter filter(e);
+	filter.Call<Tara::MouseScrollEvent>([this](Tara::MouseScrollEvent& ee) {
+		if (ee.GetYOffset() > 0) {
+			this->SetSpeed(this->GetSpeed() * 1.5);
+		}
+		else {
+			this->SetSpeed(this->GetSpeed() / 1.5);
+		}
+		return false;
+	});
 }

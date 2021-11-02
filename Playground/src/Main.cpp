@@ -71,6 +71,8 @@ public:
 		);
 
 		m_Camera->SetPerspectiveFOV(45.0f);
+		SetLayerCamera(m_Camera);
+
 		//m_Camera->SetOrthographicExtent(8.0f);
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
@@ -143,13 +145,13 @@ public:
 			m_TempSpriteEntity->SetWorldPosition(ray.first + (ray.second * 5));
 		}
 	}
-	
+	/*
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera->GetCamera());
 		
 		Tara::Layer::Draw(deltaTime);
 
-		Tara::Renderer::Text(TRANSFORM_2D(1, 1, 0, 1, 1), "Hello World", font);
+		//Tara::Renderer::Text(TRANSFORM_2D(1, 1, 0, 1, 1), "Hello World", font);
 		//Tara::Renderer::Quad(TRANSFORM_2D(1, 1, 0, 2, 2), { 1,1,1,1 }, font->GetTexture());
 		
 		
@@ -159,6 +161,7 @@ public:
 
 		Tara::Renderer::EndScene();
 	}
+	*/
 	
 	virtual void OnEvent(Tara::Event& e) override {
 		//LOG_S(INFO) << "TestingLayer::OnEvent!";

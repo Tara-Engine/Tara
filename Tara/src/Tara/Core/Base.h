@@ -49,6 +49,6 @@ that should be in every file
 
 //defining reftypes
 #define REFTYPE(name) class name; \
-	using name##Ref = std::shared_ptr<##name>;
+	using name##Ref = std::shared_ptr<name>;
 
-#define NOREFTYPE(name) using name##NoRef = std::weak_ptr<##name>;
+#define NOREFTYPE(name) using name##NoRef = std::weak_ptr<name>;

@@ -4,6 +4,7 @@
 #include "Tara/Core/Entity.h"
 #include "Tara/Input/EventListener.h"
 #include "Tara/Input/Manifold.h"
+#include "Tara/Entities/CameraEntity.h"
 
 namespace Tara {
 
@@ -131,6 +132,11 @@ namespace Tara {
 		template<class T> 
 		std::list<std::shared_ptr<T>> GetAllEntitiesOfClassInRadius(Vector origin, float radius);
 
+		/// <summary>
+		/// Set the layer camera. Default camera used for drawing.
+		/// </summary>
+		/// <param name="camera">the new camera entity</param>
+		void SetLayerCamera(const CameraEntityRef& camera) { m_LayerCamera = camera; }
 
 	protected:
 		/// <summary>
@@ -147,10 +153,9 @@ namespace Tara {
 
 		std::list<EntityRef> m_Entities;
 		std::list<EntityNoRef> m_DestroyedEntities;
-
 		std::list<EventListenerNoRef> m_Listeners;
-
 		std::list<Manifold> m_FrameManifoldQueue;
+		CameraEntityRef m_LayerCamera; //intentonally an owning pointer
 	};
 
 
