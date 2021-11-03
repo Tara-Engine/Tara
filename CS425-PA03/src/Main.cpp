@@ -44,7 +44,7 @@ public:
 		auto path = RoomManager::Get()->Generate((uint32_t)time(0), MAP_SIZE, MAP_SIZE, 30);
 		
 		//RoomManager lua integration Testing!
-		Tara::Script::Get()->DEBUG_RunScript("assets/test.lua");
+		//Tara::Script::Get()->DEBUG_RunScript("assets/test.lua");
 
 
 		//textures and sprites
@@ -183,6 +183,7 @@ int main(int argc, char** argv) {
 	//lua types
 	Tara::Script::RegisterType<PawnEntity>("PawnEntity");
 	Tara::Script::RegisterType<RoomManager>("RoomManager");
+	CONNECT_FUNCTION(Regenerate);
 	
 	//add layers to scene
 	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<GameLayer>());

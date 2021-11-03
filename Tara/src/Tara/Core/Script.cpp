@@ -6,6 +6,7 @@
 #include "Tara/Core/Entity.h"
 #include "Tara/Entities/CameraEntity.h"
 #include "Tara/Entities/SpriteEntity.h"
+#include "Tara/Utility/After.h"
 
 namespace Tara{
 	Script::Script()
@@ -32,6 +33,8 @@ namespace Tara{
 		RegisterType<Entity>("Tara::Entity");
 		RegisterType<CameraEntity>("Tara::CameraEntity");
 		RegisterType<SpriteEntity>("Tara::SpriteEntity");
+
+		CONNECT_FUNCTION_OVERRIDE(After);
 	}
 
 	void Script::ReloadDefaultLibrary()

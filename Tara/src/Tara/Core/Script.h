@@ -6,7 +6,8 @@
 #define CONNECT_METHOD_OVERRIDE(classname, funcname) type[#funcname] = &classname::__SCRIPT__##funcname
 #define CONNECT_STATIC(classname, funcname) Tara::Script::Get()->GetState()[#classname][#funcname] = &classname::funcname
 #define CONNECT_STATIC_OVERRIDE(classname, funcname) Tara::Script::Get()->GetState()[#classname][#funcname] = &classname::__SCRIPT__##funcname
-
+#define CONNECT_FUNCTION(funcname) Tara::Script::Get()->GetState()[#funcname] = &funcname
+#define CONNECT_FUNCTION_OVERRIDE(funcname) Tara::Script::Get()->GetState()[#funcname] = &__SCRIPT__##funcname
 
 namespace Tara {
 

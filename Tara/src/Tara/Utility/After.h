@@ -27,11 +27,14 @@ namespace Tara {
 		//va_end(args);
 	}
 
-	/*
-	template <typename Callable> void After(Callable&& callable, float seconds) {
-		std::future<void> future = std::async(std::launch::deferred, std::move(callable));
-		AfterCallable* c = new AfterCallable(seconds, std::move(future));
-		Application::Get()->After(c);
+	inline void __SCRIPT__After(sol::protected_function func, float seconds) {
+		After([func]() {
+			auto result = func();
+			if (!result.valid()) {
+				sol::error err = result;
+				LOG_S(ERROR) << "Error in Lua Script: " << err.what();
+				LOG_S(ERROR) << loguru::stacktrace().c_str();
+			}
+		}, seconds);
 	}
-	*/
 }
