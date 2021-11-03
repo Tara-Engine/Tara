@@ -19,7 +19,7 @@ namespace Tara {
 		m_Data.Title = title;
 		m_Data.VSync = true;
 		if (!TARA_GLFW_INTITIALIZED) {
-			bool result = (bool)glfwInit();
+			int result = glfwInit();
 			DCHECK_F(result, "GLFW failed to intialize properly!");
 			glfwSetErrorCallback(TARA_GLFW_Error_Callback);
 			TARA_GLFW_INTITIALIZED = true;

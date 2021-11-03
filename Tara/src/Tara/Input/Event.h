@@ -53,9 +53,6 @@ namespace Tara {
 		static sol::table GetScriptEvent(Event& e);
 
 	public:
-		//virtual trivial destructor
-		virtual ~Event() {}
-
 		/// <summary>
 		/// Get the class of the event
 		/// </summary>
@@ -99,8 +96,6 @@ namespace Tara {
 	/// Natvie Window Events
 	/// </summary>
 	class NativeEvent : public Event {
-	public:
-		virtual ~NativeEvent() {}
 		EVENT_CLASS_CATEGORY(EventCategoryNative)
 	};
 
@@ -109,8 +104,6 @@ namespace Tara {
 	/// Such as collision, trace hits, etc.
 	/// </summary>
 	class ApplicationEvent : public Event {
-	public:
-		virtual ~ApplicationEvent() {}
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
@@ -129,7 +122,6 @@ namespace Tara {
 		/// <param name="e">The event</param>
 		EventFilter(Event& e)
 			: m_Event(e) {}
-
 		/// <summary>
 		/// Attempt to call the supplied function with the event the filter was created with, 
 		/// if it is the supplied subclass
@@ -173,7 +165,6 @@ namespace Tara {
 	class WindowCloseEvent : public NativeEvent {
 	public:
 		WindowCloseEvent(){}
-		virtual ~WindowCloseEvent() {}
 		EVENT_CLASS_CLASS(WindowClose)
 		EVENT_CLASS_CATEGORY(EventCategoryNative)
 	};
