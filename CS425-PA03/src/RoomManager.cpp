@@ -394,11 +394,13 @@ sol::table RoomManager::__SCRIPT__WorldCoordToRoomCoord(sol::table worldCoord)
 {
 	//must parse the worldCoord table to vec2, run through WorldCoordToRoomCoord, then put into lua table
 	sol::table table = NEW_TABLE;
-	return table; 
+	table.add("x", (int)(worldCoord.get_or("x", 0) / ROOM_SCALE));
+	table.add("y", (int)(worldCoord.get_or("y", 0) / ROOM_SCALE - 1));
+	return table;
 }
 
 std::pair<bool, bool> RoomManager::__SCRIPT__IsCentered(sol::table pos)
 {
-	return std::make_pair(false, false);
+	return IsCentered(glm::vec2(pos.get_or("x", 0), pos.get_or("y", 0)));
 }
 
