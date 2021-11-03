@@ -436,9 +436,22 @@ namespace Tara{
 
 	void Rotator::Clamp()
 	{
-		Roll = fmod(Roll, 180.0f);
-		Pitch = fmod(Pitch, 180.0f);
-		Yaw = fmod(Yaw, 180.0f);
+		Roll = fmod(Roll, 360);
+		if (Roll >  180) { Roll -= 360; }
+		if (Roll < -180) { Roll += 360; }
+
+		Pitch = fmod(Pitch, 180);
+		if (Pitch >  90) { Pitch -= 180; }
+		if (Pitch < -90) { Pitch += 180; }
+
+		Yaw = fmod(Yaw, 360);
+		if (Yaw >  180) { Yaw -= 360; }
+		if (Yaw < -180) { Yaw += 360; }
+
+
+		//Roll = fmod(Roll, 180.0f);
+		//Pitch = fmod(Pitch, 180.0f);
+		//Yaw = fmod(Yaw, 180.0f);
 	}
 
 	Rotator Rotator::operator+(const Rotator& other) const

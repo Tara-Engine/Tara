@@ -233,6 +233,12 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		sol::table ToScriptTable() const;
+
+		
+		//friend std::ofstream& operator<< (std::ofstream& out, const Vector& curr) {
+		//	out << "{" << curr.x << "," << curr.y << "," << curr.z << "}";
+		//}
+		
 	};
 
 
@@ -411,7 +417,25 @@ namespace Tara {
 		/// <returns></returns>
 		sol::table ToScriptTable() const;
 	};
+	
+}
 
-	
-	
+
+//Logging stuff
+inline std::ostream& operator<< (std::ostream& out, const Tara::Vector& v)
+{
+	out << "{x:" << v.x << ",y:" << v.y << ",z:" << v.z << "}";
+	return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const Tara::Rotator& r)
+{
+	out << "{Roll:" << r.Roll << ",Pitch:" << r.Pitch << ",Yaw:" << r.Yaw << "}";
+	return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const Tara::Transform& t)
+{
+	out << "{Position:" << t.Position << ", Rotation:" << t.Rotation << ", Scale:" << t.Scale << "}";
+	return out;
 }

@@ -174,8 +174,8 @@ void Regenerate(Tara::LayerNoRef layer) {
 
 int main(int argc, char** argv) {
 	//Initialize the application
+	Tara::Script::Get()->SetDefaultLibraryPath("../Tara/lua"); //set lua lib path (before init!)
 	Tara::Application::Get()->Init(WIDTH, HEIGHT, "CS425 PA03");
-	
 	//lua types
 	Tara::Script::RegisterType<PawnEntity>("PawnEntity");
 	

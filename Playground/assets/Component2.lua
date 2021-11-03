@@ -27,12 +27,13 @@ CurrentComponent:SetOnEventCallbackFunction(function(event)
 		end
 	elseif (event.Type == "KeyPress") then
 		--print(inspect(CurrentComponent:GetParent():GetRelativeTransform()))
-		local v = {
-			x = math.random(-1, 1),
-			y = math.random(-1, 1),
-			z = math.random(-1, 1),
-		}
-		CurrentComponent:GetParent():SetRelativePosition(v)
-		
+		--local v = {
+		--	x = math.random(-1, 1),
+		--	y = math.random(-1, 1),
+		--	z = math.random(-1, 1),
+		--}
+		--CurrentComponent:GetParent():SetRelativePosition(v)
+		local vis = CurrentComponent:GetParent():GetVisible()
+		CurrentComponent:GetParent():SetVisible(not vis)
 	end
 end)

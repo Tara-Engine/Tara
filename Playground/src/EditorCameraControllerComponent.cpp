@@ -53,7 +53,7 @@ void EditorCameraControllerComponent::OnUpdate(float deltaTime)
 		float pitch = parentRotation.Pitch + dMouse.y;
 		pitch = (pitch > 90) ? 90 : ((pitch < -90) ? -90 : pitch);
 		Tara::Rotator newRot{ 0.0f, pitch, parentRotation.Yaw + dMouse.x };
-
+		LOG_S(INFO) << "Rotation" << newRot;
 
 		GetParent().lock()->SetWorldRotation(newRot);
 		prevMousePos = rawMouseNow;

@@ -204,6 +204,17 @@ namespace Tara {
 		/// <returns>the name as string</returns>
 		const std::string& GetName() const { return m_Name; }
 
+		/// <summary>
+		/// Get if this entity is marked visible. Will be true even if parent is not visible
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetVisible() const { return m_Visible; }
+
+		/// <summary>
+		/// Set if this entity is visible. All children will inherit visiblility effects, but not value. (ie, a visible child of an invisible parent will not be rendered)
+		/// </summary>
+		/// <param name="visible"></param>
+		inline void SetVisible(bool visible) { m_Visible = visible; }
 
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
@@ -474,6 +485,7 @@ protected:
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
 		bool m_Exists = true;
+		bool m_Visible = true;
 	};
 
 	/// <summary>

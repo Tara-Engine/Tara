@@ -277,7 +277,9 @@ namespace Tara{
             OnDraw( deltaTime);
         }
         for (auto child : m_Children) {
-            child->Draw(deltaTime);
+            if (child->GetVisible()) {
+                child->Draw(deltaTime);
+            }
         }
         if (m_DrawChildrenFirst) {
             OnDraw(deltaTime);
@@ -578,6 +580,8 @@ namespace Tara{
 
 
         CONNECT_FUNCTION(Entity, GetName);
+        CONNECT_FUNCTION(Entity, GetVisible);
+        CONNECT_FUNCTION(Entity, SetVisible);
         CONNECT_FUNCTION(Entity, IsChild);
         CONNECT_FUNCTION(Entity, GetFirstChildOfName);
         CONNECT_FUNCTION(Entity, RemoveChildByName);
