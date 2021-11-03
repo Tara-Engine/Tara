@@ -73,10 +73,10 @@ Tara::Vector EnemyControllerComponent::GetAStarDirection(int32_t x, int32_t y)
 		}
 		glm::vec2 current = queue.top();
 		queue.pop();
-		auto room = manager->GetRoom(current.x, current.y);
+		auto room = manager->GetRoom((int32_t)current.x, (int32_t)current.y);
 		if (room->GetDoorState() & DOORSTATE_UP && visited.count(glm::vec2(current.x, current.y + 1)) == 0)
 		{
-			int32_t h = visited[current].size() + abs(current.x - target.x) + abs(current.y + 1 - target.y) + 1; // +1 to account for traceback length being one short
+			int32_t h = (int32_t)(visited[current].size() + abs(current.x - target.x) + abs(current.y + 1 - target.y) + 1); // +1 to account for traceback length being one short
 			queue.push(glm::vec3(current.x, current.y + 1, h));
 			glm::vec2 next = glm::vec2(current.x, current.y + 1);
 			visited[next] = std::list<glm::vec2>();
@@ -88,7 +88,7 @@ Tara::Vector EnemyControllerComponent::GetAStarDirection(int32_t x, int32_t y)
 		}
 		if (room->GetDoorState() & DOORSTATE_DOWN && visited.count(glm::vec2(current.x, current.y - 1)) == 0)
 		{
-			int32_t h = visited[current].size() + abs(current.x - target.x) + abs(current.y - 1 - target.y) + 1;
+			int32_t h = (int32_t)(visited[current].size() + abs(current.x - target.x) + abs(current.y - 1 - target.y) + 1);
 			queue.push(glm::vec3(current.x, current.y - 1, h));
 			glm::vec2 next = glm::vec2(current.x, current.y - 1);
 			visited[next] = std::list<glm::vec2>();
@@ -100,7 +100,7 @@ Tara::Vector EnemyControllerComponent::GetAStarDirection(int32_t x, int32_t y)
 		}
 		if (room->GetDoorState() & DOORSTATE_LEFT && visited.count(glm::vec2(current.x - 1, current.y)) == 0)
 		{
-			int32_t h = visited[current].size() + abs(current.x - 1 - target.x) + abs(current.y - target.y) + 1;
+			int32_t h = (int32_t)(visited[current].size() + abs(current.x - 1 - target.x) + abs(current.y - target.y) + 1);
 			queue.push(glm::vec3(current.x - 1, current.y, h));
 			glm::vec2 next = glm::vec2(current.x - 1, current.y);
 			visited[next] = std::list<glm::vec2>();
@@ -112,7 +112,7 @@ Tara::Vector EnemyControllerComponent::GetAStarDirection(int32_t x, int32_t y)
 		}
 		if (room->GetDoorState() & DOORSTATE_RIGHT && visited.count(glm::vec2(current.x + 1, current.y)) == 0)
 		{
-			int32_t h = visited[current].size() + abs(current.x + 1 - target.x) + abs(current.y - target.y) + 1;
+			int32_t h = (int32_t)(visited[current].size() + abs(current.x + 1 - target.x) + abs(current.y - target.y) + 1);
 			queue.push(glm::vec3(current.x + 1, current.y, h));
 			glm::vec2 next = glm::vec2(current.x + 1, current.y);
 			visited[next] = std::list<glm::vec2>();

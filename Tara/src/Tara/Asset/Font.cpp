@@ -5,6 +5,8 @@
 
 #include "Tara/Renderer/Renderer.h"
 
+
+
 namespace Tara{
 
 	Font::Font(const std::string& filePath, uint32_t imageSize, uint32_t characterHeightPx, const std::string& name)
@@ -61,7 +63,7 @@ namespace Tara{
 		uint8_t* fileBuffer;
 		uint8_t* pixels;
 
-		//read file size
+		//read file size. Using fopen_s somehow breaks image loading. DO NOT USE fopen_s.
 		FILE* fontFile = fopen(m_Path.c_str(), "rb");
 		fseek(fontFile, 0, SEEK_END);
 		size = ftell(fontFile);
@@ -73,7 +75,7 @@ namespace Tara{
 		fclose(fontFile);
 
 		//create pizels array
-		pixels = (uint8_t*)malloc(m_ImageSize * m_ImageSize);
+		pixels = (uint8_t*)malloc((long)m_ImageSize * (long)m_ImageSize);
 
 		//begin pack
 		stbtt_pack_context packContext;
@@ -82,7 +84,7 @@ namespace Tara{
 		//we want nice looking fonts!
 		stbtt_PackSetOversampling(&packContext, 2, 2);
 		//pack stuff!
-		stbtt_PackFontRange(&packContext, fileBuffer, 0, m_CharacterHeightPx, 32, 95, m_CharacterData+32);
+		stbtt_PackFontRange(&packContext, fileBuffer, 0, (float)m_CharacterHeightPx, 32, 95, m_CharacterData+32);
 		stbtt_PackEnd(&packContext);
 		
 		//free file buffer, no longer needed
