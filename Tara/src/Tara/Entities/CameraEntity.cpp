@@ -126,12 +126,12 @@ namespace Tara{
 	void CameraEntity::RegisterLuaType(sol::state& lua)
 	{
 		sol::usertype<CameraEntity> type = lua.new_usertype<CameraEntity>("CameraEntity", sol::base_classes, sol::bases<Entity>());
-		CONNECT_FUNCTION(CameraEntity, SetUseWorldScale);
-		CONNECT_FUNCTION(CameraEntity, GetUseWorldScale);
-		CONNECT_FUNCTION(CameraEntity, SetPerspectiveFOV);
-		CONNECT_FUNCTION_OVERRIDE(CameraEntity, GetProjectionType);
-		CONNECT_FUNCTION_OVERRIDE(CameraEntity, SetProjectionType);
-		CONNECT_FUNCTION_OVERRIDE(CameraEntity, SetOrthographicExtent);
+		CONNECT_METHOD(CameraEntity, SetUseWorldScale);
+		CONNECT_METHOD(CameraEntity, GetUseWorldScale);
+		CONNECT_METHOD(CameraEntity, SetPerspectiveFOV);
+		CONNECT_METHOD_OVERRIDE(CameraEntity, GetProjectionType);
+		CONNECT_METHOD_OVERRIDE(CameraEntity, SetProjectionType);
+		CONNECT_METHOD_OVERRIDE(CameraEntity, SetOrthographicExtent);
 
 
 	}

@@ -115,6 +115,12 @@ public:
 	/// </summary>
 	void ClearAll();
 
+public:
+	//lua stuff
+
+	static void RegisterLuaType(sol::state& lua);
+	static sol::table __SCRIPT__WorldCoordToRoomCoord(sol::table worldCoord);
+	static std::pair<bool, bool> __SCRIPT__IsCentered(sol::table pos);
 private:
 	
 	//callable struct for hashing pairs

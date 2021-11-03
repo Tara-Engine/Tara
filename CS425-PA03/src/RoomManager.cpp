@@ -380,3 +380,25 @@ void RoomManager::ClearAll()
 	m_DefaultLayer.reset();
 }
 
+void RoomManager::RegisterLuaType(sol::state& lua)
+{
+	sol::usertype<RoomManager> type = lua.new_usertype<RoomManager>("RoomManager");
+	CONNECT_METHOD(RoomManager, GetRoom);
+	CONNECT_STATIC(RoomManager, Get);
+	CONNECT_STATIC(RoomManager, WorldCoordToRoomCoord);
+	CONNECT_STATIC(RoomManager, IsCentered);
+
+}
+
+sol::table RoomManager::__SCRIPT__WorldCoordToRoomCoord(sol::table worldCoord)
+{
+	//must parse the worldCoord table to vec2, run through WorldCoordToRoomCoord, then put into lua table
+	sol::table table = NEW_TABLE;
+	return table; 
+}
+
+std::pair<bool, bool> RoomManager::__SCRIPT__IsCentered(sol::table pos)
+{
+	return std::make_pair(false, false);
+}
+

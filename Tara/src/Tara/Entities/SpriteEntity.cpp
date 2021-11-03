@@ -143,17 +143,17 @@ namespace Tara {
 	void SpriteEntity::RegisterLuaType(sol::state& lua)
 	{
 		sol::usertype<SpriteEntity> type = lua.new_usertype<SpriteEntity>("SpriteEntity", sol::base_classes, sol::bases<Entity>());
-		CONNECT_FUNCTION(SpriteEntity, SetSprite);
-		CONNECT_FUNCTION(SpriteEntity, GetSprite);
-		CONNECT_FUNCTION(SpriteEntity, SetCurrentFrame);
-		CONNECT_FUNCTION(SpriteEntity, GetCurrentFrame);
-		CONNECT_FUNCTION(SpriteEntity, PlayAnimation);
+		CONNECT_METHOD(SpriteEntity, SetSprite);
+		CONNECT_METHOD(SpriteEntity, GetSprite);
+		CONNECT_METHOD(SpriteEntity, SetCurrentFrame);
+		CONNECT_METHOD(SpriteEntity, GetCurrentFrame);
+		CONNECT_METHOD(SpriteEntity, PlayAnimation);
 
-		CONNECT_FUNCTION_OVERRIDE(SpriteEntity, GetCurrentSequence); // table form
-		CONNECT_FUNCTION_OVERRIDE(SpriteEntity, SetCurrentSequence); // table form
-		CONNECT_FUNCTION_OVERRIDE(SpriteEntity, SetTint); // table form
-		CONNECT_FUNCTION_OVERRIDE(SpriteEntity, SetFlip); // string pair form
-		CONNECT_FUNCTION_OVERRIDE(SpriteEntity, GetFlip); // return pair of strings
+		CONNECT_METHOD_OVERRIDE(SpriteEntity, GetCurrentSequence); // table form
+		CONNECT_METHOD_OVERRIDE(SpriteEntity, SetCurrentSequence); // table form
+		CONNECT_METHOD_OVERRIDE(SpriteEntity, SetTint); // table form
+		CONNECT_METHOD_OVERRIDE(SpriteEntity, SetFlip); // string pair form
+		CONNECT_METHOD_OVERRIDE(SpriteEntity, GetFlip); // return pair of strings
 
 	}
 

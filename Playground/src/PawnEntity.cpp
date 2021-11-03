@@ -136,14 +136,14 @@ std::string PawnEntity::__SCRIPT__GetDirection() const
 void PawnEntity::RegisterLuaType(sol::state& lua)
 {
 	sol::usertype<PawnEntity> type = lua.new_usertype<PawnEntity>("PawnEntity", sol::base_classes, sol::bases<Tara::Entity, Tara::SpriteEntity>()); 
-	CONNECT_FUNCTION(PawnEntity, GetAlive);
-	CONNECT_FUNCTION(PawnEntity, SetAlive);
-	CONNECT_FUNCTION(PawnEntity, GetImmortal);
-	CONNECT_FUNCTION(PawnEntity, SetImmortal);
-	CONNECT_FUNCTION(PawnEntity, Respawn);
-	CONNECT_FUNCTION(PawnEntity, GetTraveling);
-	CONNECT_FUNCTION(PawnEntity, Kill);
-	CONNECT_FUNCTION_OVERRIDE(PawnEntity, SetTarget);
-	CONNECT_FUNCTION_OVERRIDE(PawnEntity, GetDirection);
-	CONNECT_FUNCTION_OVERRIDE(PawnEntity, SetDirection);
+	CONNECT_METHOD(PawnEntity, GetAlive);
+	CONNECT_METHOD(PawnEntity, SetAlive);
+	CONNECT_METHOD(PawnEntity, GetImmortal);
+	CONNECT_METHOD(PawnEntity, SetImmortal);
+	CONNECT_METHOD(PawnEntity, Respawn);
+	CONNECT_METHOD(PawnEntity, GetTraveling);
+	CONNECT_METHOD(PawnEntity, Kill);
+	CONNECT_METHOD_OVERRIDE(PawnEntity, SetTarget);
+	CONNECT_METHOD_OVERRIDE(PawnEntity, GetDirection);
+	CONNECT_METHOD_OVERRIDE(PawnEntity, SetDirection);
 }

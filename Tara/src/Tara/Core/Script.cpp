@@ -48,5 +48,15 @@ namespace Tara{
 		}
 	}
 
+	void Script::DEBUG_RunScript(const std::string& script)
+	{
+		auto results = m_LuaState.safe_script_file(script);
+		if (!results.valid()) {
+			sol::error err = results;
+			LOG_S(ERROR) << "Error in Lua Script: " << err.what();
+			LOG_S(ERROR) << loguru::stacktrace().c_str();
+		}
+	}
+
 
 }

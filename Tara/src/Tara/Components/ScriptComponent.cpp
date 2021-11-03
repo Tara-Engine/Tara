@@ -77,8 +77,8 @@ namespace Tara{
 	void ScriptComponent::RegisterLuaType(sol::state& lua)
 	{
 		sol::usertype<ScriptComponent> type = lua.new_usertype<ScriptComponent>("ScriptComponent", sol::base_classes, sol::bases<Component>()); //MUST manually list all base classes!		
-		CONNECT_FUNCTION(ScriptComponent, SetOnUpdateCallbackFunction);
-		CONNECT_FUNCTION(ScriptComponent, SetOnEventCallbackFunction);
+		CONNECT_METHOD(ScriptComponent, SetOnUpdateCallbackFunction);
+		CONNECT_METHOD(ScriptComponent, SetOnEventCallbackFunction);
 	}
 
 

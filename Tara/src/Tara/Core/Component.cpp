@@ -20,10 +20,10 @@ namespace Tara{
 	void Component::RegisterLuaType(sol::state& lua)
 	{
 		sol::usertype<Component> type = lua.new_usertype<Component>("Component"); //no constructors. for now.
-		CONNECT_FUNCTION(Component, ListenForEvents);
-		CONNECT_FUNCTION(Component, GetName);
-		CONNECT_FUNCTION(Component, GetListeningForEvents);
-		CONNECT_FUNCTION_OVERRIDE(Component, GetParent);
+		CONNECT_METHOD(Component, ListenForEvents);
+		CONNECT_METHOD(Component, GetName);
+		CONNECT_METHOD(Component, GetListeningForEvents);
+		CONNECT_METHOD_OVERRIDE(Component, GetParent);
 	}
 
 }

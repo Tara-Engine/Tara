@@ -558,52 +558,52 @@ namespace Tara{
         sol::usertype<Entity> type = lua.new_usertype<Entity>("Entity"); //no constructors. for now.
         
         //TODO: make lua-specific versions
-        CONNECT_FUNCTION(Entity, GetSpecificBoundingBox);
-        CONNECT_FUNCTION(Entity, GetFullBoundingBox);
+        CONNECT_METHOD(Entity, GetSpecificBoundingBox);
+        CONNECT_METHOD(Entity, GetFullBoundingBox);
 
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativeTransform);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldTransform);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativeTransform);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldTransform);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativePosition);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativePosition);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldPosition);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldPosition);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativeRotation);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativeRotation);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldRotation);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldRotation);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetRelativeScale);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetRelativeScale);
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetWorldScale);
-        CONNECT_FUNCTION_OVERRIDE(Entity, SetWorldScale);
+        CONNECT_METHOD_OVERRIDE(Entity, GetRelativeTransform);
+        CONNECT_METHOD_OVERRIDE(Entity, GetWorldTransform);
+        CONNECT_METHOD_OVERRIDE(Entity, SetRelativeTransform);
+        CONNECT_METHOD_OVERRIDE(Entity, SetWorldTransform);
+        CONNECT_METHOD_OVERRIDE(Entity, GetRelativePosition);
+        CONNECT_METHOD_OVERRIDE(Entity, SetRelativePosition);
+        CONNECT_METHOD_OVERRIDE(Entity, GetWorldPosition);
+        CONNECT_METHOD_OVERRIDE(Entity, SetWorldPosition);
+        CONNECT_METHOD_OVERRIDE(Entity, GetRelativeRotation);
+        CONNECT_METHOD_OVERRIDE(Entity, SetRelativeRotation);
+        CONNECT_METHOD_OVERRIDE(Entity, GetWorldRotation);
+        CONNECT_METHOD_OVERRIDE(Entity, SetWorldRotation);
+        CONNECT_METHOD_OVERRIDE(Entity, GetRelativeScale);
+        CONNECT_METHOD_OVERRIDE(Entity, SetRelativeScale);
+        CONNECT_METHOD_OVERRIDE(Entity, GetWorldScale);
+        CONNECT_METHOD_OVERRIDE(Entity, SetWorldScale);
 
 
-        CONNECT_FUNCTION(Entity, GetName);
-        CONNECT_FUNCTION(Entity, GetVisible);
-        CONNECT_FUNCTION(Entity, SetVisible);
-        CONNECT_FUNCTION(Entity, IsChild);
-        CONNECT_FUNCTION(Entity, GetFirstChildOfName);
-        CONNECT_FUNCTION(Entity, RemoveChildByName);
-        CONNECT_FUNCTION(Entity, RemoveChildByRef);
-        CONNECT_FUNCTION(Entity, AddChild);
-        CONNECT_FUNCTION(Entity, SwapParent);
+        CONNECT_METHOD(Entity, GetName);
+        CONNECT_METHOD(Entity, GetVisible);
+        CONNECT_METHOD(Entity, SetVisible);
+        CONNECT_METHOD(Entity, IsChild);
+        CONNECT_METHOD(Entity, GetFirstChildOfName);
+        CONNECT_METHOD(Entity, RemoveChildByName);
+        CONNECT_METHOD(Entity, RemoveChildByRef);
+        CONNECT_METHOD(Entity, AddChild);
+        CONNECT_METHOD(Entity, SwapParent);
         
-        CONNECT_FUNCTION_OVERRIDE(Entity, GetParent);
+        CONNECT_METHOD_OVERRIDE(Entity, GetParent);
         
-        CONNECT_FUNCTION(Entity, GetOwningLayer);
-        CONNECT_FUNCTION(Entity, DebugLogAllChildren);
-        CONNECT_FUNCTION(Entity, SetUpdateChildrenFirst);
-        CONNECT_FUNCTION(Entity, GetUpdateChildrenFirst);
-        CONNECT_FUNCTION(Entity, SetDrawChildrenFirst);
-        CONNECT_FUNCTION(Entity, GetDrawChildrenFirst);
-        CONNECT_FUNCTION(Entity, AddComponent);
-        CONNECT_FUNCTION(Entity, IsComponent);
-        CONNECT_FUNCTION(Entity, GetFirstComponentOfName);
-        CONNECT_FUNCTION(Entity, RemoveComponentByName);
-        CONNECT_FUNCTION(Entity, RemoveComponentByRef);
-        CONNECT_FUNCTION(Entity, Destroy);
-        CONNECT_FUNCTION(Entity, ListenForEvents);
+        CONNECT_METHOD(Entity, GetOwningLayer);
+        CONNECT_METHOD(Entity, DebugLogAllChildren);
+        CONNECT_METHOD(Entity, SetUpdateChildrenFirst);
+        CONNECT_METHOD(Entity, GetUpdateChildrenFirst);
+        CONNECT_METHOD(Entity, SetDrawChildrenFirst);
+        CONNECT_METHOD(Entity, GetDrawChildrenFirst);
+        CONNECT_METHOD(Entity, AddComponent);
+        CONNECT_METHOD(Entity, IsComponent);
+        CONNECT_METHOD(Entity, GetFirstComponentOfName);
+        CONNECT_METHOD(Entity, RemoveComponentByName);
+        CONNECT_METHOD(Entity, RemoveComponentByRef);
+        CONNECT_METHOD(Entity, Destroy);
+        CONNECT_METHOD(Entity, ListenForEvents);
     }
 
 }

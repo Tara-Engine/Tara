@@ -70,13 +70,13 @@ namespace Tara{
 	void TextEntity::RegisterLuaType(sol::state& lua)
 	{
 		sol::usertype<TextEntity> type = lua.new_usertype<TextEntity>("TextEntity", sol::base_classes, sol::bases<Entity>());
-		CONNECT_FUNCTION(TextEntity, SetFont);
-		CONNECT_FUNCTION(TextEntity, GetFont);
-		CONNECT_FUNCTION(TextEntity, SetText);
-		CONNECT_FUNCTION(TextEntity, GetText);
+		CONNECT_METHOD(TextEntity, SetFont);
+		CONNECT_METHOD(TextEntity, GetFont);
+		CONNECT_METHOD(TextEntity, SetText);
+		CONNECT_METHOD(TextEntity, GetText);
 
-		CONNECT_FUNCTION_OVERRIDE(TextEntity, SetColor); // table form
-		CONNECT_FUNCTION_OVERRIDE(TextEntity, GetColor); // table form
+		CONNECT_METHOD_OVERRIDE(TextEntity, SetColor); // table form
+		CONNECT_METHOD_OVERRIDE(TextEntity, GetColor); // table form
 	}
 
 

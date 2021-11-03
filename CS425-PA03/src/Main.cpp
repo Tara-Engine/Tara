@@ -43,6 +43,10 @@ public:
 		RoomManager::Get()->LoadRoomTextures();
 		auto path = RoomManager::Get()->Generate((uint32_t)time(0), MAP_SIZE, MAP_SIZE, 30);
 		
+		//RoomManager lua integration Testing!
+		Tara::Script::Get()->DEBUG_RunScript("assets/test.lua");
+
+
 		//textures and sprites
 		m_DeathTexture = Tara::Texture2D::Create("assets/DeathLogo.png", "deathLogo");
 		auto playerSprite = Tara::AssetLibrary::Get()->GetAssetIf<Tara::Sprite>("playerSprite");
@@ -178,6 +182,7 @@ int main(int argc, char** argv) {
 	Tara::Application::Get()->Init(WIDTH, HEIGHT, "CS425 PA03");
 	//lua types
 	Tara::Script::RegisterType<PawnEntity>("PawnEntity");
+	Tara::Script::RegisterType<RoomManager>("RoomManager");
 	
 	//add layers to scene
 	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<GameLayer>());

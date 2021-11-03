@@ -1,9 +1,12 @@
 #pragma once
 #include "tarapch.h"
 
+#define NEW_TABLE sol::table(Tara::Script::Get()->GetState(), sol::create)
+#define CONNECT_METHOD(classname, funcname) type[#funcname] = &classname::funcname
+#define CONNECT_METHOD_OVERRIDE(classname, funcname) type[#funcname] = &classname::__SCRIPT__##funcname
+#define CONNECT_STATIC(classname, funcname) Tara::Script::Get()->GetState()[#classname][#funcname] = &classname::funcname
+#define CONNECT_STATIC_OVERRIDE(classname, funcname) Tara::Script::Get()->GetState()[#classname][#funcname] = &classname::__SCRIPT__##funcname
 
-#define CONNECT_FUNCTION(classname, funcname) type[#funcname] = &classname::funcname
-#define CONNECT_FUNCTION_OVERRIDE(classname, funcname) type[#funcname] = &classname::__SCRIPT__##funcname
 
 namespace Tara {
 
@@ -58,6 +61,12 @@ namespace Tara {
 		/// Reload lua libraries
 		/// </summary>
 		void ReloadDefaultLibrary();
+
+		/// <summary>
+		/// DEBUG run a random script file
+		/// </summary>
+		/// <param name="script"></param>
+		void DEBUG_RunScript(const std::string& script);
 
 		/// <summary>
 		/// Register a class, if you can. Otherwise, compile error!
