@@ -10,7 +10,11 @@ local libDir = LibraryPath
 
 local loaded = {}
 
-function require(modname)
+function require(modname, usename)
+	if (usename == nil) then
+		usename = modname
+	end
+	
 	--try several permutations of possible locations
 	local status
 	local ret
@@ -30,19 +34,15 @@ function require(modname)
 		end, debug.traceback)
 		if (status) then
 			if (ret) then
-				--print("adding " .. modname .. " to global scope")
 				--add to global namespace
-				_G[modname]  = ret
-			else
-				--print("module " .. modname .. " loaded but did not directly return anything")
+				_G[usename]  = ret
 			end
 			return ret --return returned value
 		else
-			msg = msg .. "Not found at: " ..libDir .. "/" .. path .. "\n"
+			msg = msg .. "Not found at: " ..libDir .. "/" .. path .. "\n" .. ret
 		end
 	end
 	
 	error("Could not load module: " .. modname .. "\nLocations searched:\n" .. msg)
-	
 	
 end

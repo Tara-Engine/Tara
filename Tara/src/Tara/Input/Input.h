@@ -112,6 +112,17 @@ namespace Tara {
 		inline float GetMouseDeltaY() const { auto p = GetMouseDelta(); return p.y; }
 
 		//TODO: add gamepad stuff here. Eventually
+	
+	public:
+		//lua stuff
+		static void RegisterLuaType(sol::state& lua);
+
+		sol::table __SCRIPT__GetMousePos();
+
+		sol::table __SCRIPT__GetPrevMousePos();
+
+		sol::table __SCRIPT__GetMouseDelta();
+
 	protected:
 		virtual void Initialize(WindowRef ref) = 0;
 		Input() {

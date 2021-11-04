@@ -259,11 +259,11 @@ namespace Tara{
         if (!m_UpdateChildrenFirst) {
             OnUpdate(deltaTime);
         }
-        for (auto child : m_Children) {
-            child->Update(deltaTime);
-        }
         for (auto component : m_Components) {
             component->OnUpdate(deltaTime);
+        }
+        for (auto child : m_Children) {
+            child->Update(deltaTime);
         }
         if (m_UpdateChildrenFirst) {
             OnUpdate(deltaTime);

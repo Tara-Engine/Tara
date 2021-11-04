@@ -96,7 +96,7 @@ namespace Tara{
 			table["Self"] = ee.GetSelf();
 			table["Other"] = ee.GetOther();
 			table["Penetration"] = ee.GetPenetration();
-			table["Normal"] = ee.GetNormal(); //TODO: use some sort of vector conversion!
+			table["Normal"] = ee.GetNormal().ToScriptTable(); 
 			return false;
 			});
 

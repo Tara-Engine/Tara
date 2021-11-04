@@ -98,7 +98,7 @@ namespace Tara {
 	{
 		T::RegisterLuaType(Get()->GetState());
 		//type["is"] = &is_check;
-		LOG_S(INFO) << "Lua casting func: " << ("CastTo" + name);
+		//LOG_S(INFO) << "Lua casting func: " << ("CastTo" + name);
 		if constexpr (std::is_base_of<Component, T>::value) {
 			Script::Get()->GetState()["CastTo"+name] = &Script::CastComponent<T>;
 			Script::Get()->GetState()["UpCast"+name] = &Script::UpCastComponent<T>;

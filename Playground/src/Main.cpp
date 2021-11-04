@@ -19,6 +19,7 @@ OpenGL include - BAD - used for developing new features ONLY
 #include "EditorCameraControllerComponent.h"
 #define SPRITE_MAX 100
 
+#include "DemoLayer.h"
 
 
 
@@ -230,8 +231,8 @@ int main(int argc, char** argv) {
 	Tara::Script::RegisterType<PawnEntity>("PawnEntity"); //register PawnEntity
 
 	//add layers to scene...
-	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<BatchTestLayer>());
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

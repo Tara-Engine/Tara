@@ -7,6 +7,7 @@
 #include "Tara/Entities/CameraEntity.h"
 #include "Tara/Entities/SpriteEntity.h"
 #include "Tara/Utility/After.h"
+#include "Tara/Input/Input.h"
 
 namespace Tara{
 	Script::Script()
@@ -28,6 +29,8 @@ namespace Tara{
 		ReloadDefaultLibrary();
 
 		//load engine default types
+		RegisterType<Input>("Tara::Input");
+		
 		RegisterType<Component>("Tara::Component");
 		RegisterType<ScriptComponent>("Tara::ScriptComponent");
 		RegisterType<Entity>("Tara::Entity");

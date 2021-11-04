@@ -5,4 +5,6 @@ dofile(LibraryPath .. "/require.lua")
 
 --library for dumping tables to strings. Handy for debugging
 require("casting")
-require("inspect")
+require("mappings")
+require("inspect", "dump")
+
