@@ -1,4 +1,10 @@
 local m_SendingToNextLevel = false
+
+--todo: make this part of lua library
+local function PowOfTwo(val)
+	return ((val == 0) or (val & (val-1)) == 0)
+end
+
 CurrentComponent:ListenForEvents(true)
 CurrentComponent:SetOnUpdateCallbackFunction(function()
 	if (not m_SendingToNextLevel) then
@@ -9,10 +15,14 @@ CurrentComponent:SetOnUpdateCallbackFunction(function()
 			local centX, centY = RoomManager.IsCentered(pos)
 			local room = RoomManager.Get():GetRoom(roomPos.x, roomPos.y)
 			local door = room:GetDoorState()
-			if (room and centX and centY and room:GetPerm() == 4 and ((door ~= 0) and (door & (door-1)) ~= 0)) then
+			if (room and centX and centY and room:GetPerm() == 4 and PowOfTwo(door)) then
+				print("should get here")
 				m_SendingToNextLevel = true
 				local layer = parent:GetOwningLayer()
-				After(function() Regenerate(layer) print("test") end, 1)
+				After(function() 
+					Regenerate(layer) 
+					print("test") 
+				end, 1)
 			end
 		end
 	end

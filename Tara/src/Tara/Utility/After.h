@@ -28,6 +28,7 @@ namespace Tara {
 	}
 
 	inline void __SCRIPT__After(sol::protected_function func, float seconds) {
+		//LOG_S(INFO) << "Script After called!";
 		After([func]() {
 			auto result = func();
 			if (!result.valid()) {
