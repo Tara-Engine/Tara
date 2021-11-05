@@ -55,6 +55,7 @@ namespace Tara{
 	void ScriptComponent::OnEvent(Event& e)
 	{
 		if (m_OnEventCallbackFunction.valid()) {
+			//LOG_S(INFO) << "Calling Script event function!\n" << loguru::stacktrace(0).c_str();
 			Script::Get()->GetState()["CurrentComponent"] = std::dynamic_pointer_cast<ScriptComponent>(shared_from_this());
 			auto results = m_OnEventCallbackFunction(Event::GetScriptEvent(e));
 			if (!results.valid()) {
