@@ -404,7 +404,7 @@ std::pair<bool, bool> RoomManager::__SCRIPT__IsCentered(sol::table pos)
 	glm::vec2 vpos(0,0);
 	vpos.x = pos.get_or("x", -1.0f);
 	vpos.y = pos.get_or("y", -1.0f);
-	LOG_S(INFO) << "{" << vpos.x << "," << vpos.y << "}";
+	//LOG_S(INFO) << "{" << vpos.x << "," << vpos.y << "}";
 	auto p = IsCentered(vpos);
 	return std::make_pair(p.first, p.second);
 }

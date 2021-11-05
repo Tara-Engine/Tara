@@ -1,22 +1,22 @@
 local m_SendingToNextLevel = false
 CurrentComponent:ListenForEvents(true)
---[[
 CurrentComponent:SetOnUpdateCallbackFunction(function()
 	if (not m_SendingToNextLevel) then
 		local parent = Cast(PawnEntity, CurrentComponent:GetParent())
 		if (parent and not parent:GetTraveling()) then
-			pos = parent:GetWorldPosition()
-			roomPos = RoomManager.WorldCoordToRoomCoord(pos)
-			centX, centY = RoomManager.IsCentered(pos)
-			room = RoomManager.Get():GetRoom(roomPos.x, roomPos.y)
-			if (room and centX and centY and room:GetPerm() == 4 ) then
+			local pos = parent:GetWorldPosition()
+			local roomPos = RoomManager.WorldCoordToRoomCoord(pos)
+			local centX, centY = RoomManager.IsCentered(pos)
+			local room = RoomManager.Get():GetRoom(roomPos.x, roomPos.y)
+			local door = room:GetDoorState()
+			if (room and centX and centY and room:GetPerm() == 4 and ((door ~= 0) and (door & (door-1)) ~= 0)) then
 				m_SendingToNextLevel = true
-				-- regen here
+				local layer = parent:GetOwningLayer()
+				After(function() Regenerate(layer) print("test") end, 1)
 			end
 		end
 	end
 end)
---]] 
 --[[and PowOfTwo(room:GetDoorState())]]
 CurrentComponent:SetOnEventCallbackFunction(function(event)
 	--print(event.Type)
