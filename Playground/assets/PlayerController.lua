@@ -35,3 +35,4 @@ CurrentComponent:SetOnUpdateCallbackFunction(function(deltaTime)
 	parent:SetRelativePosition(pos)
 	
 end)
+

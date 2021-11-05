@@ -90,9 +90,9 @@ namespace Tara {
 		
 		if (Penetration > 0) {
 			OverlapEvent orig = OverlapEvent(*this);
-			A->OnEvent(orig);
+			A->ReceiveEvent(orig);
 			OverlapEvent other = OverlapEvent(Invert());
-			B->OnEvent(other);
+			B->ReceiveEvent(other);
 		}
 		else if (Penetration == 0) {
 			//generate Touch Events
