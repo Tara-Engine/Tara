@@ -9,46 +9,41 @@ CurrentComponent:ListenForEvents(true)
 CurrentComponent:SetOnUpdateCallbackFunction(function()
 	if (not m_SendingToNextLevel) then
 		local parent = Cast(PawnEntity, CurrentComponent:GetParent())
-		if (parent and not parent:GetTraveling()) then
+		if (parent and not parent:GetTraveling() and parent:GetAlive()) then
 			local pos = parent:GetWorldPosition()
 			local roomPos = RoomManager.WorldCoordToRoomCoord(pos)
 			local centX, centY = RoomManager.IsCentered(pos)
 			local room = RoomManager.Get():GetRoom(roomPos.x, roomPos.y)
 			local door = room:GetDoorState()
-			if (room and centX and centY and room:GetPerm() == 4 and PowOfTwo(door)) then
-				print("should get here")
-				m_SendingToNextLevel = true
-				local layer = parent:GetOwningLayer()
-				After(function() 
-					Regenerate(layer) 
-					print("test") 
-				end, 1)
+			if (room and centX and centY and room:GetPerm() == 4) then
+				if PowOfTwo(door)then
+					m_SendingToNextLevel = true
+					local layer = parent:GetOwningLayer()
+					After(function() 
+						Regenerate(layer) 
+					end, 1)
+				else
+					--player needs to be stopped here
+					parent:Kill()
+				end
 			end
 		end
 	end
 end)
---[[and PowOfTwo(room:GetDoorState())]]
+
 CurrentComponent:SetOnEventCallbackFunction(function(event)
-	--print(event.Type)
 	if (event.Type == "KeyPress") then
-		print("Event is run!")
 		local parent = Cast(PawnEntity, CurrentComponent:GetParent())
 		if (not parent) then return false end
-		if (parent:GetTraveling()) then
-			print("parent is traveling.")
+		if (parent:GetTraveling() or not parent:GetAlive()) then
 			return
 		end
 		local pos = parent:GetWorldPosition()
 		local key = event.Key
 		local dir = {x = 0, y = 0}
 		local roomPos = RoomManager.WorldCoordToRoomCoord(pos)
-		--print(dump(pos))
 		local centX, centY = RoomManager.IsCentered(pos)
 		local room = RoomManager.Get():GetRoom(roomPos.x, roomPos.y)
-		print("RoomPos: " .. dump(roomPos))
-		print("Room: " .. dump(room))
-		--print(centX)
-		--print(centY)
 		if (key == TARA_KEY_E) then
 			print("CURRENT ROOM: {" .. roomPos.x .. "," .. roomPos.y .. "}")
 		end

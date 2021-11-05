@@ -128,7 +128,8 @@ public:
 		Tara::Layer::Update(deltaTime);
 		//deal with player and enemy colliding
 		//here, for simplicity. They already both have renferences in this context.
-		if (m_Player->GetAlive() && (m_Player->GetWorldPosition(), m_Enemy->GetWorldPosition()).Length() < ROOM_SCALE / 9) {
+		//actually, for some reason, this stopped working.
+		if (m_Player->GetAlive() && (m_Player->GetWorldPosition(), m_Enemy->GetWorldPosition()).Length() < ROOM_SCALE / 9.0f) {
 			m_Player->Kill();
 		}
 	}

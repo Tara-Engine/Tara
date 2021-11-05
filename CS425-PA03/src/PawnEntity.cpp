@@ -95,9 +95,9 @@ void PawnEntity::Respawn()
 
 void PawnEntity::Kill()
 {
-	LOG_S(INFO) << "Pawn \"" << GetName() << "\" has Died!";
-	SetAlive(false);
 	if (!GetImmortal()) { //only respawn if not immortal
+		LOG_S(INFO) << "Pawn \"" << GetName() << "\" has Died!";
+		SetAlive(false);
 		Tara::After(std::bind(&PawnEntity::Respawn, this), 1.0f, this);
 	}
 }
