@@ -71,6 +71,11 @@ public:
 	/// <param name="perm">the new permutation</param>
 	inline void SetPerm(uint32_t perm) { m_Perm = perm; }
 	
+public:
+	//lua stuff
+	static void RegisterLuaType(sol::state& lua);
+
+
 private:
 	uint32_t m_DoorState;
 	uint32_t m_Perm;

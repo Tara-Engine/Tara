@@ -183,6 +183,7 @@ int main(int argc, char** argv) {
 	//lua types
 	Tara::Script::RegisterType<PawnEntity>("PawnEntity");
 	Tara::Script::RegisterType<RoomManager>("RoomManager");
+	Tara::Script::RegisterType<RoomEntity>("RoomEntity");
 	CONNECT_FUNCTION(Regenerate);
 	
 	//add layers to scene

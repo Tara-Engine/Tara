@@ -6,6 +6,17 @@ RoomEntity::RoomEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, u
 {
 }
 
+void RoomEntity::RegisterLuaType(sol::state& lua)
+{
+	sol::usertype<RoomEntity> type = lua.new_usertype<RoomEntity>("RoomEntity", sol::base_classes, sol::bases<Tara::Entity, Tara::SpriteEntity>());
+	CONNECT_METHOD(RoomEntity, GetDoorState);
+	CONNECT_METHOD(RoomEntity, MatchDoorState);
+	CONNECT_METHOD(RoomEntity, HardMatchDoorState);
+	CONNECT_METHOD(RoomEntity, SetDoorState);
+	CONNECT_METHOD(RoomEntity, GetPerm);
+	CONNECT_METHOD(RoomEntity, SetPerm);
+}
+
 
 
 
