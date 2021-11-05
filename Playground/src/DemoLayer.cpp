@@ -2,11 +2,11 @@
 #include <random>
 
 DemoLayer::DemoLayer()
-{
-}
+{}
 
 DemoLayer::~DemoLayer()
 {
+	Deactivate();
 }
 
 void DemoLayer::Activate()
@@ -15,11 +15,11 @@ void DemoLayer::Activate()
 	
 	//first, load some assets
 
-	//load a texture file
+	//load two texture files
 	auto playerTexture = Tara::Texture2D::Create("assets/Particle.png", "playerTexture"); 
 	auto otherTexture = Tara::Texture2D::Create("assets/UV_Checker.png", "UV_Checker");
 
-	//take that texture and turn it into a sprite (which can be animated, but is not in this case)
+	//take those textures and turn them into sprites (which can be animated, but is not in this case)
 	auto playerSprite = Tara::Sprite::Create(playerTexture, 1, 1, "playerSprite"); 
 	auto otherSprite = Tara::Sprite::Create(otherTexture, 1, 1, "UV_Checker_sprite");
 
@@ -32,7 +32,7 @@ void DemoLayer::Activate()
 		Tara::CreateEntity<Tara::SpriteEntity>(
 			Tara::EntityNoRef(),
 			weak_from_this(),
-			TRANSFORM_2D((rd()%18) - 9.0f, (rd()&10) - 5.0f, 0, 1, 1),
+			TRANSFORM_2D((rd()%18) - 9.0f, (rd()%10) - 5.0f, 0, 1, 1),
 			"randomEntity", //yes, they can all have the same name!
 			otherSprite
 		);
@@ -62,5 +62,4 @@ void DemoLayer::Activate()
 
 void DemoLayer::Deactivate()
 {
-	Deactivate();
 }

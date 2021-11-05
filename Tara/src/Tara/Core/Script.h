@@ -115,14 +115,14 @@ namespace Tara {
 	template<class T> 
 	inline std::shared_ptr<T> Script::CastComponent(ComponentRef ref) {
 		static_assert(std::is_base_of<Component, T>::value, "Error: Tara::Script::CastComponent:: Provided class is not a subclass of Tara::Component");
-		LOG_S(INFO) << "C++ performing cast from ComponentRef to some subclass";
+		//LOG_S(INFO) << "C++ performing cast from ComponentRef to some subclass";
 		auto c = std::dynamic_pointer_cast<T>(ref);
 		if (c) {
-			LOG_S(INFO) << "it succeeded";
+			//LOG_S(INFO) << "it succeeded";
 			return c;
 		}
 		else {
-			LOG_S(INFO) << "it failed";
+			//LOG_S(INFO) << "it failed";
 			return nullptr;
 		}
 	}
@@ -130,7 +130,7 @@ namespace Tara {
 	template<class T>
 	inline ComponentRef Script::UpCastComponent(std::shared_ptr<T> ref) {
 		static_assert(std::is_base_of<Component, T>::value, "Error: Tara::Script::UpCastComponent:: Provided class is not a subclass of Tara::Component");
-		LOG_S(INFO) << "C++ performing upcast from ComponentRef subclass to ComponentRef itself";
+		//LOG_S(INFO) << "C++ performing upcast from ComponentRef subclass to ComponentRef itself";
 		return std::dynamic_pointer_cast<Component>(ref);
 	}
 
@@ -149,7 +149,7 @@ namespace Tara {
 	template<class T>
 	inline EntityRef Script::UpCastEntity(std::shared_ptr<T> ref) {
 		static_assert(std::is_base_of<Entity, T>::value, "Error: Tara::Script::UpCastEntity:: Provided class is not a subclass of Tara::Entity");
-		LOG_S(INFO) << "C++ performing upcast from ComponentRef subclass to ComponentRef itself";
+		//LOG_S(INFO) << "C++ performing upcast from ComponentRef subclass to ComponentRef itself";
 		return std::dynamic_pointer_cast<Entity>(ref);
 	}
 }
