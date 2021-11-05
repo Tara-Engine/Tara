@@ -385,8 +385,8 @@ void RoomManager::RegisterLuaType(sol::state& lua)
 	sol::usertype<RoomManager> type = lua.new_usertype<RoomManager>("RoomManager");
 	CONNECT_METHOD(RoomManager, GetRoom);
 	CONNECT_STATIC(RoomManager, Get);
-	CONNECT_STATIC(RoomManager, WorldCoordToRoomCoord);
-	CONNECT_STATIC(RoomManager, IsCentered);
+	CONNECT_STATIC_OVERRIDE(RoomManager, WorldCoordToRoomCoord);
+	CONNECT_STATIC_OVERRIDE(RoomManager, IsCentered);
 
 }
 
@@ -394,8 +394,8 @@ sol::table RoomManager::__SCRIPT__WorldCoordToRoomCoord(sol::table worldCoord)
 {
 	//must parse the worldCoord table to vec2, run through WorldCoordToRoomCoord, then put into lua table
 	sol::table table = NEW_TABLE;
-	table.add("x", (int)(worldCoord.get_or("x", 0) / ROOM_SCALE));
-	table.add("y", (int)(worldCoord.get_or("y", 0) / ROOM_SCALE - 1));
+	table["x"] = (int)(worldCoord.get_or("x", 0) / ROOM_SCALE);
+	table["y"] = (int)(worldCoord.get_or("y", 0) / ROOM_SCALE - 1);
 	return table;
 }
 

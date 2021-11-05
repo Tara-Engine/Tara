@@ -100,7 +100,7 @@ public:
 		//m_Player->AddChild(cameraEntity);
 		
 		//Make a copy of this for the AIControllerComponent. But only leave 1 uncommented
-		Tara::CreateComponent<PlayerControllerComponent>(m_Player, "playerController");
+		Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/PlayerControllerComponent.lua", "playerController");
 		//m_Player->SetImmortal(true);//test immortality
 		
 
