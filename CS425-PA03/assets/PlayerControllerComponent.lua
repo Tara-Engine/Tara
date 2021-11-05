@@ -35,7 +35,8 @@ CurrentComponent:SetOnEventCallbackFunction(function(event)
 		--print(dump(pos))
 		local centX, centY = RoomManager.IsCentered(pos)
 		local room = RoomManager.Get():GetRoom(roomPos.x, roomPos.y)
-		print(dump(room))
+		print("RoomPos: " .. dump(roomPos))
+		print("Room: " .. dump(room))
 		--print(centX)
 		--print(centY)
 		if (key == TARA_KEY_E) then
@@ -53,7 +54,7 @@ CurrentComponent:SetOnEventCallbackFunction(function(event)
 			if (centY and (room == nil or not centX or (room and room:GetDoorState() & 4 > 0))) then
 				dir.x = -1
 			end
-		elseif (key == TARA_KEY_S or key == TARA_KEY_RIGHT) then
+		elseif (key == TARA_KEY_D or key == TARA_KEY_RIGHT) then
 			if (centY and (room == nil or not centX or (room and room:GetDoorState() & 8 > 0))) then
 				dir.x = 1
 			end
