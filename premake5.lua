@@ -5,18 +5,36 @@ Download premake, and run the command:
 /path/to/premake/executable/premake5 vs2019
 to generate visual studios 2019 project files.
 If another version of visual studios is desired, use the appropreate options in premake.
+
+
+
+When using Tara as a submodule (as you should do),
+make sure to defune Tara_Included to some non-nil value before including it.
+You can also define outputdir to be some path for the binaries, but do not need to.
+
+Tara_IncludeDir is defined with key/value pairs to all Tara's dependancies, RELATIVE TO THIS FOLDER
+Tara_Links is defined as a list of all the dependency projects for a project using Tara.
 --]]
 
+
+local make_workspace = true
+if (Tara_Included ~= nil) then
+	make_workspace = false
+end
+
+if (make_workspace) then
 workspace("Tara")
 	architecture("x64")
 	configurations{"Debug", "Release"}
 	startproject("Playground")
-	
+end	
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+if (outputdir == nil) then
+	outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+end
 
 --standard includes
-IncludeDir = {
+Tara_IncludeDir = {
 	glad = "Vendor/glad/include",
 	glfw = "Vendor/glfw/include",
 	loguru = "Vendor/loguru",
@@ -26,13 +44,19 @@ IncludeDir = {
 	lua = "Vendor/lua",
 	sol = "Vendor/sol2/include",
 }
---"sdl" = "Vendor/sdl/include",
+
+--standard links for anything using Tara.
+Tara_Links = {
+	"Tara",
+	"glfw",
+	"glad",
+	"loguru",
+	"lua",
+}
+
+--include Tara's dependancies
 group("dependancies")
---	include("Vendor/glad")
 	include("Vendor")
-
-
-
 group("")
 
 
@@ -54,21 +78,18 @@ project("Tara")
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.c",
 		"%{prj.name}/src/**.cpp",
-		--"Vendor/glad/src/glad.c",
-		--"Vendor/loguru/src/loguru.cpp",
-		
 	})
 	
 	includedirs({
 		"%{prj.name}/src",
-		"%{IncludeDir.glad}",
-		"%{IncludeDir.glfw}",
-		"%{IncludeDir.loguru}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb}",
-		"%{IncludeDir.json}",
-		"%{IncludeDir.lua}",
-		"%{IncludeDir.sol}",
+		"%{Tara_IncludeDir.glad}",
+		"%{Tara_IncludeDir.glfw}",
+		"%{Tara_IncludeDir.loguru}",
+		"%{Tara_IncludeDir.glm}",
+		"%{Tara_IncludeDir.stb}",
+		"%{Tara_IncludeDir.json}",
+		"%{Tara_IncludeDir.lua}",
+		"%{Tara_IncludeDir.sol}",
 	})
 	
 	
@@ -80,7 +101,8 @@ project("Tara")
 	})
 	
 	defines({
-		"LOGURU_WITH_STREAMS=1"
+		"LOGURU_WITH_STREAMS=1",
+		"SOL_NO_EXCEPTIONS=1",
 	})
 	
 	filter("system:Windows")
@@ -99,7 +121,11 @@ project("Tara")
 		toolset("clang")
 		links({
 			"GL",
-			"X11", "dl", "pthread", "m", "z", --"Xtest", "Xfixes"
+			"X11", 
+			"dl", 
+			"pthread", 
+			"m", 
+			"z",
 		})
 	
 	filter("")
@@ -117,6 +143,7 @@ project("Tara")
 	filter("")
 
 
+if (make_workspace) then
 
 project("Playground")
 	location("Playground")
@@ -138,23 +165,24 @@ project("Playground")
 	includedirs({
 		"%{prj.name}/src",
 		"Tara/src",
-		"%{IncludeDir.glad}",
-		"%{IncludeDir.loguru}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb}",
-		"%{IncludeDir.json}",
-		"%{IncludeDir.lua}",
-		"%{IncludeDir.sol}",
+		"%{Tara_IncludeDir.glad}",
+		"%{Tara_IncludeDir.loguru}",
+		"%{Tara_IncludeDir.glm}",
+		"%{Tara_IncludeDir.stb}",
+		"%{Tara_IncludeDir.json}",
+		"%{Tara_IncludeDir.lua}",
+		"%{Tara_IncludeDir.sol}",
 	})
 	
 	
-	links({
-		"Tara",
-		"glfw",
-		"glad",
-		"loguru",
-		"lua",
-	})
+	links(Tara_Links)
+	--links({
+	--	"Tara",
+	--	"glfw",
+	--	"glad",
+	--	"loguru",
+	--	"lua",
+	--})
 	
 	filter("system:Windows")
 		system("windows")
@@ -211,23 +239,24 @@ project("CS425-PA03")
 	includedirs({
 		"%{prj.name}/src",
 		"Tara/src",
-		"%{IncludeDir.glad}",
-		"%{IncludeDir.loguru}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb}",
-		"%{IncludeDir.json}",
-		"%{IncludeDir.lua}",
-		"%{IncludeDir.sol}",
+		"%{Tara_IncludeDir.glad}",
+		"%{Tara_IncludeDir.loguru}",
+		"%{Tara_IncludeDir.glm}",
+		"%{Tara_IncludeDir.stb}",
+		"%{Tara_IncludeDir.json}",
+		"%{Tara_IncludeDir.lua}",
+		"%{Tara_IncludeDir.sol}",
 	})
 	
 	
-	links({
-		"Tara",
-		"glfw",
-		"glad",
-		"loguru",
-		"lua",
-	})
+	links(Tara_Links)
+	--links({
+	--	"Tara",
+	--	"glfw",
+	--	"glad",
+	--	"loguru",
+	--	"lua",
+	--})
 	
 	filter("system:Windows")
 		system("windows")
@@ -263,3 +292,5 @@ project("CS425-PA03")
 	filter("")
 
 group("")
+
+end
