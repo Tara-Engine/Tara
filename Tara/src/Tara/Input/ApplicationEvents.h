@@ -9,8 +9,8 @@ namespace Tara {
 	//REFTYPE(Entity);
 	//NOREFTYPE(Entity);
 
-	REFTYPE(Component);
-	NOREFTYPE(Component);
+	//REFTYPE(Component);
+	//NOREFTYPE(Component);
 
 	
 	/// <summary>
@@ -22,13 +22,28 @@ namespace Tara {
 	/// </summary>
 	class OverlapEvent : public ApplicationEvent {
 	public:
-		//TODO: Add manifold to event!
 		OverlapEvent(const Manifold& manifold)
 			 :m_Manifold(manifold)
 		{}
+		/// <summary>
+		/// Get the self reference from the manifold.
+		/// </summary>
+		/// <returns></returns>
 		virtual EntityRef GetSelf() const { return m_Manifold.A; }
+		/// <summary>
+		/// Get the other reference from the manifold
+		/// </summary>
+		/// <returns></returns>
 		virtual EntityRef GetOther() const { return m_Manifold.B; }
+		/// <summary>
+		/// Get the ammount the objects are overlapping along normal
+		/// </summary>
+		/// <returns></returns>
 		virtual float GetPenetration() const { return m_Manifold.Penetration; }
+		/// <summary>
+		/// Get the shortest direction to not overlapping. (2D X-Y plane)
+		/// </summary>
+		/// <returns></returns>
 		virtual Vector GetNormal() const { return m_Manifold.Normal; }
 
 		virtual std::string ToString() const override;
@@ -39,23 +54,38 @@ namespace Tara {
 		const Manifold& m_Manifold;
 	};
 
+	/// <summary>
+	/// Base class for events relating to children
+	/// </summary>
+	/// <returns></returns>
 	class ChildEvent : public ApplicationEvent {
 	public:
 		ChildEvent(EntityNoRef parent, EntityNoRef child)
 			:m_Parent(parent), m_Child(child)
 		{}
+		/// <summary>
+		/// Get the parent in the event
+		/// </summary>
+		/// <returns></returns>
 		virtual inline EntityRef GetParent() const { return m_Parent.lock(); }
+		/// <summary>
+		/// Get the child in the event
+		/// </summary>
+		/// <returns></returns>
 		virtual inline EntityRef GetChild() const { return m_Child.lock(); }
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryHirarchy)
 
 	protected:
-		inline std::string GetParentName() const { return ((GetParent()) ? GetParent()->GetName() : "[DESTROYED]"); }
-		inline std::string GetChildName() const {return ((GetChild()) ? GetChild()->GetName() : "[DESTROYED]");}
+		inline std::string GetParentName() const { return ((GetParent()) ? GetParent()->GetName() : "[NULL]"); }
+		inline std::string GetChildName() const {return ((GetChild()) ? GetChild()->GetName() : "[NULL]");}
 	private:
 		EntityNoRef m_Parent;
 		EntityNoRef m_Child;
 	};
 
+	/// <summary>
+	/// Event for when a child is added to a parent.
+	/// </summary>
 	class ChildAddedEvent : public ChildEvent {
 	public:
 		ChildAddedEvent(EntityNoRef parent, EntityNoRef child)
@@ -69,6 +99,9 @@ namespace Tara {
 		EVENT_CLASS_CLASS(ChildAdded)
 	};
 
+	/// <summary>
+	/// Event for when a child is removed from a parent
+	/// </summary>
 	class ChildRemovedEvent : public ChildEvent {
 	public:
 		ChildRemovedEvent(EntityNoRef parent, EntityNoRef child)
@@ -82,12 +115,23 @@ namespace Tara {
 		EVENT_CLASS_CLASS(ChildRemoved)
 	};
 
+	/// <summary>
+	/// Event for when an entity has its parents swapped.
+	/// </summary>
 	class ParentSwapedEvent : public ApplicationEvent {
 	public:
 		ParentSwapedEvent(EntityNoRef oldParent, EntityNoRef newParent)
 			:m_OldParent(oldParent), m_NewParent(newParent)
 		{}
+		/// <summary>
+		/// Get the old parent
+		/// </summary>
+		/// <returns></returns>
 		virtual inline EntityRef GetOldParent() const { return m_OldParent.lock(); }
+		/// <summary>
+		/// Get the new parent
+		/// </summary>
+		/// <returns></returns>
 		virtual inline EntityRef GetNewParent() const { return m_NewParent.lock(); }
 		virtual std::string ToString() const override {
 			std::stringstream ss;
@@ -97,31 +141,45 @@ namespace Tara {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryHirarchy)
 		EVENT_CLASS_CLASS(ParentChanged)
 	protected:
-		virtual inline std::string GetOldParentName() const { return ((GetOldParent()) ? GetOldParent()->GetName() : "[DESTROYED]"); }
-		virtual inline std::string GetNewParentName() const { return ((GetNewParent()) ? GetNewParent()->GetName() : "[DESTROYED]"); }
+		virtual inline std::string GetOldParentName() const { return ((GetOldParent()) ? GetOldParent()->GetName() : "[NULL]"); }
+		virtual inline std::string GetNewParentName() const { return ((GetNewParent()) ? GetNewParent()->GetName() : "[NULL]"); }
 	private:
 		EntityNoRef m_OldParent;
 		EntityNoRef m_NewParent;
 	};
 
-
+	/// <summary>
+	/// Base class for component-related events
+	/// </summary>
+	/// <returns></returns>
 	class ComponentEvent : public ApplicationEvent {
 	public:
 		ComponentEvent(EntityNoRef entity, ComponentNoRef component)
 			:m_Entity(entity), m_Component(component)
 		{}
+		/// <summary>
+		/// Get the entity in the event
+		/// </summary>
+		/// <returns></returns>
 		virtual inline EntityRef GetEntity() const { return m_Entity.lock(); }
+		/// <summary>
+		/// Get the component in the event
+		/// </summary>
+		/// <returns></returns>
 		virtual inline ComponentRef GetComponent() const { return m_Component.lock(); }
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryHirarchy)
 
 	protected:
-		inline std::string GetEntityName() const { return ((GetEntity()) ? GetEntity()->GetName() : "[DESTROYED]"); }
-		inline std::string GetComponentName() const { return ((GetComponent()) ? GetComponent()->GetName() : "[DESTROYED]"); }
+		inline std::string GetEntityName() const { return ((GetEntity()) ? GetEntity()->GetName() : "[NULL]"); }
+		inline std::string GetComponentName() const { return ((GetComponent()) ? GetComponent()->GetName() : "[NULL]"); }
 	private:
 		EntityNoRef m_Entity;
 		ComponentNoRef m_Component;
 	};
 
+	/// <summary>
+	/// Event for when a component is added to an entity
+	/// </summary>
 	class ComponentAddedEvent : public ComponentEvent {
 	public:
 		ComponentAddedEvent(EntityNoRef parent, ComponentNoRef child)
@@ -135,6 +193,9 @@ namespace Tara {
 		EVENT_CLASS_CLASS(ComponentAdded)
 	};
 
+	/// <summary>
+	/// Event for when a component is removed from an entity
+	/// </summary>
 	class ComponentRemovedEvent : public ComponentEvent {
 	public:
 		ComponentRemovedEvent(EntityNoRef parent, ComponentNoRef child)
@@ -148,4 +209,46 @@ namespace Tara {
 		EVENT_CLASS_CLASS(ComponentRemoved)
 	};
 
+	/// <summary>
+	/// Event for when an entity is clicked on. Must have a ClickableComponent attached to receive.
+	/// </summary>
+	class ClickEvent : public ApplicationEvent {
+	public:
+		ClickEvent(float mouseX, float mouseY, int32_t button)
+			: m_MouseX(mouseX), m_MouseY(mouseY), m_Button(button)
+		{}
+		/// <summary>
+		/// Get the mouse  position
+		/// </summary>
+		/// <returns></returns>
+		inline glm::vec2 GetMousePos() const { return { m_MouseX, m_MouseY }; }
+		/// <summary>
+		/// Get the mouse X position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseX() const { return m_MouseX; }
+		/// <summary>
+		/// Get the mouse Y position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseY() const { return m_MouseY; }
+		/// <summary>
+		/// Get the highest-priority button that is down (TARA_BUTTON_1 has the highest, TARA_BUTTON_8 has the lowest)
+		/// </summary>
+		/// <returns></returns>
+		inline int32_t GetMouseButton() const { return m_Button; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "Click Event: Mouse Pos: [X=" << m_MouseX << " Y=" << m_MouseY << "]. Button: " << m_Button;
+			return ss.str();
+		}
+
+		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
+		EVENT_CLASS_CLASS(ClickEvent)
+	private:
+		float m_MouseX;
+		float m_MouseY;
+		int32_t m_Button;
+	};
 }

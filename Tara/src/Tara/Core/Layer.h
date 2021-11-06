@@ -137,6 +137,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="camera">the new camera entity</param>
 		void SetLayerCamera(const CameraEntityRef& camera) { m_LayerCamera = camera; }
+		
+		/// <summary>
+		/// Get a weak pointer to the owned camera.
+		/// </summary>
+		/// <returns></returns>
+		CameraEntityNoRef GetLayerCamera() { return m_LayerCamera; }
 
 	protected:
 		/// <summary>

@@ -4,6 +4,7 @@ The Tara Game Engine is designed to be a game engine for procedurally generated 
 ## Cloning
 When cloning the repository, using the `--recursive` option. There are a number of submodules. A game engine is generally a pretty large project, and using libraries and tools made by other excellent people helps the process a lot!
 
+Some of these submodules (json) take a while to clone. To be sure your terminal is not hanging, use the `--progress` option.
 
 ## Compilation Guide
 Tara uses [Premake](https://premake.github.io/) as its build configuration manager. Premake is similar to cmake, but much simpler and easier to use. It can generate project files for pretty much all platforms.
@@ -63,3 +64,4 @@ A lot of my knowledge about game engine design comes from [The Cherno's Youtube 
 
 Anything in the "Vendor" folder is third-party, and the license, if available, is in the folder of each individual part. As far as possible, these are also git submodules. The `premake5.lua` file directly in "Vendor" is used for the various projects for these submodules.
 
+Other submodules may be found in "Tara/lua". These are lua libraries that make lua easier to use.
