@@ -29,7 +29,7 @@ void TColorRectEntity::OnDraw(float deltaTime)
 
 void TColorRectEntity::OnEvent(Tara::Event& e)
 {
-	//LOG_S(INFO) << e.ToString();
+	LOG_S(INFO) << e.ToString();
 	Tara::EventFilter filter(e);
 	filter.Call<Tara::OverlapEvent>(TARA_BIND_FN(TColorRectEntity::OnOverlapEvent));
 }

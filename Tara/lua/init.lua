@@ -4,7 +4,8 @@ print("Lua Library Loading! Path:" .. LibraryPath)
 dofile(LibraryPath .. "/require.lua")
 
 --library for dumping tables to strings. Handy for debugging
+require("inspect", "dump")
 require("casting")
 require("mappings")
-require("inspect", "dump")
+require("MathTypes")
 

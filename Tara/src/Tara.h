@@ -46,6 +46,7 @@
 
 //Components
 #include "Tara/Components/ScriptComponent.h"
+#include "Tara/Components/ClickableComponent.h"
 
 //Utilities
 #include "Tara/Utility/After.h"

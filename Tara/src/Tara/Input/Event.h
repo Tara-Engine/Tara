@@ -11,11 +11,12 @@ namespace Tara {
 	/// </summary>
 	enum class EventClass {
 		None = 0,
-		WindowClose, WindowResize, 
+		WindowClose, WindowResize,
 		KeyPress, KeyRelease, KeyType,
 		MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
-		Overlap, 
-		ChildAdded, ChildRemoved, ParentChanged, ComponentAdded, ComponentRemoved
+		Overlap,
+		ChildAdded, ChildRemoved, ParentChanged, ComponentAdded, ComponentRemoved,
+		ClickEvent,
 		//TODO: other Application Events
 	};
 
@@ -32,6 +33,7 @@ namespace Tara {
 		EventCategoryMouseButton = BIT(5),
 		EventCategoryOverlap	 = BIT(6),
 		EventCategoryHirarchy	 = BIT(7),
+		EventCategoryUI			 = BIT(8),
 		//TODO: Categories of application events
 	};
 
@@ -316,6 +318,7 @@ namespace Tara {
 			: m_xPos(xPos), m_yPos(yPos) {}
 		inline float GetXPos() const { return m_xPos; }
 		inline float GetYPos() const { return m_yPos; }
+		inline glm::vec2 GetPos() const { return { m_xPos, m_yPos }; }
 		virtual std::string ToString() const override {
 			std::stringstream ss;
 			ss << GetName() << " [X:" << m_xPos << " Y:" << m_yPos << "]";

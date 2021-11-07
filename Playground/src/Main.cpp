@@ -66,15 +66,17 @@ public:
 		//m_Camera = Tara::CameraEntity::Create(Tara::EntityNoRef(), weak_from_this(), Tara::Camera::ProjectionType::Ortographic, TRANSFORM_DEFAULT, "camera");
 		m_Camera = Tara::CreateEntity<Tara::CameraEntity>(
 			Tara::EntityNoRef(), weak_from_this(), 
-			Tara::Camera::ProjectionType::Perspective, 
-			Tara::Transform{ {0.0f, 0.0f, 10.0f},{0.0f,0.0f,180.0f},{1.0f} }, 
+			Tara::Camera::ProjectionType::Ortographic, 
+			Tara::Transform{ {0.0f, 0.0f, 0.0f},{0.0f,0.0f,0.0f},{1.0f} }, 
 			"camera"
 		);
 
-		m_Camera->SetPerspectiveFOV(45.0f);
-		SetLayerCamera(m_Camera);
+		//m_Camera->SetPerspectiveFOV(45.0f);
 
-		//m_Camera->SetOrthographicExtent(8.0f);
+		m_Camera->SetOrthographicExtent(8.0f);
+		
+		SetLayerCamera(m_Camera);
+		
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
 		//m_Camera = camera;
@@ -103,8 +105,10 @@ public:
 
 		
 		//m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
-		m_Player = Tara::CreateEntity<TColorRectEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
+		m_Player = Tara::CreateEntity<TColorRectEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
 		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
+		Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
+
 		
 		auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?", TRANSFORM_2D(-1, 0, 0, 1, 1));
 		textEntity->SetColor({ 1,0,0,1 });
@@ -117,15 +121,17 @@ public:
 
 		//attach camera to player
 		//m_Player->AddChild(m_Camera);
-		m_Camera->AddChild(m_Player);
+		//m_Camera->AddChild(m_Player);
 
 		//Controller Component
-		auto controller = Tara::CreateComponent<EditorCameraControllerComponent>(m_Camera, 1.0f, "CameraController");
+		//auto controller = Tara::CreateComponent<EditorCameraControllerComponent>(m_Camera, 1.0f, "CameraController");
+		auto controller = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/PlayerController.lua", "playerController");
+		
 		//controller->SetSpeed(1.5f);
 		
 		
 		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
-		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
+		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
 	}
 	
 	virtual void Deactivate() override {
@@ -138,13 +144,13 @@ public:
 		//call super update function
 		Tara::Layer::Update(deltaTime);
 
-		if (Tara::Input::Get()->IsMouseDown(TARA_MOUSE_BUTTON_1)) {
-			//test the whole camera ray thing
-			auto ray = m_Camera->GetCamera()->GetRayFromScreenCoordinate(Tara::Input::Get()->GetMouseX(), Tara::Input::Get()->GetMouseY());
-			//since ortho, only origin is nesecary
-			//set the m_TempSpriteEntity location
-			m_TempSpriteEntity->SetWorldPosition(ray.first + (ray.second * 5));
-		}
+		//if (Tara::Input::Get()->IsMouseDown(TARA_MOUSE_BUTTON_1)) {
+		//	//test the whole camera ray thing
+		//	auto ray = m_Camera->GetCamera()->GetRayFromScreenCoordinate(Tara::Input::Get()->GetMouseX(), Tara::Input::Get()->GetMouseY());
+		//	//since ortho, only origin is nesecary
+		//	//set the m_TempSpriteEntity location
+		//	m_TempSpriteEntity->SetWorldPosition(ray.first + (ray.second * 5));
+		//}
 	}
 	/*
 	virtual void Draw(float deltaTime) override{
@@ -231,8 +237,8 @@ int main(int argc, char** argv) {
 	Tara::Script::RegisterType<PawnEntity>("PawnEntity"); //register PawnEntity
 
 	//add layers to scene...
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
-	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;
