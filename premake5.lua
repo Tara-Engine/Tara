@@ -176,13 +176,6 @@ project("Playground")
 	
 	
 	links(Tara_Links)
-	--links({
-	--	"Tara",
-	--	"glfw",
-	--	"glad",
-	--	"loguru",
-	--	"lua",
-	--})
 	
 	filter("system:Windows")
 		system("windows")
@@ -216,81 +209,5 @@ project("Playground")
 		optimize("On")
 	
 	filter("")
-	
-group("ClassProjs")
-
-project("CS425-PA03")
-	location("CS425-PA03")
-	kind("ConsoleApp")
-	language("C++")
-	cppdialect("C++17") --prefered C++19, but premake does not support that yet
-	staticruntime("Off")
-	
-	targetdir("bin/"..outputdir.."/%{prj.name}")
-	objdir("bin/int/"..outputdir.."/%{prj.name}")
-	
-	files({
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.hpp", 
-		"%{prj.name}/src/**.c",
-		"%{prj.name}/src/**.cpp"
-	})
-	
-	includedirs({
-		"%{prj.name}/src",
-		"Tara/src",
-		"%{Tara_IncludeDir.glad}",
-		"%{Tara_IncludeDir.loguru}",
-		"%{Tara_IncludeDir.glm}",
-		"%{Tara_IncludeDir.stb}",
-		"%{Tara_IncludeDir.json}",
-		"%{Tara_IncludeDir.lua}",
-		"%{Tara_IncludeDir.sol}",
-	})
-	
-	
-	links(Tara_Links)
-	--links({
-	--	"Tara",
-	--	"glfw",
-	--	"glad",
-	--	"loguru",
-	--	"lua",
-	--})
-	
-	filter("system:Windows")
-		system("windows")
-		systemversion("latest")
-		
-		defines({})
-		
-		links({
-			"opengl32.lib"
-		})
-	
-	filter("system:linux")
-		system("linux")
-		systemversion("latest")
-		toolset("clang")
-		links({
-			"GL",
-			"X11", "dl", "pthread", "m", "z", --"Xtest", "Xfixes"
-		})
-	
-	filter("")
-	
-	filter("configurations:Debug")
-		runtime("Debug")
-		defines("DEBUG")
-		symbols("On")
-		
-	filter("configurations:Release")
-		runtime("Release")
-		defines("NDBUG")
-		optimize("On")
-	
-	filter("")
-
-group("")
 
 end

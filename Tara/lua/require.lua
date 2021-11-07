@@ -31,7 +31,16 @@ function require(modname, usename)
 	for i, path in ipairs(paths) do
 		status, ret = xpcall(function()
 			return dofile(libDir .. "/" .. path)
-		end, debug.traceback)
+		end, 
+		function(err)
+			local traceback = debug.traceback(err)
+			local s, e = string.find(err, "cannot open")
+			if s~=1 then
+				print(err .. "\n" .. traceback)
+			end
+			return traceback
+		end)
+		
 		if (status) then
 			if (ret) then
 				--add to global namespace
@@ -39,7 +48,7 @@ function require(modname, usename)
 			end
 			return ret --return returned value
 		else
-			msg = msg .. "Not found at: " ..libDir .. "/" .. path .. "\n" .. ret
+			msg = msg .. "Not found at: " ..libDir .. "/" .. path .. "\n"
 		end
 	end
 	

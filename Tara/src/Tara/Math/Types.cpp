@@ -394,12 +394,15 @@ namespace Tara{
 
 	sol::table Vector::ToScriptTable() const
 	{
-		//TODO: when lua side library for tables, complete, replace this
-		auto table = sol::table(Script::Get()->GetState(), sol::create);
-		table["x"] = x;
-		table["y"] = y;
-		table["z"] = z;
-		return table;
+		auto ret = (Script::Get()->GetState()["Vector"]["new"](x, y, z));
+		if (!ret.valid()) {
+			auto table = sol::table(Script::Get()->GetState(), sol::create);
+			table["x"] = x;
+			table["y"] = y;
+			table["z"] = z;
+			return table;
+		}
+		return ret;
 	}
 
 
