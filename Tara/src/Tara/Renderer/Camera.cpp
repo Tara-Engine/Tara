@@ -32,6 +32,10 @@ namespace Tara {
 	}
 
 
+	OrthographicCamera::OrthographicCamera(ProjectionType type)
+		: Camera(ProjectionType::Ortographic), m_Extent(-1, 1), m_MaintainAspectRatio(true)
+	{}
+
 	OrthographicCamera::OrthographicCamera(float width)
 			: Camera(ProjectionType::Ortographic), m_Extent(-(width/2), width/2), m_MaintainAspectRatio(true)
 	{
@@ -153,6 +157,49 @@ namespace Tara {
 		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, -1.0f, 1.0f);
 	}
 
+	ScreenCamera::ScreenCamera()
+		: OrthographicCamera(ProjectionType::Screen)
+	{
+		auto& window = Application::Get()->GetWindow();
+		m_ScreenWidth = (float)window->GetWidth();
+		m_ScreenHeight = (float)window->GetHeight();
+		OrthographicCamera::SetExtent((float)window->GetWidth());
+	}
+
+	void ScreenCamera::UpdateRenderArea(uint32_t width, uint32_t height)
+	{
+		m_ScreenWidth = (float)width;
+		m_ScreenHeight = (float)height;
+		OrthographicCamera::SetExtent((float)width);
+	}
+
+	glm::mat4 ScreenCamera::GetViewMatrix() const
+	{
+		auto t = Transform(m_Transform);
+		t.Position.x += (m_ScreenWidth / 2);
+		t.Position.y += (m_ScreenHeight / 2);
+		return glm::inverse(t.GetTransformMatrix());
+	}
+
+	void ScreenCamera::UpdateProjectionMatrix()
+	{
+		auto extent = GetExtent();
+		float aspectRatio = m_ScreenWidth / m_ScreenHeight;
+		float width = extent.Right - extent.Left;
+		float height = width / aspectRatio;
+		extent.Top = height / 2.0f;
+		extent.Bottom = -extent.Top;
+		extent.Near = -1.0f;
+		extent.Far = 1.0f;
+		
+		m_ProjectionMatrix = glm::ortho(
+			extent.Left, extent.Right,
+			extent.Bottom, extent.Top,
+			extent.Near, extent.Far
+		);
+	}
 
 
 }
+
+

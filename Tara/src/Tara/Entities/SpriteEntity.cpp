@@ -42,6 +42,10 @@ namespace Tara {
 			}
 			Renderer::Quad(GetWorldTransform(), m_Tint, m_Sprite->GetTexture(), UVs.first, UVs.second);
 		}
+		else {
+			//draw color if no asset
+			Renderer::Quad(GetWorldTransform(), m_Tint);
+		}
 	}
 
 	void SpriteEntity::PlayAnimation(const std::string& name)

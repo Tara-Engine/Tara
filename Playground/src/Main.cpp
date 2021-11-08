@@ -105,8 +105,8 @@ public:
 
 		
 		//m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
-		m_Player = Tara::CreateEntity<TColorRectEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
-		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
+		m_Player = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
+		m_Player->SetTint({ 0.0f, 1.0f, 0.0f, 0.25f });
 		Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
 
 		
@@ -221,7 +221,7 @@ private:
 	float m_PlayerSpeed = 1.0f;
 
 	Tara::CameraEntityRef m_Camera;
-	std::shared_ptr<TColorRectEntity> m_Player;
+	Tara::SpriteEntityRef m_Player;
 	Tara::SpriteEntityRef m_TempSpriteEntity;
 	float m_TimeCounter = 0;
 
