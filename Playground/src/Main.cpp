@@ -75,7 +75,7 @@ public:
 
 		m_Camera->SetOrthographicExtent(8.0f);
 		
-		SetLayerCamera(m_Camera);
+		//SetLayerCamera(m_Camera);
 		
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
 		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
@@ -132,6 +132,11 @@ public:
 		
 		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
 		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
+
+
+
+		//tileset test
+		m_tileset = Tara::Tileset::Create("assets/TestSet.json", "TestTileset");
 	}
 	
 	virtual void Deactivate() override {
@@ -152,11 +157,15 @@ public:
 		//	m_TempSpriteEntity->SetWorldPosition(ray.first + (ray.second * 5));
 		//}
 	}
-	/*
+	
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera->GetCamera());
 		
 		Tara::Layer::Draw(deltaTime);
+
+		auto uvs = m_tileset->GetTileUVs(2);
+		auto tex = m_tileset->GetTexture();
+		Tara::Renderer::Quad(TRANSFORM_2D(-1, 0, 0, 1, 1), { 1,1,1,1 }, tex, uvs.first, uvs.second);
 
 		//Tara::Renderer::Text(TRANSFORM_2D(1, 1, 0, 1, 1), "Hello World", font);
 		//Tara::Renderer::Quad(TRANSFORM_2D(1, 1, 0, 2, 2), { 1,1,1,1 }, font->GetTexture());
@@ -168,7 +177,7 @@ public:
 
 		Tara::Renderer::EndScene();
 	}
-	*/
+	
 	
 	virtual void OnEvent(Tara::Event& e) override {
 		//LOG_S(INFO) << "TestingLayer::OnEvent!";
@@ -211,7 +220,7 @@ private:
 	//TESTING STUFF
 	//Tara::Texture2DRef m_Texture;
 	//Tara::Texture2DRef m_Texture2;
-	
+	Tara::TilesetRef m_tileset;
 	Tara::ShaderRef m_SimpleShader;
 	Tara::VertexArrayRef m_VertexArray;
 	

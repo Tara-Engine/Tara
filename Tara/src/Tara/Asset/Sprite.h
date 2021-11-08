@@ -3,13 +3,13 @@
 #include "Tara/Renderer/Texture.h"
 
 namespace Tara {
+	REFTYPE(Sprite)
 
 	/// <summary>
 	/// A sprite class. It stores all the frame and animation information for a spritesheet.
 	/// 
 	/// </summary>
 	class Sprite : public Asset {
-		using SpriteRef = std::shared_ptr<Sprite>;
 	public: 
 		/// <summary>
 		/// A struct to hold the information of a specific animation sequence:
@@ -152,6 +152,4 @@ namespace Tara {
 		uint32_t m_YFrameCount;
 		std::unordered_map<std::string, AnimationSequence> m_Sequences;
 	};
-
-	using SpriteRef = std::shared_ptr<Sprite>;
 }
