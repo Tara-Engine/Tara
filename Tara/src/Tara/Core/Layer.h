@@ -20,7 +20,7 @@ namespace Tara {
 	class Layer : public std::enable_shared_from_this<Layer> {
 
 		friend class Entity;
-
+		friend class Scene;
 	public:
 		/// <summary>
 		/// Layer Constructor
@@ -162,6 +162,7 @@ namespace Tara {
 		std::list<EventListenerNoRef> m_Listeners;
 		std::list<Manifold> m_FrameManifoldQueue;
 		CameraEntityRef m_LayerCamera; //intentonally an owning pointer
+		bool m_Dead = false; //used by Scene to destroy layers
 	};
 
 
