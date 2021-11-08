@@ -24,13 +24,28 @@ namespace Tara {
 	void Scene::Update(float deltaTime)
 	{
 		//LOG_S(INFO) << "Scene: Layercount:" << m_Layers.size();
-		for (auto& layer : m_Layers) {
-			layer->Update(deltaTime);
-			layer->RunOverlapChecks();
+		std::list<std::vector<LayerRef>::iterator> deadLayers;
+		for (auto& layer = m_Layers.begin(); layer != m_Layers.end(); layer++) {
+			(*layer)->Update(deltaTime);
+			(*layer)->RunOverlapChecks();
+			if ((*layer)->m_Dead) {
+				deadLayers.push_back(layer);
+			}
 		}
-		for (auto& layer : m_Overlays) {
-			layer->Update(deltaTime);
-			layer->RunOverlapChecks();
+		for (auto& layer : deadLayers) {
+			m_Layers.erase(layer);
+		}
+		deadLayers.clear();
+
+		for (auto& layer = m_Overlays.begin(); layer != m_Overlays.end(); layer++) {
+			(*layer)->Update(deltaTime);
+			(*layer)->RunOverlapChecks();
+			if ((*layer)->m_Dead) {
+				deadLayers.push_back(layer);
+			}
+		}
+		for (auto& layer : deadLayers) {
+			m_Layers.erase(layer);
 		}
 	}
 
@@ -74,13 +89,15 @@ namespace Tara {
 		auto result = std::find(m_Layers.begin(), m_Layers.end(), layer);
 		if (result != m_Layers.end()) {
 			(*result)->Deactivate();
-			m_Layers.erase(result);
+			(*result)->m_Dead = true;
+			//m_Layers.erase(result);
 			return true;
 		}
 		result = std::find(m_Overlays.begin(), m_Overlays.end(), layer);
 		if (result != m_Overlays.end()) {
 			(*result)->Deactivate();
-			m_Overlays.erase(result);
+			(*result)->m_Dead = true;
+			//m_Overlays.erase(result);
 			return true;
 		}
 		return false;

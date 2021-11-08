@@ -21,7 +21,7 @@ OpenGL include - BAD - used for developing new features ONLY
 
 #include "DemoLayer.h"
 
-
+void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
 
 /// <summary>
 /// Testing Layer
@@ -49,7 +49,7 @@ public:
 		Tara::Texture::SetDefaultTextureFiltering(Tara::Texture::Filtering::Nearest);
 
 
-		font = Tara::Font::Create("assets/arial.ttf", 1024, 96, "arial");
+		font = Tara::Font::Create("assets/LiberationSans-Regular.ttf", 1024, 96, "arial");
 
 		//make a texture asset
 		auto textureUVChecker = Tara::Texture2D::Create("assets/UV_Checker.png");
@@ -181,12 +181,13 @@ public:
 	
 	virtual void OnEvent(Tara::Event& e) override {
 		//LOG_S(INFO) << "TestingLayer::OnEvent!";
-		Layer::OnEvent(e); //parent call
 
 
 		Tara::EventFilter filter(e);
 		filter.Call<Tara::MouseButtonPressEvent>(TARA_BIND_FN(TestingLayer::OnMousePressedEvent));
 		filter.Call<Tara::KeyPressEvent>(TARA_BIND_FN(TestingLayer::OnKeyPressedEvent));
+		///LOG_S(INFO) << "LAYER CALLING PARENT EVENT";
+		Layer::OnEvent(e); //parent call
 	}
 
 	bool OnKeyPressedEvent(Tara::KeyPressEvent& e) {
@@ -196,6 +197,11 @@ public:
 		//if (m_TempSpriteEntity){
 		//	m_TempSpriteEntity->Destroy();
 		//	m_TempSpriteEntity.reset();
+		//}
+		//if (e.GetKey() == TARA_KEY_F1) {
+		//	//load new layer
+		//	LOG_S(INFO) << "LAYER SWITCH";
+		//	LayerSwitch("basic", weak_from_this());
 		//}
 		return false;
 	}
@@ -251,4 +257,18 @@ int main(int argc, char** argv) {
 	//run
 	Tara::Application::Get()->Run();
 	return 0;
+}
+
+void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer)
+{
+	if (newLayerName == "basic") {
+		Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
+	}
+	else {
+		LOG_S(WARNING) << "Attempted to switch to unknown layer: " << newLayerName;
+		return; //make sure not to unload current layer
+	}
+	if (currentLayer.lock()) {
+		Tara::Application::Get()->GetScene()->RemoveLayer(currentLayer.lock());
+	}
 }
