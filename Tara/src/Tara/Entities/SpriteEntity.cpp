@@ -6,7 +6,7 @@
 
 namespace Tara {
 
-	SpriteEntity::SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name, SpriteRef sprite)
+	SpriteEntity::SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, const std::string& name, SpriteRef sprite)
 		: Entity(parent, owningLayer, transform, name), m_Sprite(sprite), 
 		m_CurrentFrame(0), m_CurrentSequence(0,0,0.0f), m_CurrentFrameTimer(0.0f), 
 		m_Tint(1.0f,1.0f,1.0f,1.0f), m_FlipBits(0)

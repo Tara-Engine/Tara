@@ -44,6 +44,7 @@
 #include "Tara/Entities/CameraEntity.h"
 #include "Tara/Entities/DynamicMultiChildEntity.h"
 #include "Tara/Entities/TextEntity.h"
+#include "Tara/Entities/TilemapEntity.h"
 
 //Components
 #include "Tara/Components/ScriptComponent.h"
