@@ -23,6 +23,18 @@ OpenGL include - BAD - used for developing new features ONLY
 
 void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
 
+
+struct TestStruct {
+	int32_t a = 77;
+	float b = 1.6f;
+	TestStruct() {
+		LOG_S(INFO) << "Test Struct constructed!";
+	}
+	~TestStruct() {
+		LOG_S(INFO) << "Test Struct destroyed!";
+	}
+};
+
 /// <summary>
 /// Testing Layer
 /// </summary>
@@ -60,6 +72,45 @@ public:
 		//auto textureParticle2x2 = Tara::Texture2D::Create("assets/Particle_2x2.png");
 		//auto textureParticle1x4 = Tara::Texture2D::Create("assets/Particle_1x4.png");
 
+
+		//tileset test
+		m_tileset = Tara::Tileset::Create("assets/TestSet.json", "TestTileset");
+
+		auto tiles2Texture = Tara::Texture2D::Create("assets/Tiles2x2.png");
+
+		auto tileset2 = Tara::Tileset::Create(tiles2Texture, 16, 16, 0, 0, "Tiles2");
+
+		//m_tileset->GiveTileMetadata(0, new TestStruct);
+
+		//LOG_S(INFO) << ((TestStruct*)(m_tileset->GetTileMetadata(0)))->a;
+
+		m_tilemap = Tara::CreateEntity<Tara::TilemapEntity>(
+			Tara::EntityNoRef(), weak_from_this(),
+			std::initializer_list{m_tileset, tileset2}, //unfortunately, must explicitly declare this. Variable Args thing.
+			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
+		);
+
+		//m_tilemap->FillFromJson("assets/testMapInf.json");
+
+
+		m_tilemap->SwapTile(0, 0, 0, 0);
+
+
+
+		//m_tilemap->SwapTile(0, 1, 0, 1);
+		//m_tilemap->SwapTile(1, 0, 0, 2);
+		//m_tilemap->SwapTile(1, 1, 0, 3);
+		//m_tilemap->SwapTile(-1, -1, 0, 3);
+		//m_tilemap->SwapTile(0, 0, 0, 4);
+		//m_tilemap->SwapTile(-1, 0, 0, 0);
+
+		//m_tilemap->PushLayer(); //explicit add new layer
+		//m_tilemap->SwapTile(2, 0, 1, 1); //tile on new layer
+
+
+		//tilemap->SwapTile(10, 9, 0, 3);
+
+
 		//the number here is width in world units the screen will be wide. Has no effect on window size.
 		//to make in 1:1 with pixels, set it to the width of the window.
 		
@@ -73,65 +124,42 @@ public:
 
 		//m_Camera->SetPerspectiveFOV(45.0f);
 
-		m_Camera->SetOrthographicExtent(8.0f);
+		m_Camera->SetOrthographicExtent(64.0f);
 		
 		SetLayerCamera(m_Camera);
 		
-		//std::shared_ptr<Tara::OrthographicCamera> camera = std::dynamic_pointer_cast<Tara::OrthographicCamera>(m_Camera->GetCamera());
-		//std::shared_ptr<Tara::OrthographicCamera> camera = std::make_shared<Tara::OrthographicCamera>(8.0f);
-		//m_Camera = camera;
-
-		//new TColorRectEntity(Tara::EntityNoRef(), weak_from_this(), { {0.5,0,0}, {0,0,0}, {1,1,1} });
-
-		if (weak_from_this().lock() == nullptr) {
-			LOG_S(ERROR) << "weak_from_this is null!";
-		}
+		
+		//auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
 
 		
-		//auto dmce = Tara::DynamicMultiChildEntity::Create(Tara::EntityNoRef(), weak_from_this());
-		auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
-
-		//auto extent = camera->GetExtent();
-		//std::random_device rd;
-		//float delta = (extent.Left - extent.Right)/(float)SPRITE_MAX, xpos = extent.Right;
-
 		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
-		//sprite->CreateAnimationSequence("default", 0, 3, 1.0f);
 		
-		//m_TempSpriteEntity = Tara::SpriteEntity::Create(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
-		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(dmce, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
-		//spriteEntity->PlayAnimation("default");
-		m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
+		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		//m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
-		//m_Player = TColorRectEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
-		m_Player = Tara::CreateEntity<TColorRectEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
-		m_Player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
-		Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
+		//m_Player = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
+		//m_Player->SetTint({ 0.0f, 1.0f, 0.0f, 0.25f });
+		//Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
 
 		
-		auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?", TRANSFORM_2D(-1, 0, 0, 1, 1));
-		textEntity->SetColor({ 1,0,0,1 });
-		textEntity->SetRelativePosition(Tara::Vector{ -1, 0, -1 });
+		//auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?", TRANSFORM_2D(-1, 0, 0, 1, 1));
+		//textEntity->SetColor({ 1,0,0,1 });
+		//textEntity->SetRelativePosition(Tara::Vector{ -1, 0, -1 });
 
-		//auto player = TControlableEntity::Create(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
-		//player->SetColor({ 0.0f, 1.0f, 0.0f, 0.25f });
-		//player->SetSpeed(1.5f);
-		//m_Player = player;
-
-		//attach camera to player
-		//m_Player->AddChild(m_Camera);
-		//m_Camera->AddChild(m_Player);
-
+		
 		//Controller Component
 		//auto controller = Tara::CreateComponent<EditorCameraControllerComponent>(m_Camera, 1.0f, "CameraController");
 		auto controller = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/PlayerController.lua", "playerController");
 		
-		//controller->SetSpeed(1.5f);
 		
 		
-		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
+		//auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
 		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
+
+
+
+		
 	}
 	
 	virtual void Deactivate() override {
@@ -152,11 +180,16 @@ public:
 		//	m_TempSpriteEntity->SetWorldPosition(ray.first + (ray.second * 5));
 		//}
 	}
+	
 	/*
 	virtual void Draw(float deltaTime) override{
 		Tara::Renderer::BeginScene(m_Camera->GetCamera());
 		
 		Tara::Layer::Draw(deltaTime);
+
+		//auto uvs = m_tileset->GetTileUVs(2);
+		//auto tex = m_tileset->GetTexture();
+		//Tara::Renderer::Quad(TRANSFORM_2D(-1, 0, 0, 1, 1), { 1,1,1,1 }, tex, uvs.first, uvs.second);
 
 		//Tara::Renderer::Text(TRANSFORM_2D(1, 1, 0, 1, 1), "Hello World", font);
 		//Tara::Renderer::Quad(TRANSFORM_2D(1, 1, 0, 2, 2), { 1,1,1,1 }, font->GetTexture());
@@ -170,6 +203,7 @@ public:
 	}
 	*/
 	
+	
 	virtual void OnEvent(Tara::Event& e) override {
 		//LOG_S(INFO) << "TestingLayer::OnEvent!";
 
@@ -177,7 +211,7 @@ public:
 		Tara::EventFilter filter(e);
 		filter.Call<Tara::MouseButtonPressEvent>(TARA_BIND_FN(TestingLayer::OnMousePressedEvent));
 		filter.Call<Tara::KeyPressEvent>(TARA_BIND_FN(TestingLayer::OnKeyPressedEvent));
-		LOG_S(INFO) << "LAYER CALLING PARENT EVENT";
+		///LOG_S(INFO) << "LAYER CALLING PARENT EVENT";
 		Layer::OnEvent(e); //parent call
 	}
 
@@ -189,11 +223,12 @@ public:
 		//	m_TempSpriteEntity->Destroy();
 		//	m_TempSpriteEntity.reset();
 		//}
-		if (e.GetKey() == TARA_KEY_F1) {
-			//load new layer
-			LOG_S(INFO) << "LAYER SWITCH";
-			LayerSwitch("basic", weak_from_this());
-		}
+		//if (e.GetKey() == TARA_KEY_F1) {
+		//	//load new layer
+		//	LOG_S(INFO) << "LAYER SWITCH";
+		//	LayerSwitch("basic", weak_from_this());
+		//}
+		m_tilemap->SwapTile(-1, 0, 0, Tara::TilemapEntity::NO_TILE);
 		return false;
 	}
 
@@ -217,7 +252,7 @@ private:
 	//TESTING STUFF
 	//Tara::Texture2DRef m_Texture;
 	//Tara::Texture2DRef m_Texture2;
-	
+	Tara::TilesetRef m_tileset;
 	Tara::ShaderRef m_SimpleShader;
 	Tara::VertexArrayRef m_VertexArray;
 	
@@ -227,12 +262,14 @@ private:
 	float m_PlayerSpeed = 1.0f;
 
 	Tara::CameraEntityRef m_Camera;
-	std::shared_ptr<TColorRectEntity> m_Player;
+	Tara::SpriteEntityRef m_Player;
 	Tara::SpriteEntityRef m_TempSpriteEntity;
 	float m_TimeCounter = 0;
 
-	Tara::ShaderRef m_GShader;
-	Tara::VertexArrayRef m_QuadPoints;
+	//Tara::ShaderRef m_GShader;
+	//Tara::VertexArrayRef m_QuadPoints;
+
+	Tara::TilemapEntityRef m_tilemap;
 };
 
 

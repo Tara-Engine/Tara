@@ -29,6 +29,10 @@ namespace Tara{
 			m_Camera = std::make_shared<PerspectiveCamera>(m_PerspectiveFOV);
 			return;
 		}
+		case Camera::ProjectionType::Screen: {
+			m_Camera = std::make_shared<ScreenCamera>();
+			return;
+		}
 		default: {
 			LOG_S(ERROR) << "Cameras other than None and Orthographic are not yet supported!";
 			return;

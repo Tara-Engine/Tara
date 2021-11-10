@@ -23,7 +23,7 @@ namespace Tara {
 		/// <param name="transform">the transform (defaults to the world origin)</param>
 		/// <param name="name">the entity's name (defaults to "SpriteEntity")</param>
 		/// <param name="texture">the Sprite to render (defults to nullptr)</param>
-		SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform = TRANSFORM_DEFAULT, std::string name = "SpriteEntity", SpriteRef sprite = nullptr);
+		SpriteEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform = TRANSFORM_DEFAULT, const std::string& name = "SpriteEntity", SpriteRef sprite = nullptr);
 
 
 	public:

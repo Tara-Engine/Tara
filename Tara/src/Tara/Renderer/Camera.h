@@ -6,6 +6,7 @@ namespace Tara {
 	REFTYPE(Camera)
 	REFTYPE(OrthographicCamera)
 	REFTYPE(PerspectiveCamera)
+	REFTYPE(ScreenCamera)
 
 	/// <summary>
 	/// Camera Base Class
@@ -86,7 +87,7 @@ namespace Tara {
 		/// Get the projection and view matrix pre-combined
 		/// </summary>
 		/// <returns>projection*view matrix, column-major</returns>
-		virtual glm::mat4 GetViewProjectionMatrix() const {return m_ProjectionMatrix * glm::inverse(m_Transform.GetTransformMatrix());};
+		virtual glm::mat4 GetViewProjectionMatrix() const {return GetProjectionMatrix() * GetViewMatrix();};
 		/// <summary>
 		/// Update the camera for a new size of area being rendererd to
 		/// </summary>
@@ -125,6 +126,9 @@ namespace Tara {
 			OrthoExtent(float left = -1.0f, float right = 1.0f, float bottom = -1.0f, float top = 1.0f, float near = -1.0f, float far = 1.0f)
 				: Left(left), Right(right), Bottom(bottom), Top(top), Near(near), Far(far) {}
 		};
+	protected:
+		//this exists soley for ScreenCamera to use
+		OrthographicCamera(ProjectionType type);
 	public:
 		/// <summary>
 		/// Create an Orthographic camera that maintains the aspect ratio at its creation
@@ -228,5 +232,37 @@ namespace Tara {
 	private:
 		float m_FOV;
 		float m_AspectRatio;
+	};
+
+	/// <summary>
+	/// A screenspace camera. Coordinates are in pixels.
+	/// </summary>
+	class ScreenCamera : public OrthographicCamera {
+	public:
+		ScreenCamera();
+		
+		virtual void SetExtent(float width) override {};
+		virtual void SetExtent(OrthoExtent extent) override {};
+
+		/// <summary>
+		/// Update the camera for a new size of area being rendererd to
+		/// </summary>
+		/// <param name="width">width of area</param>
+		/// <param name="height">height of area</param>
+		virtual void UpdateRenderArea(uint32_t width, uint32_t height) override;
+
+		/// <summary>
+		/// Get the view matrix of the camera
+		/// </summary>
+		/// <returns>view matrix, column-major</returns>
+		virtual glm::mat4 GetViewMatrix() const;
+
+	protected:
+		/// <summary>
+		/// update the projection matrix according to extent
+		/// </summary>
+		virtual void UpdateProjectionMatrix() override;
+	private:
+		float m_ScreenWidth, m_ScreenHeight;
 	};
 }
