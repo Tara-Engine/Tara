@@ -1,6 +1,8 @@
 #include "tarapch.h"
 #include "TilemapEntity.h"
 #include "Tara/Renderer/Renderer.h"
+#include "nlohmann/json.hpp"
+#include <fstream>
 
 namespace Tara {
 	Tara::TileChunk::TileChunk()
@@ -8,7 +10,7 @@ namespace Tara {
 	{
 		Tiles = new uint32_t[(uint64_t)WIDTH * WIDTH];
 		memset(Tiles, 0, (uint64_t)WIDTH * WIDTH);
-		LOG_S(INFO) << "Tile Chunk Created";
+		//LOG_S(INFO) << "Tile Chunk Created";
 	}
 
 	TileChunk::TileChunk(TileChunk&& old) noexcept
@@ -19,7 +21,7 @@ namespace Tara {
 
 	TileChunk::~TileChunk()
 	{
-		LOG_S(INFO) << "Tile Chunk Destroyed";
+		//LOG_S(INFO) << "Tile Chunk Destroyed";
 		if (Tiles) {
 			delete[] Tiles;
 			//Tiles = nullptr;
@@ -130,6 +132,61 @@ namespace Tara {
 	inline void TilemapEntity::PushLayer()
 	{
 		m_Layers.push_back(std::move(TileLayer{}));
+	}
+
+	void TilemapEntity::FillFromJson(const std::string& path)
+	{
+		std::ifstream file(path);
+		nlohmann::json json;
+		file >> json;
+		nlohmann::json jLayers = json["layers"];
+
+		bool isInfFile = json["infinite"].get<bool>();
+
+		m_Layers.clear(); //clear current data
+		for (auto& jLayer : jLayers) {
+			//make a new layuer
+			PushLayer();
+			
+			if (isInfFile) {
+
+				for (auto& jChunk : jLayer["chunks"]) {
+					//read the data out of json
+					std::vector<uint32_t> data = jChunk["data"].get<std::vector<uint32_t>>();
+					int32_t width = jChunk["width"].get<int32_t>();
+					//height data is irrelevent
+					//int32_t height = jLayer["height"].get<int32_t>();
+					int32_t originX = jChunk["x"].get<int32_t>();
+					int32_t originY = jChunk["y"].get<int32_t>();
+
+					//put the data into the layer. Its aready numerically formatted.
+					TileLayer& tLayer = m_Layers[m_Layers.size() - 1];
+					for (int i = 0; i < data.size(); i++) {
+						int32_t x = i % width + originX;
+						int32_t y = -(i / width + originY);
+						tLayer.SetTile(x, y, data[i]);
+					}
+				}
+			}
+			else {
+				//read the data out of json
+				std::vector<uint32_t> data = jLayer["data"].get<std::vector<uint32_t>>();
+				int32_t width = jLayer["width"].get<int32_t>();
+				//height data is irrelevent
+				int32_t height = jLayer["height"].get<int32_t>();
+				int32_t originX = jLayer["x"].get<int32_t>();
+				int32_t originY = jLayer["y"].get<int32_t>();
+
+				//put the data into the layer. Its aready numerically formatted.
+				TileLayer& tLayer = m_Layers[m_Layers.size() - 1];
+				for (int i = 0; i < data.size(); i++) {
+					int32_t x = i % width + originX;
+					int32_t y = (height - 1) - (i / width + originY);
+					tLayer.SetTile(x, y, data[i]);
+				}
+			}
+		}
+
 	}
 
 	void TilemapEntity::OnDraw(float deltaTime)

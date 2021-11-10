@@ -210,7 +210,15 @@ namespace Tara {
 		/// add a new layer to the map
 		/// </summary>
 		inline void PushLayer();
-		
+	
+		/// <summary>
+		/// Fill the tilemap with data from a Tiled json file. Does not check tilesets
+		/// </summary>
+		/// <param name="path"></param>
+		void FillFromJson(const std::string& path);
+
+	public:
+
 		void OnDraw(float deltaTime) override;
 
 	public:

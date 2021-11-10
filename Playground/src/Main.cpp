@@ -75,13 +75,14 @@ public:
 			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
 		);
 
+		m_tilemap->FillFromJson("assets/testMapInf.json");
 		//m_tilemap->SwapTile(0, 0, 0, 0);
 		//m_tilemap->SwapTile(0, 1, 0, 1);
 		//m_tilemap->SwapTile(1, 0, 0, 2);
 		//m_tilemap->SwapTile(1, 1, 0, 3);
 		//m_tilemap->SwapTile(-1, -1, 0, 3);
-		m_tilemap->SwapTile(0, 0, 0, 4);
-		m_tilemap->SwapTile(-1, 0, 0, 0);
+		//m_tilemap->SwapTile(0, 0, 0, 4);
+		//m_tilemap->SwapTile(-1, 0, 0, 0);
 
 		//m_tilemap->PushLayer(); //explicit add new layer
 		//m_tilemap->SwapTile(2, 0, 1, 1); //tile on new layer
@@ -103,7 +104,7 @@ public:
 
 		//m_Camera->SetPerspectiveFOV(45.0f);
 
-		m_Camera->SetOrthographicExtent(8.0f);
+		m_Camera->SetOrthographicExtent(64.0f);
 		
 		SetLayerCamera(m_Camera);
 		
@@ -111,9 +112,9 @@ public:
 		//auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
 
 		
-		//auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
+		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
 		
-		//m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
 		//m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
