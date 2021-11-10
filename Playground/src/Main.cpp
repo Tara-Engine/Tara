@@ -64,17 +64,28 @@ public:
 		//tileset test
 		m_tileset = Tara::Tileset::Create("assets/TestSet.json", "TestTileset");
 
+		auto tiles2Texture = Tara::Texture2D::Create("assets/Tiles2x2.png");
 
-		auto tilemap = Tara::CreateEntity<Tara::TilemapEntity>(
+		auto tileset2 = Tara::Tileset::Create(tiles2Texture, 16, 16, 0, 0, "Tiles2");
+
+
+		m_tilemap = Tara::CreateEntity<Tara::TilemapEntity>(
 			Tara::EntityNoRef(), weak_from_this(),
-			std::initializer_list{m_tileset}, //unfortunately, must explicitly declare this. Variable Args thing.
-			TRANSFORM_DEFAULT, "Tilemap Entity"
+			std::initializer_list{m_tileset, tileset2}, //unfortunately, must explicitly declare this. Variable Args thing.
+			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
 		);
 
-		tilemap->SwapTile(0, 0, 0, 0);
-		tilemap->SwapTile(0, 1, 0, 1);
-		tilemap->SwapTile(1, 0, 0, 2);
-		tilemap->SwapTile(1, 1, 0, 3);
+		//m_tilemap->SwapTile(0, 0, 0, 0);
+		//m_tilemap->SwapTile(0, 1, 0, 1);
+		//m_tilemap->SwapTile(1, 0, 0, 2);
+		//m_tilemap->SwapTile(1, 1, 0, 3);
+		//m_tilemap->SwapTile(-1, -1, 0, 3);
+		m_tilemap->SwapTile(0, 0, 0, 4);
+		m_tilemap->SwapTile(-1, 0, 0, 0);
+
+		//m_tilemap->PushLayer(); //explicit add new layer
+		//m_tilemap->SwapTile(2, 0, 1, 1); //tile on new layer
+
 
 		//tilemap->SwapTile(10, 9, 0, 3);
 
@@ -100,20 +111,20 @@ public:
 		//auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
 
 		
-		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
+		//auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
 		
-		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
-		m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
+		//m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		//m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
-		m_Player = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
-		m_Player->SetTint({ 0.0f, 1.0f, 0.0f, 0.25f });
-		Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
+		//m_Player = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_2D(1,0,0,1,1), "player");
+		//m_Player->SetTint({ 0.0f, 1.0f, 0.0f, 0.25f });
+		//Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
 
 		
-		auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?", TRANSFORM_2D(-1, 0, 0, 1, 1));
-		textEntity->SetColor({ 1,0,0,1 });
-		textEntity->SetRelativePosition(Tara::Vector{ -1, 0, -1 });
+		//auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?", TRANSFORM_2D(-1, 0, 0, 1, 1));
+		//textEntity->SetColor({ 1,0,0,1 });
+		//textEntity->SetRelativePosition(Tara::Vector{ -1, 0, -1 });
 
 		
 		//Controller Component
@@ -122,7 +133,7 @@ public:
 		
 		
 		
-		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
+		//auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
 		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
 
 
@@ -196,6 +207,7 @@ public:
 		//	LOG_S(INFO) << "LAYER SWITCH";
 		//	LayerSwitch("basic", weak_from_this());
 		//}
+		m_tilemap->SwapTile(-1, 0, 0, Tara::TilemapEntity::NO_TILE);
 		return false;
 	}
 
@@ -233,8 +245,10 @@ private:
 	Tara::SpriteEntityRef m_TempSpriteEntity;
 	float m_TimeCounter = 0;
 
-	Tara::ShaderRef m_GShader;
-	Tara::VertexArrayRef m_QuadPoints;
+	//Tara::ShaderRef m_GShader;
+	//Tara::VertexArrayRef m_QuadPoints;
+
+	Tara::TilemapEntityRef m_tilemap;
 };
 
 

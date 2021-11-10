@@ -77,6 +77,10 @@ namespace Tara {
 	public:
 		TileLayer() = default;
 
+		TileLayer(TileLayer&& old) 
+			: m_Chunks(std::move(old.m_Chunks))
+		{}
+
 		~TileLayer();
 
 		/// <summary>
@@ -122,6 +126,10 @@ namespace Tara {
 			EntityNoRef parent, LayerNoRef owningLayer, std::initializer_list<TilesetRef> tilesets, 
 			Transform transform = TRANSFORM_DEFAULT, const std::string& name = "TilemapEntity"
 		);
+
+		virtual ~TilemapEntity() {
+
+		}
 
 		/// <summary>
 		/// Get a tile in the map.

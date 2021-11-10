@@ -4,9 +4,11 @@
 
 namespace Tara {
 	Tara::TileChunk::TileChunk()
+		: Tiles(nullptr)
 	{
 		Tiles = new uint32_t[(uint64_t)WIDTH * WIDTH];
 		memset(Tiles, 0, (uint64_t)WIDTH * WIDTH);
+		LOG_S(INFO) << "Tile Chunk Created";
 	}
 
 	TileChunk::TileChunk(TileChunk&& old) noexcept
@@ -17,8 +19,10 @@ namespace Tara {
 
 	TileChunk::~TileChunk()
 	{
+		LOG_S(INFO) << "Tile Chunk Destroyed";
 		if (Tiles) {
 			delete[] Tiles;
+			//Tiles = nullptr;
 		}
 	}
 
@@ -125,7 +129,7 @@ namespace Tara {
 
 	inline void TilemapEntity::PushLayer()
 	{
-		m_Layers.push_back(TileLayer{});
+		m_Layers.push_back(std::move(TileLayer{}));
 	}
 
 	void TilemapEntity::OnDraw(float deltaTime)
@@ -148,8 +152,8 @@ namespace Tara {
 						//positional aquiring
 						//transforms added so that the offset is relative to the rotation and scale of the parent transform.
 						Transform t = world + TRANSFORM_2D(
-							(float)(i % TileChunk::WIDTH + offset.x * TileChunk::WIDTH),
-							(float)(i / TileChunk::WIDTH + offset.y * TileChunk::WIDTH),
+							(float)(i / TileChunk::WIDTH + offset.x * TileChunk::WIDTH),
+							(float)(i % TileChunk::WIDTH + offset.y * TileChunk::WIDTH),
 							0,1,1
 						); 
 
