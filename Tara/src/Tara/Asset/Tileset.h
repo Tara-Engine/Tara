@@ -30,6 +30,10 @@ namespace Tara {
 		/// <param name="name">the asset name</param>
 		Tileset(const std::string& filePath, const std::string& name);
 
+		/// <summary>
+		/// destructor.
+		/// </summary>
+		virtual ~Tileset();
 
 		/// <summary>
 		/// Create a tileset from scratch.
@@ -137,6 +141,29 @@ namespace Tara {
 		/// <returns></returns>
 		uint32_t GetTileCountY() const { return (uint32_t)std::floorf((m_Texture->GetHeight() - (m_Margin * 2) ) / (m_TileHeight + m_Spacing)); }
 
+		/// <summary>
+		/// Give a certain tile ID some metadata. The Tileset now owns the metadata, and is responsible for cleanup!
+		/// </summary>
+		/// <param name="index">the tile index</param>
+		/// <param name="metaData">pointer to the metadata. Should be heap-allocated</param>
+		void GiveTileMetadata(uint32_t index, void* metaData);
+
+		/// <summary>
+		/// Get a pointer to the metadata associated with a tile ID.
+		/// Callspace does not own the data, it is stilled owned by the tileset.
+		/// </summary>
+		/// <param name="index">the tile index</param>
+		/// <returns></returns>
+		void* GetTileMetadata(uint32_t index);
+
+		/// <summary>
+		/// Get a pointer to the metadata associated with a tile ID, and clear it from that ID.
+		/// That tile ID will no longer have control of the metadata, the callspace owns it now.
+		/// </summary>
+		/// <param name="index">the tile index</param>
+		/// <returns></returns>
+		void* TakeTileMetadata(uint32_t index);
+
 	protected:
 		inline void UpdateTileCount() { m_TileCount = GetTileCountX() * GetTileCountY(); }
 
@@ -148,5 +175,6 @@ namespace Tara {
 		float m_TileWidth;
 		float m_TileHeight;
 		std::string m_FilePath;
+		std::unordered_map<unsigned int, void*> m_TileMetadata;
 	};
 }

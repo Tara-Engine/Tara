@@ -23,6 +23,18 @@ OpenGL include - BAD - used for developing new features ONLY
 
 void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
 
+
+struct TestStruct {
+	int32_t a = 77;
+	float b = 1.6f;
+	TestStruct() {
+		LOG_S(INFO) << "Test Struct constructed!";
+	}
+	~TestStruct() {
+		LOG_S(INFO) << "Test Struct destroyed!";
+	}
+};
+
 /// <summary>
 /// Testing Layer
 /// </summary>
@@ -68,6 +80,9 @@ public:
 
 		auto tileset2 = Tara::Tileset::Create(tiles2Texture, 16, 16, 0, 0, "Tiles2");
 
+		//m_tileset->GiveTileMetadata(0, new TestStruct);
+
+		//LOG_S(INFO) << ((TestStruct*)(m_tileset->GetTileMetadata(0)))->a;
 
 		m_tilemap = Tara::CreateEntity<Tara::TilemapEntity>(
 			Tara::EntityNoRef(), weak_from_this(),
@@ -75,8 +90,13 @@ public:
 			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
 		);
 
-		m_tilemap->FillFromJson("assets/testMapInf.json");
-		//m_tilemap->SwapTile(0, 0, 0, 0);
+		//m_tilemap->FillFromJson("assets/testMapInf.json");
+
+
+		m_tilemap->SwapTile(0, 0, 0, 0);
+
+
+
 		//m_tilemap->SwapTile(0, 1, 0, 1);
 		//m_tilemap->SwapTile(1, 0, 0, 2);
 		//m_tilemap->SwapTile(1, 1, 0, 3);
