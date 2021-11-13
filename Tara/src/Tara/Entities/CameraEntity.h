@@ -82,6 +82,44 @@ namespace Tara {
 		inline const CameraRef& GetCamera()const { return m_Camera; }
 
 		/// <summary>
+		/// Set if the internal camera should be auto-resized to match the window size.
+		/// Will resize any RenderTarget attached to that camera.
+		/// </summary>
+		/// <param name="mimic"></param>
+		void SetMimicWindowSize(bool mimic) { m_MimicWindowSize = mimic; }
+
+		/// <summary>
+		/// Set if the camera should be rendered from every frame
+		/// </summary>
+		/// <param name="render"></param>
+		void SetRenderEveryFrame(bool render) { m_RenderEveryFrame = render; }
+
+		/// <summary>
+		/// Set if the camera should be rendered from next frame.
+		/// </summary>
+		/// <param name="render"></param>
+		void SetRenderNextFrame(bool render) { m_RenderNextFrame = render; }
+
+		/// <summary>
+		/// Get if the internal camera should be auto-resized to match the window size.
+		/// </summary>
+		/// <returns></returns>
+		bool GetMimicWindowSize() const { return m_MimicWindowSize; }
+
+		/// <summary>
+		/// Get if the camera should be rendered from every frame
+		/// </summary>
+		/// <returns></returns>
+		bool GetRenderEveryFrame() const { return m_RenderEveryFrame; }
+
+		/// <summary>
+		/// Get if the camera should be rendered from next frame.
+		/// </summary>
+		/// <returns></returns>
+		bool GetRenderNextFrame() const { return m_RenderNextFrame; }
+
+	public:
+		/// <summary>
 		/// The overriden update function
 		/// </summary>
 		/// <param name="deltaTime"></param>
@@ -112,11 +150,16 @@ namespace Tara {
 		/// <param name="lua"></param>
 		static void RegisterLuaType(sol::state& lua);
 
+
+		
 	private:
 		CameraRef m_Camera;
 		OrthographicCamera::OrthoExtent m_OrthoExtent;
 		float m_PerspectiveFOV;
 		bool m_UseWorldScale = false;
+		bool m_MimicWindowSize = true;
+		bool m_RenderEveryFrame = false;
+		bool m_RenderNextFrame = false;
 	};
 	
 }

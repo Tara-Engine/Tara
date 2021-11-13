@@ -62,10 +62,12 @@ void FramebufferBuildLayer::Activate()
 	auto playerController = Tara::CreateComponent<Tara::ScriptComponent>(player, "assets/PlayerController.lua", "playerController");
 
 	//make a framebuffer and SceneCamera
+	
 	m_ScreenCamera = std::make_shared<Tara::ScreenCamera>();
 	m_ScreenCamera->UpdateRenderArea(1200, 700); //manual width/height. Will not auto-update in test
 
 	m_Framebuffer = Tara::RenderTarget::Create(1200, 700, "framebuffer"); //also matching screen size
+	camera->GetCamera()->SetRenderTarget(m_Framebuffer);
 }
 
 void FramebufferBuildLayer::Deactivate()
@@ -74,22 +76,15 @@ void FramebufferBuildLayer::Deactivate()
 
 void FramebufferBuildLayer::Draw(float deltaTime)
 {
-	//use the framebuffer as a rendertarget
-	m_Framebuffer->RenderTo(true);
-	Tara::RenderCommand::Clear();
+	
 	//draw the layer
 	Layer::Draw(deltaTime);
-	//clear what is being rendered to the bad way
-	m_Framebuffer->RenderTo(false);
 	
 	//render the framebuffer onto a quad
 	auto& window = Tara::Application::Get()->GetWindow();
 
-	//LOG_S(INFO) << "Window:      Width:" << window->GetWidth() << " Height: " << window->GetHeight();
-	//LOG_S(INFO) << "Framebuffer: Width:" << m_Framebuffer->GetWidth() << " Height: " << m_Framebuffer->GetHeight();
-
 	Tara::Renderer::BeginScene(m_ScreenCamera);
-	Tara::Renderer::Quad(TRANSFORM_2D(0, 0, 0, (float)window->GetWidth(), (float)window->GetHeight()), { 1.0f,1.0f,1.0f,1.0f }, m_Framebuffer);
+	Tara::Renderer::Quad(TRANSFORM_2D(0, 0, 0, (float)window->GetWidth()/2, (float)window->GetHeight()/2), { 1.0f,1.0f,1.0f,1.0f }, m_Framebuffer);
 	//Tara::Renderer::Quad(TRANSFORM_2D(0, 0, 0, (float)m_Framebuffer->GetWidth(), (float)m_Framebuffer->GetHeight()), { 1.0f,1.0f,1.0f,1.0f }, m_Framebuffer);
 	Tara::Renderer::EndScene();
 }
@@ -100,7 +95,7 @@ void FramebufferBuildLayer::OnEvent(Tara::Event& e)
 
 	Tara::EventFilter filter(e);
 	filter.Call<Tara::WindowResizeEvent>([this](Tara::WindowResizeEvent& ee) {
-		m_Framebuffer->SetSize(ee.GetWidth(), ee.GetHeight());
+		//m_Framebuffer->SetSize(ee.GetWidth(), ee.GetHeight());
 		m_ScreenCamera->UpdateRenderArea(ee.GetWidth(), ee.GetHeight());
 		return false;
 	});

@@ -76,13 +76,20 @@ namespace Tara{
 
 	void CameraEntity::OnUpdate(float deltaTime)
 	{
-		if (m_UseWorldScale){
-			m_Camera->SetTransform(GetWorldTransform());
-		}
-		else {
-			Transform t = GetWorldTransform();
-			t.Scale = GetRelativeTransform().Scale;
-			m_Camera->SetTransform(t);
+		if (m_RenderEveryFrame || m_RenderNextFrame){
+			if (m_UseWorldScale){
+				m_Camera->SetTransform(GetWorldTransform());
+			}
+			else {
+				Transform t = GetWorldTransform();
+				t.Scale = GetRelativeTransform().Scale;
+				m_Camera->SetTransform(t);
+			}
+			//render with camera
+			GetOwningLayer().lock()->EnqueCamera(std::dynamic_pointer_cast<CameraEntity>(shared_from_this()));
+			
+			//if it was only m_RenderNextFrame, then don't render next frame
+			m_RenderNextFrame = false;
 		}
 	}
 
@@ -93,12 +100,14 @@ namespace Tara{
 
 	void CameraEntity::OnEvent(Event& e)
 	{
-		//if we have a window resize event, then update the internal camera render area
-		EventFilter filter(e);
-		filter.Call<WindowResizeEvent>([this](WindowResizeEvent& ee) {
-			this->GetCamera()->UpdateRenderArea(ee.GetWidth(), ee.GetHeight());
-			return false;
-		});
+		if (m_MimicWindowSize){
+			//if we have a window resize event, then update the internal camera render area
+			EventFilter filter(e);
+			filter.Call<WindowResizeEvent>([this](WindowResizeEvent& ee) {
+				this->GetCamera()->UpdateRenderArea(ee.GetWidth(), ee.GetHeight());
+				return false;
+			});
+		}
 	}
 
 	void CameraEntity::__SCRIPT__SetProjectionType(const char* type)
