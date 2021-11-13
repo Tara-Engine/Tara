@@ -20,6 +20,7 @@ OpenGL include - BAD - used for developing new features ONLY
 #define SPRITE_MAX 100
 
 #include "DemoLayer.h"
+#include "FramebufferBuildLayer.h"
 
 void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
 
@@ -281,7 +282,8 @@ int main(int argc, char** argv) {
 
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

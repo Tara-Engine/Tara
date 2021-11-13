@@ -107,7 +107,12 @@ namespace Tara {
 		/// <returns>that number.</returns>
 		inline static uint32_t GetMaxTextureSlotsPerShader() {return s_RC->IGetMaxTextureSlotsPerShader();}
 	
-	
+		/// <summary>
+		/// Enable and Disable depth testing in the rendering system. Should be disabled for 2D.
+		/// </summary>
+		/// <param name="enable"></param>
+		inline static void EnableDepthTesting(bool enable) { s_RC->IEnableDepthTesting(enable); }
+
 	protected:
 		/// <summary>
 		/// Protected SetClearColor, for underlying implementation to override
@@ -145,6 +150,11 @@ namespace Tara {
 		/// </summary>
 		virtual uint32_t IGetMaxTextureSlotsPerShader() = 0;
 
+		/// <summary>
+		/// Protected EnableDepthTesting for underlying implementation to override
+		/// </summary>
+		/// <param name="enable"></param>
+		virtual void IEnableDepthTesting(bool enable) = 0;
 	private:
 
 		struct DrawType {

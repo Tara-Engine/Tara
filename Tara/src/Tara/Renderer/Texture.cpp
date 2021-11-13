@@ -5,6 +5,7 @@
 
 //platform-dependant
 #include "Platform/OpenGL/OpenGLTexture2D.h"
+#include "Platform/OpenGL/OpenGlRenderTarget.h"
 
 namespace Tara{
     Texture::Filtering Texture::s_DefaultTextureFiltering = Texture::Filtering::Nearest;
@@ -31,6 +32,8 @@ namespace Tara{
         }
         return ref;
     }
+
+
     Texture2DRef Texture2D::Create(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name)
     {
         Texture2DRef ref;
@@ -38,6 +41,22 @@ namespace Tara{
         if (ref == nullptr) {
             switch (Renderer::GetRenderBackend()) { //GetAssetNameFromPath(path)
             case RenderBackend::OpenGl: ref = std::make_shared<OpenGLTexture2D>(bytes, width, height, bytesPerPixel, name); break;
+
+            case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
+            }
+            AssetLibrary::Get()->RegisterAsset(ref);
+        }
+        return ref;
+    }
+
+
+    RenderTargetRef RenderTarget::Create(uint32_t width, uint32_t height, const std::string& name)
+    {
+        RenderTargetRef ref;
+        ref = AssetLibrary::Get()->GetAssetIf<RenderTarget>(name);
+        if (ref == nullptr) {
+            switch (Renderer::GetRenderBackend()) { //GetAssetNameFromPath(path)
+            case RenderBackend::OpenGl: ref = std::make_shared<OpenGLRenderTarget>(width, height, name); break;
 
             case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
             }

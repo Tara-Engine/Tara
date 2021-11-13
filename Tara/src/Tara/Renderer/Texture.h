@@ -4,8 +4,9 @@
 
 namespace Tara {
 
-	REFTYPE(Textuyre)
-	REFTYPE(Texture2D)
+	REFTYPE(Textuyre);
+	REFTYPE(Texture2D);
+	REFTYPE(RenderTarget);
 
 	/// <summary>
 	/// Texture Base Class. All textures are this class
@@ -80,4 +81,35 @@ namespace Tara {
 		static Texture2DRef Create(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name);
 	};
 
+
+	/// <summary>
+	/// RenderTarget are special Texture2D objects that can be rendered to.
+	/// Create a Camera and give it a RenderTarget to do this!
+	/// </summary>
+	class RenderTarget : public Texture2D {
+	public:
+		RenderTarget(const std::string& name) : Texture2D(name) {}
+
+		/// <summary>
+		/// Enable rendering to this framebuffer.
+		/// </summary>
+		/// <param name="render">true if you actually want to render to this RenderTarget, false if you want to stop rendering to it</param>
+		virtual void RenderTo(bool render) const = 0;
+
+		/// <summary>
+		/// Set the new size of the RenderTarget
+		/// </summary>
+		/// <param name="width">the new width</param>
+		/// <param name="height">the new height</param>
+		virtual void SetSize(uint32_t width, uint32_t height) = 0;
+		
+		/// <summary>
+		/// Create a RenderTarget
+		/// </summary>
+		/// <param name="width">the initial height of the RenderTarget image</param>
+		/// <param name="height">the initial width of the RenderTarget image</param>
+		/// <param name="name">the name of the asset</param>
+		/// <returns>Reference to the new RenderTarget</returns>
+		static RenderTargetRef Create(uint32_t width, uint32_t height, const std::string& name);
+	};
 }
