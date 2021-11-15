@@ -216,6 +216,18 @@ namespace Tara {
 		/// <param name="visible"></param>
 		inline void SetVisible(bool visible) { m_Visible = visible; }
 
+		/// <summary>
+		/// Get the filtering bits for what cameras can be render this entity
+		/// </summary>
+		/// <returns></returns>
+		inline uint32_t GetRenderFilterBits() const { return m_RenderFilterBits; }
+
+		/// <summary>
+		/// Set the filtering bits for what cameras can be render this entity
+		/// </summary>
+		/// <param name="bits"></param>
+		inline void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
+
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
 		************************************************************************************/
@@ -390,7 +402,7 @@ protected:
 		/// Draw the entity. Should not be manually called.
 		/// </summary>
 		/// <param name="deltaTime"></param>
-		void Draw(float deltaTime);
+		void Draw(float deltaTime, const uint32_t& cameraBits);
 
 
 		/// <summary>
@@ -440,6 +452,7 @@ protected:
 		/// <param name="list">the list to append to</param>
 		virtual void GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list);
 
+		
 
 	public:
 		//Lua Stuff
@@ -482,6 +495,7 @@ protected:
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
 		std::list<ComponentRef> m_Components;
+		uint32_t m_RenderFilterBits;
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
 		bool m_Exists = true;

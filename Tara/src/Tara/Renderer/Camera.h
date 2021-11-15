@@ -36,7 +36,8 @@ namespace Tara {
 			: m_Transform(), 
 			m_Type(type),
 			m_ProjectionMatrix(1),
-			m_RenderTarget(nullptr)
+			m_RenderTarget(nullptr),
+			m_RenderFilterBits(~0)
 		{}
 
 		virtual ~Camera() = default;
@@ -130,6 +131,17 @@ namespace Tara {
 		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
 		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y);
 
+		/// <summary>
+		/// Get the filtering bits for what entities can be rendered by the camera
+		/// </summary>
+		/// <returns></returns>
+		inline uint32_t GetRenderFilterBits() const { return m_RenderFilterBits; }
+
+		/// <summary>
+		/// Set the filtering bits for what entities can be rendered by the camera
+		/// </summary>
+		/// <param name="bits"></param>
+		inline void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
 	protected:
 		inline virtual void UpdateProjectionMatrix() { return; }
@@ -142,6 +154,7 @@ namespace Tara {
 		const ProjectionType m_Type;
 		glm::mat4 m_ProjectionMatrix;
 		RenderTargetRef m_RenderTarget;
+		uint32_t m_RenderFilterBits;
 	};
 
 	/// <summary>

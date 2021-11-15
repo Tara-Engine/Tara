@@ -50,6 +50,8 @@ public:
 	virtual void OnEvent(Tara::Event& e) override;
 
 private:
-	Tara::RenderTargetRef m_Framebuffer;
-	Tara::ScreenCameraRef m_ScreenCamera;
+	Tara::SpriteEntityRef m_DisplayEntity;
+	Tara::CameraEntityRef m_ScreenCamera;
+	//Tara::RenderTargetRef m_Framebuffer;
+	//Tara::ScreenCameraRef m_ScreenCamera;
 };

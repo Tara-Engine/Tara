@@ -47,10 +47,10 @@ namespace Tara{
 			auto camera = cameranoref.lock();
 			if (camera) {
 				Tara::Renderer::BeginScene(camera->GetCamera());
-
+				uint32_t cameraBits = camera->GetCamera()->GetRenderFilterBits();
 				for (auto entity : m_Entities) {
 					if (entity) {
-						entity->Draw(deltaTime);
+						entity->Draw(deltaTime, cameraBits);
 					}
 				}
 
