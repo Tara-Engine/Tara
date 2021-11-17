@@ -9,8 +9,7 @@ namespace Tara {
 		: Tiles(nullptr)
 	{
 		Tiles = new uint32_t[(uint64_t)WIDTH * WIDTH];
-		memset(Tiles, 0, (uint64_t)WIDTH * WIDTH);
-		//LOG_S(INFO) << "Tile Chunk Created";
+		memset(Tiles, uint32_t(0), ((uint64_t)WIDTH * WIDTH * 4));
 	}
 
 	TileChunk::TileChunk(TileChunk&& old) noexcept

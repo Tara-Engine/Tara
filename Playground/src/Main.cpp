@@ -246,6 +246,37 @@ public:
 			}
 		}
 
+		if (e.GetButton() == TARA_MOUSE_BUTTON_1) {
+			//Tilemap stuff
+			glm::vec2 mousepos = Tara::Input::Get()->GetMousePos();
+
+			//try and get a camera
+			Tara::CameraEntityRef camEntity = m_tilemap->GetOwningLayer().lock()->GetLayerCamera().lock();
+			if (camEntity) {
+
+				//get the mouse pos in the world using the camera
+				std::pair<Tara::Vector, Tara::Vector> ray = camEntity->GetCamera()->GetRayFromScreenCoordinate(mousepos.x, mousepos.y);
+
+				int32_t tileX = (int32_t)floorf(ray.first.x);
+				int32_t tileY = (int32_t)floorf(ray.first.y);
+
+				//if there is no tile, set one. Otherwise, remove it!
+				uint32_t oldTile = m_tilemap->GetTile(tileX, tileY, 0);
+				if (oldTile == Tara::TilemapEntity::NO_TILE) {
+					LOG_S(INFO) << "Tile is empty! " << oldTile;
+					m_tilemap->SwapTile(tileX, tileY, 0, 0);
+				}
+				else {
+					LOG_S(INFO) << "Tile is not empty! " << oldTile;
+					//set the cell to empty.
+					m_tilemap->SwapTile(tileX, tileY, 0, Tara::TilemapEntity::NO_TILE);
+				}
+
+			}
+
+
+		}
+
 		return false;
 	}
 
@@ -282,8 +313,8 @@ int main(int argc, char** argv) {
 
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
-	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;
