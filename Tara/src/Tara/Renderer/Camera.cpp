@@ -41,6 +41,7 @@ namespace Tara {
 	}
 
 
+
 	std::pair<float, float> Camera::GetRenderTargetSize() const
 	{
 		if (m_RenderTarget) {
@@ -51,6 +52,7 @@ namespace Tara {
 			return std::make_pair((float)window->GetWidth(), (float)window->GetHeight());
 		}
 	}
+
 
 	OrthographicCamera::OrthographicCamera(ProjectionType type)
 		: Camera(ProjectionType::Ortographic), m_Extent(-1, 1), m_MaintainAspectRatio(true)
@@ -197,6 +199,7 @@ namespace Tara {
 		if (m_RenderTarget) {
 			m_RenderTarget->SetSize(width, height);
 		}
+
 		m_ScreenWidth = (float)width;
 		m_ScreenHeight = (float)height;
 		OrthographicCamera::SetExtent((float)width);
@@ -228,8 +231,6 @@ namespace Tara {
 		);
 	}
 
-
-	
 
 
 

@@ -2,7 +2,9 @@
 #include "TilemapEntity.h"
 #include "Tara/Renderer/Renderer.h"
 #include "nlohmann/json.hpp"
+
 #include "Tara/Core/Script.h"
+
 #include <fstream>
 
 namespace Tara {
@@ -10,7 +12,9 @@ namespace Tara {
 		: Tiles(nullptr)
 	{
 		Tiles = new uint32_t[(uint64_t)WIDTH * WIDTH];
+
 		memset(Tiles, uint32_t(0), ((uint64_t)WIDTH * WIDTH * 4));
+
 	}
 
 	TileChunk::TileChunk(TileChunk&& old) noexcept
@@ -88,6 +92,7 @@ namespace Tara {
 			//we have a valid chunk
 			//return the tileID from it.
 			iter->second->SetTile(idxX.second, idxY.second, tileID);
+
 			//if this is an empty tile, check if all tiles are 0, if they are, then remove that chunk
 			if (!tileID) {
 				bool allEmpty = true;
@@ -121,6 +126,7 @@ namespace Tara {
 	TilemapEntity::TilemapEntity(EntityNoRef parent, LayerNoRef owningLayer, std::initializer_list<TilesetRef> tilesets, Transform transform, const std::string& name)
 		: Entity(parent, owningLayer, transform, name),
 		m_Bounds(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f)
+
 	{
 		m_Tilesets = tilesets;
 		PushLayer(); //create a default layer
@@ -369,6 +375,7 @@ namespace Tara {
 	}
 
 
+
 	bool TilemapEntity::ConfirmOverlap(EntityRef other)
 	{
 		BoundingBox b = other->GetSpecificBoundingBox();
@@ -395,7 +402,6 @@ namespace Tara {
 	}
 
 	
-
 	std::pair<int32_t, int32_t> TilemapEntity::ToChunkIndex(int32_t index)
 	{
 		int32_t chunk = index / TileChunk::WIDTH; 
@@ -406,6 +412,7 @@ namespace Tara {
 		}
 		return std::make_pair(chunk, cindex);
 	}
+
 
 	uint32_t TilemapEntity::__SCRIPT__GetTile(sol::object a, sol::object b, sol::object c)
 	{

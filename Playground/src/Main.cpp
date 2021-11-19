@@ -90,7 +90,9 @@ public:
 			std::initializer_list{m_tileset, tileset2}, //unfortunately, must explicitly declare this. Variable Args thing.
 			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
 		);
+
 		m_tilemap->SetLayerColliding(0, true);
+
 		//m_tilemap->FillFromJson("assets/testMapInf.json");
 
 
@@ -125,6 +127,7 @@ public:
 
 		//m_Camera->SetPerspectiveFOV(45.0f);
 
+
 		m_Camera->SetOrthographicExtent(16.0f);
 		
 		SetLayerCamera(m_Camera);
@@ -136,6 +139,7 @@ public:
 		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
 		
 		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(m_Camera, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+
 		//m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
@@ -155,8 +159,10 @@ public:
 		
 		
 		
+
 		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_tilemap, "assets/Component1.lua", "LuaComponent1");
 		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/Component2.lua", "LuaComponent2");
+
 
 
 

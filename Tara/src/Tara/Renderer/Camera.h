@@ -100,6 +100,7 @@ namespace Tara {
 		/// Get the projection and view matrix pre-combined
 		/// </summary>
 		/// <returns>projection*view matrix, column-major</returns>
+
 		virtual glm::mat4 GetViewProjectionMatrix() const {return GetProjectionMatrix() * GetViewMatrix();}
 		
 		/// <summary>
