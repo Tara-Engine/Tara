@@ -20,6 +20,7 @@ OpenGL include - BAD - used for developing new features ONLY
 #define SPRITE_MAX 100
 
 #include "DemoLayer.h"
+#include "FramebufferBuildLayer.h"
 
 void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
 
@@ -90,6 +91,8 @@ public:
 			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
 		);
 
+		m_tilemap->SetLayerColliding(0, true);
+
 		//m_tilemap->FillFromJson("assets/testMapInf.json");
 
 
@@ -124,17 +127,19 @@ public:
 
 		//m_Camera->SetPerspectiveFOV(45.0f);
 
-		m_Camera->SetOrthographicExtent(64.0f);
+
+		m_Camera->SetOrthographicExtent(16.0f);
 		
 		SetLayerCamera(m_Camera);
 		
-		
+		m_Camera->GetCamera()->SetRenderFilterBits(0x0000000F);
 		//auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
 
 		
 		auto sprite = Tara::Sprite::Create(textureDirArrows, 1, 1, "ParticleSprite");
 		
-		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+		m_TempSpriteEntity = Tara::CreateEntity<PawnEntity>(m_Camera, weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+
 		//m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
@@ -154,8 +159,10 @@ public:
 		
 		
 		
-		//auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
-		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
+
+		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_tilemap, "assets/Component1.lua", "LuaComponent1");
+		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/Component2.lua", "LuaComponent2");
+
 
 
 
@@ -245,6 +252,37 @@ public:
 			}
 		}
 
+		if (e.GetButton() == TARA_MOUSE_BUTTON_1) {
+			//Tilemap stuff
+			glm::vec2 mousepos = Tara::Input::Get()->GetMousePos();
+
+			//try and get a camera
+			Tara::CameraEntityRef camEntity = m_tilemap->GetOwningLayer().lock()->GetLayerCamera().lock();
+			if (camEntity) {
+
+				//get the mouse pos in the world using the camera
+				std::pair<Tara::Vector, Tara::Vector> ray = camEntity->GetCamera()->GetRayFromScreenCoordinate(mousepos.x, mousepos.y);
+
+				int32_t tileX = (int32_t)floorf(ray.first.x);
+				int32_t tileY = (int32_t)floorf(ray.first.y);
+
+				//if there is no tile, set one. Otherwise, remove it!
+				uint32_t oldTile = m_tilemap->GetTile(tileX, tileY, 0);
+				if (oldTile == Tara::TilemapEntity::NO_TILE) {
+					LOG_S(INFO) << "Tile is empty! " << oldTile;
+					m_tilemap->SwapTile(tileX, tileY, 0, 0);
+				}
+				else {
+					LOG_S(INFO) << "Tile is not empty! " << oldTile;
+					//set the cell to empty.
+					m_tilemap->SwapTile(tileX, tileY, 0, Tara::TilemapEntity::NO_TILE);
+				}
+
+			}
+
+
+		}
+
 		return false;
 	}
 
@@ -282,6 +320,7 @@ int main(int argc, char** argv) {
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
 	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

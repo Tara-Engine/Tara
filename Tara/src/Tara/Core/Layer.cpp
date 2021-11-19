@@ -43,18 +43,22 @@ namespace Tara{
 
 	void Layer::Draw(float deltaTime)
 	{
-		if (m_LayerCamera) {
-			Tara::Renderer::BeginScene(m_LayerCamera->GetCamera());
-		}
-		//m_LayerCamera
-		for (auto entity : m_Entities) {
-			if (entity) {
-				entity->Draw(deltaTime);
+		for (auto& cameranoref : m_CameraQueue) {
+			auto camera = cameranoref.lock();
+			if (camera) {
+				Tara::Renderer::BeginScene(camera->GetCamera());
+				uint32_t cameraBits = camera->GetCamera()->GetRenderFilterBits();
+				for (auto entity : m_Entities) {
+					if (entity) {
+						entity->Draw(deltaTime, cameraBits);
+					}
+				}
+
+				Tara::Renderer::EndScene();
 			}
 		}
-		if (m_LayerCamera) {
-			Tara::Renderer::EndScene();
-		}
+		
+		m_CameraQueue.clear();
 	}
 
 	void Layer::OnEvent(Event& e)

@@ -50,7 +50,7 @@ namespace Tara{
 
 	void OpenGLRenderCommand::IClear()
 	{
-		glClear(GL_COLOR_BUFFER_BIT); //TODO: Add depth buffer and everything else needed!
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //TODO: Add depth buffer and everything else needed!
 	}
 
 	void OpenGLRenderCommand::IDraw(VertexArrayRef vertexArray)
@@ -68,6 +68,16 @@ namespace Tara{
 		int32_t textureUnits;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &textureUnits);
 		return (uint32_t)textureUnits;
+	}
+
+	void OpenGLRenderCommand::IEnableDepthTesting(bool enable)
+	{
+		if (enable) {
+			glEnable(GL_DEPTH_TEST);
+		}
+		else {
+			glDisable(GL_DEPTH_TEST);
+		}
 	}
 
 	void OpenGLRenderCommand::GLError(

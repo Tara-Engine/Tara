@@ -14,6 +14,7 @@ namespace Tara {
 		virtual void IDraw(VertexArrayRef vertexArray) override;
 		virtual void IDrawCount(uint32_t count) override;
 		virtual uint32_t IGetMaxTextureSlotsPerShader() override;
+		virtual void IEnableDepthTesting(bool enable) override;
 	public:
 		static void GLError(
 			uint32_t source,

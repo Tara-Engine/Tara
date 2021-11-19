@@ -101,6 +101,7 @@ namespace Tara {
 
 	private:
 		std::unordered_map<glm::ivec2, TileChunk*> m_Chunks;
+		bool m_Colliding = false;
 	};
 
 
@@ -143,14 +144,16 @@ namespace Tara {
 		/// </summary>
 		/// <param name="pos">the coordinates of the tile</param>
 		/// <returns>the tileID</returns>
-		inline uint32_t GetTile(glm::ivec3 pos) { GetTile(pos.x, pos.y, pos.z); };
+		inline uint32_t GetTile(glm::ivec3 pos) { return GetTile(pos.x, pos.y, pos.z); };
+
 
 		/// <summary>
 		/// Get a tile in the map.
 		/// </summary>
 		/// <param name="pos">the coordinates of the tile</param>
 		/// <returns>the tileID</returns>
-		inline uint32_t GetTile(Vector pos) { GetTile((int32_t)pos.x, (int32_t)pos.y, (int32_t)pos.z); }
+		inline uint32_t GetTile(Vector pos) { return GetTile((int32_t)pos.x, (int32_t)pos.y, (int32_t)pos.z); }
+
 
 		/// <summary>
 		/// Set a tile in the map. If there was any metadata for that cell, it is removed.
@@ -208,9 +211,6 @@ namespace Tara {
 		/// add a new layer to the map
 		/// </summary>
 		inline void PushLayer();
-	
-
-
 
 		/// <summary>
 		/// Fill the tilemap with data from a Tiled json file. Does not check tilesets
@@ -353,9 +353,27 @@ namespace Tara {
 		/// <returns>a non-owning pointer to the metadata</returns>
 		inline void WipeCellMetadata(Vector pos) { WipeCellMetadata(glm::ivec3{ (int)pos.x, (int)pos.y, (int)pos.z }); }
 
+
+		/// <summary>
+		/// Set if a layer is a colliding layer
+		/// </summary>
+		/// <param name="layer"></param>
+		/// <param name="colliding"></param>
+		inline void SetLayerColliding(int32_t layer, bool colliding) { if (layer < m_Layers.size()) { m_Layers[layer].m_Colliding = colliding; } }
+		
+		/// <summary>
+		/// Get if a layer is a colliding layer
+		/// </summary>
+		/// <param name="layer"></param>
+		/// <returns></returns>
+		inline bool GetLayerColliding(int32_t layer) {if (layer < m_Layers.size()) { return m_Layers[layer].m_Colliding; }else { return false; }}
 	public:
 
+		inline virtual BoundingBox GetSpecificBoundingBox() const override { return m_Bounds * GetWorldTransform(); };
+
 		void OnDraw(float deltaTime) override;
+
+		virtual bool ConfirmOverlap(EntityRef other) override;
 
 	public:
 		/// <summary>
@@ -365,11 +383,22 @@ namespace Tara {
 		/// <returns>pair: (chunk index, index into chunk)</returns>
 		static std::pair<int32_t, int32_t> ToChunkIndex(int32_t index);
 
+
+	public:
+		//Lua stuff
+		uint32_t __SCRIPT__GetTile(sol::object a, sol::object b, sol::object c);
+		void __SCRIPT__SetTile(sol::object a, sol::object b, sol::object c, sol::object d);
+		void __SCRIPT__SwapTile(sol::object a, sol::object b, sol::object c, sol::object d);
+		
+
+		static void RegisterLuaType(sol::state& lua);
+
 		
 	private:
 		std::vector<TilesetRef> m_Tilesets;
 		std::vector<TileLayer> m_Layers; //TileLayer is stack, not pointer, cause its only the size of an unordered_list. 
 		std::unordered_map<glm::ivec3, void*> m_CellMetadata;
+		BoundingBox m_Bounds;
 	};
 
 

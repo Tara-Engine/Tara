@@ -136,13 +136,24 @@ namespace Tara {
 		/// Set the layer camera. Default camera used for drawing.
 		/// </summary>
 		/// <param name="camera">the new camera entity</param>
-		void SetLayerCamera(const CameraEntityRef& camera) { m_LayerCamera = camera; }
+		inline void SetLayerCamera(const CameraEntityRef& camera) { 
+			m_LayerCamera = camera;
+			m_LayerCamera->SetRenderEveryFrame(true);
+		}
 		
 		/// <summary>
 		/// Get a weak pointer to the owned camera.
 		/// </summary>
 		/// <returns></returns>
 		CameraEntityNoRef GetLayerCamera() { return m_LayerCamera; }
+
+		/// <summary>
+		/// Add a camera to render the scene next frame
+		/// </summary>
+		/// <param name="camera"></param>
+		void EnqueCamera(CameraEntityNoRef camera) {
+			m_CameraQueue.insert(camera);
+		}
 
 	protected:
 		/// <summary>
@@ -157,10 +168,17 @@ namespace Tara {
 
 	private:
 
+		struct CameraHasher {
+			std::size_t operator()(const CameraEntityNoRef& t) const {
+				return std::hash<void*>()(t.lock().get());
+			}
+		};
+
 		std::list<EntityRef> m_Entities;
 		std::list<EntityNoRef> m_DestroyedEntities;
 		std::list<EventListenerNoRef> m_Listeners;
 		std::list<Manifold> m_FrameManifoldQueue;
+		std::unordered_set<CameraEntityNoRef, CameraHasher> m_CameraQueue;
 		CameraEntityRef m_LayerCamera; //intentonally an owning pointer
 		bool m_Dead = false; //used by Scene to destroy layers
 	};

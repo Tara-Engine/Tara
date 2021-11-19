@@ -216,6 +216,18 @@ namespace Tara {
 		/// <param name="visible"></param>
 		inline void SetVisible(bool visible) { m_Visible = visible; }
 
+		/// <summary>
+		/// Get the filtering bits for what cameras can be render this entity
+		/// </summary>
+		/// <returns></returns>
+		inline virtual uint32_t GetRenderFilterBits() const { return m_RenderFilterBits; }
+
+		/// <summary>
+		/// Set the filtering bits for what cameras can be render this entity
+		/// </summary>
+		/// <param name="bits"></param>
+		inline virtual void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
+
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
 		************************************************************************************/
@@ -390,7 +402,7 @@ protected:
 		/// Draw the entity. Should not be manually called.
 		/// </summary>
 		/// <param name="deltaTime"></param>
-		void Draw(float deltaTime);
+		void Draw(float deltaTime, const uint32_t& cameraBits);
 
 
 		/// <summary>
@@ -404,6 +416,7 @@ protected:
 		/// </summary>
 		/// <returns></returns>
 		inline bool Exists() const { if (!m_Exists) { LOG_S(ERROR) << "Attempting to access a deleted Entity!"; } return m_Exists; }
+
 
 	public: //must be public to properly inherit
 
@@ -440,6 +453,13 @@ protected:
 		/// <param name="list">the list to append to</param>
 		virtual void GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list);
 
+		/// <summary>
+		/// In case any entity has special collision, override this. Their spicific overlap volumes overlap
+		/// But the individual may have something else going on.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		inline virtual bool ConfirmOverlap(EntityRef other) { return true; }
 
 	public:
 		//Lua Stuff
@@ -482,6 +502,7 @@ protected:
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
 		std::list<ComponentRef> m_Components;
+		uint32_t m_RenderFilterBits;
 		bool m_UpdateChildrenFirst = true;
 		bool m_DrawChildrenFirst = false;
 		bool m_Exists = true;

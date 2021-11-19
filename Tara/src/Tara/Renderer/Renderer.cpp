@@ -26,6 +26,11 @@ namespace Tara {
 	void Renderer::BeginScene(const CameraRef camera)
 	{
 		s_SceneData.camera = camera;
+		auto rt = camera->GetRenderTarget();
+		if (rt) {
+			rt->RenderTo(true);
+			RenderCommand::Clear();
+		}
 
 		//if the Renderer has not initialized its quad related stuff, do it
 		if (!s_InitializedQuadDraw){
@@ -78,6 +83,13 @@ namespace Tara {
 			//glDrawArrays(GL_POINTS, 0, m_Quads.size());
 		}
 		s_QuadGroups.clear();
+		
+		//unset render target
+		auto rt = s_SceneData.camera->GetRenderTarget();
+		if (rt) {
+			rt->RenderTo(false);
+		}
+		
 		//clear camera
 		s_SceneData.camera = nullptr;
 	}

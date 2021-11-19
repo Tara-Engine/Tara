@@ -11,7 +11,7 @@
 
 namespace Tara{
     Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
-        :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform)
+        :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform), m_RenderFilterBits(~0)
     {
         CHECK_NOTNULL_F(m_OwningLayer.lock(), "the owning layer of a newly created entity should never be null!");
     }
@@ -270,18 +270,18 @@ namespace Tara{
         }
     }
 
-    void Entity::Draw(float deltaTime)
+    void Entity::Draw(float deltaTime, const uint32_t& cameraBits)
     {
         ENTITY_EXISTS();
-        if (!m_DrawChildrenFirst){
-            OnDraw( deltaTime);
+        if (!m_DrawChildrenFirst && (cameraBits & m_RenderFilterBits)){
+            OnDraw(deltaTime);
         }
         for (auto child : m_Children) {
             if (child->GetVisible()) {
-                child->Draw(deltaTime);
+                child->Draw(deltaTime, cameraBits);
             }
         }
-        if (m_DrawChildrenFirst) {
+        if (m_DrawChildrenFirst && (cameraBits & m_RenderFilterBits)) {
             OnDraw(deltaTime);
         }
     }
@@ -451,9 +451,10 @@ namespace Tara{
         ENTITY_EXISTS();
         //IF the core AABB of self and other overlap, THEN generate overlap event
         if (GetSpecificBoundingBox().Overlaping(other->GetSpecificBoundingBox())) {
-            Manifold m(shared_from_this(), other);
-            m_OwningLayer.lock()->AddManifoldToQueue(std::move(m));
-
+            if (ConfirmOverlap(other) && other->ConfirmOverlap(shared_from_this())) {
+                Manifold m(shared_from_this(), other);
+                m_OwningLayer.lock()->AddManifoldToQueue(std::move(m));
+            }
             //INENTIONAL NO RETURN
         }
 
@@ -604,6 +605,9 @@ namespace Tara{
         CONNECT_METHOD(Entity, RemoveComponentByRef);
         CONNECT_METHOD(Entity, Destroy);
         CONNECT_METHOD(Entity, ListenForEvents);
+
+        CONNECT_METHOD(Entity, GetRenderFilterBits);
+        CONNECT_METHOD(Entity, SetRenderFilterBits);
     }
 
 }

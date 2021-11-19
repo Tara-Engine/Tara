@@ -2,6 +2,9 @@
 #include "TilemapEntity.h"
 #include "Tara/Renderer/Renderer.h"
 #include "nlohmann/json.hpp"
+
+#include "Tara/Core/Script.h"
+
 #include <fstream>
 
 namespace Tara {
@@ -9,8 +12,9 @@ namespace Tara {
 		: Tiles(nullptr)
 	{
 		Tiles = new uint32_t[(uint64_t)WIDTH * WIDTH];
-		memset(Tiles, 0, (uint64_t)WIDTH * WIDTH);
-		//LOG_S(INFO) << "Tile Chunk Created";
+
+		memset(Tiles, uint32_t(0), ((uint64_t)WIDTH * WIDTH * 4));
+
 	}
 
 	TileChunk::TileChunk(TileChunk&& old) noexcept
@@ -21,7 +25,6 @@ namespace Tara {
 
 	TileChunk::~TileChunk()
 	{
-		//LOG_S(INFO) << "Tile Chunk Destroyed";
 		if (Tiles) {
 			delete[] Tiles;
 			//Tiles = nullptr;
@@ -89,6 +92,23 @@ namespace Tara {
 			//we have a valid chunk
 			//return the tileID from it.
 			iter->second->SetTile(idxX.second, idxY.second, tileID);
+
+			//if this is an empty tile, check if all tiles are 0, if they are, then remove that chunk
+			if (!tileID) {
+				bool allEmpty = true;
+				for (int i = 0; i < TileChunk::WIDTH * TileChunk::WIDTH; i++) {
+					if (iter->second->Tiles[i]) {
+						//a valid tile is found
+						allEmpty = false;
+						break;
+					}
+				}
+				if (allEmpty) {
+					TileChunk* chunk = iter->second;
+					m_Chunks.erase(iter);
+					delete chunk;
+				}
+			}
 		}
 		else {
 			//not a loaded chunk, so its entirely empty.
@@ -102,8 +122,11 @@ namespace Tara {
 		}
 	}
 
+
 	TilemapEntity::TilemapEntity(EntityNoRef parent, LayerNoRef owningLayer, std::initializer_list<TilesetRef> tilesets, Transform transform, const std::string& name)
-		: Entity(parent, owningLayer, transform, name)
+		: Entity(parent, owningLayer, transform, name),
+		m_Bounds(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f)
+
 	{
 		m_Tilesets = tilesets;
 		PushLayer(); //create a default layer
@@ -137,6 +160,30 @@ namespace Tara {
 	{
 		if (layer >= 0 && layer < m_Layers.size()) {
 			m_Layers[layer].SetTile(x, y, tileID + 1); //if tileID is NO_TILE, it becomes 0.
+			if (tileID + 1) {
+				//if we are setting a tile, make sure to update the bounds
+				if (x < m_Bounds.x) {
+					//Offset Width so it stays the same pos
+					m_Bounds.Width += m_Bounds.x - x;
+					//move bounds X
+					m_Bounds.x = x;
+				}
+				if (x >= m_Bounds.x + m_Bounds.Width) {
+					//increase Width to encompass the whole thing. Width will alwawys be one greater than last index in X
+					m_Bounds.Width = (x - m_Bounds.x) + 1;
+				}
+
+				if (y < m_Bounds.y) {
+					//offset Height so it stays the same pos
+					m_Bounds.Height += m_Bounds.y - y;
+					//move bounds Y
+					m_Bounds.y = y;
+				}
+				if (y >= m_Bounds.y + m_Bounds.Height) {
+					//increase Height to encompass the whole thing. Height will alwawys be one greater than last index in Y
+					m_Bounds.Height = (y - m_Bounds.y) + 1;
+				}
+			}
 		}
 		else {
 			LOG_S(ERROR) << "Attempted to set a tile in a nonexistant tilemap layer. tilemap layers must be explicitly created!";
@@ -327,6 +374,34 @@ namespace Tara {
 		}
 	}
 
+
+
+	bool TilemapEntity::ConfirmOverlap(EntityRef other)
+	{
+		BoundingBox b = other->GetSpecificBoundingBox();
+		//transform corners of bounding box into tilepsace coords.
+		b = b / GetWorldTransform();
+		int32_t x1 = (int32_t)floorf(b.x) + 1;
+		int32_t x2 = x1 + (int32_t)ceilf(b.Width);
+		int32_t y1 = (int32_t)floorf(b.y) + 1;
+		int32_t y2 = y1 + (int32_t)ceilf(b.Height);
+		//check each tile, if a single non-empty one is found, return true
+		for (auto& layer : m_Layers) {
+			if (layer.m_Colliding){
+				for (int32_t x = x1; x <= x2; x++) {
+					for (int32_t y = y1; y <= y2; y++) {
+						if (layer.GetTile(x, y)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		//they were all empty
+		return false;
+	}
+
+	
 	std::pair<int32_t, int32_t> TilemapEntity::ToChunkIndex(int32_t index)
 	{
 		int32_t chunk = index / TileChunk::WIDTH; 
@@ -336,6 +411,117 @@ namespace Tara {
 			cindex += TileChunk::WIDTH;
 		}
 		return std::make_pair(chunk, cindex);
+	}
+
+
+	uint32_t TilemapEntity::__SCRIPT__GetTile(sol::object a, sol::object b, sol::object c)
+	{
+		if (a.valid()) {
+			if (b.valid() && c.valid()) {
+				if (
+					a.get_type() == sol::type::number && 
+					b.get_type() == sol::type::number && 
+					c.get_type() == sol::type::number
+				) {
+					int32_t x = a.as<int32_t>();
+					int32_t y = b.as<int32_t>();
+					int32_t layer = c.as<int32_t>();
+					return GetTile(x, y, layer);
+				}//else error below
+			}
+			else if (!b.valid() && !c.valid()) {
+				auto tbl = a.as<sol::table>();
+				if (tbl.valid()) {
+					Vector v{ tbl };
+					return GetTile(v);
+				}//else error below
+			}//else error below
+		}//else error below
+		LOG_S(ERROR) << "Lua:: Tilemap::GetTile must take at one paramater (vector) or three paramaters (numbers)";
+		return NO_TILE;
+	}
+
+	void TilemapEntity::__SCRIPT__SetTile(sol::object a, sol::object b, sol::object c, sol::object d)
+	{
+		if (a.valid() && b.valid()) {
+			if (c.valid() && d.valid()) {
+				if (
+					a.get_type() == sol::type::number &&
+					b.get_type() == sol::type::number &&
+					c.get_type() == sol::type::number &&
+					d.get_type() == sol::type::number
+				) {
+					int32_t x = a.as<int32_t>();
+					int32_t y = b.as<int32_t>();
+					int32_t layer = c.as<int32_t>();
+					uint32_t tile = d.as<uint32_t>();
+					SetTile(x, y, layer, tile);
+					return;
+				}//else error below
+			}
+			else if (!c.valid() && !d.valid()) {
+				auto tbl = a.as<sol::table>();
+				if (tbl.valid() && b.get_type() == sol::type::number) {
+					Vector v{ tbl };
+					uint32_t tile = b.as<uint32_t>();
+					SetTile(v, tile);
+					return;
+				}//else error below
+
+			}//else error below
+		}
+		LOG_S(ERROR) << "Lua:: Tilemap::SetTile must take two paramaters (Vector and number) or four paramaters (four numbers)";
+		return;
+	}
+
+	void TilemapEntity::__SCRIPT__SwapTile(sol::object a, sol::object b, sol::object c, sol::object d)
+	{
+		if (a.valid() && b.valid()) {
+			if (c.valid() && d.valid()) {
+				if (
+					a.get_type() == sol::type::number &&
+					b.get_type() == sol::type::number &&
+					c.get_type() == sol::type::number &&
+					d.get_type() == sol::type::number
+					) {
+					int32_t x = a.as<int32_t>();
+					int32_t y = b.as<int32_t>();
+					int32_t layer = c.as<int32_t>();
+					uint32_t tile = d.as<uint32_t>();
+					SwapTile(x, y, layer, tile);
+					return;
+				}//else error below
+			}
+			else if (!c.valid() && !d.valid()) {
+				auto tbl = a.as<sol::table>();
+				if (tbl.valid() && b.get_type() == sol::type::number) {
+					Vector v{ tbl };
+					uint32_t tile = b.as<uint32_t>();
+					SwapTile(v, tile);
+					return;
+				}//else error below
+
+			}//else error below
+
+		}
+		LOG_S(ERROR) << "Lua:: Tilemap::SwapTile must take two paramaters (Vector and number) or four paramaters (four numbers)";
+		return;
+	}
+
+	void TilemapEntity::RegisterLuaType(sol::state& lua)
+	{
+		sol::usertype<TilemapEntity> type = lua.new_usertype<TilemapEntity>("TilemapEntity", sol::base_classes, sol::bases<Entity>());
+		CONNECT_METHOD(TilemapEntity, GetLayerCount);
+		CONNECT_METHOD(TilemapEntity, PushLayer);
+		CONNECT_METHOD(TilemapEntity, FillFromJson);
+		CONNECT_METHOD_OVERRIDE(TilemapEntity, GetTile);
+		CONNECT_METHOD_OVERRIDE(TilemapEntity, SetTile);
+		CONNECT_METHOD_OVERRIDE(TilemapEntity, SwapTile);
+		/*
+		GetTile
+		SetTile
+		SwapTile
+		*/
 	}
 
 }

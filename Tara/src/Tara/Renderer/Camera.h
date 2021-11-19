@@ -1,5 +1,6 @@
 #pragma once
 #include "Tara/Math/Types.h"
+#include "Tara/Renderer/Texture.h"
 
 namespace Tara {
 
@@ -34,82 +35,127 @@ namespace Tara {
 		Camera(ProjectionType type = ProjectionType::None)
 			: m_Transform(), 
 			m_Type(type),
-			m_ProjectionMatrix(1) 
-		{};
+			m_ProjectionMatrix(1),
+			m_RenderTarget(nullptr),
+			m_RenderFilterBits(~0)
+		{}
 
 		virtual ~Camera() = default;
+		
 		/// <summary>
 		/// Set the world Transform of a camera
 		/// </summary>
 		/// <param name="t">the new transform</param>
 		void SetTransform(Transform t) { m_Transform = t; }
+		
 		/// <summary>
 		/// Set the world Position of a camera
 		/// </summary>
 		/// <param name="pos">the new position</param>
 		void SetPosition(Vector pos) { m_Transform.Position = pos; }
+		
 		/// <summary>
 		/// Set the world rotation of a camera
 		/// </summary>
 		/// <param name="rot">the new rotation</param>
 		void SetRotation(Rotator rot) { m_Transform.Rotation = rot; }
+		
 		/// <summary>
 		/// Get the world Transform of a camera
 		/// </summary>
 		/// <returns>the transform</returns>
 		Transform GetTransform() const { return m_Transform; }
+		
 		/// <summary>
 		/// Get the world Position of a camera
 		/// </summary>
 		/// <returns>the position</returns>
 		Vector GetPosition() const { return m_Transform.Position; }
+		
 		/// <summary>
 		/// Get the world Rotation of a camera
 		/// </summary>
 		/// <returns>The rotation</returns>
 		Rotator GetRotation() const { return m_Transform.Rotation; }
+		
 		/// <summary>
 		/// Get the camera's projection type
 		/// </summary>
 		/// <returns>the propjection type</returns>
-		Camera::ProjectionType GetProjectionType() const { return m_Type; }
+		ProjectionType GetProjectionType() const { return m_Type; }
+		
 		/// <summary>
 		/// Get the projection matrix of the camera
 		/// </summary>
 		/// <returns>4x4 projection matrix, column-major</returns>
-		virtual glm::mat4 GetProjectionMatrix() const { return m_ProjectionMatrix; };
+		virtual glm::mat4 GetProjectionMatrix() const { return m_ProjectionMatrix; }
+		
 		/// <summary>
 		/// Get the view matrix of the camera
 		/// </summary>
 		/// <returns>view matrix, column-major</returns>
-		virtual glm::mat4 GetViewMatrix() const { return glm::inverse(m_Transform.GetTransformMatrix()); };
+		virtual glm::mat4 GetViewMatrix() const { return glm::inverse(m_Transform.GetTransformMatrix()); }
+		
 		/// <summary>
 		/// Get the projection and view matrix pre-combined
 		/// </summary>
 		/// <returns>projection*view matrix, column-major</returns>
-		virtual glm::mat4 GetViewProjectionMatrix() const {return GetProjectionMatrix() * GetViewMatrix();};
+
+		virtual glm::mat4 GetViewProjectionMatrix() const {return GetProjectionMatrix() * GetViewMatrix();}
+		
+		/// <summary>
+		/// Get the render target of a camera
+		/// </summary>
+		/// <returns></returns>
+		const RenderTargetRef& GetRenderTarget() const { return m_RenderTarget; }
+
+		/// <summary>
+		/// Set the render target of a camera
+		/// </summary>
+		/// <param name="target"></param>
+		void SetRenderTarget(const RenderTargetRef& target) { m_RenderTarget = target; }
+
+	public:
 		/// <summary>
 		/// Update the camera for a new size of area being rendererd to
 		/// </summary>
 		/// <param name="width">width of area</param>
 		/// <param name="height">height of area</param>
-		inline virtual void UpdateRenderArea(uint32_t width, uint32_t height) { return; }
+		virtual void UpdateRenderArea(uint32_t width, uint32_t height);
 		
+	public:
 		/// <summary>
 		/// Given a location on the screen, make a unit ray into the world, relative to the same space as the camera sees it.
 		/// </summary>
 		/// <param name="x">the X pixel location on the screen</param>
 		/// <param name="y">the Y pixel location on the screen</param>
 		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
-		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y);
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const;
+
+		/// <summary>
+		/// Get the filtering bits for what entities can be rendered by the camera
+		/// </summary>
+		/// <returns></returns>
+		inline uint32_t GetRenderFilterBits() const { return m_RenderFilterBits; }
+
+		/// <summary>
+		/// Set the filtering bits for what entities can be rendered by the camera
+		/// </summary>
+		/// <param name="bits"></param>
+		inline void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
 	protected:
 		inline virtual void UpdateProjectionMatrix() { return; }
+
+	
+		std::pair<float, float> GetRenderTargetSize() const;
 
 	protected:
 		Transform m_Transform;
 		const ProjectionType m_Type;
 		glm::mat4 m_ProjectionMatrix;
+		RenderTargetRef m_RenderTarget;
+		uint32_t m_RenderFilterBits;
 	};
 
 	/// <summary>
@@ -225,7 +271,7 @@ namespace Tara {
 		/// <param name="x">the X pixel location on the screen</param>
 		/// <param name="y">the Y pixel location on the screen</param>
 		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
-		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) override;
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const override;
 	protected:
 		virtual void UpdateProjectionMatrix() override;
 

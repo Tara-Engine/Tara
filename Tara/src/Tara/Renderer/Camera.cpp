@@ -5,11 +5,20 @@
 
 namespace Tara {
 
-	std::pair<Vector, Vector> Camera::GetRayFromScreenCoordinate(float x, float y)
+	void Camera::UpdateRenderArea(uint32_t width, uint32_t height)
+	{
+		if (m_RenderTarget) {
+			m_RenderTarget->SetSize(width, height);
+		}
+	}
+
+
+	std::pair<Vector, Vector> Camera::GetRayFromScreenCoordinate(float x, float y) const
 	{
 		//this is for orthographic camera only
-		float wWidth = (float)Application::Get()->GetWindow()->GetWidth();
-		float wHeight = (float)Application::Get()->GetWindow()->GetHeight();
+		auto sizes = GetRenderTargetSize();
+		float wWidth = sizes.first;
+		float wHeight = sizes.second;
 		//Get the positions in the viewing volume of -1 to 1
 		float vx = MapRange((float)x, 0.0f, wWidth, -1.0f, 1.0f);
 		float vy = MapRange((float)y, 0.0f, wHeight, 1.0f, -1.0f); //y is inverted between pixel space and view space
@@ -29,6 +38,19 @@ namespace Tara {
 
 		//Return the pair of start and end of the ray
 		return std::make_pair(origin, offset);
+	}
+
+
+
+	std::pair<float, float> Camera::GetRenderTargetSize() const
+	{
+		if (m_RenderTarget) {
+			return std::make_pair((float)m_RenderTarget->GetWidth(), (float)m_RenderTarget->GetHeight());
+		}
+		else {
+			auto window = Application::Get()->GetWindow();
+			return std::make_pair((float)window->GetWidth(), (float)window->GetHeight());
+		}
 	}
 
 
@@ -79,14 +101,17 @@ namespace Tara {
 				m_Extent.Near, m_Extent.Far
 			);
 		}
+		if (m_RenderTarget) {
+			m_RenderTarget->SetSize(width, height);
+		}
 	}
 
 	void OrthographicCamera::UpdateProjectionMatrix()
 	{
 		if (m_MaintainAspectRatio) {
 			//TODO: make this depend on some other information than getting the window
-			auto window = Application::Get()->GetWindow();
-			float aspectRatio = (float)window->GetWidth() / (float)window->GetHeight();
+			auto sizes = GetRenderTargetSize();
+			float aspectRatio = sizes.first / sizes.second;
 			float width = m_Extent.Right - m_Extent.Left;
 			float height = width / aspectRatio;
 			LOG_S(INFO) << "Ortho Camera Resize: Aspect: " << aspectRatio << " Width: " << width << " Height:" << height;
@@ -106,22 +131,25 @@ namespace Tara {
 	PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio)
 		: Camera(ProjectionType::Perspective), m_FOV(fov), m_AspectRatio(aspectRatio)
 	{
-		
 		UpdateProjectionMatrix();
 	}
 
 	void PerspectiveCamera::UpdateRenderArea(uint32_t width, uint32_t height)
 	{
-		auto& window = Application::Get()->GetWindow();
-		m_AspectRatio = (float)window->GetWidth() / (float)window->GetHeight();
+		if (m_RenderTarget) {
+			m_RenderTarget->SetSize(width, height);
+		}
+		auto sizes = GetRenderTargetSize();
+		m_AspectRatio = sizes.first / sizes.second;
 		UpdateProjectionMatrix();
 	}
 
-	std::pair<Vector, Vector> PerspectiveCamera::GetRayFromScreenCoordinate(float x, float y)
+	std::pair<Vector, Vector> PerspectiveCamera::GetRayFromScreenCoordinate(float x, float y) const
 	{
 		//Here is the version for perspective cameras
-		float wWidth = (float)Application::Get()->GetWindow()->GetWidth();
-		float wHeight = (float)Application::Get()->GetWindow()->GetHeight();
+		auto sizes = GetRenderTargetSize();
+		float wWidth = sizes.first;
+		float wHeight = sizes.second;
 		//Get the positions in the viewing volume of -1 to 1
 		float vx = MapRange((float)x, 0.0f, wWidth, -1.0f, 1.0f);
 		float vy = MapRange((float)y, 0.0f, wHeight, 1.0f, -1.0f); //y is inverted between pixel space and view space
@@ -168,6 +196,10 @@ namespace Tara {
 
 	void ScreenCamera::UpdateRenderArea(uint32_t width, uint32_t height)
 	{
+		if (m_RenderTarget) {
+			m_RenderTarget->SetSize(width, height);
+		}
+
 		m_ScreenWidth = (float)width;
 		m_ScreenHeight = (float)height;
 		OrthographicCamera::SetExtent((float)width);
@@ -199,6 +231,10 @@ namespace Tara {
 		);
 	}
 
+
+
+
+	
 
 }
 
