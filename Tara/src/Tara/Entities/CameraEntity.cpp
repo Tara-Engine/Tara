@@ -142,6 +142,12 @@ namespace Tara{
 		CONNECT_METHOD(CameraEntity, SetUseWorldScale);
 		CONNECT_METHOD(CameraEntity, GetUseWorldScale);
 		CONNECT_METHOD(CameraEntity, SetPerspectiveFOV);
+		CONNECT_METHOD(CameraEntity, SetMimicWindowSize);
+		CONNECT_METHOD(CameraEntity, GetMimicWindowSize);
+		CONNECT_METHOD(CameraEntity, SetRenderEveryFrame);
+		CONNECT_METHOD(CameraEntity, GetRenderEveryFrame);
+		CONNECT_METHOD(CameraEntity, SetRenderNextFrame);
+		CONNECT_METHOD(CameraEntity, GetRenderNextFrame);
 		CONNECT_METHOD_OVERRIDE(CameraEntity, GetProjectionType);
 		CONNECT_METHOD_OVERRIDE(CameraEntity, SetProjectionType);
 		CONNECT_METHOD_OVERRIDE(CameraEntity, SetOrthographicExtent);

@@ -2,6 +2,7 @@
 #include "TilemapEntity.h"
 #include "Tara/Renderer/Renderer.h"
 #include "nlohmann/json.hpp"
+#include "Tara/Core/Script.h"
 #include <fstream>
 
 namespace Tara {
@@ -335,6 +336,113 @@ namespace Tara {
 			cindex += TileChunk::WIDTH;
 		}
 		return std::make_pair(chunk, cindex);
+	}
+
+	uint32_t TilemapEntity::__SCRIPT__GetTile(sol::object a, sol::object b, sol::object c)
+	{
+		if (a.valid()) {
+			if (b.valid() && c.valid()) {
+				if (
+					a.get_type() == sol::type::number && 
+					b.get_type() == sol::type::number && 
+					c.get_type() == sol::type::number
+				) {
+					int32_t x = a.as<int32_t>();
+					int32_t y = b.as<int32_t>();
+					int32_t layer = c.as<int32_t>();
+					return GetTile(x, y, layer);
+				}//else error below
+			}
+			else if (!b.valid() && !c.valid()) {
+				auto tbl = a.as<sol::table>();
+				if (tbl.valid()) {
+					Vector v{ tbl };
+					return GetTile(v);
+				}//else error below
+			}//else error below
+		}//else error below
+		LOG_S(ERROR) << "Lua:: Tilemap::GetTile must take at one paramater (vector) or three paramaters (numbers)";
+		return NO_TILE;
+	}
+
+	void TilemapEntity::__SCRIPT__SetTile(sol::object a, sol::object b, sol::object c, sol::object d)
+	{
+		if (a.valid() && b.valid()) {
+			if (c.valid() && d.valid()) {
+				if (
+					a.get_type() == sol::type::number &&
+					b.get_type() == sol::type::number &&
+					c.get_type() == sol::type::number &&
+					d.get_type() == sol::type::number
+				) {
+					int32_t x = a.as<int32_t>();
+					int32_t y = b.as<int32_t>();
+					int32_t layer = c.as<int32_t>();
+					uint32_t tile = d.as<uint32_t>();
+					SetTile(x, y, layer, tile);
+				}//else error below
+			}
+			else if (!c.valid() && !d.valid()) {
+				auto tbl = a.as<sol::table>();
+				if (tbl.valid() && b.get_type() == sol::type::number) {
+					Vector v{ tbl };
+					uint32_t tile = b.as<uint32_t>();
+					SetTile(v, tile);
+				}//else error below
+
+			}//else error below
+
+		}
+		LOG_S(ERROR) << "Lua:: Tilemap::SetTile must take two paramaters (Vector and number) or four paramaters (four numbers)";
+		return;
+	}
+
+	void TilemapEntity::__SCRIPT__SwapTile(sol::object a, sol::object b, sol::object c, sol::object d)
+	{
+		if (a.valid() && b.valid()) {
+			if (c.valid() && d.valid()) {
+				if (
+					a.get_type() == sol::type::number &&
+					b.get_type() == sol::type::number &&
+					c.get_type() == sol::type::number &&
+					d.get_type() == sol::type::number
+					) {
+					int32_t x = a.as<int32_t>();
+					int32_t y = b.as<int32_t>();
+					int32_t layer = c.as<int32_t>();
+					uint32_t tile = d.as<uint32_t>();
+					SwapTile(x, y, layer, tile);
+				}//else error below
+			}
+			else if (!c.valid() && !d.valid()) {
+				auto tbl = a.as<sol::table>();
+				if (tbl.valid() && b.get_type() == sol::type::number) {
+					Vector v{ tbl };
+					uint32_t tile = b.as<uint32_t>();
+					SwapTile(v, tile);
+				}//else error below
+
+			}//else error below
+
+		}
+		LOG_S(ERROR) << "Lua:: Tilemap::SwapTile must take two paramaters (Vector and number) or four paramaters (four numbers)";
+		return;
+	}
+
+	void TilemapEntity::RegisterLuaType(sol::state& lua)
+	{
+		sol::usertype<TilemapEntity> type = lua.new_usertype<TilemapEntity>("TilemapEntity", sol::base_classes, sol::bases<Entity>());
+		CONNECT_METHOD(TilemapEntity, GetLayerCount);
+		CONNECT_METHOD(TilemapEntity, PushLayer);
+		CONNECT_METHOD(TilemapEntity, FillFromJson);
+		CONNECT_METHOD_OVERRIDE(TilemapEntity, GetTile);
+		CONNECT_METHOD_OVERRIDE(TilemapEntity, SetTile);
+		CONNECT_METHOD_OVERRIDE(TilemapEntity, SwapTile);
+		/*
+		GetTile
+		SetTile
+		SwapTile
+		*/
 	}
 
 }

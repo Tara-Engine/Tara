@@ -143,14 +143,14 @@ namespace Tara {
 		/// </summary>
 		/// <param name="pos">the coordinates of the tile</param>
 		/// <returns>the tileID</returns>
-		inline uint32_t GetTile(glm::ivec3 pos) { GetTile(pos.x, pos.y, pos.z); };
+		inline uint32_t GetTile(glm::ivec3 pos) { return GetTile(pos.x, pos.y, pos.z); };
 
 		/// <summary>
 		/// Get a tile in the map.
 		/// </summary>
 		/// <param name="pos">the coordinates of the tile</param>
 		/// <returns>the tileID</returns>
-		inline uint32_t GetTile(Vector pos) { GetTile((int32_t)pos.x, (int32_t)pos.y, (int32_t)pos.z); }
+		inline uint32_t GetTile(Vector pos) { return GetTile((int32_t)pos.x, (int32_t)pos.y, (int32_t)pos.z); }
 
 		/// <summary>
 		/// Set a tile in the map. If there was any metadata for that cell, it is removed.
@@ -365,6 +365,14 @@ namespace Tara {
 		/// <returns>pair: (chunk index, index into chunk)</returns>
 		static std::pair<int32_t, int32_t> ToChunkIndex(int32_t index);
 
+	public:
+		//Lua stuff
+		uint32_t __SCRIPT__GetTile(sol::object a, sol::object b, sol::object c);
+		void __SCRIPT__SetTile(sol::object a, sol::object b, sol::object c, sol::object d);
+		void __SCRIPT__SwapTile(sol::object a, sol::object b, sol::object c, sol::object d);
+		
+
+		static void RegisterLuaType(sol::state& lua);
 		
 	private:
 		std::vector<TilesetRef> m_Tilesets;

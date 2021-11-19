@@ -8,6 +8,7 @@
 #include "Tara/Entities/SpriteEntity.h"
 #include "Tara/Utility/After.h"
 #include "Tara/Input/Input.h"
+#include "Tara/Entities/TilemapEntity.h"
 
 namespace Tara{
 	Script::Script()
@@ -36,6 +37,7 @@ namespace Tara{
 		RegisterType<Entity>("Tara::Entity");
 		RegisterType<CameraEntity>("Tara::CameraEntity");
 		RegisterType<SpriteEntity>("Tara::SpriteEntity");
+		RegisterType<TilemapEntity>("Tara::TilemapEntity");
 
 		CONNECT_FUNCTION_OVERRIDE(After);
 	}
