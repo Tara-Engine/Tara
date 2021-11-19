@@ -135,6 +135,12 @@ namespace Tara{
 		LOG_S(WARNING) << "Lua version of CamaeraEntity::SetOrthographicExtent not implemented yet.";
 	}
 
+	std::pair<sol::table, sol::table> CameraEntity::__SCRIPT__GetRayFromScreenCoordinate(float x, float y) const
+	{
+		auto coords = GetRayFromScreenCoordinate(x, y);
+		return std::make_pair(coords.first.ToScriptTable(), coords.second.ToScriptTable());
+	}
+
 
 	void CameraEntity::RegisterLuaType(sol::state& lua)
 	{
@@ -148,6 +154,12 @@ namespace Tara{
 		CONNECT_METHOD(CameraEntity, GetRenderEveryFrame);
 		CONNECT_METHOD(CameraEntity, SetRenderNextFrame);
 		CONNECT_METHOD(CameraEntity, GetRenderNextFrame);
+		CONNECT_METHOD(CameraEntity, GetRenderTarget);
+		CONNECT_METHOD(CameraEntity, SetRenderTarget);
+		
+		CONNECT_METHOD_OVERRIDE(CameraEntity, GetRayFromScreenCoordinate);
+		
+
 		CONNECT_METHOD_OVERRIDE(CameraEntity, GetProjectionType);
 		CONNECT_METHOD_OVERRIDE(CameraEntity, SetProjectionType);
 		CONNECT_METHOD_OVERRIDE(CameraEntity, SetOrthographicExtent);

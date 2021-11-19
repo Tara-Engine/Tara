@@ -129,7 +129,7 @@ public:
 		
 		SetLayerCamera(m_Camera);
 		
-		
+		m_Camera->GetCamera()->SetRenderFilterBits(0x0000000F);
 		//auto dmce = Tara::CreateEntity<Tara::DynamicMultiChildEntity>(Tara::EntityNoRef(), weak_from_this());
 
 		
@@ -155,8 +155,8 @@ public:
 		
 		
 		
-		//auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_Player, "assets/Component1.lua", "LuaComponent1");
-		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_TempSpriteEntity, "assets/Component2.lua", "LuaComponent2");
+		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_tilemap, "assets/Component1.lua", "LuaComponent1");
+		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/Component2.lua", "LuaComponent2");
 
 
 

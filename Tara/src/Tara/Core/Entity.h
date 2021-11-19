@@ -220,13 +220,13 @@ namespace Tara {
 		/// Get the filtering bits for what cameras can be render this entity
 		/// </summary>
 		/// <returns></returns>
-		inline uint32_t GetRenderFilterBits() const { return m_RenderFilterBits; }
+		inline virtual uint32_t GetRenderFilterBits() const { return m_RenderFilterBits; }
 
 		/// <summary>
 		/// Set the filtering bits for what cameras can be render this entity
 		/// </summary>
 		/// <param name="bits"></param>
-		inline void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
+		inline virtual void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *

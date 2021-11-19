@@ -118,6 +118,38 @@ namespace Tara {
 		/// <returns></returns>
 		bool GetRenderNextFrame() const { return m_RenderNextFrame; }
 
+		/// <summary>
+		/// Get the internal camera render target
+		/// </summary>
+		/// <returns></returns>
+		const RenderTargetRef& GetRenderTarget() const { return m_Camera->GetRenderTarget(); }
+
+		/// <summary>
+		/// Set the internal camera render target
+		/// </summary>
+		/// <param name="target"></param>
+		void SetRenderTarget(const RenderTargetRef& target) { m_Camera->SetRenderTarget(target); }
+
+		/// <summary>
+		/// Get a ray from the camera's position and rotation
+		/// </summary>
+		/// <param name="x">screen coord x</param>
+		/// <param name="y">screen coord y</param>
+		/// <returns></returns>
+		std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const { return m_Camera->GetRayFromScreenCoordinate(x, y); }
+
+		/// <summary>
+		/// Get the filtering bits for what cameras can be render this entity
+		/// </summary>
+		/// <returns></returns>
+		inline virtual uint32_t GetRenderFilterBits() const { return m_Camera->GetRenderFilterBits(); }
+
+		/// <summary>
+		/// Set the filtering bits for what cameras can be render this entity
+		/// </summary>
+		/// <param name="bits"></param>
+		inline virtual void SetRenderFilterBits(uint32_t bits) { m_Camera->SetRenderFilterBits(bits); }
+
 	public:
 		/// <summary>
 		/// The overriden update function
@@ -143,6 +175,7 @@ namespace Tara {
 		void __SCRIPT__SetProjectionType(const char* type);
 		std::string __SCRIPT__GetProjectionType() const;
 		void __SCRIPT__SetOrthographicExtent(sol::object extent);
+		std::pair<sol::table, sol::table> __SCRIPT__GetRayFromScreenCoordinate(float x, float y) const;
 
 		/// <summary>
 		/// Register the lua type

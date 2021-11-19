@@ -380,6 +380,7 @@ namespace Tara {
 					int32_t layer = c.as<int32_t>();
 					uint32_t tile = d.as<uint32_t>();
 					SetTile(x, y, layer, tile);
+					return;
 				}//else error below
 			}
 			else if (!c.valid() && !d.valid()) {
@@ -388,10 +389,10 @@ namespace Tara {
 					Vector v{ tbl };
 					uint32_t tile = b.as<uint32_t>();
 					SetTile(v, tile);
+					return;
 				}//else error below
 
 			}//else error below
-
 		}
 		LOG_S(ERROR) << "Lua:: Tilemap::SetTile must take two paramaters (Vector and number) or four paramaters (four numbers)";
 		return;
@@ -412,6 +413,7 @@ namespace Tara {
 					int32_t layer = c.as<int32_t>();
 					uint32_t tile = d.as<uint32_t>();
 					SwapTile(x, y, layer, tile);
+					return;
 				}//else error below
 			}
 			else if (!c.valid() && !d.valid()) {
@@ -420,6 +422,7 @@ namespace Tara {
 					Vector v{ tbl };
 					uint32_t tile = b.as<uint32_t>();
 					SwapTile(v, tile);
+					return;
 				}//else error below
 
 			}//else error below

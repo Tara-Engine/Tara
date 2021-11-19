@@ -129,7 +129,7 @@ namespace Tara {
 		/// <param name="x">the X pixel location on the screen</param>
 		/// <param name="y">the Y pixel location on the screen</param>
 		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
-		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y);
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const;
 
 		/// <summary>
 		/// Get the filtering bits for what entities can be rendered by the camera
@@ -147,7 +147,7 @@ namespace Tara {
 		inline virtual void UpdateProjectionMatrix() { return; }
 
 	
-		std::pair<float, float> GetRenderTargetSize();
+		std::pair<float, float> GetRenderTargetSize() const;
 
 	protected:
 		Transform m_Transform;
@@ -270,7 +270,7 @@ namespace Tara {
 		/// <param name="x">the X pixel location on the screen</param>
 		/// <param name="y">the Y pixel location on the screen</param>
 		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
-		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) override;
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const override;
 	protected:
 		virtual void UpdateProjectionMatrix() override;
 

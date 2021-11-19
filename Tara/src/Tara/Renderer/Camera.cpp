@@ -13,7 +13,7 @@ namespace Tara {
 	}
 
 
-	std::pair<Vector, Vector> Camera::GetRayFromScreenCoordinate(float x, float y)
+	std::pair<Vector, Vector> Camera::GetRayFromScreenCoordinate(float x, float y) const
 	{
 		//this is for orthographic camera only
 		auto sizes = GetRenderTargetSize();
@@ -41,7 +41,7 @@ namespace Tara {
 	}
 
 
-	std::pair<float, float> Camera::GetRenderTargetSize()
+	std::pair<float, float> Camera::GetRenderTargetSize() const
 	{
 		if (m_RenderTarget) {
 			return std::make_pair((float)m_RenderTarget->GetWidth(), (float)m_RenderTarget->GetHeight());
@@ -142,7 +142,7 @@ namespace Tara {
 		UpdateProjectionMatrix();
 	}
 
-	std::pair<Vector, Vector> PerspectiveCamera::GetRayFromScreenCoordinate(float x, float y)
+	std::pair<Vector, Vector> PerspectiveCamera::GetRayFromScreenCoordinate(float x, float y) const
 	{
 		//Here is the version for perspective cameras
 		auto sizes = GetRenderTargetSize();
