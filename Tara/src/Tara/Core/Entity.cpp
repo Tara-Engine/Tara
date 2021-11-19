@@ -451,9 +451,10 @@ namespace Tara{
         ENTITY_EXISTS();
         //IF the core AABB of self and other overlap, THEN generate overlap event
         if (GetSpecificBoundingBox().Overlaping(other->GetSpecificBoundingBox())) {
-            Manifold m(shared_from_this(), other);
-            m_OwningLayer.lock()->AddManifoldToQueue(std::move(m));
-
+            if (ConfirmOverlap(other) && other->ConfirmOverlap(shared_from_this())) {
+                Manifold m(shared_from_this(), other);
+                m_OwningLayer.lock()->AddManifoldToQueue(std::move(m));
+            }
             //INENTIONAL NO RETURN
         }
 

@@ -67,6 +67,11 @@ namespace Tara{
 		return BoundingBox(newPosition, newExtent);
 	}
 
+	BoundingBox BoundingBox::operator/(const Transform& t) const
+	{
+		return *this * (-t);
+	}
+
 	bool BoundingBox::operator==(const BoundingBox& other) const
 	{
 		return (Position == other.Position && Extent == other.Extent);

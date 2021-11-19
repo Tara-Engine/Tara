@@ -29,7 +29,9 @@ CurrentComponent:SetOnEventCallbackFunction(function(event)
 		local parent = Cast(CameraEntity, CurrentComponent:GetParent())
 		if (parent) then
 			local origin, dir = parent:GetRayFromScreenCoordinate(0,0)
-			print("Origin: " .. dump(origin) .. "\nDir: " .. dump(dir));
+			--print("Origin: " .. dump(origin) .. "\nDir: " .. dump(dir));
 		end
+	elseif (event.Type == "Overlap") then
 	end
+	--print("Event:: " .. dump(event))
 end)

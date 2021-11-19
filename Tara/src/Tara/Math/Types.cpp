@@ -570,6 +570,11 @@ namespace Tara{
 		return Transform(Position - Rotation.Inverse().RotateVector(other.Position) / Scale, Rotation - other.Rotation, Scale / other.Scale);
 	}
 
+	Transform Transform::operator-() const
+	{
+		return Transform(-Position, Rotation.Inverse(), -Scale);
+	}
+
 	sol::table Transform::ToScriptTable() const
 	{
 		//TODO: when lua side library for tables, complete, replace this

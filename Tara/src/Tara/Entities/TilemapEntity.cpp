@@ -117,8 +117,10 @@ namespace Tara {
 		}
 	}
 
+
 	TilemapEntity::TilemapEntity(EntityNoRef parent, LayerNoRef owningLayer, std::initializer_list<TilesetRef> tilesets, Transform transform, const std::string& name)
-		: Entity(parent, owningLayer, transform, name)
+		: Entity(parent, owningLayer, transform, name),
+		m_Bounds(0.0f,0.0f,0.0f,0.0f,0.0f,0.0f)
 	{
 		m_Tilesets = tilesets;
 		PushLayer(); //create a default layer
@@ -152,6 +154,30 @@ namespace Tara {
 	{
 		if (layer >= 0 && layer < m_Layers.size()) {
 			m_Layers[layer].SetTile(x, y, tileID + 1); //if tileID is NO_TILE, it becomes 0.
+			if (tileID + 1) {
+				//if we are setting a tile, make sure to update the bounds
+				if (x < m_Bounds.x) {
+					//Offset Width so it stays the same pos
+					m_Bounds.Width += m_Bounds.x - x;
+					//move bounds X
+					m_Bounds.x = x;
+				}
+				if (x >= m_Bounds.x + m_Bounds.Width) {
+					//increase Width to encompass the whole thing. Width will alwawys be one greater than last index in X
+					m_Bounds.Width = (x - m_Bounds.x) + 1;
+				}
+
+				if (y < m_Bounds.y) {
+					//offset Height so it stays the same pos
+					m_Bounds.Height += m_Bounds.y - y;
+					//move bounds Y
+					m_Bounds.y = y;
+				}
+				if (y >= m_Bounds.y + m_Bounds.Height) {
+					//increase Height to encompass the whole thing. Height will alwawys be one greater than last index in Y
+					m_Bounds.Height = (y - m_Bounds.y) + 1;
+				}
+			}
 		}
 		else {
 			LOG_S(ERROR) << "Attempted to set a tile in a nonexistant tilemap layer. tilemap layers must be explicitly created!";
@@ -341,6 +367,34 @@ namespace Tara {
 			}
 		}
 	}
+
+
+	bool TilemapEntity::ConfirmOverlap(EntityRef other)
+	{
+		BoundingBox b = other->GetSpecificBoundingBox();
+		//transform corners of bounding box into tilepsace coords.
+		b = b / GetWorldTransform();
+		int32_t x1 = (int32_t)floorf(b.x) + 1;
+		int32_t x2 = x1 + (int32_t)ceilf(b.Width);
+		int32_t y1 = (int32_t)floorf(b.y) + 1;
+		int32_t y2 = y1 + (int32_t)ceilf(b.Height);
+		//check each tile, if a single non-empty one is found, return true
+		for (auto& layer : m_Layers) {
+			if (layer.m_Colliding){
+				for (int32_t x = x1; x <= x2; x++) {
+					for (int32_t y = y1; y <= y2; y++) {
+						if (layer.GetTile(x, y)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		//they were all empty
+		return false;
+	}
+
+	
 
 	std::pair<int32_t, int32_t> TilemapEntity::ToChunkIndex(int32_t index)
 	{

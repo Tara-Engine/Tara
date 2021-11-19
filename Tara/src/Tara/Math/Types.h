@@ -412,6 +412,12 @@ namespace Tara {
 		Transform operator- (const Transform& other) const;
 
 		/// <summary>
+		/// Unary minus (invert) transform
+		/// </summary>
+		/// <returns></returns>
+		Transform operator-() const;
+
+		/// <summary>
 		/// Get a lua type from a rotator
 		/// </summary>
 		/// <returns></returns>

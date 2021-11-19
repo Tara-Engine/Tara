@@ -417,6 +417,7 @@ protected:
 		/// <returns></returns>
 		inline bool Exists() const { if (!m_Exists) { LOG_S(ERROR) << "Attempting to access a deleted Entity!"; } return m_Exists; }
 
+
 	public: //must be public to properly inherit
 
 		/// <summary>
@@ -452,7 +453,13 @@ protected:
 		/// <param name="list">the list to append to</param>
 		virtual void GetAllChildrenInRadius(Vector origin, float radius, std::list<EntityRef>& list);
 
-		
+		/// <summary>
+		/// In case any entity has special collision, override this. Their spicific overlap volumes overlap
+		/// But the individual may have something else going on.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		inline virtual bool ConfirmOverlap(EntityRef other) { return true; }
 
 	public:
 		//Lua Stuff

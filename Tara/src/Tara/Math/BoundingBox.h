@@ -117,6 +117,14 @@ namespace Tara {
 		BoundingBox operator*(const Transform& t) const;
 
 		/// <summary>
+		/// Invert-Modify a bounding box by a transform.
+		/// In essence, it takes the box, un-transforms it, and makes a new box around the old one.
+		/// </summary>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		BoundingBox operator/(const Transform& t) const;
+
+		/// <summary>
 		/// Equality operator
 		/// </summary>
 		/// <param name="other"></param>
