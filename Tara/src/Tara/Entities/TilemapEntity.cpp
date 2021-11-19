@@ -21,7 +21,6 @@ namespace Tara {
 
 	TileChunk::~TileChunk()
 	{
-		//LOG_S(INFO) << "Tile Chunk Destroyed";
 		if (Tiles) {
 			delete[] Tiles;
 			//Tiles = nullptr;
@@ -89,6 +88,22 @@ namespace Tara {
 			//we have a valid chunk
 			//return the tileID from it.
 			iter->second->SetTile(idxX.second, idxY.second, tileID);
+			//if this is an empty tile, check if all tiles are 0, if they are, then remove that chunk
+			if (!tileID) {
+				bool allEmpty = true;
+				for (int i = 0; i < TileChunk::WIDTH * TileChunk::WIDTH; i++) {
+					if (iter->second->Tiles[i]) {
+						//a valid tile is found
+						allEmpty = false;
+						break;
+					}
+				}
+				if (allEmpty) {
+					TileChunk* chunk = iter->second;
+					m_Chunks.erase(iter);
+					delete chunk;
+				}
+			}
 		}
 		else {
 			//not a loaded chunk, so its entirely empty.
