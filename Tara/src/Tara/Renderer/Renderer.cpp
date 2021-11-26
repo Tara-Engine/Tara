@@ -174,6 +174,33 @@ namespace Tara {
 		}
 	}
 	
+	void Renderer::Patch(const Transform& transform, const PatchRef& patch, glm::vec4 color)
+	{
+		Transform offset{ transform.Position, transform.Rotation, {1.0f, 1.0f, transform.Scale.z} };
+		auto muv = patch->GetMiddleUVs();
+		auto mp = patch->GetMiddleOffsets(glm::vec2(transform.Scale.x, transform.Scale.y));
+		auto t = patch->GetTexture();
 
+		float xPos[] = { 0.0f, mp.first.x, mp.second.x, transform.Scale.x };
+		float yPos[] = { 0.0f, mp.first.y, mp.second.y, transform.Scale.y };
+
+		float xUV[] = { 0.0f, muv.first.x, muv.second.x, 1.0f };
+		float yUV[] = { 0.0f, muv.first.y, muv.second.y, 1.0f };
+
+		//draw the quads.
+		for (int x = 0; x < 3; x++) {
+			for (int y = 0; y < 3; y++) {
+				Quad(
+					offset + TRANSFORM_2D(
+						xPos[x], yPos[y],
+						0.0f,
+						xPos[x + 1] - xPos[x], yPos[y + 1] - yPos[y]),
+					color, t,
+					{ xUV[x],yUV[y] },
+					{ xUV[x + 1],yUV[y + 1] }
+				);
+			}
+		}
+	}
 
 }

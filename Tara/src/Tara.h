@@ -32,6 +32,7 @@
 #include "Tara/Asset/Asset.h"
 #include "Tara/Asset/Font.h"
 #include "Tara/Asset/Tileset.h"
+#include "Tara/Asset/Patch.h"
 
 //math
 #include "Tara/Math/Types.h"
@@ -49,6 +50,10 @@
 //Components
 #include "Tara/Components/ScriptComponent.h"
 #include "Tara/Components/ClickableComponent.h"
+
+//UI
+#include "Tara/UI/UIBaseEntity.h"
+#include "Tara/UI/UIVisualEntity.h"
 
 //Utilities
 #include "Tara/Utility/After.h"

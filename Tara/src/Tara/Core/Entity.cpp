@@ -10,7 +10,7 @@
 //disable MSVC warning C4003. It has to do with not enough params in a function-like macro, which is being done intentionally here.
 
 namespace Tara{
-    Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, std::string name)
+    Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, const std::string& name)
         :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform), m_RenderFilterBits(~0)
     {
         CHECK_NOTNULL_F(m_OwningLayer.lock(), "the owning layer of a newly created entity should never be null!");

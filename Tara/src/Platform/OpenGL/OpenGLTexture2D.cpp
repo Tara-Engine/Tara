@@ -44,6 +44,33 @@ namespace Tara{
 		}
 	}
 
+	void OpenGLTexture2D::SetWrap(Wrapping wrap)
+	{
+		switch (wrap) {
+		case Texture::Wrapping::Clamp: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		case Texture::Wrapping::Border: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		}
+		case Texture::Wrapping::Repeat: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		case Texture::Wrapping::Mirror: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		}
+		}
+	}
+
+	void OpenGLTexture2D::SetBorderColor(const glm::vec4& color)
+	{
+		glTextureParameterfv(m_RendererID, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&color);
+	}
+
 	void OpenGLTexture2D::LoadFromFile()
 	{
 		int32_t width, height, channels;
@@ -109,9 +136,26 @@ namespace Tara{
 			glTextureParameteriv(m_RendererID, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);
 		}
 
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
+		//deal with wrapping
+		switch (Texture::s_DefaultTextureWrapping) {
+		case Texture::Wrapping::Clamp: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		case Texture::Wrapping::Border: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		}
+		case Texture::Wrapping::Repeat: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		case Texture::Wrapping::Mirror: {
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		}
+		}
+		
 		glTextureSubImage2D(
 			m_RendererID,
 			0, 0, 0,
