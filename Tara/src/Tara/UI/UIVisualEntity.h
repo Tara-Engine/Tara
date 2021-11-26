@@ -49,7 +49,7 @@ namespace Tara {
 		/// <summary>
 		/// Overridable calculate desired size. Must set it into m_DesieredSize;
 		/// </summary>
-		virtual void CalculateDesiredSize();
+		//virtual void CalculateDesiredSize();
 		
 		//void OnUpdate(float deltaTime);
 

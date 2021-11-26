@@ -22,7 +22,6 @@ namespace Tara{
 
 	glm::vec2 UIBaseEntity::GetDesiredSize() const
 	{
-		
 		return UIBox::DecompressBoxAndSize(m_Transform).second;
 	}
 
@@ -44,6 +43,7 @@ namespace Tara{
 		auto border = GetBorder();
 		size.x += border.x + border.y;
 		size.y += border.z + border.w;
+
 		//set the size
 		SetDesiredSize(size);
 	}
@@ -69,6 +69,7 @@ namespace Tara{
 	UIBox UIBaseEntity::GetRenderArea() const
 	{
 		UIBox allowed = GetAllowedArea();
+		//LOG_S(INFO) << "Allowed Area: {" << allowed.x1 << "," << allowed.y1 << "} - {" << allowed.x2 << "," << allowed.y2;
 		glm::vec2 desired = GetDesiredSize();
 		UIBox target{ 0,0,0,0 };
 		uint32_t snapRules = GetSnapRules();
@@ -83,7 +84,7 @@ namespace Tara{
 			target.x1 = allowed.x1 + (allowed.Width() / 2) - (desired.x / 2) - offsets.x;
 		}
 		else if (snapRules & UISnapRule::RIGHT) {
-			target.x1 = allowed.x2 - desired.x - (offsets.x + offsets.y);
+			target.x1 = allowed.x2 - (desired.x + (offsets.x + offsets.y));
 		}
 		else {
 			//no rule!
@@ -99,7 +100,7 @@ namespace Tara{
 			target.x2 = allowed.x2 - (allowed.Width() / 2) + (desired.x / 2) + offsets.y;
 		}
 		else if (snapRules & UISnapRule::LEFT) {
-			target.x2 = allowed.x1 + desired.x + (offsets.x + offsets.y);
+			target.x2 = allowed.x1 + (desired.x + (offsets.x + offsets.y));
 		}
 		else {
 			//no rule!
@@ -116,7 +117,7 @@ namespace Tara{
 			target.y1 = allowed.y1 + (allowed.Height() / 2) - (desired.y / 2) - offsets.w;
 		}
 		else if (snapRules & UISnapRule::TOP) {
-			target.y1 = allowed.y2 - desired.y - (offsets.z + offsets.w);
+			target.y1 = allowed.y2 - (desired.y + (offsets.z + offsets.w));
 		}
 		else {
 			//no rule!
@@ -132,13 +133,22 @@ namespace Tara{
 			target.y2 = allowed.y2 - (allowed.Height() / 2) + (desired.y / 2) + offsets.z;
 		}
 		else if (snapRules & UISnapRule::BOTTOM) {
-			target.y2 = allowed.y1 + desired.y + (offsets.z + offsets.w);
+			target.y2 = allowed.y1 + (desired.y + (offsets.z + offsets.w));
 		}
 		else {
 			//no rule!
 			//warning will have been done above
 			target.y2 = allowed.y2 - offsets.z;
 		}
+
+		//clamp the target to the allowed area
+		target.x1 = std::clamp(target.x1, allowed.x1, allowed.x2);
+		target.x2 = std::clamp(target.x2, allowed.x1, allowed.x2);
+		
+		target.y1 = std::clamp(target.y1, allowed.y1, allowed.y2);
+		target.y2 = std::clamp(target.y2, allowed.y1, allowed.y2);
+
+		//LOG_S(INFO) << "Render Area: {" << target.x1 << "," << target.y1 << "} - {" << target.x2 << "," << target.y2;
 
 		return target;
 	}

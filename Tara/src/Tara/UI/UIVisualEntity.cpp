@@ -13,7 +13,7 @@ namespace Tara{
 		auto pixels = m_Patch->GetBorderPixels();
 		SetBorder((float)std::get<0>(pixels), (float)std::get<1>(pixels), (float)std::get<2>(pixels), (float)std::get<3>(pixels));
 	}
-
+	/*
 	void UIVisualEntity::CalculateDesiredSize()
 	{
 
@@ -38,6 +38,7 @@ namespace Tara{
 		//set the size
 		SetDesiredSize(size);
 	}
+	*/
 
 	/*
 	void UIVisualEntity::OnUpdate(float deltaTime)
