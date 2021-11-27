@@ -44,7 +44,7 @@ namespace Tara {
 		void OnUpdate(float deltaTime);
 
 		//for debug purposes
-		//void OnDraw(float deltaTime);
+		void OnDraw(float deltaTime);
 	private:
 		Direction m_Direction;
 	};

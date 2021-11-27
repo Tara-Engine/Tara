@@ -1,8 +1,12 @@
 #include "tarapch.h"
 #include "UIBaseEntity.h"
 #include "Tara/Core/Application.h"
+#include "Tara/Renderer/Renderer.h"
 
 namespace Tara{
+
+	bool UIBaseEntity::s_EnableDebugRendering = false;
+
 	UIBaseEntity::UIBaseEntity(EntityNoRef parent, LayerNoRef owningLayer, const std::string& name)
 		: Entity(parent, owningLayer, { {0,0,0},{0,0,0},{0,0,0} }, name),
 		m_Spacing({0,0}),
@@ -149,6 +153,7 @@ namespace Tara{
 		target.y2 = std::clamp(target.y2, allowed.y1, allowed.y2);
 
 		//LOG_S(INFO) << "Render Area: {" << target.x1 << "," << target.y1 << "} - {" << target.x2 << "," << target.y2;
+		target.Rectify();
 
 		return target;
 	}
@@ -202,5 +207,24 @@ namespace Tara{
 			}
 			return false;
 		});
+	}
+
+
+	void UIBaseEntity::OnDraw(float deltaTime)
+	{
+		//Debug rendering of invisible entities
+		if (s_EnableDebugRendering){
+			auto target = GetRenderArea();
+
+			srand((unsigned int)(this)); //use this as the seed, so every time its the same color, but all spacers are different
+			glm::vec4 randomColor{
+				rand() % 100 / 100.0f,
+				rand() % 100 / 100.0f,
+				rand() % 100 / 100.0f,
+				1
+			};
+			//TEMP just fill allowed area
+			Renderer::Quad(target.ToTransform(), randomColor);
+		}
 	}
 }

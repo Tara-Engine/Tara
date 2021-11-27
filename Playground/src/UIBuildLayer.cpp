@@ -24,6 +24,8 @@ void UIBuildLayer::Activate()
 
 	SetLayerCamera(m_SceneCamera);
 
+	//Tara::UIBaseEntity::SetEnableDebugDraw(true);
+
 	auto base = Tara::CreateEntity<Tara::UIBaseEntity>(Tara::EntityNoRef(), weak_from_this(), "UIBaseEntity");
 	base->SetBorder(0, 0, 0, 0);
 
@@ -43,22 +45,16 @@ void UIBuildLayer::Activate()
 	vis2->SetTint({ 0.7, 0.7, 1, 1 });
 	vis2->SetBorderFromPatch();
 	
-	auto vis3 = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 3");
-	vis3->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	vis3->SetTint({ 0.7, 0.7, 1, 1 });
+	auto spacer = Tara::CreateEntity<Tara::UISpacerEntity>(list, weak_from_this());
+	spacer->SetSize(50, 50);
+	spacer->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+
+	auto vis3 = Tara::CreateEntity<Tara::UIVisualEntity>(spacer, weak_from_this(), m_Patch, "UIVisualEntity 3");
+	vis3->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::BOTTOM | Tara::UISnapRule::LEFT | Tara::UISnapRule::RIGHT);
+	vis3->SetTint({ 1.0, 0.7, 0.7, 1 });
 	vis3->SetBorderFromPatch();
-	vis3->SetOffsets(0, 0, 0, 50);
+	vis3->SetOffsets(0, 0, 0, 10);
 
-	auto vis4 = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 2");
-	vis4->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	vis4->SetTint({ 1, 0.7, 0.7, 1 });
-	vis4->SetBorderFromPatch();
-
-	auto vis5 = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 3");
-	vis5->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	vis5->SetTint({ 1, 0.7, 0.7, 1 });
-	vis5->SetBorderFromPatch();
-	//vis2->SetOffsets(50, 150, 0, 75);
 }
 
 void UIBuildLayer::Draw(float deltaTime)

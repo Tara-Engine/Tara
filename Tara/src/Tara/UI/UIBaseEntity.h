@@ -25,6 +25,12 @@ namespace Tara {
 
 		virtual ~UIBaseEntity() = default;
 		
+		inline static void SetEnableDebugDraw(bool enable) { s_EnableDebugRendering = enable; }
+
+		inline static bool GetEnableDebugDraw() { return s_EnableDebugRendering; }
+
+	public:
+
 		/// <summary>
 		/// Get the minimum size that this UIEntity wants to be. 
 		/// This is determined by its children and any sized internal content (like text)
@@ -154,6 +160,9 @@ namespace Tara {
 
 		inline virtual void OnBeginPlay() override { ListenForEvents(true); };
 
+		//DEBUG
+		virtual void OnDraw(float deltaTime) override;
+
 	protected:
 		//Transform m_Transform
 		//floats x1, y1, x2, y1, vec4 border
@@ -188,6 +197,9 @@ namespace Tara {
 		virtual inline Vector GetWorldScale()							const	override { return { 0,0,0 }; }
 		virtual inline void SetWorldScale(const Vector& scale)					override {}
 #pragma warning( pop )
+
+	protected:
+		static bool s_EnableDebugRendering;
 	};
 
 }

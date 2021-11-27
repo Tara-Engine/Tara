@@ -55,6 +55,7 @@
 #include "Tara/UI/UIBaseEntity.h"
 #include "Tara/UI/UIVisualEntity.h"
 #include "Tara/UI/UIListEntity.h"
+#include "Tara/UI/UISpacerEntity.h"
 
 //Utilities
 #include "Tara/Utility/After.h"
