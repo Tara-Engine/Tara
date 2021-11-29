@@ -31,7 +31,7 @@ namespace Tara{
 		auto worldPos = GetMousePos(screenPos);
 		if (IsInOwner(worldPos)) {
 			m_IsDownOverMe = true;
-			ClickEvent e(screenPos.x, screenPos.y, 0);
+			ClickEvent e(screenPos.x, screenPos.y, e.GetButton());
 			GetParent().lock()->ReceiveEvent(e);
 		}
 		return false;

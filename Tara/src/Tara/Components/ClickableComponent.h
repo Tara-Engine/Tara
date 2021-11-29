@@ -13,7 +13,7 @@ namespace Tara {
 	/// </summary>
 	class ClickableComponent : public Component {
 	public:
-		ClickableComponent(EntityNoRef parent, const std::string& name);
+		ClickableComponent(EntityNoRef parent, const std::string& name = "ClickableComponent");
 
 		virtual ~ClickableComponent() {}
 

@@ -1,4 +1,5 @@
 #include "UIBuildLayer.h"
+#include <sstream>
 
 UIBuildLayer::UIBuildLayer()
 	: Tara::Layer()
@@ -45,6 +46,18 @@ void UIBuildLayer::Activate()
 	text->SetText("Test:\n[    ]\n[\t]");
 	text->SetTextSize(32);
 
+	Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT, 
+		[this](Tara::LambdaComponent* self, float deltaTime) {
+			auto screenPos = Tara::Input::Get()->GetMousePos();
+			auto worldPos = this->m_SceneCamera->GetRayFromScreenCoordinate(screenPos.x, screenPos.y);
+			auto parent = std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock());
+			std::stringstream ss;
+			ss << "Mouse: " << worldPos.first;
+			parent->SetText(ss.str());
+		}, 
+		LAMBDA_EVENT_DEFAULT
+	);
+
 	auto vis2 = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 2");
 	vis2->SetSnapRules(Tara::UISnapRule::TOP |Tara::UISnapRule::LEFT );
 	vis2->SetTint({ 0.7, 0.7, 1, 1 });
@@ -60,6 +73,23 @@ void UIBuildLayer::Activate()
 	vis3->SetBorderFromPatch();
 	vis3->SetOffsets(0, 0, 0, 10);
 
+	Tara::CreateComponent<Tara::ClickableComponent>(vis3);
+
+	Tara::CreateComponent<Tara::LambdaComponent>(vis3, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT, 
+		[](Tara::LambdaComponent* self, Tara::Event& e) {
+			if (e.IsInCategory(Tara::EventCategory::EventCategoryUI)) {
+				int* clicks = self->Param<int>("clicks");
+				if (clicks) {
+					(*clicks)++;
+				}
+				else {
+					self->CreateParam<int>("clicks", 1);
+					
+				}
+				LOG_S(INFO) << e.ToString() << "Clicks: " << *self->Param<int>("clicks");
+			}
+		}
+	);
 }
 
 void UIBuildLayer::Draw(float deltaTime)

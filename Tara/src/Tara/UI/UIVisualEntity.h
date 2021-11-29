@@ -55,6 +55,8 @@ namespace Tara {
 
 		virtual void OnDraw(float deltaTime);
 
+		inline virtual void OnBeginPlay() override {}
+
 	private:
 		PatchRef m_Patch;
 		glm::vec4 m_Tint;

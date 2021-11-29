@@ -55,6 +55,13 @@ namespace Tara{
 	void UIBaseEntity::SetDesiredSize(glm::vec2 size)
 	{
 		m_Transform = UIBox::CompressBoxAndSize(UIBox::DecompressBoxAndSize(m_Transform).first, size);
+		auto parent = GetParent().lock();
+		if (parent) {
+			auto pparent = std::dynamic_pointer_cast<Tara::UIBaseEntity>(parent);
+			if (pparent) {
+				pparent->m_DesiredSizeDirty = true;
+			}
+		}
 	}
 	
 	void UIBaseEntity::SetAllowedArea(const UIBox& area)
@@ -209,6 +216,12 @@ namespace Tara{
 		});
 	}
 
+
+	inline BoundingBox UIBaseEntity::GetSpecificBoundingBox() const
+	{
+		auto renderArea = GetRenderArea();
+		return BoundingBox(renderArea.x1, renderArea.y1, 0, renderArea.Width(), renderArea.Height(), 1);
+	}
 
 	void UIBaseEntity::OnDraw(float deltaTime)
 	{

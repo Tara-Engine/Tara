@@ -160,9 +160,15 @@ namespace Tara {
 
 		inline virtual void OnBeginPlay() override { ListenForEvents(true); };
 
+		inline virtual BoundingBox GetSpecificBoundingBox() const;
+
 		//DEBUG
 		virtual void OnDraw(float deltaTime) override;
 
+
+		inline virtual void SelfOverlapChecks() override {};
+		
+		inline virtual void OtherOverlapChecks(EntityRef other) override {};
 	protected:
 		//Transform m_Transform
 		//floats x1, y1, x2, y1, vec4 border

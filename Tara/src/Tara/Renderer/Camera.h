@@ -303,6 +303,14 @@ namespace Tara {
 		/// <returns>view matrix, column-major</returns>
 		virtual glm::mat4 GetViewMatrix() const;
 
+		/// <summary>
+		/// Given a location on the screen, make a unit ray into the world, relative to the same space as the camera sees it.
+		/// </summary>
+		/// <param name="x">the X pixel location on the screen</param>
+		/// <param name="y">the Y pixel location on the screen</param>
+		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
+		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const override;
+
 	protected:
 		/// <summary>
 		/// update the projection matrix according to extent

@@ -45,6 +45,8 @@ namespace Tara {
 
 		//for debug purposes
 		void OnDraw(float deltaTime);
+
+		inline virtual void OnBeginPlay() override {}
 	private:
 		Direction m_Direction;
 	};

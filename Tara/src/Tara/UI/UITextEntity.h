@@ -68,6 +68,7 @@ namespace Tara {
 
 		virtual void OnUpdate(float deltaTime) override;
 
+		inline virtual void OnBeginPlay() override {}
 	private:
 		//private internal functions
 

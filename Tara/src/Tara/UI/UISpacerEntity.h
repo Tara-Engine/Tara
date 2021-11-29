@@ -40,6 +40,7 @@ namespace Tara {
 		//overriden stuff
 		virtual void CalculateDesiredSize() override;
 
+		inline virtual void OnBeginPlay() override {}
 	private:
 		glm::vec2 m_Size;
 	};

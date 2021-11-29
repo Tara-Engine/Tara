@@ -71,7 +71,7 @@ namespace Tara{
 			m_TextMeshSize = glm::vec2{0,0};
 		}
 		m_TextDirty = false;
-
+		m_DesiredSizeDirty = true;
 	}
 
 

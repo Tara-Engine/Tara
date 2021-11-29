@@ -50,6 +50,7 @@
 //Components
 #include "Tara/Components/ScriptComponent.h"
 #include "Tara/Components/ClickableComponent.h"
+#include "Tara/Components/LambdaComponent.h"
 
 //UI
 #include "Tara/UI/UIBaseEntity.h"
