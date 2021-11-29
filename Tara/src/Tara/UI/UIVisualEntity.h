@@ -20,25 +20,25 @@ namespace Tara {
 		/// Get the visual patch for this entity
 		/// </summary>
 		/// <returns></returns>
-		const PatchRef& GetPatch() const { return m_Patch; }
+		inline const PatchRef& GetPatch() const { return m_Patch; }
 
 		/// <summary>
 		/// Set the visual patch for this entity
 		/// </summary>
 		/// <param name="patch"></param>
-		void SetPatch(const PatchRef& patch) { m_Patch = patch, m_DesiredSizeDirty = true; }
+		inline void SetPatch(const PatchRef& patch) { m_Patch = patch, m_DesiredSizeDirty = true; }
 
 		/// <summary>
 		/// Set the visual tint
 		/// </summary>
 		/// <param name="color"></param>
-		void SetTint(glm::vec4 color) { m_Tint = color; }
+		inline void SetTint(glm::vec4 color) { m_Tint = color; }
 		
 		/// <summary>
 		/// Get the visual tint
 		/// </summary>
 		/// <returns></returns>
-		const glm::vec4& GetTint() const { return m_Tint; }
+		inline const glm::vec4& GetTint() const { return m_Tint; }
 
 		/// <summary>
 		/// Set the border to be the same as the current patch pixel border

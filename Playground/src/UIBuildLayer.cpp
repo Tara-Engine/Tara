@@ -9,7 +9,7 @@ UIBuildLayer::~UIBuildLayer()
 
 void UIBuildLayer::Activate()
 {
-
+	auto font = Tara::Font::Create("assets/LiberationSans-Regular.ttf", 1024, 96, "arial");
 
 	auto textureUVChecker = Tara::Texture2D::Create("assets/Button_Normal.png");
 	m_Patch = Tara::Patch::Create(textureUVChecker, "ButtonPatch");
@@ -37,8 +37,13 @@ void UIBuildLayer::Activate()
 	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 1");
 	vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	vis->SetBorderFromPatch();
-	vis->SetOffsets(0, 1000, 0, 50);
+	//vis->SetOffsets(0, 1000, 0, 50);
 	//vis->SetTint({1, 1, 1, 0.5});
+
+	auto text = Tara::CreateEntity<Tara::UITextEntity>(vis, weak_from_this(), font, "Text Entity");
+	text->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	text->SetText("Test:\n[    ]\n[\t]");
+	text->SetTextSize(32);
 
 	auto vis2 = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 2");
 	vis2->SetSnapRules(Tara::UISnapRule::TOP |Tara::UISnapRule::LEFT );

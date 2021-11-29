@@ -18,8 +18,12 @@ namespace Tara{
 		}
 		auto t = GetWorldTransform(); //cache of world transform
 		auto& tex = m_Font->GetTexture(); //cache of texture. audo does deduce const, but not &
-		//for each character, draw its font
-		for (int i = 0; i < m_Text.size(); i++) {
+		//for each character, draw its font. Don't use m_Text.size() because there may be more transforms than in the original text. using \t is an example of this
+		for (int i = 0; i < m_CachedTrasforms.size(); i++) {
+			if (m_CachedMinUVs[i] == glm::vec2(0, 0) && m_CachedMaxUVs[i] == glm::vec2(0, 0)) {
+				//there is more allocated cells than displayed characters.
+				break;
+			}
 			Renderer::Quad(t + m_CachedTrasforms[i], m_Color, tex, m_CachedMinUVs[i], m_CachedMaxUVs[i]);
 		}
 	}
