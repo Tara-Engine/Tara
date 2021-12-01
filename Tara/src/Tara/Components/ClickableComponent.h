@@ -23,6 +23,24 @@ namespace Tara {
 		/// <param name="camera"></param>
 		inline void SetCamera(CameraEntityNoRef camera) { m_Camera = camera; }
 
+		/// <summary>
+		/// Get the camera being used. If none set, returns layer camera. If that is not set, returns nullptr
+		/// </summary>
+		/// <returns></returns>
+		CameraEntityNoRef GetCamera() const;
+
+		/// <summary>
+		/// Set the distance (in screen units) that the mouse has to travel while down to start drag and drop events
+		/// </summary>
+		/// <param name="dist"></param>
+		inline void SetDragStartDistance(float dist) { m_DragStartDist = dist; }
+
+		/// <summary>
+		/// Get the distance (in screen units) that the mouse has to travel while down to start drag and drop events
+		/// </summary>
+		/// <returns></returns>
+		inline float GetDragStartDistance() const { return m_DragStartDist; }
+
 	public:
 		//overrides
 		virtual void OnBeginPlay() override;
@@ -37,7 +55,7 @@ namespace Tara {
 		
 		bool OnMouseButtonReleaseEvent(MouseButtonReleaseEvent& e);
 		
-		bool OnMouseMoveEvent(MouseMoveEvent& e);
+		//bool OnMouseMoveEvent(MouseMoveEvent& e);
 
 		Vector GetMousePos(glm::vec2 mousePos);
 
@@ -46,6 +64,9 @@ namespace Tara {
 	private:
 		bool m_IsDownOverMe;
 		bool m_IsHovering;
+		bool m_IsDragging;
+		float m_DragStartDist;
+		glm::vec2 m_DragOriginCache;
 		CameraEntityNoRef m_Camera;
 	};
 

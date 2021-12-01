@@ -45,7 +45,9 @@ void UIBuildLayer::Activate()
 	auto base = Tara::CreateEntity<Tara::UIBaseEntity>(Tara::EntityNoRef(), weak_from_this(), "UIBaseEntity");
 	base->SetBorder(0, 0, 0, 0);
 
-	auto list = Tara::CreateEntity<Tara::UIListEntity>(base, weak_from_this(), "UIListEntity");
+	auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, weak_from_this(), patchFrame, 28.0f, "Basic Frame");
+
+	auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, weak_from_this(), "UIListEntity");
 	//list->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
 	list->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	list->SetSpacing(10, 10);

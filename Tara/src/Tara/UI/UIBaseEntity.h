@@ -134,13 +134,13 @@ namespace Tara {
 		/// <summary>
 		/// Set the positional offsets for drawings
 		/// </summary>
-		/// <param name="offsets">UIBox offsets</param>
+		/// <param name="offsets">vec4 (left, right, top, bottom) offsets</param>
 		inline void SetOffsets(glm::vec4 offsets) { m_Offsets = offsets; m_DesiredSizeDirty = true; }
 
 		/// <summary>
 		/// Get the positional offsets for drawing
 		/// </summary>
-		/// <returns>Offsets as a UIBox</returns>
+		/// <returns>Offsets as a vec4 (left, right, top, bottom)</returns>
 		inline const glm::vec4& GetOffsets() const { return m_Offsets; }
 
 		/// <summary>

@@ -300,12 +300,75 @@ namespace Tara {
 		/// <returns></returns>
 		inline bool GetIsHovering() const { return m_IsHovering; }
 
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "Hover Event";
+			if (!m_IsHovering) {
+				ss << " Ended";
+			}
+			ss << ": Mouse Pos: [X=" << m_MouseX << " Y=" << m_MouseY << "].";
+			return ss.str();
+		}
+
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
 		EVENT_CLASS_CLASS(HoverEvent)
 	private:
 		float m_MouseX;
 		float m_MouseY;
 		bool m_IsHovering;
+	};
+
+	/// <summary>
+	/// An event for when the mouse is clicked, then moved while held down
+	/// </summary>
+	class DragEvent : public ApplicationEvent {
+	public:
+		enum class DragType : uint8_t {
+			BEGIN, CONTINUE, END
+		};
+	public:
+		DragEvent(float mouseX, float mouseY, DragType type)
+			:m_MouseX(mouseX), m_MouseY(mouseY), m_Type(type)
+		{}
+		/// <summary>
+		/// Get the mouse  position
+		/// </summary>
+		/// <returns></returns>
+		inline glm::vec2 GetMousePos() const { return { m_MouseX, m_MouseY }; }
+		/// <summary>
+		/// Get the mouse X position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseX() const { return m_MouseX; }
+		/// <summary>
+		/// Get the mouse Y position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseY() const { return m_MouseY; }
+
+		/// <summary>
+		/// Get the drag type (start, continue, end)
+		/// </summary>
+		/// <returns></returns>
+		inline DragType GetDragType() const { return m_Type; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "Drag Event: Mouse Pos: [X=" << m_MouseX << " Y=" << m_MouseY << "]. Type: ";
+			switch (m_Type) {
+			case DragType::BEGIN:{ ss << "BEGIN."; break; }
+			case DragType::CONTINUE:{ ss << "CONTINUE."; break; }
+			case DragType::END:{ ss << "END."; break; }
+			}
+			return ss.str();
+		}
+
+		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
+		EVENT_CLASS_CLASS(DragEvent)
+	private:
+		float m_MouseX;
+		float m_MouseY;
+		DragType m_Type;
 	};
 
 	/// <summary>
@@ -330,6 +393,12 @@ namespace Tara {
 		/// <returns></returns>
 		inline bool GetToggle() const { return m_Toggle; }
 
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "UI Toggle Event: State: " << ((m_Toggle)?"On":"Off");
+			return ss.str();
+		}
+
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
 		EVENT_CLASS_CLASS(UIToggleEvent)
 	private:
@@ -352,6 +421,12 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		inline UIBaseEntityNoRef GetElement() const { return m_Element; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "UI State Change Event.";
+			return ss.str();
+		}
 
 		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
 		EVENT_CLASS_CLASS(UIStateChangeEvent)

@@ -6,8 +6,26 @@
 
 namespace Tara{
 	ClickableComponent::ClickableComponent(EntityNoRef parent, const std::string& name)
-		: Component(parent, name), m_IsDownOverMe(false), m_IsHovering(false)
+		: Component(parent, name), m_DragOriginCache(0,0), m_DragStartDist(5), m_IsDragging(false), m_IsDownOverMe(false), m_IsHovering(false)
 	{
+	}
+
+	CameraEntityNoRef ClickableComponent::GetCamera() const
+	{
+		CameraEntityRef camEntity = m_Camera.lock();
+		if (camEntity) {
+			return camEntity;
+		}
+		else {
+			auto parent = GetParent().lock();
+			if (parent) {
+				camEntity = parent->GetOwningLayer().lock()->GetLayerCamera().lock();
+				if (camEntity) {
+					return camEntity;
+				}
+			}
+		}
+		return CameraEntityNoRef();
 	}
 
 	void ClickableComponent::OnBeginPlay()
@@ -20,7 +38,7 @@ namespace Tara{
 	{
 		auto screenPos = Input::Get()->GetMousePos();
 		auto worldPos = GetMousePos(screenPos);
-		if (!m_IsDownOverMe) {
+		if (!m_IsDownOverMe && !m_IsDragging) {
 			if (IsInOwner(worldPos)) {
 				m_IsHovering = true;
 				HoverEvent e(screenPos.x, screenPos.y, true);
@@ -35,12 +53,36 @@ namespace Tara{
 			}
 		}
 		else {
-			if (!IsInOwner(worldPos)) {
-				//unclick nicely
-				ClickEvent e(screenPos.x, screenPos.y, 0, false, true);
-				GetParent().lock()->ReceiveEvent(e);
-				m_IsDownOverMe = false;
+			if (!m_IsDragging) {
+				auto tween = screenPos - m_DragOriginCache;
+				auto dist = sqrtf(tween.x * tween.x + tween.y * tween.y);
+				
+				if (dist >= m_DragStartDist) {
+					m_IsDragging = true;
+					//LOG_S(INFO) << "Dragging started!";
+					//send start event
+					DragEvent e(m_DragOriginCache.x, m_DragOriginCache.y, DragEvent::DragType::BEGIN);
+					GetParent().lock()->ReceiveEvent(e);
+					//send update event
+					DragEvent c(screenPos.x, screenPos.y, DragEvent::DragType::CONTINUE);
+					GetParent().lock()->ReceiveEvent(c);
+				}
+				
+				if (!IsInOwner(worldPos)) {
+					//unclick nicely
+					ClickEvent e(screenPos.x, screenPos.y, 0, false, true);
+					GetParent().lock()->ReceiveEvent(e);
+					m_IsDownOverMe = false;
+				}
 			}
+			else {
+				//send a drag contiue event
+				//LOG_S(INFO) << "Dragging Continued";
+				DragEvent e(screenPos.x, screenPos.y, DragEvent::DragType::CONTINUE);
+				GetParent().lock()->ReceiveEvent(e);
+			}
+
+			
 		}
 	}
 
@@ -59,6 +101,7 @@ namespace Tara{
 		auto worldPos = GetMousePos(screenPos);
 		if (IsInOwner(worldPos)) {
 			m_IsDownOverMe = true;
+			m_DragOriginCache = screenPos;
 			ClickEvent e(screenPos.x, screenPos.y, e.GetButton(), false, false);
 			GetParent().lock()->ReceiveEvent(e);
 		}
@@ -68,11 +111,18 @@ namespace Tara{
 
 	bool ClickableComponent::OnMouseButtonReleaseEvent(MouseButtonReleaseEvent& e)
 	{
+		auto screenPos = Input::Get()->GetMousePos();
 		if (m_IsDownOverMe) {
-			auto screenPos = Input::Get()->GetMousePos();
 			ClickEvent e(screenPos.x, screenPos.y, e.GetButton(), true, false);
 			GetParent().lock()->ReceiveEvent(e);
 			m_IsDownOverMe = false;
+		}
+		if (m_IsDragging) {
+			//LOG_S(INFO) << "Dragging Ended";
+			m_IsDragging = false;
+			//send drag end event
+			DragEvent e(screenPos.x, screenPos.y, DragEvent::DragType::END);
+			GetParent().lock()->ReceiveEvent(e);
 		}
 		return false;
 	}
