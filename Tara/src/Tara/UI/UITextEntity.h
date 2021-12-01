@@ -85,6 +85,7 @@ namespace Tara {
 		std::vector<glm::vec2> m_CachedMaxUVs;
 		glm::vec2 m_TextMeshSize;
 		float m_TextSize;
+		float m_VerticalOffset;
 
 		bool m_TextDirty;
 	};

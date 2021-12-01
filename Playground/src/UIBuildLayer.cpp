@@ -12,16 +12,31 @@ void UIBuildLayer::Activate()
 {
 	auto font = Tara::Font::Create("assets/LiberationSans-Regular.ttf", 1024, 96, "arial");
 
-	auto textureUVChecker = Tara::Texture2D::Create("assets/Button_Normal.png");
-	m_Patch = Tara::Patch::Create(textureUVChecker, "ButtonPatch");
-	m_Patch->SetBorderPixels(16, 16, 16, 16);
+	m_Patch = Tara::Patch::Create(Tara::Texture2D::Create("assets/Widget_Base.png"), "PatchWidgetBase");
+	m_Patch->SetBorderPixels(2, 2, 2, 2);
+
+	auto patchFrame = Tara::Patch::Create(Tara::Texture2D::Create("assets/Frame.png"), "PatchFrame");
+	patchFrame->SetBorderPixels(2, 2, 30, 2);
+
+
+	auto patchButtonNormal = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Normal.png"), "PatchButtonNormal");
+	patchButtonNormal->SetBorderPixels(5, 5, 5, 5);
+
+	auto patchButtonHover = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Hover.png"), "PatchButtonHover");
+	patchButtonHover->SetBorderPixels(5, 5, 5, 5);
+
+	auto patchButtonClicked = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Clicked.png"), "PatchButtonClicked");
+	patchButtonClicked->SetBorderPixels(5, 5, 5, 5);
+
+	auto patchButtonDisabled = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Disabled.png"), "PatchButtonDisabled");
+	patchButtonDisabled->SetBorderPixels(5, 5, 5, 5);
 
 	m_SceneCamera = Tara::CreateEntity<Tara::CameraEntity>(
 		Tara::EntityNoRef(), weak_from_this(),
 		Tara::Camera::ProjectionType::Screen,
 		TRANSFORM_DEFAULT,
 		"camera"
-		);
+	);
 
 	SetLayerCamera(m_SceneCamera);
 
@@ -58,48 +73,61 @@ void UIBuildLayer::Activate()
 		LAMBDA_EVENT_DEFAULT
 	);
 
-	auto vis2 = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 2");
-	vis2->SetSnapRules(Tara::UISnapRule::TOP |Tara::UISnapRule::LEFT );
-	vis2->SetTint({ 0.7, 0.7, 1, 1 });
-	vis2->SetBorderFromPatch();
+
+	//vis 2
 	
-	auto spacer = Tara::CreateEntity<Tara::UISpacerEntity>(list, weak_from_this());
-	spacer->SetSize(50, 50);
-	spacer->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 
-	auto vis3 = Tara::CreateEntity<Tara::UIVisualEntity>(spacer, weak_from_this(), m_Patch, "UIVisualEntity 3");
-	vis3->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::BOTTOM | Tara::UISnapRule::LEFT | Tara::UISnapRule::RIGHT);
-	vis3->SetTint({ 1.0, 0.7, 0.7, 1 });
-	vis3->SetBorderFromPatch();
-	vis3->SetOffsets(0, 0, 0, 10);
+	
+	auto button = Tara::CreateEntity<Tara::UIButtonEntity>(list, weak_from_this(), patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+	button->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	button->SetBorderFromPatch();
+	button->SetTint({ 1, 1, 1, 1 });
 
-	Tara::CreateComponent<Tara::ClickableComponent>(vis3);
-
-	Tara::CreateComponent<Tara::LambdaComponent>(vis3, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT, 
-		[](Tara::LambdaComponent* self, Tara::Event& e) {
-			if (e.IsInCategory(Tara::EventCategory::EventCategoryUI)) {
-				int* clicks = self->Param<int>("clicks");
-				if (clicks) {
-					(*clicks)++;
+	Tara::CreateComponent<Tara::LambdaComponent>(button, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT, 
+		[this](Tara::LambdaComponent* self, Tara::Event& e) {
+			//LOG_S(INFO) << e.ToString();
+			Tara::EventFilter filter(e);
+			filter.Call<Tara::UIToggleEvent>([this, self](Tara::UIToggleEvent& ee) {
+				int* clickCount = self->Param<int>("clickCount");
+				if (!clickCount) {
+					self->CreateParam<int>("clickCount", 0);
+					clickCount = self->Param<int>("clickCount");
 				}
-				else {
-					self->CreateParam<int>("clicks", 1);
-					
+				(*clickCount)++;
+				auto parent = self->GetParent().lock();
+				if (!parent) { return true; }
+				auto disp = parent->GetFirstChildOfType<Tara::UITextEntity>();
+				if (!disp) { return true; }
+				std::stringstream ss;
+				ss << "Clicks: " << *clickCount;
+				disp->SetText(ss.str());
+				if (*clickCount > 9) {
+					auto pparent = std::dynamic_pointer_cast<Tara::UIButtonEntity>(parent);
+					if (!pparent) { return true; }
+					pparent->SetEnabled(false);
+					Tara::After([self, pparent, disp]() {
+						pparent->SetEnabled(true);
+						(*(self->Param<int>("clickCount"))) = 0;
+						disp->SetText("Clicks: 0");
+					}, 1);
 				}
-				LOG_S(INFO) << e.ToString() << "Clicks: " << *self->Param<int>("clicks");
-			}
+				return true;
+			});
 		}
 	);
-}
-
-void UIBuildLayer::Draw(float deltaTime)
-{
-	Layer::Draw(deltaTime);
 	
-	//Tara::Renderer::BeginScene(m_SceneCamera->GetCamera());
+	auto sizer = Tara::CreateEntity<Tara::UISpacerEntity>(button, weak_from_this());
+	sizer->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	sizer->SetSize({ 150, 25 });
 
-	//Tara::Renderer::Patch(TRANSFORM_2D(0, 0, 0, 500, 300), m_Patch);
+	auto text2 = Tara::CreateEntity<Tara::UITextEntity>(button, weak_from_this(), font, "Text Entity");
+	text2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	text2->SetText("Clicks: 0");
+	text2->SetTextSize(32);
 
-	//Tara::Renderer::EndScene();
+	//Vis 3
+	
 }
+
+
 

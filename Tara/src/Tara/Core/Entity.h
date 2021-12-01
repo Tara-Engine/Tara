@@ -247,6 +247,13 @@ namespace Tara {
 		EntityRef GetFirstChildOfName(const std::string& name) const;
 		
 		/// <summary>
+		/// Get the first child of a specific subclass of Entity, if any.
+		/// </summary>
+		/// <typeparam name="EntityType">the subclass of entity</typeparam>
+		/// <returns>the first child of that subclass if any, or nullptr if none found</returns>
+		template<typename EntityType> std::shared_ptr<EntityType> GetFirstChildOfType() const;
+
+		/// <summary>
 		/// Remove a child by its name. Only removes the first child with this name
 		/// </summary>
 		/// <param name="name">The child name</param>
@@ -521,17 +528,32 @@ protected:
 	/// <returns>A reference to the created Entity</returns>
 	template<class EntityType, typename... VA_ARGS>
 	inline std::shared_ptr<EntityType> CreateEntity(VA_ARGS&&... args) {
-		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::CreateEntity:: Provided class is not a subclass of Tara::Entity");
-		static_assert(std::is_constructible<EntityType, VA_ARGS...>::value, "Error: Tara::CreateEntity:: cannot compile due to paramaters passed not matching constructor of that entity type!");
+		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::CreateEntity: Provided class is not a subclass of Tara::Entity");
+		static_assert(std::is_constructible<EntityType, VA_ARGS...>::value, "Error: Tara::CreateEntity: cannot compile due to paramaters passed not matching constructor of that entity type!");
 		std::shared_ptr<EntityType> entity = std::make_shared<EntityType>(std::forward<VA_ARGS>(args)...);
 		Entity::Register(entity);
 		entity->OnBeginPlay();
 		return entity;
 	}
 
+	template<typename EntityType>
+	inline std::shared_ptr<EntityType> Entity::GetFirstChildOfType() const
+	{
+		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::Entity::GetFirstChildOfType : Provided class is not a subclass of Tara::Entity");
+		ENTITY_EXISTS(nullptr);
+		for (auto comp : m_Children) {
+			auto subtype = std::dynamic_pointer_cast<EntityType>(comp);
+			if (subtype) {
+				return subtype;
+			}
+		}
+		return nullptr;
+	}
+
 	template<typename ComponentType>
 	inline std::shared_ptr<ComponentType> Entity::GetFirstCompontentOfType() const
 	{
+		static_assert(std::is_base_of<Component, ComponentType>::value, "Error: Tara::Entity::GetFirstCompontentOfType : Provided class is not a subclass of Tara::Component");
 		ENTITY_EXISTS(nullptr);
 		for (auto comp : m_Components) {
 			auto subtype = std::dynamic_pointer_cast<ComponentType>(comp);

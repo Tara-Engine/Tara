@@ -11,7 +11,13 @@ namespace Tara {
 	/// </summary>
 	class UIVisualEntity : public UIBaseEntity {
 	public:
-
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="parent">the parent entity</param>
+		/// <param name="owningLayer">the owning layer</param>
+		/// <param name="patch">the visual patch</param>
+		/// <param name="name">the name</param>
 		UIVisualEntity(EntityNoRef parent, LayerNoRef owningLayer, PatchRef patch, const std::string& name = "UIVisualEntity");
 
 		virtual ~UIVisualEntity() = default;

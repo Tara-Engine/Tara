@@ -12,6 +12,12 @@ namespace Tara {
 	/// </summary>
 	class UISpacerEntity : public UIBaseEntity {
 	public:
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="parent">Parent entity</param>
+		/// <param name="owningLayer">owning layer</param>
+		/// <param name="name">name</param>
 		UISpacerEntity(EntityNoRef parent, LayerNoRef owningLayer, const std::string& name = "UISpacerEntity");
 
 		virtual ~UISpacerEntity() = default;

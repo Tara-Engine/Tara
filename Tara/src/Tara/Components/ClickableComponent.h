@@ -17,12 +17,19 @@ namespace Tara {
 
 		virtual ~ClickableComponent() {}
 
+		/// <summary>
+		/// Set the camera to use for mouse position calculations
+		/// </summary>
+		/// <param name="camera"></param>
+		inline void SetCamera(CameraEntityNoRef camera) { m_Camera = camera; }
+
+	public:
+		//overrides
 		virtual void OnBeginPlay() override;
 
-		//virtual void OnUpdate(float deltaTime) override;
+		virtual void OnUpdate(float deltaTime) override;
+		
 		virtual void OnEvent(Event& e) override;
-
-		inline void SetCamera(CameraEntityNoRef camera) { m_Camera = camera; }
 
 	private:
 		
@@ -38,6 +45,7 @@ namespace Tara {
 
 	private:
 		bool m_IsDownOverMe;
+		bool m_IsHovering;
 		CameraEntityNoRef m_Camera;
 	};
 

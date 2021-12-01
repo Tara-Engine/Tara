@@ -43,10 +43,7 @@ namespace Tara {
 		/// </summary>
 		virtual void CalculateDesiredSize();
 
-		/// <summary>
-		/// Set the desired size. Will not mark m_DesiredSizeDirty to true. Used in CalculateDesiredSize
-		/// </summary>
-		void SetDesiredSize(glm::vec2 size);
+		
 
 		/// <summary>
 		/// Set the area that the UI is allowed to render in.
@@ -74,7 +71,7 @@ namespace Tara {
 		/// Set the border around the element's children
 		/// </summary>
 		/// <param name="border">vec4 of {left, right, top, bottom} sides in pixels</param>
-		inline void SetBorder(glm::vec4 border) { m_Border = border; }
+		inline void SetBorder(glm::vec4 border) { m_Border = border; m_DesiredSizeDirty = true; }
 
 		/// <summary>
 		/// Get the border around the element's children
@@ -151,6 +148,13 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		UIBox GetRenderArea() const;
+
+	protected:
+		/// <summary>
+		/// Set the desired size. Will not mark m_DesiredSizeDirty to true. Used in CalculateDesiredSize
+		/// </summary>
+		void SetDesiredSize(glm::vec2 size);
+
 	public:
 		//Overriden stuff
 
