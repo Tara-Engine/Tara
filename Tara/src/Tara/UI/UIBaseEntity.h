@@ -68,6 +68,13 @@ namespace Tara {
 		inline void SetBorder(float left, float right, float top, float bottom) {SetBorder({left, right, top, bottom});}
 		
 		/// <summary>
+		/// Set the border with equal left-right and top-bottom values
+		/// </summary>
+		/// <param name="lr">the left-right value</param>
+		/// <param name="tb">the top-bottom value</param>
+		inline void SetBorder(float lr, float tb) { SetBorder({ lr, lr, tb, tb }); }
+
+		/// <summary>
 		/// Set the border around the element's children
 		/// </summary>
 		/// <param name="border">vec4 of {left, right, top, bottom} sides in pixels</param>

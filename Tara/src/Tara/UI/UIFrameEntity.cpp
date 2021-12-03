@@ -65,7 +65,7 @@ namespace Tara {
 				Renderer::Quad(TRANSFORM_2D(d.x1, d.y2 - m_ResizeHandleSize, 0, d.Width(), m_ResizeHandleSize), glm::vec4{ 0,0,0,0.5 });
 				break;
 			}
-			default:{}
+			default: {break; }
 			}
 			m_DrawResizeBar = false;
 		}
@@ -117,20 +117,12 @@ namespace Tara {
 				setDragOrigin = true;
 			}
 
-			if (setDragOrigin) {
-				auto offset = GetOffsets();
-				auto mouseOffsetCorner = glm::vec2(worldCoord.x, worldCoord.y) - glm::vec2(drawArea.x1, drawArea.y1);
-				mouseOffsetCorner *= -1;
-				
+			if (setDragOrigin) {				
 				m_DragData = new DragData{
 					worldCoord,			//mouse pos
 					GetSize(),			//size
 					GetOffsets()		//offset
 				};
-				//LOG_S(INFO) << "MousePosition: " << m_DragData->MousePositionWorld;
-				//LOG_S(INFO) << "FrameSize: " << m_DragData->FrameSize;
-				//LOG_S(INFO) << "FrameOffsets: " << m_DragData->FrameOffsets;
-
 				return true;
 			}
 

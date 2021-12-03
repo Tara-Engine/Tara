@@ -184,7 +184,7 @@ namespace Tara{
 					//move unique to next slot
 					//take the base (y1), and the total height scaled by the percentage that is wanted.
 					if (m_Direction == Direction::Vertical) {
-						unique.y1 = unique.y2 - (allowed.Height() * (heightParts[i] / totalHeight));
+						unique.y2 = unique.y1 + (allowed.Height() * (heightParts[i] / totalHeight));
 					}
 					else {
 						unique.x2 = unique.x1 + allowed.Width() * (heightParts[i] / totalHeight);
@@ -203,7 +203,7 @@ namespace Tara{
 					//adjust unique start for spacing
 					//ie, take end of last block, and move it up by spacing, then set to first
 					if (m_Direction == Direction::Vertical) {
-						unique.y2 = unique.y1 - spacing.y;
+						unique.y1 = unique.y2 + spacing.y;
 					}
 					else {
 						unique.x1 = unique.x2 + spacing.x;

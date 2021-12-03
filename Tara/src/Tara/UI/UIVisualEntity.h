@@ -50,6 +50,8 @@ namespace Tara {
 		/// Set the border to be the same as the current patch pixel border
 		/// </summary>
 		void SetBorderFromPatch();
+
+
 	public:
 
 		/// <summary>

@@ -46,43 +46,17 @@ void UIBuildLayer::Activate()
 	base->SetBorder(0, 0, 0, 0);
 
 
-	//auto sz = Tara::CreateEntity<Tara::UISpacerEntity>(base, PARENT_LAYER);
-	//sz->SetSnapRules(Tara::UISnapRule::BOTTOM | Tara::UISnapRule::CENTER_HORIZONTAL);
-	//sz->SetSize({ 600, 350 });
-	/*
-	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(base, PARENT_LAYER, m_Patch, "UIVisualEntity 1");
-	vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	vis->SetBorderFromPatch();
-	//vis->SetOffsets(0, 1000, 0, 50);
-	//vis->SetTint({1, 1, 1, 0.5});
-
-	auto sz = Tara::CreateEntity<Tara::UISpacerEntity>(vis, PARENT_LAYER);
-	sz->SetSnapRules(Tara::UISnapRule::BOTTOM | Tara::UISnapRule::CENTER_HORIZONTAL);
-	sz->SetSize({ 100, 100 });
-	*/
-	
-
-	//*
 	auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, PARENT_LAYER, patchFrame, 28.0f, "Basic Frame");
-	//frame->SetOffsets(10, 0, 10, 0);
+	frame->SetBorder(frame->GetBorder() + 5.0f);
 	
 	auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, PARENT_LAYER, "UIListEntity");
-	//list->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
 	list->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	list->SetSpacing(10, 10);
+	list->SetSpacing(5, 5);
 
 	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(list, PARENT_LAYER, m_Patch, "UIVisualEntity 1");
 	vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	vis->SetBorderFromPatch();
-	//vis->SetOffsets(100, 500, 20, 50);
 	vis->SetTint({1, 0.8, 0.8, 1});
-
-	//auto sz = Tara::CreateEntity<Tara::UISpacerEntity>(vis, PARENT_LAYER);
-	//sz->SetSnapRules(Tara::UISnapRule::CENTER_VERTICAL | Tara::UISnapRule::CENTER_HORIZONTAL);
-	//sz->SetSize({ 100, 100 });
-
-
-
 
 	auto text = Tara::CreateEntity<Tara::UITextEntity>(vis, PARENT_LAYER, font, "Text Entity");
 	text->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
@@ -92,10 +66,10 @@ void UIBuildLayer::Activate()
 	Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT, 
 		[this](Tara::LambdaComponent* self, float deltaTime) {
 			auto screenPos = Tara::Input::Get()->GetMousePos();
-			auto worldPos = this->m_SceneCamera->GetRayFromScreenCoordinate(screenPos.x, screenPos.y);
+			//auto worldPos = this->m_SceneCamera->GetRayFromScreenCoordinate(screenPos.x, screenPos.y);
 			auto parent = std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock());
 			std::stringstream ss;
-			ss << "Mouse: " << worldPos.first;
+			ss << "Mouse: " << screenPos;
 			//LOG_S(INFO) << ss.str();
 			parent->SetText(ss.str());
 		}, 
@@ -105,9 +79,6 @@ void UIBuildLayer::Activate()
 	
 
 	//vis 2
-	
-
-	
 	auto button = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
 	button->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	button->SetBorderFromPatch();
@@ -139,7 +110,7 @@ void UIBuildLayer::Activate()
 						pparent->SetEnabled(true);
 						(*(self->Param<int>("clickCount"))) = 0;
 						disp->SetText("Clicks: 0");
-					}, 1);
+					}, 3);
 				}
 				return true;
 			});
@@ -155,8 +126,26 @@ void UIBuildLayer::Activate()
 	text2->SetText("Clicks: 0");
 	text2->SetTextSize(32);
 
-	//Vis 3
-	//*/
+	//debug draw button
+
+	auto button2 = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "debugDrawButton");
+	button2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	button2->SetBorderFromPatch();
+
+	Tara::CreateComponent<Tara::LambdaComponent>(button2, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+		[this](Tara::LambdaComponent* self, Tara::Event& e) {
+			//LOG_S(INFO) << e.ToString();
+			Tara::EventFilter filter(e);
+			filter.Call<Tara::UIToggleEvent>([this, self](Tara::UIToggleEvent& ee) {
+				Tara::UIBaseEntity::SetEnableDebugDraw(!Tara::UIBaseEntity::GetEnableDebugDraw());
+				return true;
+			});
+		}
+	);
+	auto text3 = Tara::CreateEntity<Tara::UITextEntity>(button2, PARENT_LAYER, font, "Text Entity");
+	text3->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	text3->SetText("Toggle Debug Draw");
+	text3->SetTextSize(32);
 }
 
 void UIBuildLayer::Draw(float deltaTime)
