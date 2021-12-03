@@ -11,7 +11,6 @@
 */
 
 namespace Tara {
-
 	void Renderer::LoadQuadShader()
 	{
 		std::unordered_map<Shader::TargetStage, std::string> sources;

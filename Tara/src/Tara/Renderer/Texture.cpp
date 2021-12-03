@@ -9,6 +9,7 @@
 
 namespace Tara{
     Texture::Filtering Texture::s_DefaultTextureFiltering = Texture::Filtering::Nearest;
+    Texture::Wrapping Texture::s_DefaultTextureWrapping = Texture::Wrapping::Repeat;
 
     Texture2DRef Texture2D::Create(const std::string& path, const std::string& name)
     {

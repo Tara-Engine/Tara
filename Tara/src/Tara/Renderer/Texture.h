@@ -17,6 +17,8 @@ namespace Tara {
 		/// Enum for texture filtering modes
 		/// </summary>
 		enum class Filtering : uint8_t {Nearest,Linear};
+
+		enum class Wrapping : uint8_t{Clamp, Border, Repeat, Mirror};
 	
 	public:
 		Texture(const std::string& name) : Asset(name){}
@@ -43,11 +45,33 @@ namespace Tara {
 		/// <param name="filter">the new filtering mode</param>
 		virtual void SetFiltering(Filtering filter) = 0;
 
+		/// <summary>
+		/// Set the texture wrapping mode
+		/// </summary>
+		/// <param name="wrap"></param>
+		virtual void SetWrap(Wrapping wrap) = 0;
+
+		/// <summary>
+		/// Set the texture border color for Texture wrap mode Border
+		/// </summary>
+		/// <param name="color"></param>
+		virtual void SetBorderColor(const glm::vec4& color) = 0;
 	public:
+		/// <summary>
+		/// Set the default texture filtering mode for all newly created textures
+		/// </summary>
+		/// <param name="filter"></param>
 		inline static void SetDefaultTextureFiltering(Filtering filter) { s_DefaultTextureFiltering = filter; }
+
+		/// <summary>
+		/// Set the default texture wrapping mode for all newly created textures
+		/// </summary>
+		/// <param name="wrap"></param>
+		inline static void SetDefaultTextureWrapping(Wrapping wrap) { s_DefaultTextureWrapping = wrap; }
 
 	protected:
 		static Filtering s_DefaultTextureFiltering;
+		static Wrapping s_DefaultTextureWrapping;
 	};
 
 	/// <summary>

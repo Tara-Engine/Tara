@@ -12,6 +12,8 @@ namespace Tara {
 		virtual inline uint32_t GetHeight()const override { return m_Height; }
 		virtual void Bind(int slot)const override;
 		virtual void SetFiltering(Filtering filter) override;
+		virtual void SetWrap(Wrapping wrap) override;
+		virtual void SetBorderColor(const glm::vec4& color) override;
 	protected:
 		void LoadFromFile();
 		void LoadFromArray(const uint8_t* imageData, uint32_t channels);

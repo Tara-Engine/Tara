@@ -11,6 +11,10 @@ namespace Tara {
 		virtual inline uint32_t GetHeight()const override { return m_Height; }
 		virtual void Bind(int slot)const override;
 		virtual void SetFiltering(Filtering filter) override;
+
+		virtual void SetWrap(Wrapping wrap) override;
+		virtual void SetBorderColor(const glm::vec4& color) override;
+
 		virtual void RenderTo(bool render) const override;
 		virtual void SetSize(uint32_t width, uint32_t height) override;
 	private:

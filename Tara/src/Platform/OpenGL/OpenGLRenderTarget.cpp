@@ -26,6 +26,29 @@ namespace Tara {
 			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}
+
+
+		//deal with wrapping
+		switch (Texture::s_DefaultTextureWrapping) {
+		case Texture::Wrapping::Clamp: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		case Texture::Wrapping::Border: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		}
+		case Texture::Wrapping::Repeat: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		case Texture::Wrapping::Mirror: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		}
+		}
+
+
 		//unbind texture
 		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -78,6 +101,35 @@ namespace Tara {
 			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}
 	}
+
+
+	void OpenGLRenderTarget::SetWrap(Wrapping wrap)
+	{
+		switch (wrap) {
+		case Texture::Wrapping::Clamp: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		case Texture::Wrapping::Border: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		}
+		case Texture::Wrapping::Repeat: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		case Texture::Wrapping::Mirror: {
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		}
+		}
+	}
+
+	void OpenGLRenderTarget::SetBorderColor(const glm::vec4& color)
+	{
+		glTextureParameterfv(m_TextureColorID, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&color);
+	}
+
 
 	void OpenGLRenderTarget::RenderTo(bool render) const
 	{

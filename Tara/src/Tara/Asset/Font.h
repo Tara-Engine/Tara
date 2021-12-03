@@ -37,6 +37,17 @@ namespace Tara {
 		/// <param name="maxUVs">a reference to a pre-created vector. Automatically resized and filled. After return, holds max UV data</param>
 		void GetTextQuads(const std::string& text, std::vector<Transform>& transforms, std::vector<glm::vec2>& minUVs, std::vector<glm::vec2>& maxUVs);
 
+		/// <summary>
+		/// Get the number of spaces that a tab takes
+		/// </summary>
+		/// <returns></returns>
+		inline float GetSpacesPerTab() const { return m_SpacesPerTab; }
+
+		/// <summary>
+		/// set the number of spaces a tab takes.
+		/// </summary>
+		/// <param name="spaces"></param>
+		inline void SetSpacesPerTab(float spaces) { m_SpacesPerTab = spaces; }
 	public:
 		/// <summary>
 		/// Create a new font from a file
@@ -51,12 +62,15 @@ namespace Tara {
 	private:
 		void LoadFromFile();
 
+		static std::string FilterString(const std::string& instr);
 	private:
 		std::string m_Path;	//file path
 		Texture2DRef m_Texture;	//the texture they are rasterized to
 		stbtt_packedchar m_CharacterData[128]; //character data
 		uint32_t m_ImageSize; //the chosen image size
 		uint32_t m_CharacterHeightPx; //the chosen pixel size of a character
+		float m_SpaceWidth;
+		float m_SpacesPerTab;
 	};
 
 

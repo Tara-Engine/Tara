@@ -6,6 +6,7 @@
 #include "Tara/Math/Types.h"
 #include "Tara/Renderer/Texture.h"
 #include "Tara/Asset/Font.h"
+#include "Tara/Asset/Patch.h"
 
 namespace Tara {
 
@@ -69,7 +70,14 @@ namespace Tara {
 		/// <param name="color">the color of the text. defaults to white</param>
 		static void Text(const Transform& transform, const std::string& text, FontRef font, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
 		
-		
+		/// <summary>
+		/// Render a 9-patch. If this is being done every frame with an unchanging patch, 
+		/// it may be more efficent to do it manually with some caching.
+		/// </summary>
+		/// <param name="transform">The transform to render at</param>
+		/// <param name="patch">the patch to render</param>
+		/// <param name="color">the tint color</param>
+		static void Patch(const Transform& transform, const PatchRef& patch, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 	private:
 		static void LoadQuadShader();

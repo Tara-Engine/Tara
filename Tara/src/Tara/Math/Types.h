@@ -9,6 +9,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <sol/sol.hpp>
 
+#include "Tara/Math/Extensions.h"
+
 //Create the default Transform
 //At origin, unrotatied, unscaled.
 #define TRANSFORM_DEFAULT Tara::Transform{Tara::Vector{0.0f,0.0f,0.0f},Tara::Rotator{0.0f,0.0f,0.0f},Tara::Vector{1.0f,1.0f,1.0f}}

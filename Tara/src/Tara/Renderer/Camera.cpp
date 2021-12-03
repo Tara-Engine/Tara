@@ -55,7 +55,7 @@ namespace Tara {
 
 
 	OrthographicCamera::OrthographicCamera(ProjectionType type)
-		: Camera(ProjectionType::Ortographic), m_Extent(-1, 1), m_MaintainAspectRatio(true)
+		: Camera(type), m_Extent(-1, 1), m_MaintainAspectRatio(true)
 	{}
 
 	OrthographicCamera::OrthographicCamera(float width)
@@ -210,7 +210,38 @@ namespace Tara {
 		auto t = Transform(m_Transform);
 		t.Position.x += (m_ScreenWidth / 2);
 		t.Position.y += (m_ScreenHeight / 2);
+		t.Scale.y *= -1;
 		return glm::inverse(t.GetTransformMatrix());
+	}
+
+	std::pair<Vector, Vector> ScreenCamera::GetRayFromScreenCoordinate(float x, float y) const
+	{
+		//this is for orthographic camera only
+		auto sizes = GetRenderTargetSize();
+		float wWidth = sizes.first;
+		float wHeight = sizes.second;
+		//Get the positions in the viewing volume of -1 to 1
+		float vx = MapRange((float)x, 0.0f, wWidth, -1.0f, 1.0f);
+		float vy = MapRange((float)y, 0.0f, wHeight, 1.0f, -1.0f); //y is inverted between pixel space and view space
+
+		//make a vec4 for matrix operations
+		glm::vec4 viewPlanePos = { vx, vy, 0.0f, 1.0f };
+
+		//Get the transform matrix, for use later
+		Transform t = m_Transform; //copy
+		t.Position += Vector{ m_ScreenWidth / 2, m_ScreenHeight / 2, 0 };
+		t.Scale.y *= -1;
+		auto tMatrix = t.GetTransformMatrix();
+
+		//transform the vector to be relative to the camera location in the world. 
+		Vector origin(tMatrix * glm::inverse(m_ProjectionMatrix) * viewPlanePos);
+
+		//now, get the offset.
+		//just get the forward vector of the camera (since its basic orthographic)
+		Vector offset = m_Transform.Rotation.GetForwardVector().Normalize();
+
+		//Return the pair of start and end of the ray
+		return std::make_pair(origin, offset);
 	}
 
 	void ScreenCamera::UpdateProjectionMatrix()

@@ -11,6 +11,8 @@
 
 #define ENTITY_EXISTS(x) if (!Exists()) {return x;}
 
+#define PARENT_LAYER Tara::LayerNoRef()
+
 //#define LISTTYPE std::list
 //#define LISTTYPE std::list
 
@@ -50,7 +52,7 @@ namespace Tara {
 		/// <param name="owningLayer">the owning layer, may not be null</param>
 		/// <param name="transform">the transform, defaults to origin, no rot, and a scale of 1</param>
 		/// <param name="name">the name</param>
-		Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform,  std::string name);
+		Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform,  const std::string& name);
 
 		/// <summary>
 		/// Register an externally created entity. This adds it to the parent, etc.
@@ -107,96 +109,96 @@ namespace Tara {
 		/// Get the transform of the Entity relative to parent
 		/// </summary>
 		/// <returns>the current transform</returns>
-		inline const Transform& GetRelativeTransform() const { return m_Transform; }
+		virtual inline const Transform& GetRelativeTransform() const { return m_Transform; }
 		
 		/// <summary>
 		/// Get the world transform of the Entity
 		/// </summary>
 		/// <returns>the current world transform</returns>
-		Transform GetWorldTransform() const;
+		virtual Transform GetWorldTransform() const;
 
 		/// <summary>
 		/// Set the relative transform of the entity
 		/// </summary>
 		/// <param name="transform">the new transform</param>
-		inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
+		virtual inline void SetRelativeTransform(const Transform& transform) { m_Transform = transform; }
 
 		/// <summary>
 		/// set the world transform of an entity
 		/// </summary>
-		void SetWorldTransform(const Transform& transform);
+		virtual void SetWorldTransform(const Transform& transform);
 
 		/// <summary>
 		/// Get the relative position of the Entity
 		/// </summary>
 		/// <returns>Position as a vector</returns>
-		inline const Vector& GetRelativePosition() const { return m_Transform.Position; }
+		virtual inline const Vector& GetRelativePosition() const { return m_Transform.Position; }
 
 		/// <summary>
 		/// Set the relative position of the Entity
 		/// </summary>
 		/// <param name="pos">the new position, as a vector</param>
-		inline void SetRelativePosition(const Vector& pos) { m_Transform.Position = pos; }
+		virtual inline void SetRelativePosition(const Vector& pos) { m_Transform.Position = pos; }
 
 		/// <summary>
 		/// Get the world position of the Entity
 		/// </summary>
 		/// <returns>World position as a vector</returns>
-		inline Vector GetWorldPosition() const { return GetWorldTransform().Position; };
+		virtual inline Vector GetWorldPosition() const { return GetWorldTransform().Position; };
 
 		/// <summary>
 		/// Set the world position of the Entity
 		/// </summary>
 		/// <param name="pos">the new position, as a vector</param>
-		void SetWorldPosition(const Vector& pos);
+		virtual void SetWorldPosition(const Vector& pos);
 
 		/// <summary>
 		/// Get the relative rotation of the Entity
 		/// </summary>
 		/// <returns>The relative rotation, as Rotator</returns>
-		inline const Rotator& GetRelativeRotation() const { return m_Transform.Rotation; }
+		virtual inline const Rotator& GetRelativeRotation() const { return m_Transform.Rotation; }
 
 		/// <summary>
 		/// Set the relative rotation of the Entity
 		/// </summary>
 		/// <param name="rot">the new rotation, as Rotator</param>
-		inline void SetRelativeRotation(const Rotator& rot) { m_Transform.Rotation = rot; }
+		virtual inline void SetRelativeRotation(const Rotator& rot) { m_Transform.Rotation = rot; }
 
 		/// <summary>
 		/// Get the world rotation of the Entity
 		/// </summary>
 		/// <returns>The relative rotation, as Rotator</returns>
-		inline Rotator GetWorldRotation() const { return GetWorldTransform().Rotation; }
+		virtual inline Rotator GetWorldRotation() const { return GetWorldTransform().Rotation; }
 
 		/// <summary>
 		/// Set the world rotation of the Entity
 		/// </summary>
 		/// <param name="rot">the new rotation, as Rotator</param>
-		void SetWorldRotation(const Rotator& rot);
+		virtual void SetWorldRotation(const Rotator& rot);
 
 		/// <summary>
 		/// Get the relative scale of the Entity
 		/// </summary>
 		/// <returns>The relative scale, as Vector</returns>
-		inline const Vector& GetRelativeScale() const { return m_Transform.Scale; }
+		virtual inline const Vector& GetRelativeScale() const { return m_Transform.Scale; }
 
 		/// <summary>
 		/// Set the relative scale of the Entity
 		/// </summary>
 		/// <param name="rot">the new scale, as Vector</param>
-		inline void SetRelativeScale(const Vector& scale) { m_Transform.Scale = scale; }
+		virtual inline void SetRelativeScale(const Vector& scale) { m_Transform.Scale = scale; }
 
 		/// <summary>
 		/// Get the world scale of the Entity
 		/// </summary>
 		/// <returns>The relative scale, as Vector</returns>
-		inline Vector GetWorldScale() const { return GetWorldTransform().Scale; }
+		virtual inline Vector GetWorldScale() const { return GetWorldTransform().Scale; }
 
 		/// <summary>
 		/// Set the world scale of the Entity
 		/// </summary>
 		/// <param name="rot">the new scale, as Vector</param>
-		void SetWorldScale(const Vector& scale);
+		virtual void SetWorldScale(const Vector& scale);
 
 		/// <summary>
 		/// Get the name of the entity
@@ -228,6 +230,16 @@ namespace Tara {
 		/// <param name="bits"></param>
 		inline virtual void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
+
+
+		/// <summary>
+		/// Destroy this entity. 
+		/// This by default will make all chilren root entities. If something else is desired, do it manually first.
+		/// Will not remove the ref you currently have, so you have to do that too.
+		/// </summary>
+		void Destroy();
+
+
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
 		************************************************************************************/
@@ -246,6 +258,13 @@ namespace Tara {
 		/// <returns>the child as reference, or nullptr if not found</returns>
 		EntityRef GetFirstChildOfName(const std::string& name) const;
 		
+		/// <summary>
+		/// Get the first child of a specific subclass of Entity, if any.
+		/// </summary>
+		/// <typeparam name="EntityType">the subclass of entity</typeparam>
+		/// <returns>the first child of that subclass if any, or nullptr if none found</returns>
+		template<typename EntityType> std::shared_ptr<EntityType> GetFirstChildOfType() const;
+
 		/// <summary>
 		/// Remove a child by its name. Only removes the first child with this name
 		/// </summary>
@@ -366,14 +385,20 @@ namespace Tara {
 		/// <returns>True if the component was remove, false otherwise</returns>
 		bool RemoveComponentByRef(ComponentRef ref);
 
+		/// <summary>
+		/// Set if the chilren of this entity should be updated first
+		/// </summary>
+		/// <param name="v">true if they should be, false otherwise.</param>
+		inline void SetUpdateComponentsFirst(bool v) { m_UpdateComponentsFirst = v; }
 
 		/// <summary>
-		/// Destroy this entity. 
-		/// This by default will make all chilren root entities. If something else is desired, do it manually first.
-		/// Will not remove the ref you currently have, so you have to do that too.
+		/// Get if the chilren of this entity should be updated first
 		/// </summary>
-		void Destroy();
+		/// <returns></returns>
+		inline bool GetUpdateComponentsFirst() const { return m_UpdateComponentsFirst; }
 
+
+		
 		/***********************************************************************************
 		*                      Physics and Event Utility Funcions                          *
 		************************************************************************************/
@@ -494,18 +519,22 @@ protected:
 		/// <param name="newParent"> the new parent</param>
 		void SetParent(EntityNoRef newParent, bool ignoreChecks = false);
 
-
+	protected:
+		Transform m_Transform;
+		uint32_t m_RenderFilterBits;
+		
 	private:
 		const std::string m_Name;
-		Transform m_Transform;
 		const LayerNoRef m_OwningLayer;
 		EntityNoRef m_Parent;
 		std::list<EntityRef> m_Children;
 		std::list<ComponentRef> m_Components;
-		uint32_t m_RenderFilterBits;
-		bool m_UpdateChildrenFirst = true;
-		bool m_DrawChildrenFirst = false;
 		bool m_Exists = true;
+
+	protected:
+		bool m_UpdateChildrenFirst = true;
+		bool m_UpdateComponentsFirst = true;
+		bool m_DrawChildrenFirst = false;
 		bool m_Visible = true;
 	};
 
@@ -518,17 +547,32 @@ protected:
 	/// <returns>A reference to the created Entity</returns>
 	template<class EntityType, typename... VA_ARGS>
 	inline std::shared_ptr<EntityType> CreateEntity(VA_ARGS&&... args) {
-		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::CreateEntity:: Provided class is not a subclass of Tara::Entity");
-		static_assert(std::is_constructible<EntityType, VA_ARGS...>::value, "Error: Tara::CreateEntity:: cannot compile due to paramaters passed not matching constructor of that entity type!");
+		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::CreateEntity: Provided class is not a subclass of Tara::Entity");
+		static_assert(std::is_constructible<EntityType, VA_ARGS...>::value, "Error: Tara::CreateEntity: cannot compile due to paramaters passed not matching constructor of that entity type!");
 		std::shared_ptr<EntityType> entity = std::make_shared<EntityType>(std::forward<VA_ARGS>(args)...);
 		Entity::Register(entity);
 		entity->OnBeginPlay();
 		return entity;
 	}
 
+	template<typename EntityType>
+	inline std::shared_ptr<EntityType> Entity::GetFirstChildOfType() const
+	{
+		static_assert(std::is_base_of<Entity, EntityType>::value, "Error: Tara::Entity::GetFirstChildOfType : Provided class is not a subclass of Tara::Entity");
+		ENTITY_EXISTS(nullptr);
+		for (auto comp : m_Children) {
+			auto subtype = std::dynamic_pointer_cast<EntityType>(comp);
+			if (subtype) {
+				return subtype;
+			}
+		}
+		return nullptr;
+	}
+
 	template<typename ComponentType>
 	inline std::shared_ptr<ComponentType> Entity::GetFirstCompontentOfType() const
 	{
+		static_assert(std::is_base_of<Component, ComponentType>::value, "Error: Tara::Entity::GetFirstCompontentOfType : Provided class is not a subclass of Tara::Component");
 		ENTITY_EXISTS(nullptr);
 		for (auto comp : m_Components) {
 			auto subtype = std::dynamic_pointer_cast<ComponentType>(comp);

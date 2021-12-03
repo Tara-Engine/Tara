@@ -33,3 +33,52 @@ MAKE_HASHABLE(glm::vec1, t.x);
 MAKE_HASHABLE(glm::vec2, t.x, t.y);
 MAKE_HASHABLE(glm::vec3, t.x, t.y, t.z);
 MAKE_HASHABLE(glm::vec4, t.x, t.y, t.z, t.w);
+
+
+inline std::ostream& operator<< (std::ostream& out, const glm::vec1& v)
+{
+    out << "{x:" << v.x << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::vec2& v)
+{
+    out << "{x:" << v.x << ",y:" << v.y << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::vec3& v)
+{
+    out << "{x:" << v.x << ",y:" << v.y << ",z:" << v.z << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::vec4& v)
+{
+    out << "{x:" << v.x << ",y:" << v.y << ",z:" << v.z << ",w:" << v.w << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::ivec1& v)
+{
+    out << "{x:" << v.x << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::ivec2& v)
+{
+    out << "{x:" << v.x << ",y:" << v.y << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::ivec3& v)
+{
+    out << "{x:" << v.x << ",y:" << v.y << ",z:" << v.z << "}";
+    return out;
+}
+
+inline std::ostream& operator<< (std::ostream& out, const glm::ivec4& v)
+{
+    out << "{x:" << v.x << ",y:" << v.y << ",z:" << v.z << ",w:" << v.w << "}";
+    return out;
+}

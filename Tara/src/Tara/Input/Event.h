@@ -16,7 +16,8 @@ namespace Tara {
 		MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
 		Overlap,
 		ChildAdded, ChildRemoved, ParentChanged, ComponentAdded, ComponentRemoved,
-		ClickEvent,
+		ClickEvent, HoverEvent, DragEvent,
+		UIToggleEvent, UIStateChangeEvent
 		//TODO: other Application Events
 	};
 

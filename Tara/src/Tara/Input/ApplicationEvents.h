@@ -12,6 +12,8 @@ namespace Tara {
 	//REFTYPE(Component);
 	//NOREFTYPE(Component);
 
+	REFTYPE(UIBaseEntity);
+	NOREFTYPE(UIBaseEntity);
 	
 	/// <summary>
 	/// Overlap Event
@@ -214,8 +216,8 @@ namespace Tara {
 	/// </summary>
 	class ClickEvent : public ApplicationEvent {
 	public:
-		ClickEvent(float mouseX, float mouseY, int32_t button)
-			: m_MouseX(mouseX), m_MouseY(mouseY), m_Button(button)
+		ClickEvent(float mouseX, float mouseY, int32_t button, bool release = false, bool mouseMoveOff = false)
+			: m_MouseX(mouseX), m_MouseY(mouseY), m_Button(button), m_Release(release), m_MouseMoveOff(mouseMoveOff)
 		{}
 		/// <summary>
 		/// Get the mouse  position
@@ -238,6 +240,19 @@ namespace Tara {
 		/// <returns></returns>
 		inline int32_t GetMouseButton() const { return m_Button; }
 
+		/// <summary>
+		/// Get if the button was pressed or released. When released, this is true. It is false if the mouse moves off the element.
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetRelease() const { return m_Release; }
+
+		/// <summary>
+		/// Get if the element is Unclicked because the mouse moved off of it
+		/// GetRelease will be false
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetMouseMoveOff() const { return m_MouseMoveOff; }
+
 		virtual std::string ToString() const override {
 			std::stringstream ss;
 			ss << "Click Event: Mouse Pos: [X=" << m_MouseX << " Y=" << m_MouseY << "]. Button: " << m_Button;
@@ -250,5 +265,172 @@ namespace Tara {
 		float m_MouseX;
 		float m_MouseY;
 		int32_t m_Button;
+		bool m_Release;
+		bool m_MouseMoveOff;
+	};
+
+	/// <summary>
+	/// mouse HoverEvent. Must have a ClickableComponent attached to receive. You will receive one with isHovering set to false when the mouse stops hovering.
+	/// </summary>
+	class HoverEvent : public ApplicationEvent {
+	public:
+		HoverEvent(float mouseX, float mouseY, bool isHovering = true)
+			:m_MouseX(mouseX), m_MouseY(mouseY), m_IsHovering(isHovering)
+		{}
+
+		/// <summary>
+		/// Get the mouse  position
+		/// </summary>
+		/// <returns></returns>
+		inline glm::vec2 GetMousePos() const { return { m_MouseX, m_MouseY }; }
+		/// <summary>
+		/// Get the mouse X position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseX() const { return m_MouseX; }
+		/// <summary>
+		/// Get the mouse Y position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseY() const { return m_MouseY; }
+
+		/// <summary>
+		/// Get if this is an actual hover event or an end hover event. You will recive one with this set to false when the mouse stops hovering
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetIsHovering() const { return m_IsHovering; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "Hover Event";
+			if (!m_IsHovering) {
+				ss << " Ended";
+			}
+			ss << ": Mouse Pos: [X=" << m_MouseX << " Y=" << m_MouseY << "].";
+			return ss.str();
+		}
+
+		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
+		EVENT_CLASS_CLASS(HoverEvent)
+	private:
+		float m_MouseX;
+		float m_MouseY;
+		bool m_IsHovering;
+	};
+
+	/// <summary>
+	/// An event for when the mouse is clicked, then moved while held down
+	/// </summary>
+	class DragEvent : public ApplicationEvent {
+	public:
+		enum class DragType : uint8_t {
+			BEGIN, CONTINUE, END
+		};
+	public:
+		DragEvent(float mouseX, float mouseY, DragType type)
+			:m_MouseX(mouseX), m_MouseY(mouseY), m_Type(type)
+		{}
+		/// <summary>
+		/// Get the mouse  position
+		/// </summary>
+		/// <returns></returns>
+		inline glm::vec2 GetMousePos() const { return { m_MouseX, m_MouseY }; }
+		/// <summary>
+		/// Get the mouse X position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseX() const { return m_MouseX; }
+		/// <summary>
+		/// Get the mouse Y position
+		/// </summary>
+		/// <returns></returns>
+		inline float GetMouseY() const { return m_MouseY; }
+
+		/// <summary>
+		/// Get the drag type (start, continue, end)
+		/// </summary>
+		/// <returns></returns>
+		inline DragType GetDragType() const { return m_Type; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "Drag Event: Mouse Pos: [X=" << m_MouseX << " Y=" << m_MouseY << "]. Type: ";
+			switch (m_Type) {
+			case DragType::BEGIN:{ ss << "BEGIN."; break; }
+			case DragType::CONTINUE:{ ss << "CONTINUE."; break; }
+			case DragType::END:{ ss << "END."; break; }
+			}
+			return ss.str();
+		}
+
+		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
+		EVENT_CLASS_CLASS(DragEvent)
+	private:
+		float m_MouseX;
+		float m_MouseY;
+		DragType m_Type;
+	};
+
+	/// <summary>
+	/// UIToggleEvent is delivered by UI elements that have a binary on/off state, like checkboxes and buttons.
+	/// </summary>
+	class UIToggleEvent : public ApplicationEvent {
+	public:
+		UIToggleEvent(UIBaseEntityNoRef element, bool toggle = true)
+			:m_Element(element), m_Toggle(toggle)
+		{}
+
+		/// <summary>
+		/// Get the UIEntity that had the event
+		/// </summary>
+		/// <returns></returns>
+		inline UIBaseEntityNoRef GetElement() const { return m_Element; }
+
+		/// <summary>
+		/// Get the toggle state. For some UI like buttons, this will always be true.
+		/// For others, like checkboxes, it may be true or false.
+		/// </summary>
+		/// <returns></returns>
+		inline bool GetToggle() const { return m_Toggle; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "UI Toggle Event: State: " << ((m_Toggle)?"On":"Off");
+			return ss.str();
+		}
+
+		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
+		EVENT_CLASS_CLASS(UIToggleEvent)
+	private:
+		UIBaseEntityNoRef m_Element;
+		bool m_Toggle;
+	};
+
+	/// <summary>
+	/// UIStateChangeEvent is delivered by UI elements that have complex input, like a TextEntryField or a DropdownBox, when its state is changed by the user.
+	/// The specific state that is changed is not held by the event, as it is complex.
+	/// </summary>
+	class UIStateChangeEvent : public ApplicationEvent {
+	public:
+		UIStateChangeEvent(UIBaseEntityNoRef element)
+			:m_Element(element)
+		{}
+
+		/// <summary>
+		/// Get the UIEntity that had the event
+		/// </summary>
+		/// <returns></returns>
+		inline UIBaseEntityNoRef GetElement() const { return m_Element; }
+
+		virtual std::string ToString() const override {
+			std::stringstream ss;
+			ss << "UI State Change Event.";
+			return ss.str();
+		}
+
+		EVENT_CLASS_CATEGORY(EventCategoryApplication | EventCategoryUI)
+		EVENT_CLASS_CLASS(UIStateChangeEvent)
+	private:
+		UIBaseEntityNoRef m_Element;
 	};
 }
