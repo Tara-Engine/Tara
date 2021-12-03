@@ -27,6 +27,7 @@ namespace Tara {
 			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}
 
+
 		//deal with wrapping
 		switch (Texture::s_DefaultTextureWrapping) {
 		case Texture::Wrapping::Clamp: {
@@ -46,6 +47,7 @@ namespace Tara {
 			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 		}
 		}
+
 
 		//unbind texture
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -100,6 +102,7 @@ namespace Tara {
 		}
 	}
 
+
 	void OpenGLRenderTarget::SetWrap(Wrapping wrap)
 	{
 		switch (wrap) {
@@ -126,6 +129,7 @@ namespace Tara {
 	{
 		glTextureParameterfv(m_TextureColorID, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&color);
 	}
+
 
 	void OpenGLRenderTarget::RenderTo(bool render) const
 	{

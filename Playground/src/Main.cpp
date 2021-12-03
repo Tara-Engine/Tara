@@ -23,6 +23,7 @@ OpenGL include - BAD - used for developing new features ONLY
 #include "FramebufferBuildLayer.h"
 #include "UIBuildLayer.h"
 
+
 void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
 
 
@@ -144,6 +145,7 @@ public:
 		//m_TempSpriteEntity->SetFlip(SPRITE_FLIP_H | SPRITE_FLIP_V);
 
 		
+
 		m_Player = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "player");
 		m_Player->SetTint({ 0.0f, 1.0f, 0.0f, 0.25f });
 		//Tara::CreateComponent<Tara::ClickableComponent>(m_Player, "ClickDetector");
@@ -151,6 +153,7 @@ public:
 		
 		auto textEntity = Tara::CreateEntity<Tara::TextEntity>(Tara::EntityNoRef(), weak_from_this(), font, "Great day, isn't it?\nNEWLINE!", TRANSFORM_DEFAULT);
 		textEntity->SetColor({ 1,0,0,1 });
+
 		//textEntity->SetRelativePosition(Tara::Vector{ -1, 0, -1 });
 
 		
@@ -323,7 +326,6 @@ int main(int argc, char** argv) {
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
 	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<UIBuildLayer>());
-	
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

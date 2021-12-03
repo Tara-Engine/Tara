@@ -231,12 +231,14 @@ namespace Tara {
 		inline virtual void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
 
+
 		/// <summary>
 		/// Destroy this entity. 
 		/// This by default will make all chilren root entities. If something else is desired, do it manually first.
 		/// Will not remove the ref you currently have, so you have to do that too.
 		/// </summary>
 		void Destroy();
+
 
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
