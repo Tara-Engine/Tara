@@ -11,7 +11,9 @@
 
 namespace Tara{
     Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, const std::string& name)
-        :m_Parent(parent), m_OwningLayer(owningLayer), m_Name(name), m_Transform(transform), m_RenderFilterBits(~0)
+        :m_Parent(parent), 
+        m_OwningLayer((parent.lock() && !owningLayer.lock()) ? parent.lock()->GetOwningLayer() : owningLayer), 
+        m_Name(name), m_Transform(transform), m_RenderFilterBits(~0)
     {
         CHECK_NOTNULL_F(m_OwningLayer.lock(), "the owning layer of a newly created entity should never be null!");
     }
@@ -256,17 +258,26 @@ namespace Tara{
     void Entity::Update(float deltaTime)
     {
         ENTITY_EXISTS();
-        if (!m_UpdateChildrenFirst) {
-            OnUpdate(deltaTime);
-        }
-        for (auto component : m_Components) {
-            component->OnUpdate(deltaTime);
-        }
-        for (auto child : m_Children) {
-            child->Update(deltaTime);
-        }
         if (m_UpdateChildrenFirst) {
-            OnUpdate(deltaTime);
+            for (auto child : m_Children) {
+                child->Update(deltaTime);
+            }
+        }
+        if (m_UpdateComponentsFirst) {
+            for (auto component : m_Components) {
+                component->OnUpdate(deltaTime);
+            }
+        }
+        OnUpdate(deltaTime);
+        if (!m_UpdateComponentsFirst) {
+            for (auto component : m_Components) {
+                component->OnUpdate(deltaTime);
+            }
+        }
+        if (!m_UpdateChildrenFirst) {
+            for (auto child : m_Children) {
+                child->Update(deltaTime);
+            }
         }
     }
 
@@ -596,6 +607,8 @@ namespace Tara{
         CONNECT_METHOD(Entity, DebugLogAllChildren);
         CONNECT_METHOD(Entity, SetUpdateChildrenFirst);
         CONNECT_METHOD(Entity, GetUpdateChildrenFirst);
+        CONNECT_METHOD(Entity, SetUpdateComponentsFirst);
+        CONNECT_METHOD(Entity, GetUpdateComponentsFirst);
         CONNECT_METHOD(Entity, SetDrawChildrenFirst);
         CONNECT_METHOD(Entity, GetDrawChildrenFirst);
         CONNECT_METHOD(Entity, AddComponent);

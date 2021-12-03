@@ -11,7 +11,7 @@ namespace Tara{
 	void UIVisualEntity::SetBorderFromPatch()
 	{
 		auto pixels = m_Patch->GetBorderPixels();
-		SetBorder((float)std::get<0>(pixels), (float)std::get<1>(pixels), (float)std::get<2>(pixels), (float)std::get<3>(pixels));
+		SetBorder((float)std::get<0>(pixels), (float)std::get<1>(pixels), (float)std::get<3>(pixels), (float)std::get<2>(pixels));
 	}
 
 	void UIVisualEntity::OnDraw(float deltaTime)

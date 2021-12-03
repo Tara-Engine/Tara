@@ -24,7 +24,7 @@ namespace Tara{
 	{
 		auto target = GetRenderArea();
 
-		Transform t{ Vector(target.x1, target.y1 + m_VerticalOffset, 0), Rotator(0,0,0), Vector(m_TextSize, m_TextSize, 1) };
+		Transform t{ Vector(target.x1, target.y2 - m_VerticalOffset, 0), Rotator(0,0,0), Vector(m_TextSize, -m_TextSize, 1) };
 
 		auto& tex = m_Font->GetTexture(); //cache of texture. audo does deduce const, but not &
 		//for each character, draw its font. Don't use m_Text.size() because there may be more transforms than in the original text. using \t is an example of this

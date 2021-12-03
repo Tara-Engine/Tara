@@ -162,7 +162,7 @@ namespace Tara {
 
 		virtual void OnEvent(Event& e) override;
 
-		inline virtual void OnBeginPlay() override { ListenForEvents(true); };
+		inline virtual void OnBeginPlay() override;
 
 		inline virtual BoundingBox GetSpecificBoundingBox() const;
 
@@ -173,15 +173,17 @@ namespace Tara {
 		inline virtual void SelfOverlapChecks() override {};
 		
 		inline virtual void OtherOverlapChecks(EntityRef other) override {};
-	protected:
-		//Transform m_Transform
-		//floats x1, y1, x2, y1, vec4 border
-		bool m_DesiredSizeDirty = true; //should be marked true on all children/parent change events
+	
 	private:
 		glm::vec2 m_Spacing;
 		glm::vec4 m_Border;
 		uint32_t m_SnapRules;
 		glm::vec4 m_Offsets;
+		//these are mutable as they need to be able to be set in the const function GetRenderArea. They function as a cache for that rather complex function.
+		mutable UIBox m_RenderAreaCache;
+		mutable	bool m_RenderAreaCacheDirty;
+	protected:
+		bool m_DesiredSizeDirty = true; //should be marked true on all children/parent change events
 
 	public:
 		//delete all functions related to Transform setting - They will break the data compression

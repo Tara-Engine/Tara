@@ -38,7 +38,7 @@ public:
 	/// No need to overide. If you do, make sure to call Layer::Draw()
 	/// </summary>
 	/// <param name="deltaTime"></param>
-	//virtual void Draw(float deltaTime) override;
+	virtual void Draw(float deltaTime) override;
 
 	/// <summary>
 	/// Event handler. Called for every window event.

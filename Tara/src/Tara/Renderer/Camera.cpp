@@ -55,7 +55,7 @@ namespace Tara {
 
 
 	OrthographicCamera::OrthographicCamera(ProjectionType type)
-		: Camera(ProjectionType::Ortographic), m_Extent(-1, 1), m_MaintainAspectRatio(true)
+		: Camera(type), m_Extent(-1, 1), m_MaintainAspectRatio(true)
 	{}
 
 	OrthographicCamera::OrthographicCamera(float width)
@@ -210,6 +210,7 @@ namespace Tara {
 		auto t = Transform(m_Transform);
 		t.Position.x += (m_ScreenWidth / 2);
 		t.Position.y += (m_ScreenHeight / 2);
+		t.Scale.y *= -1;
 		return glm::inverse(t.GetTransformMatrix());
 	}
 
@@ -229,6 +230,7 @@ namespace Tara {
 		//Get the transform matrix, for use later
 		Transform t = m_Transform; //copy
 		t.Position += Vector{ m_ScreenWidth / 2, m_ScreenHeight / 2, 0 };
+		t.Scale.y *= -1;
 		auto tMatrix = t.GetTransformMatrix();
 
 		//transform the vector to be relative to the camera location in the world. 

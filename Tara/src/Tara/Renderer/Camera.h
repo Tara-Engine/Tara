@@ -281,7 +281,7 @@ namespace Tara {
 	};
 
 	/// <summary>
-	/// A screenspace camera. Coordinates are in pixels.
+	/// A screenspace camera. Coordinates are in pixels. Origin is the top left, and screen coordinates match world coordinates (unless the camera is moved)
 	/// </summary>
 	class ScreenCamera : public OrthographicCamera {
 	public:
@@ -310,6 +310,18 @@ namespace Tara {
 		/// <param name="y">the Y pixel location on the screen</param>
 		/// <returns>a pair of vectors, as (start, offset) of the ray</returns>
 		virtual std::pair<Vector, Vector> GetRayFromScreenCoordinate(float x, float y) const override;
+
+		/// <summary>
+		/// Get the width of the area being rendered to
+		/// </summary>
+		/// <returns></returns>
+		inline float GetTargetWidth() const { return m_ScreenWidth; }
+
+		/// <summary>
+		/// Get the height of the area being rendererd to
+		/// </summary>
+		/// <returns></returns>
+		inline float GetTargetHeight() const { return m_ScreenHeight; }
 
 	protected:
 		/// <summary>

@@ -16,7 +16,7 @@ void UIBuildLayer::Activate()
 	m_Patch->SetBorderPixels(2, 2, 2, 2);
 
 	auto patchFrame = Tara::Patch::Create(Tara::Texture2D::Create("assets/Frame.png"), "PatchFrame");
-	patchFrame->SetBorderPixels(2, 2, 30, 2);
+	patchFrame->SetBorderPixels(2, 2, 31, 2);
 
 
 	auto patchButtonNormal = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Normal.png"), "PatchButtonNormal");
@@ -45,20 +45,46 @@ void UIBuildLayer::Activate()
 	auto base = Tara::CreateEntity<Tara::UIBaseEntity>(Tara::EntityNoRef(), weak_from_this(), "UIBaseEntity");
 	base->SetBorder(0, 0, 0, 0);
 
-	auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, weak_from_this(), patchFrame, 28.0f, "Basic Frame");
 
-	auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, weak_from_this(), "UIListEntity");
-	//list->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
-	list->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	list->SetSpacing(10, 10);
-
-	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(list, weak_from_this(), m_Patch, "UIVisualEntity 1");
+	//auto sz = Tara::CreateEntity<Tara::UISpacerEntity>(base, PARENT_LAYER);
+	//sz->SetSnapRules(Tara::UISnapRule::BOTTOM | Tara::UISnapRule::CENTER_HORIZONTAL);
+	//sz->SetSize({ 600, 350 });
+	/*
+	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(base, PARENT_LAYER, m_Patch, "UIVisualEntity 1");
 	vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	vis->SetBorderFromPatch();
 	//vis->SetOffsets(0, 1000, 0, 50);
 	//vis->SetTint({1, 1, 1, 0.5});
 
-	auto text = Tara::CreateEntity<Tara::UITextEntity>(vis, weak_from_this(), font, "Text Entity");
+	auto sz = Tara::CreateEntity<Tara::UISpacerEntity>(vis, PARENT_LAYER);
+	sz->SetSnapRules(Tara::UISnapRule::BOTTOM | Tara::UISnapRule::CENTER_HORIZONTAL);
+	sz->SetSize({ 100, 100 });
+	*/
+	
+
+	//*
+	auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, PARENT_LAYER, patchFrame, 28.0f, "Basic Frame");
+	//frame->SetOffsets(10, 0, 10, 0);
+	
+	auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, PARENT_LAYER, "UIListEntity");
+	//list->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
+	list->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	list->SetSpacing(10, 10);
+
+	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(list, PARENT_LAYER, m_Patch, "UIVisualEntity 1");
+	vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	vis->SetBorderFromPatch();
+	//vis->SetOffsets(100, 500, 20, 50);
+	vis->SetTint({1, 0.8, 0.8, 1});
+
+	//auto sz = Tara::CreateEntity<Tara::UISpacerEntity>(vis, PARENT_LAYER);
+	//sz->SetSnapRules(Tara::UISnapRule::CENTER_VERTICAL | Tara::UISnapRule::CENTER_HORIZONTAL);
+	//sz->SetSize({ 100, 100 });
+
+
+
+
+	auto text = Tara::CreateEntity<Tara::UITextEntity>(vis, PARENT_LAYER, font, "Text Entity");
 	text->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	text->SetText("Test:\n[    ]\n[\t]");
 	text->SetTextSize(32);
@@ -70,17 +96,19 @@ void UIBuildLayer::Activate()
 			auto parent = std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock());
 			std::stringstream ss;
 			ss << "Mouse: " << worldPos.first;
+			//LOG_S(INFO) << ss.str();
 			parent->SetText(ss.str());
 		}, 
 		LAMBDA_EVENT_DEFAULT
 	);
 
+	
 
 	//vis 2
 	
 
 	
-	auto button = Tara::CreateEntity<Tara::UIButtonEntity>(list, weak_from_this(), patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+	auto button = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
 	button->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	button->SetBorderFromPatch();
 	button->SetTint({ 1, 1, 1, 1 });
@@ -118,17 +146,26 @@ void UIBuildLayer::Activate()
 		}
 	);
 	
-	auto sizer = Tara::CreateEntity<Tara::UISpacerEntity>(button, weak_from_this());
+	auto sizer = Tara::CreateEntity<Tara::UISpacerEntity>(button, PARENT_LAYER);
 	sizer->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	sizer->SetSize({ 150, 25 });
 
-	auto text2 = Tara::CreateEntity<Tara::UITextEntity>(button, weak_from_this(), font, "Text Entity");
+	auto text2 = Tara::CreateEntity<Tara::UITextEntity>(button, PARENT_LAYER, font, "Text Entity");
 	text2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
 	text2->SetText("Clicks: 0");
 	text2->SetTextSize(32);
 
 	//Vis 3
-	
+	//*/
+}
+
+void UIBuildLayer::Draw(float deltaTime)
+{
+	Layer::Draw(deltaTime);
+
+	//Tara::Renderer::BeginScene(m_SceneCamera->GetCamera());
+	//Tara::Renderer::Quad(TRANSFORM_2D(0, 0, 0, 100, 100), glm::vec4(1, 1, 1, 1));
+	//Tara::Renderer::EndScene();
 }
 
 

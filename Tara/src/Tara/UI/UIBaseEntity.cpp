@@ -3,6 +3,8 @@
 #include "Tara/Core/Application.h"
 #include "Tara/Renderer/Renderer.h"
 
+#include "Tara/Utility/Profiler.h"
+
 namespace Tara{
 
 	bool UIBaseEntity::s_EnableDebugRendering = false;
@@ -13,15 +15,12 @@ namespace Tara{
 		m_Border({0,0,0,0}),
 		m_SnapRules(UISnapRule::TOP | UISnapRule::LEFT | UISnapRule::BOTTOM | UISnapRule::RIGHT),
 		m_Offsets(0,0,0,0),
-		m_DesiredSizeDirty(true)
+		m_DesiredSizeDirty(true),
+		m_RenderAreaCache(0,0,0,0),
+		m_RenderAreaCacheDirty(true)
 	{
-		auto window = Application::Get()->GetWindow();
-		if (window) {
-			LOG_S(INFO) << "Window Dimentions: " << window->GetWidth() << ", " << window->GetHeight();
-			SetAllowedArea(UIBox{ 0.0f,0.0f, (float)window->GetWidth(), (float)window->GetHeight() });
-		}else{
-			SetAllowedArea(UIBox{ 0.0f,0.0f,1.0f,1.0f }); //default unit box
-		}
+		SetUpdateChildrenFirst(false);
+		SetUpdateComponentsFirst(true);
 	}
 
 	glm::vec2 UIBaseEntity::GetDesiredSize() const
@@ -68,6 +67,7 @@ namespace Tara{
 	{
 		auto prev = UIBox::DecompressBoxAndSize(m_Transform);
 		m_Transform = UIBox::CompressBoxAndSize(area, prev.second);
+		m_RenderAreaCacheDirty = true;
 	}
 	
 	UIBox UIBaseEntity::GetAllowedArea() const
@@ -79,6 +79,12 @@ namespace Tara{
 
 	UIBox UIBaseEntity::GetRenderArea() const
 	{
+		//SCOPE_PROFILE("GetRenderArea");
+		if (!m_RenderAreaCacheDirty) {
+			return m_RenderAreaCache;
+		}
+		m_RenderAreaCacheDirty = false;
+
 		UIBox allowed = GetAllowedArea();
 		//LOG_S(INFO) << "Allowed Area: {" << allowed.x1 << "," << allowed.y1 << "} - {" << allowed.x2 << "," << allowed.y2;
 		glm::vec2 desired = GetDesiredSize();
@@ -121,35 +127,35 @@ namespace Tara{
 
 
 		//bottom
-		if (snapRules & UISnapRule::BOTTOM) {
-			target.y1 = allowed.y1 + offsets.w;
+		if (snapRules & UISnapRule::TOP) {
+			target.y1 = allowed.y1 + offsets.z;
 		}
 		else if (snapRules & UISnapRule::CENTER_VERTICAL) {
-			target.y1 = allowed.y1 + (allowed.Height() / 2) - (desired.y / 2) - offsets.w;
+			target.y1 = allowed.y1 + (allowed.Height() / 2) - (desired.y / 2) - offsets.z;
 		}
-		else if (snapRules & UISnapRule::TOP) {
+		else if (snapRules & UISnapRule::BOTTOM) {
 			target.y1 = allowed.y2 - (desired.y + (offsets.z + offsets.w));
 		}
 		else {
 			//no rule!
-			LOG_S(WARNING) << "UIEntity has no horizontal snap rules! This is an issue.";
-			target.y1 = allowed.y1 + offsets.w;
+			LOG_S(WARNING) << "UIEntity has no vertical snap rules! This is an issue.";
+			target.y1 = allowed.y1 + offsets.z;
 		}
 
 		//top (done in reverse of bottom)
-		if (snapRules & UISnapRule::TOP) {
-			target.y2 = allowed.y2 - offsets.z;
+		if (snapRules & UISnapRule::BOTTOM) {
+			target.y2 = allowed.y2 - offsets.w;
 		}
 		else if (snapRules & UISnapRule::CENTER_VERTICAL) {
-			target.y2 = allowed.y2 - (allowed.Height() / 2) + (desired.y / 2) + offsets.z;
+			target.y2 = allowed.y2 - (allowed.Height() / 2) + (desired.y / 2) + offsets.w;
 		}
-		else if (snapRules & UISnapRule::BOTTOM) {
+		else if (snapRules & UISnapRule::TOP) {
 			target.y2 = allowed.y1 + (desired.y + (offsets.z + offsets.w));
 		}
 		else {
 			//no rule!
 			//warning will have been done above
-			target.y2 = allowed.y2 - offsets.z;
+			target.y2 = allowed.y2 - offsets.w;
 		}
 
 		//clamp the target to the allowed area
@@ -161,7 +167,7 @@ namespace Tara{
 
 		//LOG_S(INFO) << "Render Area: {" << target.x1 << "," << target.y1 << "} - {" << target.x2 << "," << target.y2;
 		target.Rectify();
-
+		m_RenderAreaCache = target;
 		return target;
 	}
 
@@ -214,6 +220,20 @@ namespace Tara{
 			}
 			return false;
 		});
+	}
+
+	inline void UIBaseEntity::OnBeginPlay()
+	{
+		ListenForEvents(true);
+		auto window = Application::Get()->GetWindow();
+		if (window) {
+			//LOG_S(INFO) << "Window Dimentions: " << window->GetWidth() << ", " << window->GetHeight();
+			SetAllowedArea(UIBox{ 0.0f,0.0f, (float)window->GetWidth(), (float)window->GetHeight() });
+		}
+		else {
+			SetAllowedArea(UIBox{ 0.0f,0.0f,1.0f,1.0f }); //default unit box
+		}
+
 	}
 
 

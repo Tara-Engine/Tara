@@ -165,12 +165,16 @@ namespace Tara {
 
 	void Tara::Renderer::Text(const Transform& transform, const std::string& text, FontRef font, glm::vec4 color)
 	{
+		Transform t(transform);
+		if (s_SceneData.camera->GetProjectionType() != Camera::ProjectionType::Screen) {
+			t.Scale.y *= -1;
+		}
 		std::vector<Transform> transforms;
 		std::vector<glm::vec2> uvMin;
 		std::vector<glm::vec2> uvMax;
 		font->GetTextQuads(text, transforms, uvMin, uvMax);
 		for (int i = 0; i < text.size(); i++) {
-			Quad(transform + transforms[i], color, font->GetTexture(), uvMin[i], uvMax[i]);
+			Quad(t + transforms[i], color, font->GetTexture(), uvMin[i], uvMax[i]);
 		}
 	}
 	
@@ -182,11 +186,19 @@ namespace Tara {
 		auto t = patch->GetTexture();
 
 		float xPos[] = { 0.0f, mp.first.x, mp.second.x, transform.Scale.x };
-		float yPos[] = { 0.0f, mp.first.y, mp.second.y, transform.Scale.y };
-
+		//Y is defaulted for when in a ScreenCamera (as that is normal)
+		float yPos[] = { transform.Scale.y, transform.Scale.y-mp.first.y, transform.Scale.y-mp.second.y, 0.0f };
+		
 		float xUV[] = { 0.0f, muv.first.x, muv.second.x, 1.0f };
 		float yUV[] = { 0.0f, muv.first.y, muv.second.y, 1.0f };
-
+		
+		//when not in screen camera, invert Y
+		if (s_SceneData.camera->GetProjectionType() != Camera::ProjectionType::Screen) {
+			for (int i = 0; i < 4; i++) {
+				yPos[i] = (transform.Scale.y - yPos[i]);
+			}
+		}
+		
 		//draw the quads.
 		for (int x = 0; x < 3; x++) {
 			for (int y = 0; y < 3; y++) {

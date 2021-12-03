@@ -11,6 +11,8 @@
 
 #define ENTITY_EXISTS(x) if (!Exists()) {return x;}
 
+#define PARENT_LAYER Tara::LayerNoRef()
+
 //#define LISTTYPE std::list
 //#define LISTTYPE std::list
 
@@ -228,6 +230,14 @@ namespace Tara {
 		/// <param name="bits"></param>
 		inline virtual void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
+
+		/// <summary>
+		/// Destroy this entity. 
+		/// This by default will make all chilren root entities. If something else is desired, do it manually first.
+		/// Will not remove the ref you currently have, so you have to do that too.
+		/// </summary>
+		void Destroy();
+
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
 		************************************************************************************/
@@ -373,14 +383,20 @@ namespace Tara {
 		/// <returns>True if the component was remove, false otherwise</returns>
 		bool RemoveComponentByRef(ComponentRef ref);
 
+		/// <summary>
+		/// Set if the chilren of this entity should be updated first
+		/// </summary>
+		/// <param name="v">true if they should be, false otherwise.</param>
+		inline void SetUpdateComponentsFirst(bool v) { m_UpdateComponentsFirst = v; }
 
 		/// <summary>
-		/// Destroy this entity. 
-		/// This by default will make all chilren root entities. If something else is desired, do it manually first.
-		/// Will not remove the ref you currently have, so you have to do that too.
+		/// Get if the chilren of this entity should be updated first
 		/// </summary>
-		void Destroy();
+		/// <returns></returns>
+		inline bool GetUpdateComponentsFirst() const { return m_UpdateComponentsFirst; }
 
+
+		
 		/***********************************************************************************
 		*                      Physics and Event Utility Funcions                          *
 		************************************************************************************/
@@ -515,6 +531,7 @@ protected:
 
 	protected:
 		bool m_UpdateChildrenFirst = true;
+		bool m_UpdateComponentsFirst = true;
 		bool m_DrawChildrenFirst = false;
 		bool m_Visible = true;
 	};

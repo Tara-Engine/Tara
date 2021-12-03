@@ -91,10 +91,22 @@ namespace Tara{
 		//scale normalized to the size of the texture being 0 to 1
 		glm::vec2 nScale = scale / texSize;
 
-		return std::make_pair(
+
+		auto ret = std::make_pair(
 			glm::vec2(m_BorderLeft, m_BorderBottom) * texSize,
 			glm::vec2(nScale.x - m_BorderRight, nScale.y - m_BorderTop) * texSize
 		);
+		//if (scale.x < 0) {
+		//	ret.first.x = (scale.x) + ret.first.x;
+		//	ret.second.x = (scale.x) + ret.second.x;
+		//}
+		//if (scale.y < 0) {
+		//	ret.first.y = (scale.y) + ret.first.y;
+		//	ret.second.y = (scale.y) + ret.second.y;
+		//}
+
+
+		return ret;
 	}
 
 

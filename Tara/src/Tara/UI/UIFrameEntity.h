@@ -6,6 +6,7 @@ namespace Tara {
 	NOREFTYPE(UIFrameEntity);
 
 	class DragEvent;
+	class HoverEvent;
 
 	class UIFrameEntity : public UIVisualEntity {
 	public:
@@ -54,10 +55,32 @@ namespace Tara {
 
 		bool OnDragEvent(DragEvent& e);
 
+		bool OnHoverEvent(HoverEvent& e);
+
+	private:
+		//helper methods
+
+		glm::vec2 GetFrameCornerUpperLeft();
+
+	private:
+		struct DragData {
+			//inverted distance from upper-left corner of widget
+			glm::vec2 MousePosition;
+			glm::vec2 FrameSize;
+			glm::vec4 FrameOffsets;
+		};
+
 	private:
 		glm::vec2 m_Size;
 		float m_HeaderSize;
-		glm::vec2 m_DragOrigin;
+		float m_ResizeHandleSize;
+
+		DragData* m_DragData;
+		//glm::vec2 m_DragOrigin;
+		
+		uint8_t m_ResizingSide;
 		bool m_Dragging;
+		bool m_Resizing; 
+		bool m_DrawResizeBar;
 	};
 }

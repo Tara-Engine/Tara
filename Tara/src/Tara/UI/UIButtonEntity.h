@@ -72,7 +72,7 @@ namespace Tara {
 		virtual void OnEvent(Tara::Event& e) override;
 
 
-	public:
+	private:
 		//Event functions
 		bool OnClickEvent(ClickEvent& e);
 	
