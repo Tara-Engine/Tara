@@ -441,6 +441,11 @@ namespace Tara {
 		/// <returns>true if the operations was successful</returns>
 		bool MoveChildDown(EntityRef child, bool toBottom = false);
 
+		/// <summary>
+		/// Recursively dive through this entity and its children and components, and, if any are listening to window events, move them to the top of the listening stack
+		/// </summary>
+		void MoveListenersUp();
+
 		/***********************************************************************************
 		*                      Physics and Event Utility Funcions                          *
 		************************************************************************************/

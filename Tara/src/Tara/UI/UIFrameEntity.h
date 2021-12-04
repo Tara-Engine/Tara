@@ -26,7 +26,7 @@ namespace Tara {
 		/// Set the size of the frame
 		/// </summary>
 		/// <param name="size"></param>
-		inline void SetSize(const glm::vec2& size) { m_Size = size; }
+		inline void SetSize(const glm::vec2& size) { m_Size = size; m_DesiredSizeDirty = true;}
 
 		/// <summary>
 		/// Set the size of the frame

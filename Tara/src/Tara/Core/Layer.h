@@ -193,10 +193,12 @@ namespace Tara {
 		std::list<EntityRef> m_Entities;
 		std::list<EntityNoRef> m_DestroyedEntities;
 		std::list<EventListenerNoRef> m_Listeners;
+		std::list<std::pair<EventListenerNoRef, bool>> m_ListenerQueue;
 		std::list<Manifold> m_FrameManifoldQueue;
 		std::unordered_set<CameraEntityNoRef, CameraHasher> m_CameraQueue;
 		CameraEntityRef m_LayerCamera; //intentonally an owning pointer
 		bool m_Dead = false; //used by Scene to destroy layers
+		bool m_InEventHandler = false;
 	};
 
 

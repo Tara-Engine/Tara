@@ -473,6 +473,21 @@ namespace Tara{
         return true;
     }
 
+    void Entity::MoveListenersUp()
+    {
+        if (GetListeningForEvents()) {
+            ListenForEvents(true);
+        }
+        for (auto& component : m_Components) {
+            if (component->GetListeningForEvents()) {
+                component->ListenForEvents(true);
+            }
+        }
+        for (auto& child : m_Children) {
+            child->MoveListenersUp();
+        }
+    }
+
     
 
     BoundingBox Entity::GetFullBoundingBox() const
