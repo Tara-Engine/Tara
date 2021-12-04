@@ -134,7 +134,7 @@ namespace Tara {
 		/// <param name="func">the bound function</param>
 		/// <returns>bool if the function could be called</returns>
 		template<typename T, typename F> bool Call(const F& func) {
-			if (m_Event.GetEventClass() == T::GetStaticClass()) {
+			if (!m_Event.m_Handled && m_Event.GetEventClass() == T::GetStaticClass()) {
 				m_Event.m_Handled = func(static_cast<T&>(m_Event));
 				return true;
 			}
