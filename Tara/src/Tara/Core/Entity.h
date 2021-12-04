@@ -65,12 +65,11 @@ namespace Tara {
 		/// </summary>
 		virtual ~Entity() = default;
 	
-	public:
 
 		/***********************************************************************************
 		*                          Overridable Functions                                   *
 		************************************************************************************/
-
+	public:
 		/// <summary>
 		/// A function called after this entity is added to the hirarchy
 		/// </summary>
@@ -100,11 +99,11 @@ namespace Tara {
 		/// <param name="e"></param>
 		virtual void ReceiveEvent(Event& e) override;
 
-	public:
+	
 		/***********************************************************************************
 		*                          Basic Utility Funcions                                  *
 		************************************************************************************/
-
+	public:
 		/// <summary>
 		/// Get the transform of the Entity relative to parent
 		/// </summary>
@@ -243,7 +242,7 @@ namespace Tara {
 		/***********************************************************************************
 		*                      Relationship Utility Funcions                               *
 		************************************************************************************/
-
+	public:
 		/// <summary>
 		/// Check if a particular entity reference is a child.
 		/// </summary>
@@ -342,6 +341,7 @@ namespace Tara {
 		/***********************************************************************************
 		*                          Component Utility Funcions                              *
 		************************************************************************************/
+	public:
 
 		/// <summary>
 		/// Add a component
@@ -397,12 +397,54 @@ namespace Tara {
 		/// <returns></returns>
 		inline bool GetUpdateComponentsFirst() const { return m_UpdateComponentsFirst; }
 
+		/***********************************************************************************
+		*                               Ordering Utility Funcions                          *
+		************************************************************************************/
+	public:
+		/// <summary>
+		/// Move the entity to the top of its parent's child list
+		/// </summary>
+		/// <returns>true if the operations was successful</returns>
+		bool MoveToTop();
 
-		
+		/// <summary>
+		/// Move the entity to the bottom of its parent's child list
+		/// </summary>
+		/// <returns>true if the operation was successful</returns>
+		inline bool MoveToBottom();
+
+		/// <summary>
+		/// Move the entity up one (ie, swap with the one above it) in its parent's child list
+		/// </summary>
+		/// <returns>true if the operations was successful</returns>
+		inline bool MoveUp();
+
+		/// <summary>
+		/// Move the entity down one (ie, swap with the one below it) in its parent's child list
+		/// </summary>
+		/// <returns>true if the operations was successful</returns>
+		inline bool MoveDown();
+
+		/// <summary>
+		/// Move a child up by one or to top in the child list. Check if the entity is a child.
+		/// </summary>
+		/// <param name="child">the child to move</param>
+		/// <param name="toTop">if the move should be to the top or normal. defaults to false (normal)</param>
+		/// <returns>true if the operations was successful</returns>
+		bool MoveChildUp(EntityRef child, bool toTop = false);
+
+		/// <summary>
+		/// Move a child down by one or to bottom in the child list. Check if the entity is a child.
+		/// </summary>
+		/// <param name="child">the child to move</param>
+		/// <param name="toBottom">if the move should be to the bottom or normal. defaults to false (normal)</param>
+		/// <returns>true if the operations was successful</returns>
+		bool MoveChildDown(EntityRef child, bool toBottom = false);
+
 		/***********************************************************************************
 		*                      Physics and Event Utility Funcions                          *
 		************************************************************************************/
-
+	public:
 		/// <summary>
 		/// Get the bounding box around this and all children entities.
 		/// </summary>

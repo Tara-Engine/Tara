@@ -7,6 +7,7 @@ namespace Tara {
 
 	class DragEvent;
 	class HoverEvent;
+	class ClickEvent;
 
 	class UIFrameEntity : public UIVisualEntity {
 	public:
@@ -56,6 +57,8 @@ namespace Tara {
 		bool OnDragEvent(DragEvent& e);
 
 		bool OnHoverEvent(HoverEvent& e);
+
+		bool OnClickEvent(ClickEvent& e);
 
 	private:
 		//helper methods
