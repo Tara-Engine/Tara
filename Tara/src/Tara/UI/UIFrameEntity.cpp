@@ -280,6 +280,7 @@ namespace Tara {
 	{
 		if (!e.GetRelease() && !e.GetMouseMoveOff()) {
 			MoveToTop();
+			MoveListenersUp();
 			return true;
 		}
 		return false;

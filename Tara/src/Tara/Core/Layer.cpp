@@ -64,8 +64,9 @@ namespace Tara{
 	void Layer::OnEvent(Event& e)
 	{
 		//LOG_S(INFO) << "Layer OnEvent called!";
+		m_InEventHandler = true;
 		std::list<EventListenerNoRef> removable;
-		for (auto listener : m_Listeners) {
+		for (auto& listener : m_Listeners) {
 			//LOG_S(INFO) << "Event listener OnEvent called!";
 			auto lockedListener = listener.lock();
 			if (lockedListener) {
@@ -84,6 +85,13 @@ namespace Tara{
 		for (auto listener : removable) {
 			m_Listeners.remove(listener);
 		}
+		m_InEventHandler = false;
+
+		//handle any enqued listener changes
+		for (auto ls : m_ListenerQueue) {
+			EnableListener(ls.first, ls.second);
+		}
+		m_ListenerQueue.clear();
 	}
 
 	bool Layer::AddEntity(EntityRef ref)
@@ -157,9 +165,18 @@ namespace Tara{
 
 	bool Layer::EnableListener(EventListenerNoRef ref, bool enable)
 	{
+		if (m_InEventHandler) {
+			//enqueue, as running now will break Listener list
+			m_ListenerQueue.push_back(std::make_pair(ref, enable));
+			return true;
+		}
 		if (enable){
 			//if the element is already in the list, move to front
-			if (std::find(m_Listeners.begin(), m_Listeners.end(), ref) != m_Listeners.end()) {
+			auto f = std::find(m_Listeners.begin(), m_Listeners.end(), ref);
+			if (f != m_Listeners.end()) {
+				if (f == m_Listeners.begin()) {
+					return true;
+				}
 				m_Listeners.remove(ref);
 			}
 			m_Listeners.push_front(ref); //listeners are updated in REVERSE order
