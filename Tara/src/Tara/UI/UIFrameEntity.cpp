@@ -40,6 +40,7 @@ namespace Tara {
 		EventFilter filter(e);
 		filter.Call<DragEvent>(TARA_BIND_FN(UIFrameEntity::OnDragEvent));
 		filter.Call<HoverEvent>(TARA_BIND_FN(UIFrameEntity::OnHoverEvent));
+		filter.Call<ClickEvent>(TARA_BIND_FN(UIFrameEntity::OnClickEvent));
 	}
 
 	void UIFrameEntity::OnDraw(float deltaTime)
@@ -271,6 +272,15 @@ namespace Tara {
 			}
 			
 			
+		}
+		return false;
+	}
+
+	bool UIFrameEntity::OnClickEvent(ClickEvent& e)
+	{
+		if (!e.GetRelease() && !e.GetMouseMoveOff()) {
+			MoveToTop();
+			return true;
 		}
 		return false;
 	}

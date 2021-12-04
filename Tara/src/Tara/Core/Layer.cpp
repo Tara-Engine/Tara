@@ -109,6 +109,52 @@ namespace Tara{
 		return std::find(m_Entities.begin(), m_Entities.end(), ref) != m_Entities.end();
 	}
 
+	bool Layer::MoveEntityDown(EntityRef ref, bool toBottom)
+	{
+		auto f = std::find(m_Entities.begin(), m_Entities.end(), ref);
+		if (f == m_Entities.end()) {
+			//not a child
+			return false;
+		}
+		if (f == m_Entities.begin()) {
+			//it is already top
+			return true;
+		}
+		if (toBottom) {
+			//remove and re-insert at top
+			//erase is used so not to search the list again
+			m_Entities.erase(f);
+			m_Entities.push_front(ref);
+		}
+		else {
+			std::iter_swap(std::prev(f), f);
+		}
+		return true;
+	}
+	
+	bool Layer::MoveEntityUp(EntityRef ref, bool toTop)
+	{
+		auto f = std::find(m_Entities.begin(), m_Entities.end(), ref);
+		if (f == m_Entities.end()) {
+			//not a child
+			return false;
+		}
+		if (f == std::prev(m_Entities.end())) {
+			//it is already bottom
+			return true;
+		}
+		if (toTop) {
+			//remove and re-insert at top
+			//erase is used so not to search the list again
+			m_Entities.erase(f);
+			m_Entities.push_back(ref);
+		}
+		else {
+			std::iter_swap(f, std::next(f));
+		}
+		return true;
+	}
+
 	bool Layer::EnableListener(EventListenerNoRef ref, bool enable)
 	{
 		if (enable){

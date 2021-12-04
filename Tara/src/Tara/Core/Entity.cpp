@@ -383,6 +383,96 @@ namespace Tara{
         }
     }
 
+    bool Entity::MoveToTop()
+    {
+        EntityRef pp = m_Parent.lock(); 
+        if (pp) { 
+            return pp->MoveChildUp(shared_from_this(), true); 
+        }
+        else { 
+            return m_OwningLayer.lock()->MoveEntityUp(shared_from_this(), true); 
+        }
+    }
+
+    inline bool Entity::MoveToBottom()
+    {
+        EntityRef pp = m_Parent.lock();
+        if (pp) {
+            return pp->MoveChildDown(shared_from_this(), true);
+        }
+        else {
+            return m_OwningLayer.lock()->MoveEntityDown(shared_from_this(), true);
+        }
+    }
+
+    inline bool Entity::MoveUp()
+    {
+        EntityRef pp = m_Parent.lock();
+        if (pp) {
+            return pp->MoveChildUp(shared_from_this(), false);
+        }
+        else {
+            return m_OwningLayer.lock()->MoveEntityUp(shared_from_this(), false);
+        }
+    }
+
+    inline bool Entity::MoveDown()
+    {
+        EntityRef pp = m_Parent.lock();
+        if (pp) {
+            return pp->MoveChildDown(shared_from_this(), false);
+        }
+        else {
+            return m_OwningLayer.lock()->MoveEntityDown(shared_from_this(), false);
+        }
+    }
+
+    bool Entity::MoveChildUp(EntityRef child, bool toTop)
+    {
+        auto f = std::find(m_Children.begin(), m_Children.end(), child);
+        if (f == m_Children.end()) {
+            //not a child
+            return false;
+        }
+        if (f == std::prev(m_Children.end())) {
+            //it is already top
+            return true;
+        }
+        if (toTop) {
+            //remove and re-insert at top
+            //erase is used so not to search the list again
+            m_Children.erase(f);
+            m_Children.push_back(child);
+        }
+        else {
+            std::iter_swap(f, std::next(f));
+        }
+        return true;
+    }
+
+    bool Entity::MoveChildDown(EntityRef child, bool toBottom)
+    {
+        auto f = std::find(m_Children.begin(), m_Children.end(), child);
+        if (f == m_Children.end()) {
+            //not a child
+            return false;
+        }
+        if (f == m_Children.begin()) {
+            //it is already bottom
+            return true;
+        }
+        if (toBottom) {
+            //remove and re-insert at top
+            //erase is used so not to search the list again
+            m_Children.erase(f);
+            m_Children.push_front(child);
+        }
+        else {
+            std::iter_swap(std::prev(f), f);
+        }
+        return true;
+    }
+
     
 
     BoundingBox Entity::GetFullBoundingBox() const
