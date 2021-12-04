@@ -58,7 +58,7 @@ namespace Tara {
 		/// Set the size of the text in pixels
 		/// </summary>
 		/// <param name="size"></param>
-		inline void SetTextSize(float size) { m_TextSize = size; }
+		inline void SetTextSize(float size) { m_TextSize = size; ; m_TextDirty = true;}
 	public:
 		//overriden stuff
 
