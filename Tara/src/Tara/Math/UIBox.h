@@ -50,6 +50,12 @@ namespace Tara {
 		inline float Height() const { return y2 - y1; }
 		
 		/// <summary>
+		/// Get the dimentions of a UIBox
+		/// </summary>
+		/// <returns></returns>
+		inline glm::vec2 Dimentions() const { return glm::vec2{x2-x1, y2-y1}; }
+
+		/// <summary>
 		/// Rectify the box, so that x1, y1 is less than x2, y2
 		/// </summary>
 		void Rectify();
@@ -76,4 +82,10 @@ namespace Tara {
 		static std::pair<UIBox, glm::vec2> DecompressBoxAndSize(const Transform& transform);
 	};
 
+}
+
+inline std::ostream& operator<< (std::ostream& out, const Tara::UIBox& b)
+{
+	out << "{x1:" << b.x1 << ", y1:" << b.y1 << ", x2:" << b.x2 << ", y2:" << b.y2 << " (" << b.Dimentions() << ")}";
+	return out;
 }
