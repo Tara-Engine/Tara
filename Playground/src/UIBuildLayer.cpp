@@ -75,109 +75,123 @@ void UIBuildLayer::Activate()
 	text1->SetTextSize(32);
 	*/
 
-	//auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, PARENT_LAYER, patchFrame, 28.0f, "Basic Frame");
-	//frame->SetBorder(frame->GetBorder() + 5.0f);
-	
-	auto list = Tara::CreateEntity<Tara::UIListEntity>(base, PARENT_LAYER, "UIListEntity");
-	list->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
-	list->SetSpacing(5, 5);
+	//frame 1
+	{
+		auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, PARENT_LAYER, patchFrame, 28.0f, "Basic Frame");
+		frame->SetBorder(frame->GetBorder() + 5.0f);
+		
+		auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, PARENT_LAYER, "UIListEntity");
+		list->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+		list->SetSpacing(5, 5);
 
-	auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(list, PARENT_LAYER, m_Patch, "UIVisualEntity 1");
-	vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	vis->SetBorderFromPatch();
-	vis->SetTint({1, 0.8, 0.8, 1});
+		auto vis = Tara::CreateEntity<Tara::UIVisualEntity>(list, PARENT_LAYER, m_Patch, "UIVisualEntity 1");
+		vis->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+		vis->SetBorderFromPatch();
+		vis->SetTint({1, 0.8, 0.8, 1});
 
-	auto text = Tara::CreateEntity<Tara::UITextEntity>(vis, PARENT_LAYER, font, "Text Entity");
-	text->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
-	text->SetText("Test:\n[    ]\n[\t]");
-	text->SetTextSize(32);
+		auto text = Tara::CreateEntity<Tara::UITextEntity>(vis, PARENT_LAYER, font, "Text Entity");
+		text->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+		text->SetText("Test:\n[    ]\n[\t]");
+		text->SetTextSize(32);
 
-	/*
-	Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT, 
-		[this](Tara::LambdaComponent* self, float deltaTime) {
-			auto screenPos = Tara::Input::Get()->GetMousePos();
-			//auto worldPos = this->m_SceneCamera->GetRayFromScreenCoordinate(screenPos.x, screenPos.y);
-			auto parent = std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock());
-			std::stringstream ss;
-			ss << "Mouse: " << screenPos;
-			//LOG_S(INFO) << ss.str();
-			parent->SetText(ss.str());
-		}, 
-		LAMBDA_EVENT_DEFAULT
-	);
-	*/
-
-	
-
-	//vis 2
-	auto button = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
-	button->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	button->SetBorderFromPatch();
-	button->SetTint({ 1, 1, 1, 1 });
-
-	Tara::CreateComponent<Tara::LambdaComponent>(button, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT, 
-		[this](Tara::LambdaComponent* self, Tara::Event& e) {
-			//LOG_S(INFO) << e.ToString();
-			Tara::EventFilter filter(e);
-			filter.Call<Tara::UIToggleEvent>([this, self](Tara::UIToggleEvent& ee) {
-				int* clickCount = self->Param<int>("clickCount");
-				if (!clickCount) {
-					self->CreateParam<int>("clickCount", 0);
-					clickCount = self->Param<int>("clickCount");
-				}
-				(*clickCount)++;
-				auto parent = self->GetParent().lock();
-				if (!parent) { return true; }
-				auto disp = parent->GetFirstChildOfType<Tara::UITextEntity>();
-				if (!disp) { return true; }
+		
+		Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT, 
+			[this](Tara::LambdaComponent* self, float deltaTime) {
+				auto screenPos = Tara::Input::Get()->GetMousePos();
+				//auto worldPos = this->m_SceneCamera->GetRayFromScreenCoordinate(screenPos.x, screenPos.y);
+				auto parent = std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock());
 				std::stringstream ss;
-				ss << "Clicks: " << *clickCount;
-				disp->SetText(ss.str());
-				if (*clickCount > 9) {
-					auto pparent = std::dynamic_pointer_cast<Tara::UIButtonEntity>(parent);
-					if (!pparent) { return true; }
-					pparent->SetEnabled(false);
-					Tara::After([self, pparent, disp]() {
-						pparent->SetEnabled(true);
-						(*(self->Param<int>("clickCount"))) = 0;
-						disp->SetText("Clicks: 0");
-					}, 3);
-				}
-				return true;
-			});
-		}
-	);
-	
-	auto sizer = Tara::CreateEntity<Tara::UISpacerEntity>(button, PARENT_LAYER);
-	sizer->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	sizer->SetSize({ 150, 25 });
+				ss << "Mouse: " << screenPos;
+				//LOG_S(INFO) << ss.str();
+				parent->SetText(ss.str());
+			}, 
+			LAMBDA_EVENT_DEFAULT
+		);
 
-	auto text2 = Tara::CreateEntity<Tara::UITextEntity>(button, PARENT_LAYER, font, "Text Entity");
-	text2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	text2->SetText("Clicks: 0");
-	text2->SetTextSize(32);
+		//vis 2
+		auto button = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+		button->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+		button->SetBorderFromPatch();
+		button->SetTint({ 1, 1, 1, 1 });
 
-	//debug draw button
+		Tara::CreateComponent<Tara::LambdaComponent>(button, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT, 
+			[this](Tara::LambdaComponent* self, Tara::Event& e) {
+				//LOG_S(INFO) << e.ToString();
+				Tara::EventFilter filter(e);
+				filter.Call<Tara::UIToggleEvent>([this, self](Tara::UIToggleEvent& ee) {
+					int* clickCount = self->Param<int>("clickCount");
+					if (!clickCount) {
+						self->CreateParam<int>("clickCount", 0);
+						clickCount = self->Param<int>("clickCount");
+					}
+					(*clickCount)++;
+					auto parent = self->GetParent().lock();
+					if (!parent) { return true; }
+					auto disp = parent->GetFirstChildOfType<Tara::UITextEntity>();
+					if (!disp) { return true; }
+					std::stringstream ss;
+					ss << "Clicks: " << *clickCount;
+					disp->SetText(ss.str());
+					if (*clickCount > 9) {
+						auto pparent = std::dynamic_pointer_cast<Tara::UIButtonEntity>(parent);
+						if (!pparent) { return true; }
+						pparent->SetEnabled(false);
+						Tara::After([self, pparent, disp]() {
+							pparent->SetEnabled(true);
+							(*(self->Param<int>("clickCount"))) = 0;
+							disp->SetText("Clicks: 0");
+						}, 3);
+					}
+					return true;
+				});
+			}
+		);
+		
+		auto sizer = Tara::CreateEntity<Tara::UISpacerEntity>(button, PARENT_LAYER);
+		sizer->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+		sizer->SetSize({ 150, 25 });
 
-	auto button2 = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "debugDrawButton");
-	button2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	button2->SetBorderFromPatch();
+		auto text2 = Tara::CreateEntity<Tara::UITextEntity>(button, PARENT_LAYER, font, "Text Entity");
+		text2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+		text2->SetText("Clicks: 0");
+		text2->SetTextSize(32);
 
-	Tara::CreateComponent<Tara::LambdaComponent>(button2, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
-		[this](Tara::LambdaComponent* self, Tara::Event& e) {
-			//LOG_S(INFO) << e.ToString();
-			Tara::EventFilter filter(e);
-			filter.Call<Tara::UIToggleEvent>([this, self](Tara::UIToggleEvent& ee) {
-				Tara::UIBaseEntity::SetEnableDebugDraw(!Tara::UIBaseEntity::GetEnableDebugDraw());
-				return true;
-			});
-		}
-	);
-	auto text3 = Tara::CreateEntity<Tara::UITextEntity>(button2, PARENT_LAYER, font, "Text Entity");
-	text3->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-	text3->SetText("Toggle Debug Draw");
-	text3->SetTextSize(32);
-	
+		//debug draw button
+
+		auto button2 = Tara::CreateEntity<Tara::UIButtonEntity>(list, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "debugDrawButton");
+		button2->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+		button2->SetBorderFromPatch();
+
+		Tara::CreateComponent<Tara::LambdaComponent>(button2, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+			[this](Tara::LambdaComponent* self, Tara::Event& e) {
+				//LOG_S(INFO) << e.ToString();
+				Tara::EventFilter filter(e);
+				filter.Call<Tara::UIToggleEvent>([this, self](Tara::UIToggleEvent& ee) {
+					Tara::UIBaseEntity::SetEnableDebugDraw(!Tara::UIBaseEntity::GetEnableDebugDraw());
+					return true;
+				});
+			}
+		);
+		auto text3 = Tara::CreateEntity<Tara::UITextEntity>(button2, PARENT_LAYER, font, "Text Entity");
+		text3->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+		text3->SetText("Toggle Debug Draw");
+		text3->SetTextSize(32);
+	}
+
+	//Frame 2
+	{
+		auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, PARENT_LAYER, patchFrame, 28.0f, "Basic Frame");
+		frame->SetBorder(frame->GetBorder() + 5.0f);
+
+		auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, PARENT_LAYER, "UIListEntity");
+		list->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+		list->SetSpacing(5, 5);
+
+		auto text1 = Tara::CreateEntity<Tara::UITextEntity>(frame, PARENT_LAYER, font, "Text Entity");
+		text1->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+		text1->SetText("testing Text");
+		text1->SetTextSize(24);
+	}
 }
 
 void UIBuildLayer::Draw(float deltaTime)

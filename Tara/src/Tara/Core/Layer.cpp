@@ -76,6 +76,9 @@ namespace Tara{
 				//add to removable list (don't want to remove now b/c of possible issues)
 				removable.push_back(listener);
 			}
+			if (e.Handled()) {
+				break;
+			}
 		}
 		//remove any that are no longer valid
 		for (auto listener : removable) {
@@ -109,11 +112,12 @@ namespace Tara{
 	bool Layer::EnableListener(EventListenerNoRef ref, bool enable)
 	{
 		if (enable){
-			if (std::find(m_Listeners.begin(), m_Listeners.end(), ref) == m_Listeners.end()) {
-				m_Listeners.push_back(ref);
-				//LOG_S(INFO) << "Adding Event Listener!";
-				return true;
+			//if the element is already in the list, move to front
+			if (std::find(m_Listeners.begin(), m_Listeners.end(), ref) != m_Listeners.end()) {
+				m_Listeners.remove(ref);
 			}
+			m_Listeners.push_front(ref); //listeners are updated in REVERSE order
+			return true;
 		}
 		else {
 			m_Listeners.remove(ref);
