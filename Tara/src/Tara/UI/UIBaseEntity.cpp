@@ -80,7 +80,6 @@ namespace Tara{
 	{
 		//SCOPE_PROFILE("GetRenderArea");
 		if (!m_RenderAreaCacheDirty) {
-			//LOG_S(INFO) << "RenderArea of " << GetName() << ": " << m_RenderAreaCache << " [CACHE]";
 			return m_RenderAreaCache;
 		}
 		m_RenderAreaCacheDirty = false;
@@ -168,7 +167,6 @@ namespace Tara{
 		//LOG_S(INFO) << "Render Area: {" << target.x1 << "," << target.y1 << "} - {" << target.x2 << "," << target.y2;
 		target.Rectify();
 		m_RenderAreaCache = target;
-		//LOG_S(INFO) << "RenderArea of " << GetName() << ": " << m_RenderAreaCache;
 		return target;
 	}
 

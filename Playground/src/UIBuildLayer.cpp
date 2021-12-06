@@ -44,6 +44,7 @@ void UIBuildLayer::Activate()
 
 	auto base = Tara::CreateEntity<Tara::UIBaseEntity>(Tara::EntityNoRef(), weak_from_this(), "UIBaseEntity");
 	base->SetBorder(0, 0, 0, 0);
+
 	
 	/*
 	Tara::UIListEntityRef list = Tara::CreateEntity<Tara::UIListEntity>(base, PARENT_LAYER, "UIListEntity");

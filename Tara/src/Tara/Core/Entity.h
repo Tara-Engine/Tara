@@ -70,6 +70,7 @@ namespace Tara {
 		*                          Overridable Functions                                   *
 		************************************************************************************/
 	public:
+
 		/// <summary>
 		/// A function called after this entity is added to the hirarchy
 		/// </summary>
@@ -98,12 +99,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="e"></param>
 		virtual void ReceiveEvent(Event& e) override;
-
 	
 		/***********************************************************************************
 		*                          Basic Utility Funcions                                  *
 		************************************************************************************/
 	public:
+
 		/// <summary>
 		/// Get the transform of the Entity relative to parent
 		/// </summary>
@@ -243,6 +244,7 @@ namespace Tara {
 		*                      Relationship Utility Funcions                               *
 		************************************************************************************/
 	public:
+
 		/// <summary>
 		/// Check if a particular entity reference is a child.
 		/// </summary>
@@ -397,6 +399,7 @@ namespace Tara {
 		/// <returns></returns>
 		inline bool GetUpdateComponentsFirst() const { return m_UpdateComponentsFirst; }
 
+
 		/***********************************************************************************
 		*                               Ordering Utility Funcions                          *
 		************************************************************************************/
@@ -450,6 +453,7 @@ namespace Tara {
 		*                      Physics and Event Utility Funcions                          *
 		************************************************************************************/
 	public:
+
 		/// <summary>
 		/// Get the bounding box around this and all children entities.
 		/// </summary>

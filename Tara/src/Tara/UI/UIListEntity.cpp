@@ -115,7 +115,7 @@ namespace Tara{
 
 				//set the child's allowed area
 				asUI->SetAllowedArea(unique);
-				
+        
 				//adjust unique start for spacing
 				//ie, take end of last block, and move it up by spacing, then set to first
 				if (m_Direction == Direction::Vertical){

@@ -59,6 +59,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="size"></param>
 		inline void SetTextSize(float size) { m_TextSize = size; ; m_TextDirty = true;}
+
 	public:
 		//overriden stuff
 
