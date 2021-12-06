@@ -57,17 +57,20 @@ namespace Tara{
 			m_VerticalOffset = 0;
 			for (auto& cacheT : m_CachedTrasforms) {
 				Transform f = t + cacheT;
+				//the transforms given from the font system can have negative Scale.y values
 				minPos.x = std::min(f.Position.x, minPos.x);
+				minPos.y = std::min(f.Position.y + f.Scale.y, minPos.y);
 				minPos.y = std::min(f.Position.y, minPos.y);
 				
 				m_VerticalOffset = std::min(m_VerticalOffset, (cacheT.Position.y + cacheT.Scale.y) * (m_TextSize));
 
 				maxPos.x = std::max(f.Position.x + f.Scale.x, maxPos.x);
 				maxPos.y = std::max(f.Position.y + f.Scale.y, maxPos.y);
+				maxPos.y = std::max(f.Position.y, maxPos.y);
 			}
 			m_TextMeshSize = glm::vec2{
 				maxPos.x - minPos.x,
-				maxPos.y - minPos.y
+				(maxPos.y - minPos.y) + m_VerticalOffset
 			};
 			m_VerticalOffset = -m_VerticalOffset;
 			//LOG_S(INFO) << m_VerticalOffset;

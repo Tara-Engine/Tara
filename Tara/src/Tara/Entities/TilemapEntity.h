@@ -3,6 +3,7 @@
 #include "Tara/Core/Entity.h"
 #include "Tara/Asset/Tileset.h"
 #include "Tara/Math/Extensions.h" //hashing for glm types
+#include <any>
 
 
 namespace Tara {
@@ -223,111 +224,77 @@ namespace Tara {
 		//Metadata-related functions
 
 		/// <summary>
-		/// Give a certain cell some metadata. The Tilemap now owns the metadata, and is responsible for cleanup!
+		/// Give a certain cell some metadata.
 		/// </summary>
 		/// <param name="x">the x location of the cell</param>
 		/// <param name="y">the y location of the cell</param>
 		/// <param name="layer">the layer of the cell</param>
 		/// <param name="metaData">pointer to the metadata. Should be heap-allocated</param>
-		inline void GiveCellMetadata(int32_t x, int32_t y, int32_t layer, void* metaData) { GiveCellMetadata(glm::ivec3{ x,y,layer }, metaData); }
+		inline void SetCellMetadata(int32_t x, int32_t y, int32_t layer, const std::any& metaData) { SetCellMetadata(glm::ivec3{ x,y,layer }, metaData); }
 		
 		/// <summary>
-		/// Give a certain cell some metadata. The Tilemap now owns the metadata, and is responsible for cleanup!
+		/// Give a certain cell some metadata.
 		/// </summary>
 		/// <param name="pos">the cell position</param>
 		/// <param name="metaData">pointer to the metadata. Should be heap-allocated</param>
-		void GiveCellMetadata(glm::ivec3 pos, void* metaData);
+		void SetCellMetadata(glm::ivec3 pos, const std::any& metaData);
 
 		/// <summary>
-		/// Give a certain cell some metadata. The Tilemap now owns the metadata, and is responsible for cleanup!
+		/// Give a certain cell some metadata.
 		/// </summary>
 		/// <param name="pos">the cell position</param>
 		/// <param name="metaData">pointer to the metadata. Should be heap-allocated</param>
-		inline void GiveCellMetadata(Vector pos, void* metaData) { GiveCellMetadata(glm::ivec3{(int)pos.x, (int)pos.y, (int)pos.z}, metaData); }
+		inline void SetCellMetadata(Vector pos, const std::any& metaData) { SetCellMetadata(glm::ivec3{(int)pos.x, (int)pos.y, (int)pos.z}, metaData); }
 
 
 
 		/// <summary>
 		/// Get a pointer to the metadata associated with a cell.
-		/// Callspace does not own the data, it is stilled owned by the tileset.
 		/// </summary>
 		/// <param name="x">the x location of the cell</param>
 		/// <param name="y">the y location of the cell</param>
 		/// <param name="layer">the layer of the cell</param>
 		/// <returns>a non-owning pointer to the metadata</returns>
-		inline void* GetCellMetadata(int32_t x, int32_t y, int32_t layer) { return GetCellMetadata(glm::ivec3{x, y, layer}); }
+		inline const std::any& GetCellMetadata(int32_t x, int32_t y, int32_t layer) { return GetCellMetadata(glm::ivec3{x, y, layer}); }
 
 		/// <summary>
 		/// Get a pointer to the metadata associated with a cell.
-		/// Callspace does not own the data, it is stilled owned by the tileset.
 		/// </summary>
 		/// <param name="pos">the cell position</param>
 		/// <returns>a non-owning pointer to the metadata</returns>
-		void* GetCellMetadata(glm::ivec3 pos);
+		const std::any& GetCellMetadata(glm::ivec3 pos);
 
 		/// <summary>
 		/// Get a pointer to the metadata associated with a cell.
-		/// Callspace does not own the data, it is stilled owned by the tileset.
 		/// </summary>
 		/// <param name="pos">the cell position</param>
 		/// <returns>a non-owning pointer to the metadata</returns>
-		inline void* GetCellMetadata(Vector pos) { return GetCellMetadata(glm::ivec3{ (int)pos.x, (int)pos.y, (int)pos.z }); }
-
-
-
-		/// <summary>
-		/// Get a pointer to the metadata associated with a cell, and clear it from that cell.
-		/// That cell will no longer have control of the metadata, the callspace owns it now.
-		/// </summary>
-		/// <param name="x">the x location of the cell</param>
-		/// <param name="y">the y location of the cell</param>
-		/// <param name="layer">the layer of the cell</param>
-		/// <returns>an owning pointer to the metadata</returns>
-		inline void* TakeCellMetadata(int32_t x, int32_t y, int32_t layer) { return TakeCellMetadata(glm::ivec3{ x, y, layer }); }
-
-		/// <summary>
-		/// Get a pointer to the metadata associated with a cell, and clear it from that cell.
-		/// That cell will no longer have control of the metadata, the callspace owns it now.
-		/// </summary>
-		/// <param name="pos">the cell position</param>
-		/// <returns>a non-owning pointer to the metadata</returns>
-		void* TakeCellMetadata(glm::ivec3 pos);
-
-		/// <summary>
-		/// Get a pointer to the metadata associated with a cell, and clear it from that cell.
-		/// That cell will no longer have control of the metadata, the callspace owns it now.
-		/// </summary>
-		/// <param name="pos">the cell position</param>
-		/// <returns>a non-owning pointer to the metadata</returns>
-		inline void* TakeCellMetadata(Vector pos) { return TakeCellMetadata(glm::ivec3{ (int)pos.x, (int)pos.y, (int)pos.z }); }
+		inline const std::any& GetCellMetadata(Vector pos) { return GetCellMetadata(glm::ivec3{ (int)pos.x, (int)pos.y, (int)pos.z }); }
 
 
 
 		/// <summary>
 		/// Get the metadata associated with the tileID of a tile in a cell, from what tileset it is a part of.
-		/// Callspace does not own the data, it is stilled owned by the tileset.
 		/// </summary>
 		/// <param name="x">the x location of the cell</param>
 		/// <param name="y">the y location of the cell</param>
 		/// <param name="layer">the layer of the cell</param>
 		/// <returns>a non-owning pointer to the metadata</returns>
-		void* GetTileMetadata(int32_t x, int32_t y, int32_t layer);
+		const std::any& GetTileMetadata(int32_t x, int32_t y, int32_t layer);
 
 		/// <summary>
 		/// Get the metadata associated with the tileID of a tile in a cell, from what tileset it is a part of.
-		/// Callspace does not own the data, it is stilled owned by the tileset.
 		/// </summary>
 		/// <param name="pos">the cell position</param>
 		/// <returns>a non-owning pointer to the metadata</returns>
-		inline void* GetTileMetadata(glm::ivec3 pos) { return GetTileMetadata(pos.x, pos.y, pos.z); } ;
+		inline const std::any& GetTileMetadata(glm::ivec3 pos) { return GetTileMetadata(pos.x, pos.y, pos.z); } ;
 
 		/// <summary>
 		/// Get the metadata associated with the tileID of a tile in a cell, from what tileset it is a part of.
-		/// Callspace does not own the data, it is stilled owned by the tileset.
 		/// </summary>
 		/// <param name="pos">the cell position</param>
 		/// <returns>a non-owning pointer to the metadata</returns>
-		inline void* GetTileMetadata(Vector pos) { return GetTileMetadata((int)pos.x, (int)pos.y, (int)pos.z); }
+		inline const std::any& GetTileMetadata(Vector pos) { return GetTileMetadata((int)pos.x, (int)pos.y, (int)pos.z); }
 
 
 
@@ -397,7 +364,7 @@ namespace Tara {
 	private:
 		std::vector<TilesetRef> m_Tilesets;
 		std::vector<TileLayer> m_Layers; //TileLayer is stack, not pointer, cause its only the size of an unordered_list. 
-		std::unordered_map<glm::ivec3, void*> m_CellMetadata;
+		std::unordered_map<glm::ivec3, std::any> m_CellMetadata;
 		BoundingBox m_Bounds;
 	};
 

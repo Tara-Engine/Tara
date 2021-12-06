@@ -92,6 +92,13 @@ namespace Tara{
 			}
 		}
 		
+		if (m_Direction == Direction::Vertical) {
+			totalHeight -= spacing.y;
+		}
+		else {
+			totalHeight -= spacing.x;
+		}
+		
 		int i = 0;
 		UIBox unique{ allowed.x1, allowed.y1, allowed.x2, allowed.y2 };
 		for (auto& child : children) {
@@ -108,7 +115,7 @@ namespace Tara{
 
 				//set the child's allowed area
 				asUI->SetAllowedArea(unique);
-
+        
 				//adjust unique start for spacing
 				//ie, take end of last block, and move it up by spacing, then set to first
 				if (m_Direction == Direction::Vertical){

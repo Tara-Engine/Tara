@@ -104,6 +104,7 @@ namespace Tara{
 			m_DragOriginCache = screenPos;
 			ClickEvent e(screenPos.x, screenPos.y, e.GetButton(), false, false);
 			GetParent().lock()->ReceiveEvent(e);
+			return e.Handled();
 		}
 		return false;
 	}
@@ -112,10 +113,12 @@ namespace Tara{
 	bool ClickableComponent::OnMouseButtonReleaseEvent(MouseButtonReleaseEvent& e)
 	{
 		auto screenPos = Input::Get()->GetMousePos();
+		bool rval = false;
 		if (m_IsDownOverMe) {
 			ClickEvent e(screenPos.x, screenPos.y, e.GetButton(), true, false);
 			GetParent().lock()->ReceiveEvent(e);
 			m_IsDownOverMe = false;
+			rval = rval | e.Handled();
 		}
 		if (m_IsDragging) {
 			//LOG_S(INFO) << "Dragging Ended";
@@ -123,8 +126,9 @@ namespace Tara{
 			//send drag end event
 			DragEvent e(screenPos.x, screenPos.y, DragEvent::DragType::END);
 			GetParent().lock()->ReceiveEvent(e);
+			rval = rval | e.Handled();
 		}
-		return false;
+		return rval;
 	}
 
 

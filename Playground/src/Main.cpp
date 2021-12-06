@@ -3,6 +3,7 @@ A Tara application, for testing purposes.
 */
 
 #include <random>
+#include <any>
 
 #include <Tara.h>
 
@@ -30,11 +31,32 @@ void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer)
 struct TestStruct {
 	int32_t a = 77;
 	float b = 1.6f;
+	bool original = true;
 	TestStruct() {
-		LOG_S(INFO) << "Test Struct constructed!";
+		LOG_S(WARNING) << "Test Struct constructed!";
+	}
+	TestStruct(const TestStruct& other) {
+		LOG_S(WARNING) << "Test Struct copied!";
+	}
+	TestStruct(TestStruct&& other) {
+		other.original = false;
+		LOG_S(WARNING) << "Test Struct moved!";
 	}
 	~TestStruct() {
-		LOG_S(INFO) << "Test Struct destroyed!";
+
+		LOG_S(WARNING) << "Test Struct destroyed! Original:" << ((original)?"true":"false");
+	}
+	TestStruct& operator=(const TestStruct& other) {
+		LOG_S(WARNING) << "Test Struct Copied by Operator!";
+	}
+	TestStruct& operator=(TestStruct&& other) {
+		other.original = false;
+		LOG_S(WARNING) << "Test Struct Moved by Operator!";
+	}
+	std::string ToString() {
+		std::stringstream ss;
+		ss << "{" << a << ", " << b << "}";
+		return std::move(ss.str());
 	}
 };
 
@@ -83,7 +105,7 @@ public:
 
 		auto tileset2 = Tara::Tileset::Create(tiles2Texture, 16, 16, 0, 0, "Tiles2");
 
-		//m_tileset->GiveTileMetadata(0, new TestStruct);
+		m_tileset->SetTileMetadata(0, TestStruct());
 
 		//LOG_S(INFO) << ((TestStruct*)(m_tileset->GetTileMetadata(0)))->a;
 
@@ -164,8 +186,8 @@ public:
 		
 		
 
-		auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_tilemap, "assets/Component1.lua", "LuaComponent1");
-		auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/Component2.lua", "LuaComponent2");
+		//auto luaComponent1 = Tara::CreateComponent<Tara::ScriptComponent>(m_tilemap, "assets/Component1.lua", "LuaComponent1");
+		//auto luaComponent2 = Tara::CreateComponent<Tara::ScriptComponent>(m_Camera, "assets/Component2.lua", "LuaComponent2");
 
 
 
@@ -256,6 +278,40 @@ public:
 			}
 		}
 
+		if (e.GetButton() == TARA_MOUSE_BUTTON_2) {
+			glm::vec2 mousepos = Tara::Input::Get()->GetMousePos();
+
+			//try and get a camera
+			Tara::CameraEntityRef camEntity = m_tilemap->GetOwningLayer().lock()->GetLayerCamera().lock();
+			if (camEntity) {
+
+				//get the mouse pos in the world using the camera
+				std::pair<Tara::Vector, Tara::Vector> ray = camEntity->GetCamera()->GetRayFromScreenCoordinate(mousepos.x, mousepos.y);
+
+				int32_t tileX = (int32_t)floorf(ray.first.x);
+				int32_t tileY = (int32_t)floorf(ray.first.y);
+
+				//get the tile and cell metadata, and if not nullptr, print the data
+				std::any cellMeta = m_tilemap->GetCellMetadata(tileX, tileY, 0);
+				std::any tileMeta = m_tilemap->GetTileMetadata(tileX, tileY, 0);
+
+				LOG_S(INFO) << "Cell Meta Type: " << cellMeta.type().name();
+				LOG_S(INFO) << "Tile Meta Type: " << tileMeta.type().name();
+
+				if (tileMeta.type() != typeid(nullptr)) {
+					uint32_t tile = m_tilemap->GetTile(tileX, tileY, 0);
+					m_tileset->WipeTileMetadata(tile);
+				}
+				if (TestStruct* tt = std::any_cast<TestStruct>(&tileMeta)) {
+					LOG_S(INFO) << "Tile Meta: " << tt->ToString();
+				}
+
+				if (TestStruct* tt = std::any_cast<TestStruct>(&cellMeta)) {
+					LOG_S(INFO) << "Cell Meta: " << tt->ToString();
+				}
+			}
+		}
+
 		if (e.GetButton() == TARA_MOUSE_BUTTON_1) {
 			//Tilemap stuff
 			glm::vec2 mousepos = Tara::Input::Get()->GetMousePos();
@@ -270,16 +326,21 @@ public:
 				int32_t tileX = (int32_t)floorf(ray.first.x);
 				int32_t tileY = (int32_t)floorf(ray.first.y);
 
+				uint32_t newIndex = rand() % 4;
+
 				//if there is no tile, set one. Otherwise, remove it!
 				uint32_t oldTile = m_tilemap->GetTile(tileX, tileY, 0);
 				if (oldTile == Tara::TilemapEntity::NO_TILE) {
 					LOG_S(INFO) << "Tile is empty! " << oldTile;
-					m_tilemap->SwapTile(tileX, tileY, 0, 0);
+					m_tilemap->SwapTile(tileX, tileY, 0, newIndex);
+					if ((rand() % 3) == 0) {
+						m_tilemap->SetCellMetadata(tileX, tileY, 0, TestStruct());
+					}
 				}
 				else {
 					LOG_S(INFO) << "Tile is not empty! " << oldTile;
 					//set the cell to empty.
-					m_tilemap->SwapTile(tileX, tileY, 0, Tara::TilemapEntity::NO_TILE);
+					m_tilemap->SetTile(tileX, tileY, 0, Tara::TilemapEntity::NO_TILE);
 				}
 
 			}

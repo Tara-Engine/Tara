@@ -39,15 +39,15 @@ namespace Tara{
     Tileset::~Tileset()
     {
         //cleanup remaining tile metadata
-        int cnt = 0;
-        for (auto& kv : m_TileMetadata) {
-            if (kv.second) {
-                delete kv.second;
-                kv.second = nullptr;
-                cnt++;
-            }
-        }
-        LOG_S(INFO) << "Tileset destructor running. Metadata chunks cleaned: " << cnt;
+        //int cnt = 0;
+        //for (auto& kv : m_TileMetadata) {
+        //    if (kv.second) {
+        //        delete kv.second;
+        //        kv.second = nullptr;
+        //        cnt++;
+        //    }
+        //}
+        //LOG_S(INFO) << "Tileset destructor running. Metadata chunks cleaned: " << cnt;
     }
 
     TilesetRef Tileset::Create(Tara::Texture2DRef texture, float tileWidth, float tileHeight, float spacing, float margin, const std::string& name)
@@ -102,21 +102,13 @@ namespace Tara{
     }
 
 
-    void Tileset::GiveTileMetadata(uint32_t index, void* metaData)
+    void Tileset::SetTileMetadata(uint32_t index, const std::any& metaData)
     {
-        auto& iter = m_TileMetadata.find(index);
-        if (iter != m_TileMetadata.end()) {
-            //there is already metadata there. We own it
-            if (iter->second) {
-                delete (iter->second);
-                iter->second = nullptr;
-            }
-        }
         //insert new metadata
         m_TileMetadata.insert_or_assign(index, metaData);
     }
 
-    void* Tileset::GetTileMetadata(uint32_t index)
+    const std::any& Tileset::GetTileMetadata(uint32_t index)
     {
         auto& iter = m_TileMetadata.find(index);
         if (iter != m_TileMetadata.end()) {
@@ -129,19 +121,12 @@ namespace Tara{
         }
     }
 
-    void* Tileset::TakeTileMetadata(uint32_t index)
+    void Tileset::WipeTileMetadata(uint32_t index)
     {
-        auto& iter = m_TileMetadata.find(index);
-        if (iter != m_TileMetadata.end()) {
-            //there is metadata there. return it without destrying
-            void* data = iter->second;
-            m_TileMetadata.erase(index); //remove it from metadata
-            return data;
-        }
-        else {
-            //we have nothing, return nullptr
-            return nullptr;
-        }
+        m_TileMetadata.erase(index); //remove it from metadata
+        //auto& iter = m_TileMetadata.find(index);
+        //if (iter != m_TileMetadata.end()) {
+        //}
     }
 
 }

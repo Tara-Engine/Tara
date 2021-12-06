@@ -77,6 +77,22 @@ namespace Tara {
 		bool IsEntityRoot(EntityRef ref);
 
 		/// <summary>
+		/// Move an entity up by one or to top in the entity list. Check if the entity is root.
+		/// </summary>
+		/// <param name="ref">the entity to move</param>
+		/// <param name="toTop">if the move should be to the top or normal. defaults to false (normal)</param>
+		/// <returns>true if the operations was successful</returns>
+		bool MoveEntityUp(EntityRef ref, bool toTop = false);
+
+		/// <summary>
+		/// Move an entity up by one or to top in the entity list. Check if the entity is root.
+		/// </summary>
+		/// <param name="ref">the entity to move</param>
+		/// <param name="toTop">if the move should be to the top or normal. defaults to false (normal)</param>
+		/// <returns>true if the operations was successful</returns>
+		bool MoveEntityDown(EntityRef ref, bool toBottom = false);
+
+		/// <summary>
 		/// Enable/Disable a specific reference as a listener
 		/// </summary>
 		/// <param name="ref">the reference</param>
@@ -177,10 +193,12 @@ namespace Tara {
 		std::list<EntityRef> m_Entities;
 		std::list<EntityNoRef> m_DestroyedEntities;
 		std::list<EventListenerNoRef> m_Listeners;
+		std::list<std::pair<EventListenerNoRef, bool>> m_ListenerQueue;
 		std::list<Manifold> m_FrameManifoldQueue;
 		std::unordered_set<CameraEntityNoRef, CameraHasher> m_CameraQueue;
 		CameraEntityRef m_LayerCamera; //intentonally an owning pointer
 		bool m_Dead = false; //used by Scene to destroy layers
+		bool m_InEventHandler = false;
 	};
 
 

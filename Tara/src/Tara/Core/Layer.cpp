@@ -64,8 +64,9 @@ namespace Tara{
 	void Layer::OnEvent(Event& e)
 	{
 		//LOG_S(INFO) << "Layer OnEvent called!";
+		m_InEventHandler = true;
 		std::list<EventListenerNoRef> removable;
-		for (auto listener : m_Listeners) {
+		for (auto& listener : m_Listeners) {
 			//LOG_S(INFO) << "Event listener OnEvent called!";
 			auto lockedListener = listener.lock();
 			if (lockedListener) {
@@ -76,11 +77,21 @@ namespace Tara{
 				//add to removable list (don't want to remove now b/c of possible issues)
 				removable.push_back(listener);
 			}
+			if (e.Handled()) {
+				break;
+			}
 		}
 		//remove any that are no longer valid
 		for (auto listener : removable) {
 			m_Listeners.remove(listener);
 		}
+		m_InEventHandler = false;
+
+		//handle any enqued listener changes
+		for (auto ls : m_ListenerQueue) {
+			EnableListener(ls.first, ls.second);
+		}
+		m_ListenerQueue.clear();
 	}
 
 	bool Layer::AddEntity(EntityRef ref)
@@ -106,14 +117,70 @@ namespace Tara{
 		return std::find(m_Entities.begin(), m_Entities.end(), ref) != m_Entities.end();
 	}
 
+	bool Layer::MoveEntityDown(EntityRef ref, bool toBottom)
+	{
+		auto f = std::find(m_Entities.begin(), m_Entities.end(), ref);
+		if (f == m_Entities.end()) {
+			//not a child
+			return false;
+		}
+		if (f == m_Entities.begin()) {
+			//it is already top
+			return true;
+		}
+		if (toBottom) {
+			//remove and re-insert at top
+			//erase is used so not to search the list again
+			m_Entities.erase(f);
+			m_Entities.push_front(ref);
+		}
+		else {
+			std::iter_swap(std::prev(f), f);
+		}
+		return true;
+	}
+	
+	bool Layer::MoveEntityUp(EntityRef ref, bool toTop)
+	{
+		auto f = std::find(m_Entities.begin(), m_Entities.end(), ref);
+		if (f == m_Entities.end()) {
+			//not a child
+			return false;
+		}
+		if (f == std::prev(m_Entities.end())) {
+			//it is already bottom
+			return true;
+		}
+		if (toTop) {
+			//remove and re-insert at top
+			//erase is used so not to search the list again
+			m_Entities.erase(f);
+			m_Entities.push_back(ref);
+		}
+		else {
+			std::iter_swap(f, std::next(f));
+		}
+		return true;
+	}
+
 	bool Layer::EnableListener(EventListenerNoRef ref, bool enable)
 	{
+		if (m_InEventHandler) {
+			//enqueue, as running now will break Listener list
+			m_ListenerQueue.push_back(std::make_pair(ref, enable));
+			return true;
+		}
 		if (enable){
-			if (std::find(m_Listeners.begin(), m_Listeners.end(), ref) == m_Listeners.end()) {
-				m_Listeners.push_back(ref);
-				//LOG_S(INFO) << "Adding Event Listener!";
-				return true;
+			//if the element is already in the list, move to front
+			auto f = std::find(m_Listeners.begin(), m_Listeners.end(), ref);
+			if (f != m_Listeners.end()) {
+				if (f == m_Listeners.begin()) {
+					return true;
+				}
+				m_Listeners.remove(ref);
 			}
+			m_Listeners.push_front(ref); //listeners are updated in REVERSE order
+			return true;
 		}
 		else {
 			m_Listeners.remove(ref);

@@ -46,7 +46,6 @@ namespace Tara{
 		auto border = GetBorder();
 		size.x += border.x + border.y;
 		size.y += border.z + border.w;
-
 		//set the size
 		SetDesiredSize(size);
 	}
