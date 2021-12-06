@@ -135,15 +135,15 @@ namespace Tara {
 	TilemapEntity::~TilemapEntity()
 	{
 		//cleanup remaining cell metadata
-		int cnt = 0;
-		for (auto& kv : m_CellMetadata) {
-			if (kv.second) {
-				delete kv.second;
-				kv.second = nullptr;
-				cnt++;
-			}
-		}
-		LOG_S(INFO) << "TilemapEntity destructor running. Metadata chunks cleaned: " << cnt;
+		//int cnt = 0;
+		//for (auto& kv : m_CellMetadata) {
+		//	if (kv.second) {
+		//		delete kv.second;
+		//		kv.second = nullptr;
+		//		cnt++;
+		//	}
+		//}
+		//LOG_S(INFO) << "TilemapEntity destructor running. Metadata chunks cleaned: " << cnt;
 	}
 
 	uint32_t TilemapEntity::GetTile(int32_t x, int32_t y, int32_t layer)
@@ -250,21 +250,13 @@ namespace Tara {
 
 	}
 
-	void TilemapEntity::GiveCellMetadata(glm::ivec3 pos, void* metaData)
+	void TilemapEntity::SetCellMetadata(glm::ivec3 pos, const std::any& metaData)
 	{
-		auto& iter = m_CellMetadata.find(pos);
-		if (iter != m_CellMetadata.end()) {
-			//there is already metadata there. We own it
-			if (iter->second) {
-				delete (iter->second);
-				iter->second = nullptr;
-			}
-		}
 		//insert new metadata
 		m_CellMetadata.insert_or_assign(pos, metaData);
 	}
 
-	void* TilemapEntity::GetCellMetadata(glm::ivec3 pos)
+	const std::any& TilemapEntity::GetCellMetadata(glm::ivec3 pos)
 	{
 		auto& iter = m_CellMetadata.find(pos);
 		if (iter != m_CellMetadata.end()) {
@@ -277,6 +269,7 @@ namespace Tara {
 		}
 	}
 
+	/*
 	void* TilemapEntity::TakeCellMetadata(glm::ivec3 pos)
 	{
 		auto& iter = m_CellMetadata.find(pos);
@@ -290,9 +283,9 @@ namespace Tara {
 			//we have nothing, return nullptr
 			return nullptr;
 		}
-	}
+	}*/
 
-	void* TilemapEntity::GetTileMetadata(int32_t x, int32_t y, int32_t layer)
+	const std::any& TilemapEntity::GetTileMetadata(int32_t x, int32_t y, int32_t layer)
 	{
 		uint32_t tile = GetTile(x, y, layer)+1;
 		if (tile) {
@@ -314,15 +307,11 @@ namespace Tara {
 
 	void TilemapEntity::WipeCellMetadata(glm::ivec3 pos)
 	{
-		auto& iter = m_CellMetadata.find(pos);
-		if (iter != m_CellMetadata.end()) {
-			//there is metadata there. destroy it!
-			if (iter->second) {
-				delete iter->second;
-				iter->second = nullptr;
-			}
-			m_CellMetadata.erase(pos); //remove slot from metadata
-		}
+		m_CellMetadata.erase(pos); //remove slot from metadata
+		//auto& iter = m_CellMetadata.find(pos);
+		//if (iter != m_CellMetadata.end()) {
+		//	//there is metadata there. destroy it!
+		//}
 	}
 
 

@@ -273,7 +273,7 @@ namespace Tara {
 			
 			
 		}
-		return false;
+		return true;
 	}
 
 	bool UIFrameEntity::OnClickEvent(ClickEvent& e)
