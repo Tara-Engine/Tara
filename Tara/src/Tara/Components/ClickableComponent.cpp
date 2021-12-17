@@ -6,7 +6,8 @@
 
 namespace Tara{
 	ClickableComponent::ClickableComponent(EntityNoRef parent, const std::string& name)
-		: Component(parent, name), m_DragOriginCache(0,0), m_DragStartDist(5), m_IsDragging(false), m_IsDownOverMe(false), m_IsHovering(false)
+		: Component(parent, name), m_IsDownOverMe(false), m_IsHovering(false), m_IsDragging(false),
+		m_DragStartDist(5), m_DragOriginCache(0,0), m_Camera(CameraEntityNoRef())
 	{
 	}
 
@@ -102,9 +103,9 @@ namespace Tara{
 		if (IsInOwner(worldPos)) {
 			m_IsDownOverMe = true;
 			m_DragOriginCache = screenPos;
-			ClickEvent e(screenPos.x, screenPos.y, e.GetButton(), false, false);
-			GetParent().lock()->ReceiveEvent(e);
-			return e.Handled();
+			ClickEvent event(screenPos.x, screenPos.y, e.GetButton(), false, false);
+			GetParent().lock()->ReceiveEvent(event);
+			return event.Handled();
 		}
 		return false;
 	}
@@ -115,18 +116,18 @@ namespace Tara{
 		auto screenPos = Input::Get()->GetMousePos();
 		bool rval = false;
 		if (m_IsDownOverMe) {
-			ClickEvent e(screenPos.x, screenPos.y, e.GetButton(), true, false);
-			GetParent().lock()->ReceiveEvent(e);
+			ClickEvent event(screenPos.x, screenPos.y, e.GetButton(), true, false);
+			GetParent().lock()->ReceiveEvent(event);
 			m_IsDownOverMe = false;
-			rval = rval | e.Handled();
+			rval = rval | event.Handled();
 		}
 		if (m_IsDragging) {
 			//LOG_S(INFO) << "Dragging Ended";
 			m_IsDragging = false;
 			//send drag end event
-			DragEvent e(screenPos.x, screenPos.y, DragEvent::DragType::END);
-			GetParent().lock()->ReceiveEvent(e);
-			rval = rval | e.Handled();
+			DragEvent event(screenPos.x, screenPos.y, DragEvent::DragType::END);
+			GetParent().lock()->ReceiveEvent(event);
+			rval = rval | event.Handled();
 		}
 		return rval;
 	}

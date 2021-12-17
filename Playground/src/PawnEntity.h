@@ -109,7 +109,7 @@ private:
 	float m_Timer;
 	float m_MaxTime = 0.25f; // 1/4 second
 	Direction m_Direction;
-	bool m_Traveling = false;
-	bool m_Alive = true;
-	bool m_Immortal = false;
+	bool m_Traveling;
+	bool m_Alive;
+	bool m_Immortal;
 };

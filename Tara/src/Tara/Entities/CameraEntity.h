@@ -142,13 +142,13 @@ namespace Tara {
 		/// Get the filtering bits for what cameras can be render this entity
 		/// </summary>
 		/// <returns></returns>
-		inline virtual uint32_t GetRenderFilterBits() const { return m_Camera->GetRenderFilterBits(); }
+		inline virtual uint32_t GetRenderFilterBits() const override { return m_Camera->GetRenderFilterBits(); }
 
 		/// <summary>
 		/// Set the filtering bits for what cameras can be render this entity
 		/// </summary>
 		/// <param name="bits"></param>
-		inline virtual void SetRenderFilterBits(uint32_t bits) { m_Camera->SetRenderFilterBits(bits); }
+		inline virtual void SetRenderFilterBits(uint32_t bits) override { m_Camera->SetRenderFilterBits(bits); }
 
 	public:
 		/// <summary>

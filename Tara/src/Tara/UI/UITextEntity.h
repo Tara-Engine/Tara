@@ -63,7 +63,7 @@ namespace Tara {
 	public:
 		//overriden stuff
 
-		virtual void CalculateDesiredSize();
+		virtual void CalculateDesiredSize() override;
 
 		virtual void OnDraw(float deltaTime) override;
 

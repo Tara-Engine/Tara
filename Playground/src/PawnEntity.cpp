@@ -7,12 +7,12 @@
 
 
 
-const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
+//const static float MOVEMENT_DISTANCE = 16 * 4; //size of 1 tile;
 
 PawnEntity::PawnEntity(Tara::EntityNoRef parent, Tara::LayerNoRef owningLayer, Tara::Transform transform, std::string name, Tara::SpriteRef sprite)
 	: SpriteEntity(parent, owningLayer, transform, name, sprite), 
 	m_Target(transform.Position), m_Origin(transform.Position), m_Spawn(transform.Position),
-	m_Timer(0), m_Traveling(false), m_Direction(Direction::DOWN)
+	m_Timer(0),  m_Direction(Direction::DOWN), m_Traveling(false), m_Alive(false), m_Immortal(false)
 {}
 
 void PawnEntity::OnUpdate(float deltaTime)

@@ -134,13 +134,13 @@ namespace Tara {
 		/// Get the number of tiles across the image (columns)
 		/// </summary>
 		/// <returns></returns>
-		uint32_t GetTileCountX() const { return (uint32_t)std::floorf((m_Texture->GetWidth() - (m_Margin * 2) ) / (m_TileWidth + m_Spacing)); }
+		uint32_t GetTileCountX() const { return (uint32_t)floorf((m_Texture->GetWidth() - (m_Margin * 2) ) / (m_TileWidth + m_Spacing)); }
 		
 		/// <summary>
 		/// Get the number of tiles down the image (rows)
 		/// </summary>
 		/// <returns></returns>
-		uint32_t GetTileCountY() const { return (uint32_t)std::floorf((m_Texture->GetHeight() - (m_Margin * 2) ) / (m_TileHeight + m_Spacing)); }
+		uint32_t GetTileCountY() const { return (uint32_t)floorf((m_Texture->GetHeight() - (m_Margin * 2) ) / (m_TileHeight + m_Spacing)); }
 
 		/// <summary>
 		/// Give a certain tile ID some metadata.

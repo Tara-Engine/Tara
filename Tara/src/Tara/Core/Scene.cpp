@@ -25,7 +25,7 @@ namespace Tara {
 	{
 		//LOG_S(INFO) << "Scene: Layercount:" << m_Layers.size();
 		std::list<std::vector<LayerRef>::iterator> deadLayers;
-		for (auto& layer = m_Layers.begin(); layer != m_Layers.end(); layer++) {
+		for (auto layer = m_Layers.begin(); layer != m_Layers.end(); layer++) {
 			(*layer)->Update(deltaTime);
 			(*layer)->RunOverlapChecks();
 			if ((*layer)->m_Dead) {
@@ -37,7 +37,7 @@ namespace Tara {
 		}
 		deadLayers.clear();
 
-		for (auto& layer = m_Overlays.begin(); layer != m_Overlays.end(); layer++) {
+		for (auto layer = m_Overlays.begin(); layer != m_Overlays.end(); layer++) {
 			(*layer)->Update(deltaTime);
 			(*layer)->RunOverlapChecks();
 			if ((*layer)->m_Dead) {

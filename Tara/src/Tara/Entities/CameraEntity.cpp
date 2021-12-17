@@ -113,9 +113,9 @@ namespace Tara{
 	void CameraEntity::__SCRIPT__SetProjectionType(const char* type)
 	{
 		Camera::ProjectionType proj = Camera::ProjectionType::None;
-		if (type == "Ortographic") { proj = Camera::ProjectionType::Ortographic; }
-		if (type == "Perspective") { proj = Camera::ProjectionType::Perspective; }
-		if (type == "Screen") { proj = Camera::ProjectionType::Screen; }
+		if (strcmp(type, "Ortographic")) { proj = Camera::ProjectionType::Ortographic; }
+		if (strcmp(type, "Perspective")) { proj = Camera::ProjectionType::Perspective; }
+		if (strcmp(type, "Screen")) { proj = Camera::ProjectionType::Screen; }
 		SetProjectionType(proj);
 	}
 

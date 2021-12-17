@@ -35,7 +35,7 @@ namespace Tara {
 		/// <param name="normalized">bool = false, in case the data is normalized</param>
 		BufferElement(Shader::Datatype type, const std::string& name = "", bool normalized = false)
 			: Name(name), Type(type), Normalized(normalized), 
-			Size(Shader::GetDatatypeSize(type)), Offset(0) {}
+			Offset(0), Size(Shader::GetDatatypeSize(type)) {}
 	};
 
 	/// <summary>

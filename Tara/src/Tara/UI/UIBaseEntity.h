@@ -169,9 +169,9 @@ namespace Tara {
 
 		virtual void OnEvent(Event& e) override;
 
-		inline virtual void OnBeginPlay() override;
+		virtual void OnBeginPlay() override;
 
-		inline virtual BoundingBox GetSpecificBoundingBox() const;
+		virtual BoundingBox GetSpecificBoundingBox() const override;
 
 		//DEBUG
 		virtual void OnDraw(float deltaTime) override;
@@ -196,8 +196,11 @@ namespace Tara {
 		//delete all functions related to Transform setting - They will break the data compression
 		//and are useless for UI
 		//well, since only some can actually be deleted, make them empty functions. 
-#pragma warning( push )
-#pragma warning( disable : 4172 )
+//#pragma warning( push )
+//#pragma warning( disable : 4172 )
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-stack-address"
 
 		virtual inline const Transform& GetRelativeTransform()			const	override { return TRANSFORM_DEFAULT; }
 		virtual inline Transform GetWorldTransform()					const	override { return TRANSFORM_DEFAULT; }
@@ -215,7 +218,10 @@ namespace Tara {
 		virtual inline void SetRelativeScale(const Vector& scale)				override {}
 		virtual inline Vector GetWorldScale()							const	override { return { 0,0,0 }; }
 		virtual inline void SetWorldScale(const Vector& scale)					override {}
-#pragma warning( pop )
+
+#pragma clang diagnostic pop
+//#pragma warning( pop )
+
 
 	protected:
 		static bool s_EnableDebugRendering;

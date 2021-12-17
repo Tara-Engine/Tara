@@ -5,8 +5,8 @@
 namespace Tara{
 
 	UITextEntity::UITextEntity(EntityNoRef parent, LayerNoRef owningLayer, FontRef font, const std::string& name)
-		:UIBaseEntity(parent, owningLayer, name), m_Text(name), m_Font(font), m_Color(1), 
-		m_TextDirty(true), m_TextMeshSize(0), m_TextSize(16), m_VerticalOffset(0)
+		:UIBaseEntity(parent, owningLayer, name), m_Font(font), m_Color(1), 
+		m_Text(name), m_TextMeshSize(0), m_TextSize(16), m_VerticalOffset(0), m_TextDirty(true)
 	{
 		UpdateDisplayString();
 	}

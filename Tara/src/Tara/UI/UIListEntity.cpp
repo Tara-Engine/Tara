@@ -134,7 +134,7 @@ namespace Tara{
 	void UIListEntity::OnDraw(float deltaTime)
 	{
 		if (s_EnableDebugRendering){
-			srand((unsigned int)(this));
+			srand((uint64_t)(this));
 
 
 			//get the allowed area for this entity, and remove the border from it

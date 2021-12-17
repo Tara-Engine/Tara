@@ -6,7 +6,7 @@
 
 namespace Tara{
     Tileset::Tileset(Tara::Texture2DRef texture, float tileWidth, float tileHeight, float spacing, float margin, const std::string& name)
-        :Asset(name), m_Texture(texture), m_TileWidth(tileWidth), m_TileHeight(tileHeight), m_Spacing(spacing), m_Margin(margin), m_FilePath("")
+        :Asset(name), m_Texture(texture), m_TileCount(0), m_Margin(margin), m_Spacing(spacing), m_TileWidth(tileWidth), m_TileHeight(tileHeight), m_FilePath("")
     {
         m_TileCount = GetTileCountX() * GetTileCountY();
     }
@@ -110,7 +110,7 @@ namespace Tara{
 
     const std::any& Tileset::GetTileMetadata(uint32_t index)
     {
-        auto& iter = m_TileMetadata.find(index);
+        const auto& iter = m_TileMetadata.find(index);
         if (iter != m_TileMetadata.end()) {
             //there is metadata there. return it without destrying
             return iter->second;

@@ -105,6 +105,8 @@ project("Tara")
 		"SOL_NO_EXCEPTIONS=1",
 	})
 	
+	toolset("clang")
+	
 	filter("system:Windows")
 		system("windows")
 		systemversion("latest")
@@ -118,7 +120,7 @@ project("Tara")
 	filter("system:linux")
 		system("linux")
 		systemversion("latest")
-		toolset("clang")
+		
 		links({
 			"GL",
 			"X11", 
@@ -177,6 +179,8 @@ project("Playground")
 	
 	links(Tara_Links)
 	
+	toolset("clang")
+	
 	filter("system:Windows")
 		system("windows")
 		systemversion("latest")
@@ -190,7 +194,6 @@ project("Playground")
 	filter("system:linux")
 		system("linux")
 		systemversion("latest")
-		toolset("clang")
 		links({
 			"GL",
 			"X11", "dl", "pthread", "m", "z", --"Xtest", "Xfixes"

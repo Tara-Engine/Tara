@@ -301,7 +301,7 @@ namespace Tara {
 		/// Get the view matrix of the camera
 		/// </summary>
 		/// <returns>view matrix, column-major</returns>
-		virtual glm::mat4 GetViewMatrix() const;
+		virtual glm::mat4 GetViewMatrix() const override;
 
 		/// <summary>
 		/// Given a location on the screen, make a unit ray into the world, relative to the same space as the camera sees it.
