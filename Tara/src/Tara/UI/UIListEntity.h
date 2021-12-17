@@ -39,12 +39,12 @@ namespace Tara {
 	public:
 		//overrides
 
-		virtual void CalculateDesiredSize();
+		virtual void CalculateDesiredSize() override;
 
-		void OnUpdate(float deltaTime);
+		void OnUpdate(float deltaTime) override;
 
 		//for debug purposes
-		void OnDraw(float deltaTime);
+		void OnDraw(float deltaTime) override;
 
 		inline virtual void OnBeginPlay() override {}
 	private:

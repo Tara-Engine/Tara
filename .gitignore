@@ -376,6 +376,11 @@ MigrationBackup/
 # update scripts
 update.sh
 
+# Kdev files
+**/.kdev4
+**/*.kdev4
+
+
 # UNIX makefiles
 **/[Mm]akefile
 

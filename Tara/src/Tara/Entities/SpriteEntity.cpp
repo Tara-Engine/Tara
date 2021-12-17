@@ -120,19 +120,19 @@ namespace Tara {
 		uint32_t bits = 0;
 		if (one.valid() && one.is<char*>()) {
 			char* s = one.as<char*>();
-			if (s == "FlipX" || s == "FlipHorizontal" || s == "SPRITE_FLIP_H") {
+			if (strcmp(s, "FlipX") || strcmp(s, "FlipHorizontal") || strcmp(s, "SPRITE_FLIP_H")) {
 				bits |= SPRITE_FLIP_H;
 			}
-			else if (s == "FlipY" || s == "FlipVertical" || s == "SPRITE_FLIP_V") {
+			else if (strcmp(s, "FlipY") || strcmp(s, "FlipVertical") || strcmp(s, "SPRITE_FLIP_V")) {
 				bits |= SPRITE_FLIP_V;
 			}
 		}
 		if (two.valid() && two.is<char*>()) {
 			char* s = two.as<char*>();
-			if (s == "FlipX" || s == "FlipHorizontal" || s == "SPRITE_FLIP_H") {
+			if (strcmp(s, "FlipX") || strcmp(s, "FlipHorizontal") || strcmp(s, "SPRITE_FLIP_H")) {
 				bits |= SPRITE_FLIP_H;
 			}
-			else if (s == "FlipY" || s == "FlipVertical" || s == "SPRITE_FLIP_V") {
+			else if (strcmp(s, "FlipY") || strcmp(s, "FlipVertical") || strcmp(s, "SPRITE_FLIP_V")) {
 				bits |= SPRITE_FLIP_V;
 			}
 		}

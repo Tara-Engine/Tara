@@ -46,17 +46,17 @@ struct TestStruct {
 
 		LOG_S(WARNING) << "Test Struct destroyed! Original:" << ((original)?"true":"false");
 	}
-	TestStruct& operator=(const TestStruct& other) {
+	void operator=(const TestStruct& other) {
 		LOG_S(WARNING) << "Test Struct Copied by Operator!";
 	}
-	TestStruct& operator=(TestStruct&& other) {
+	void operator=(TestStruct&& other) {
 		other.original = false;
 		LOG_S(WARNING) << "Test Struct Moved by Operator!";
 	}
 	std::string ToString() {
 		std::stringstream ss;
 		ss << "{" << a << ", " << b << "}";
-		return std::move(ss.str());
+		return ss.str();
 	}
 };
 
@@ -111,7 +111,7 @@ public:
 
 		m_tilemap = Tara::CreateEntity<Tara::TilemapEntity>(
 			Tara::EntityNoRef(), weak_from_this(),
-			std::initializer_list{m_tileset, tileset2}, //unfortunately, must explicitly declare this. Variable Args thing.
+			std::initializer_list<Tara::TilesetRef>{m_tileset, tileset2}, //unfortunately, must explicitly declare this. Variable Args thing.
 			TRANSFORM_2D(0,0,0,1,1), "Tilemap Entity"
 		);
 
@@ -362,12 +362,12 @@ private:
 	Tara::FontRef font;
 	//Tara::CameraRef m_Camera;
 	
-	float m_PlayerSpeed = 1.0f;
+	//float m_PlayerSpeed = 1.0f;
 
 	Tara::CameraEntityRef m_Camera;
 	Tara::SpriteEntityRef m_Player;
 	Tara::SpriteEntityRef m_TempSpriteEntity;
-	float m_TimeCounter = 0;
+	//float m_TimeCounter = 0;
 
 	//Tara::ShaderRef m_GShader;
 	//Tara::VertexArrayRef m_QuadPoints;
@@ -384,9 +384,9 @@ int main(int argc, char** argv) {
 
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
-	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<UIBuildLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<UIBuildLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

@@ -67,7 +67,7 @@ namespace Tara {
 		/// Events are forwarded by parent, unless both are listening for native window events and that event is one.
 		/// </summary>
 		/// <param name="e">The event</param>
-		inline virtual void OnEvent(Event& e) {}
+		inline virtual void OnEvent(Event& e) override {}
 
 	public:
 		/// <summary>

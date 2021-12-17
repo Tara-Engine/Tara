@@ -15,9 +15,9 @@ namespace Tara{
 		m_Border({0,0,0,0}),
 		m_SnapRules(UISnapRule::TOP | UISnapRule::LEFT | UISnapRule::BOTTOM | UISnapRule::RIGHT),
 		m_Offsets(0,0,0,0),
-		m_DesiredSizeDirty(true),
 		m_RenderAreaCache(0,0,0,0),
-		m_RenderAreaCacheDirty(true)
+		m_RenderAreaCacheDirty(true),
+		m_DesiredSizeDirty(true)
 	{
 		SetUpdateChildrenFirst(false);
 		SetUpdateComponentsFirst(true);
@@ -248,7 +248,7 @@ namespace Tara{
 		if (s_EnableDebugRendering){
 			auto target = GetRenderArea();
 
-			srand((unsigned int)(this)); //use this as the seed, so every time its the same color, but all spacers are different
+			srand((uint64_t)(this)); //use this as the seed, so every time its the same color, but all spacers are different
 			glm::vec4 randomColor{
 				rand() % 100 / 100.0f,
 				rand() % 100 / 100.0f,

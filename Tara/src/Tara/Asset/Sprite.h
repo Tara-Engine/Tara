@@ -119,7 +119,7 @@ namespace Tara {
 		/// Get the size, in pixels, of a single frame
 		/// </summary>
 		/// <returns>a vec2 of the frame size in pixel count</returns>
-		inline glm::vec2 GetFrameSizePixel() const { glm::vec2((float)m_Texture->GetWidth() / (float)m_XFrameCount, (float)m_Texture->GetHeight() / m_YFrameCount); }
+		inline glm::vec2 GetFrameSizePixel() const { return glm::vec2((float)m_Texture->GetWidth() / (float)m_XFrameCount, (float)m_Texture->GetHeight() / m_YFrameCount); }
 
 		/// <summary>
 		/// Get a reference to the internal texture

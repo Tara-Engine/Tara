@@ -11,8 +11,9 @@
 
 namespace Tara {
 	UIFrameEntity::UIFrameEntity(EntityNoRef parent, LayerNoRef owningLayer, PatchRef patch, float headerPixels, const std::string& name)
-		: UIVisualEntity(parent, owningLayer, patch, name), m_Size(0,0), m_HeaderSize(headerPixels),
-		m_ResizeHandleSize(10), m_ResizingSide(0), m_Dragging(false), m_Resizing(false), m_DragData(nullptr), m_DrawResizeBar(false)
+		: UIVisualEntity(parent, owningLayer, patch, name), m_Size(0,0), 
+		m_HeaderSize(headerPixels),m_ResizeHandleSize(10), m_DragData(nullptr), 
+		m_ResizingSide(0), m_Dragging(false), m_Resizing(false), m_DrawResizeBar(false)
 	{
 		SetBorderFromPatch();
 		SetSnapRules(UISnapRule::TOP | UISnapRule::LEFT);

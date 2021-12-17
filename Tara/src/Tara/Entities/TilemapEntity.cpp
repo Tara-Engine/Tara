@@ -87,7 +87,7 @@ namespace Tara {
 		auto idxX = TilemapEntity::ToChunkIndex(x);
 		auto idxY = TilemapEntity::ToChunkIndex(y);
 		glm::ivec2 chunkIndex{ idxX.first, idxY.first };
-		auto& iter = m_Chunks.find(chunkIndex);
+		auto iter = m_Chunks.find(chunkIndex);
 		if (iter != m_Chunks.end()) {
 			//we have a valid chunk
 			//return the tileID from it.
@@ -192,7 +192,7 @@ namespace Tara {
 
 	inline void TilemapEntity::PushLayer()
 	{
-		m_Layers.push_back(std::move(TileLayer{}));
+		m_Layers.push_back(TileLayer{});
 	}
 
 	void TilemapEntity::FillFromJson(const std::string& path)
@@ -258,7 +258,7 @@ namespace Tara {
 
 	const std::any& TilemapEntity::GetCellMetadata(glm::ivec3 pos)
 	{
-		auto& iter = m_CellMetadata.find(pos);
+		auto iter = m_CellMetadata.find(pos);
 		if (iter != m_CellMetadata.end()) {
 			//there is metadata there. return it without destrying
 			return iter->second;

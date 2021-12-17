@@ -61,7 +61,7 @@ namespace Tara {
 		
 		//void OnUpdate(float deltaTime);
 
-		virtual void OnDraw(float deltaTime);
+		virtual void OnDraw(float deltaTime) override;
 
 		inline virtual void OnBeginPlay() override {}
 
