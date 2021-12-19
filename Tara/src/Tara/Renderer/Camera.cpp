@@ -182,7 +182,7 @@ namespace Tara {
 			m_AspectRatio = (float)window->GetWidth() / (float)window->GetHeight();
 		}
 		//TODO: add methods to set near and far clipping plane
-		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, -1.0f, 1.0f);
+		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, 0.1f, 100.0f);
 	}
 
 	ScreenCamera::ScreenCamera()
@@ -262,11 +262,7 @@ namespace Tara {
 		);
 	}
 
-
-
-
 	
-
 }
 
 

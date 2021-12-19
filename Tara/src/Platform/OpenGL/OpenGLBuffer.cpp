@@ -3,7 +3,7 @@
 #include "glad/glad.h"
 
 namespace Tara {
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t count)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(const float* vertices, uint32_t count)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -35,14 +35,14 @@ namespace Tara {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void OpenGLVertexBuffer::SetData(float* data, uint32_t count)
+	void OpenGLVertexBuffer::SetData(const float* data, uint32_t count)
 	{
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, GL_STATIC_DRAW);
 	}
 
 
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
+	OpenGLIndexBuffer::OpenGLIndexBuffer(const uint32_t* indices, uint32_t count)
 		:m_Count(count)
 	{
 		glCreateBuffers((uint32_t)1, &m_RendererID); //somehow 1 is actually -1?

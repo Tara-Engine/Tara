@@ -5,14 +5,14 @@ namespace Tara {
 
 	class OpenGLVertexBuffer : public VertexBuffer {
 	public:
-		OpenGLVertexBuffer(float* verteces, uint32_t count);
+		OpenGLVertexBuffer(const float* verteces, uint32_t count);
 		//OpenGLVertexBuffer(void* verteces, uint32_t size);
 		~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void SetData(float* data, uint32_t count) override;
+		virtual void SetData(const float* data, uint32_t count) override;
 	private:
 		uint32_t m_RendererID;
 	};
@@ -20,7 +20,7 @@ namespace Tara {
 
 	class OpenGLIndexBuffer : public IndexBuffer {
 	public:
-		OpenGLIndexBuffer(uint32_t* indecies, uint32_t count);
+		OpenGLIndexBuffer(const uint32_t* indecies, uint32_t count);
 		~OpenGLIndexBuffer();
 
 		//TODO: layout stuff

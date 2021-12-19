@@ -6,7 +6,10 @@
 
 #include "Tara/Renderer/Renderer.h"
 
-
+//no messages from fopen. (intentionally being used instead of fopen_s)
+//well the messages are generated anyway
+#define _CRT_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
 
 namespace Tara{
 

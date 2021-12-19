@@ -23,6 +23,7 @@ OpenGL include - BAD - used for developing new features ONLY
 #include "DemoLayer.h"
 #include "FramebufferBuildLayer.h"
 #include "UIBuildLayer.h"
+#include "ModelBuildLayer.h"
 
 
 void LayerSwitch(const std::string& newLayerName, Tara::LayerNoRef currentLayer);
@@ -384,9 +385,10 @@ int main(int argc, char** argv) {
 
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<UIBuildLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<ModelBuildLayer>());
 	//run
 	Tara::Application::Get()->Run();
 	return 0;

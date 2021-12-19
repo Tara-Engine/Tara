@@ -82,6 +82,24 @@ namespace Tara{
 		glUseProgram(0);
 	}
 
+	bool OpenGLShader::ValidUniform(const std::string& name)
+	{
+		auto cache = m_UniformCache.find(name);
+		if (cache != m_UniformCache.end()) {
+			return true; //true, and cached
+		}
+		else {
+			int32_t loc = glGetUniformLocation(m_RendererID, name.c_str());
+			if (loc == -1) {
+				return false; //not cached, and not valid
+			}
+			else {
+				m_UniformCache.insert_or_assign(name, loc);
+				return true; //not cached previously (now it is!) and valid
+			}
+		}
+	}
+
 	void OpenGLShader::Send(const std::string& name, int value)
 	{
 		glUniform1i(GetUniformLocation(name), value);

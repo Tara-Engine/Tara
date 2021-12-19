@@ -8,9 +8,10 @@ Some of these submodules (json) take a while to clone. To be sure your terminal 
 
 ## Compilation Guide
 Tara uses [Premake](https://premake.github.io/) as its build configuration manager. Premake is similar to cmake, but much simpler and easier to use. It can generate project files for pretty much all platforms.
+Tara also uses clang as its C and C++ compiler. This is for maximum cross-platform code parallelism. MSVC is particularly lenient, while GCC is not. Clang is a nice middle ground with the same rules everywhere.
 
 ### Windows
-Compiling on windows should be very straightforward. All that is required is some version of Visual Studios that supports C++17. For this example, VS 2019 will be assumed. If using a different version, then replace the year number in the commands with the appropriate one. Tara has not been tested on versions of Visual Studios older than 2019.
+Compiling on windows should be very straightforward. All that is required is some version of Visual Studios that supports C++17, with the Clang toolchain installed. For this example, VS 2019 will be assumed. If using a different version, then replace the year number in the commands with the appropriate one. Tara has not been tested on versions of Visual Studios other than 2019. (premake does not support anything later at the time of writing)
 
 #### Step 1: Generate project files.
 To generate project files, use [Premake](https://premake.github.io/).

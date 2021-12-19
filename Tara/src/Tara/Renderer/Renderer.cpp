@@ -98,8 +98,27 @@ namespace Tara {
 	{
 		vertexArray->Bind();
 		shader->Bind();
-		shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
-		shader->Send("u_MatrixModel", transform.GetTransformMatrix());
+		if (shader->ValidUniform("u_MatrixViewProjection")) {
+			shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
+		}
+		else {
+			if (shader->ValidUniform("u_MatrixView")) {
+				shader->Send("u_MatrixView", s_SceneData.camera->GetViewMatrix());
+			}
+			if (shader->ValidUniform("u_MatrixProjection")) {
+				shader->Send("u_MatrixProjection", s_SceneData.camera->GetProjectionMatrix());
+			}
+		}
+		if (shader->ValidUniform("u_MatrixModel")){
+			shader->Send("u_MatrixModel", transform.GetTransformMatrix());
+		}
+		if (shader->ValidUniform("u_CameraPositionWS")) {
+			shader->Send("u_CameraPositionWS", s_SceneData.camera->GetPosition());
+		}
+		if (shader->ValidUniform("u_CameraForwardVector")) {
+			shader->Send("u_CameraForwardVector", s_SceneData.camera->GetRotation().GetForwardVector());
+		}
+		
 		RenderCommand::Draw(vertexArray);
 	}
 

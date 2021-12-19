@@ -33,6 +33,7 @@
 #include "Tara/Asset/Font.h"
 #include "Tara/Asset/Tileset.h"
 #include "Tara/Asset/Patch.h"
+#include "Tara/Asset/StaticMesh.h"
 
 //math
 #include "Tara/Math/Types.h"
@@ -65,6 +66,8 @@
 #include "Tara/Utility/After.h"
 #include "Tara/Utility/Timer.h"
 #include "Tara/Utility/Profiler.h"
+#include "Tara/Utility/MeshPart.h"
+#include "Tara/Utility/MeshMaker.h"
 
 #define LOGURU_WITH_STREAMS 1
 #include "loguru.hpp"

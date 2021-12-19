@@ -3,17 +3,21 @@
 #include "Tara/Renderer/Buffer.h"
 
 namespace Tara {
+	REFTYPE(VertexArray);
+
 	/// <summary>
 	/// Vertex Array class.
 	/// Used to hold the Vertex and Index buffers 
 	/// When drawing, this is what is bound, not the various buffers.
 	/// </summary>
 	class VertexArray{
-		/// <summary>
-		/// A reference to a VertexArray
-		/// </summary>
-		using VertexArrayRef = std::shared_ptr<VertexArray>;
 	public:
+		/// <summary>
+		/// Create a new VertexArray object
+		/// </summary>
+		/// <returns>the new VertexArrayRef object</returns>
+		static VertexArrayRef Create();
+
 		virtual ~VertexArray() {}
 		/// <summary>
 		/// Bind the Vertex Array to be drawn
@@ -51,11 +55,7 @@ namespace Tara {
 		inline const IndexBufferRef& GetIndexBuffer() const { return m_IndexBuffer; }
 
 	public:
-		/// <summary>
-		/// Create a new VertexArray object
-		/// </summary>
-		/// <returns>the new VertexArrayRef object</returns>
-		static VertexArrayRef Create();
+		
 
 	protected:
 		/// <summary>
@@ -68,10 +68,4 @@ namespace Tara {
 		IndexBufferRef m_IndexBuffer;
 	};
 	
-	/// <summary>
-	/// Reference to a Vertex Array class.
-	/// Used to hold the Vertex and Index buffers 
-	/// When drawing, this is what is bound, not the various buffers.
-	/// </summary>
-	using VertexArrayRef = std::shared_ptr<VertexArray>;
 }

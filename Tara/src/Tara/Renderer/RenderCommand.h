@@ -113,6 +113,8 @@ namespace Tara {
 		/// <param name="enable"></param>
 		inline static void EnableDepthTesting(bool enable) { s_RC->IEnableDepthTesting(enable); }
 
+		inline static void EnableBackfaceCulling(bool enable) { s_RC->IEnableBackfaceCulling(enable); }
+
 	protected:
 		/// <summary>
 		/// Protected SetClearColor, for underlying implementation to override
@@ -155,6 +157,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="enable"></param>
 		virtual void IEnableDepthTesting(bool enable) = 0;
+
+		/// <summary>
+		/// Protected EnableBackfaceCulling for underlying implementation to override
+		/// </summary>
+		/// <param name="enable"></param>
+		virtual void IEnableBackfaceCulling(bool enable) = 0;
 	private:
 
 		struct DrawType {

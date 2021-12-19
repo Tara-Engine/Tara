@@ -74,9 +74,22 @@ namespace Tara{
 	{
 		if (enable) {
 			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
 		}
 		else {
 			glDisable(GL_DEPTH_TEST);
+		}
+	}
+
+	void OpenGLRenderCommand::IEnableBackfaceCulling(bool enable)
+	{
+		if (enable) {
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			glFrontFace(GL_CW); //This is to match DirectX!
+		}
+		else {
+			glDisable(GL_CULL_FACE);
 		}
 	}
 

@@ -13,6 +13,9 @@ namespace Tara {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+		
+		//uniform checking
+		virtual bool ValidUniform(const std::string& name) override;
 
 		//uniform sending
 		virtual void Send(const std::string& name, int value) override;

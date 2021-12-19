@@ -1,5 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
+#include "Tara/Math/Types.h"
 #include "Tara/Asset/Asset.h"
 
 namespace Tara {
@@ -24,6 +25,13 @@ namespace Tara {
 		/// Unbind the current shader (not nesecary to use)
 		/// </summary>
 		virtual void Unbind() const = 0;
+
+		/// <summary>
+		/// Check if a uniform is valid or not
+		/// </summary>
+		/// <param name="name">the uniform name</param>
+		/// <returns>true if uniform is valid, false otherwise</returns>
+		virtual bool ValidUniform(const std::string& name) = 0;
 
 		/// <summary>
 		/// Sends a value to a uniform in the Shader
@@ -58,6 +66,12 @@ namespace Tara {
 		/// <param name="name">Name of the uniform</param>
 		/// <param name="value">value to send</param>
 		virtual void Send(const std::string& name, const glm::vec3& value) = 0;
+		/// <summary>
+		/// Sends a value to a uniform in the Shader
+		/// </summary>
+		/// <param name="name">Name of the uniform</param>
+		/// <param name="value">value to send</param>
+		inline virtual void Send(const std::string& name, const Vector& value) { Send(name, (glm::vec3)value); };
 		/// <summary>
 		/// Sends a value to a uniform in the Shader
 		/// </summary>
