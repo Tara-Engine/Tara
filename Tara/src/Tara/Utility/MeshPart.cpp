@@ -2,7 +2,8 @@
 #include "MeshPart.h"
 
 namespace Tara{
-	void MeshPart::CalculateNormals()
+
+	MeshPart& MeshPart::CalculateNormals()
 	{
 		//first, get the usage count
 		std::vector<int32_t> usageCount(Vertices.size(), 0);
@@ -35,22 +36,40 @@ namespace Tara{
 			}
 		}
 
-
+		return *this;
 	}
 
-	void MeshPart::FlipNormals()
+	MeshPart& MeshPart::FlipNormals()
 	{
 		for (auto& vert : Vertices) {
 			vert.Normal *= -1;
 		}
+		return *this;
 	}
 
-	void MeshPart::FlipWindings()
+	MeshPart& MeshPart::FlipWindings()
 	{
 		for (int i = 0; i < Indices.size(); i += 3) {
 			//for every triangle
 			std::swap(Indices[i + 1], Indices[i + 2]);
 		}
+		return *this;
+	}
+
+	MeshPart& MeshPart::ClearNormals()
+	{
+		for (auto& vert : Vertices) {
+			vert.Normal = { 0,0,0 };
+		}
+		return *this;
+	}
+
+	MeshPart& MeshPart::Transform(glm::mat4 matrix)
+	{
+		for (auto& vert : Vertices) {
+			vert.Position = Tara::Vector(matrix * (glm::vec4)vert.Position);
+		}
+		return *this;
 	}
 
 	MeshPart MeshPart::UnitCube()

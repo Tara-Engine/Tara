@@ -88,6 +88,22 @@ namespace Tara {
 			: Vertices(std::move(vertices)), Indices(std::move(indices))
 		{}
 
+		/// <summary>
+		/// Explicit Copy Constructor
+		/// </summary>
+		/// <param name="other"></param>
+		MeshPart(const MeshPart& other) = default;
+
+		/// <summary>
+		/// Explicit move constructor
+		/// </summary>
+		/// <param name="other"></param>
+		MeshPart(MeshPart&& other) = default;
+
+		MeshPart& operator=(const MeshPart& other) = default;
+
+		MeshPart& operator=(MeshPart&& other) = default;
+
 	public:
 		//modifying fucntions. These work in-place
 
@@ -96,20 +112,42 @@ namespace Tara {
 		/// Normals are always assumed to be smooth, to have sharp normals, use seperate vertecies on the same location
 		/// This is a modifying operation, changing the object.
 		/// </summary>
-		void CalculateNormals();
-
+		/// <returns>A reference to itself</returns>
+		MeshPart& CalculateNormals();
+		
 		/// <summary>
 		/// Flip the normals for the Mesh part
 		/// </summary>
-		void FlipNormals();
+		/// <returns>A reference to itself </returns>
+		MeshPart& FlipNormals();
 
 		/// <summary>
 		/// Flip the order (clockwise/counterclockwise) that the vertecies of the triangels are ordered in.
 		/// </summary>
-		void FlipWindings();
+		/// <returns>A reference to itself </returns>
+		MeshPart& FlipWindings();
+
+		/// <summary>
+		/// Flip both the normals and the Windings in one function call. Inverts the mesh
+		/// </summary>
+		/// <returns>A reference to itself </returns>
+		inline MeshPart& FlipTriangles() { FlipNormals(); FlipWindings(); return *this; }
+
+		/// <summary>
+		/// Delete all normals
+		/// </summary>
+		/// <returns>A reference to itself </returns>
+		MeshPart& ClearNormals();
+
+		/// <summary>
+		/// Transform the vertices positions by a matrix
+		/// </summary>
+		/// <param name="matrix">the matrix to transform the vertices by</param>
+		/// <returns>A reference to itself</returns>
+		MeshPart& Transform(glm::mat4 matrix);
 
 	public:
-		//Combination and modification operations
+		//Combination operations (do not work in-place)
 
 
 	public:

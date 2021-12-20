@@ -17,6 +17,10 @@ namespace Tara {
 		enum class Mode {
 			TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS
 		};
+
+		enum class CombineRules {
+			NEVER, IF_SECOND_DEFAULT, IF_MATCH_IGNORE_NORMAL, IF_MATCH_ALL 
+		};
 	
 	public:
 		MeshMaker(Mode mode);
@@ -37,7 +41,9 @@ namespace Tara {
 
 		void TextureCoord(float u, float v) { TextureCoord({ u,v }); }
 
-		//inline void SetSmoothAngle(float smoothAngle) {m_SmoothAngle = smoothAngle;}
+		inline void SetCombineRule(CombineRules rule) { PushPrimitive(); m_CurrentCombine = rule; }
+
+		inline void SetMode(Mode mode) { PushPrimitive(); m_CurrentMode = mode; DumpPrimitive(); }
 
 		void PushPrimitive();
 
@@ -46,14 +52,19 @@ namespace Tara {
 		MeshPart GetMeshPart();
 
 	private:
+
+		uint32_t AddNewVertex(const Tara::Vertex& vertex);
+
+	private:
 		std::vector<Tara::Vertex> m_Vertices;
 		std::vector<uint32_t> m_Indices;
 		Mode m_CurrentMode;
+		CombineRules m_CurrentCombine;
 		Tara::Vertex m_WorkingPrimitive[4];
 		int32_t m_IndexCache[2];
 		int32_t m_WorkingIndex;
 		bool m_Alternator;
-		//float m_SmoothAngle;
+		
 	};
 
 
