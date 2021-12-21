@@ -25,7 +25,7 @@ namespace Tara{
 		glDeleteTextures(1, &m_RendererID);
 	}
 
-	void OpenGLTexture2D::Bind(int slot) const
+	void OpenGLTexture2D::ImplBind(int slot, int) const
 	{
 		//glActiveTexture(GL_TEXTURE0 + slot);
 		//glBindTexture(GL_TEXTURE_2D, m_RendererID);

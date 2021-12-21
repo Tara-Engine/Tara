@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Tara/Renderer/Buffer.h"
+#include "Tara/Renderer/Bindable.h"
 
 namespace Tara {
 	REFTYPE(VertexArray);
@@ -10,7 +11,7 @@ namespace Tara {
 	/// Used to hold the Vertex and Index buffers 
 	/// When drawing, this is what is bound, not the various buffers.
 	/// </summary>
-	class VertexArray{
+	class VertexArray : public Bindable{
 	public:
 		/// <summary>
 		/// Create a new VertexArray object
@@ -19,16 +20,6 @@ namespace Tara {
 		static VertexArrayRef Create();
 
 		virtual ~VertexArray() {}
-		/// <summary>
-		/// Bind the Vertex Array to be drawn
-		/// </summary>
-		virtual void Bind() const = 0;
-		/// <summary>
-		/// Unbind the Vertex Array (not nesecary)
-		/// </summary>
-		virtual void Unbind() const = 0;
-		
-		//these are virtual as they are platform-dependant
 		
 		/// <summary>
 		/// Add a VertexBuffer to this VertexArray. 

@@ -1,5 +1,8 @@
 #include "tarapch.h"
 #include "RenderCommand.h"
+#include "Tara/Renderer/Renderer.h"
+#include "Tara/Renderer/VertexArray.h"
+#include "Tara/Renderer/Bindable.h"
 
 //platform-specific includes
 //REMEMBER: this SHOULD be wrapped in #ifdefs and whatnot!
@@ -43,6 +46,11 @@ namespace Tara {
 			auto t = *(m_DrawTypeStack.begin());
 			s_RC->ISetDrawType(t.Type, t.WireFrame);
 		}
+	}
+
+	void RenderCommand::Bind(BindableRef ref, int a, int b)
+	{
+		ref->ImplBind(a, b);
 	}
 
 

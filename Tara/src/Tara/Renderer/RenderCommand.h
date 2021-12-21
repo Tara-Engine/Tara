@@ -1,9 +1,11 @@
 #pragma once
-#include "Tara/Renderer/Renderer.h"
-#include "Tara/Renderer/VertexArray.h"
+#include "Tara/Core/Base.h"
 
 namespace Tara {
 	
+	//forward declaration
+	REFTYPE(Bindable);
+	REFTYPE(VertexArray);
 
 	/// <summary>
 	/// An Enum of the drawing types available to the render backend
@@ -48,40 +50,64 @@ namespace Tara {
 	/// PlatformRenderCommand instance. (Unique Pointer)
 	/// </summary>
 	class RenderCommand {
+	private:
+		
+		enum class CommandType {
+			CLEAR,
+			DRAW,
+			DRAW_COUNT,
+			
+			SET_CLEAR_COLOR,
+			PUSH_DRAW_TYPE,
+			POP_DRAW_TYPE,
+			ENABLE_DEPTH_TEST,
+			ENABLE_BACKFACE_CULLING,
+
+			BIND,
+		};
+
+		union CommandParams {
+			struct VertexArrayForm {
+				VertexArrayRef VertexArray;
+			};
+
+			struct CountForm {
+				uint32_t Count;
+			};
+
+			struct ColorForm {
+				float r, g, b, a;
+			};
+
+			struct DrawTypeForm {
+				RenderDrawType Type;
+				bool Wireframe;
+			};
+
+			struct BoolType {
+				bool Enable;
+			};
+
+			struct BindType {
+				BindableRef bindable;
+				int	a, b;
+			};
+		};
+
+		struct Command {
+			CommandType Type;
+			bool IsDeferred;
+			CommandParams Params;
+		};
+
 	public:
 		/// <summary>
 		/// Initialize the RenderCommand internal instance
 		/// </summary>
 		static void Init();
-		/// <summary>
-		/// Set the clear color
-		/// </summary>
-		/// <param name="color">clear color as a vec3</param>
-		inline static void SetClearColor(glm::vec3 color) { s_RC->ISetClearColor(color.r, color.g, color.b); }
-		/// <summary>
-		/// Set the clear color
-		/// </summary>
-		/// <param name="color">clear color as a vec4 (alpha is ignored)</param>
-		inline static void SetClearColor(glm::vec4 color) { s_RC->ISetClearColor(color.r, color.g, color.b); }
-		/// <summary>
-		/// Set the clear color
-		/// </summary>
-		/// <param name="r">red component of clear color</param>
-		/// <param name="g">green component of clear color</param>
-		/// <param name="b">blue component of clear color</param>
-		inline static void SetClearColor(float r, float g, float b) { s_RC->ISetClearColor(r, g, b); }
-		
-		/// <summary>
-		/// Push a new draw type for future draws
-		/// </summary>
-		/// <param name="drawType">the new draw type</param>
-		/// <param name="wireframe">if wireframe should be turned on (false by default)</param>
-		static void PushDrawType(RenderDrawType drawType, bool wireframe = false);
-		
-		/// <summary>
-		/// Pop the current drawType for future draws
-		/// </summary>
-		static void PopDrawType();
+
+	public:
+		//Drawing functions. Can be queued.
 
 		/// <summary>
 		/// clear the screen
@@ -101,20 +127,68 @@ namespace Tara {
 		/// <param name="vertexArray"></param>
 		inline static void DrawCount(uint32_t count) { s_RC->IDrawCount(count); }
 
+	public:
+		//State change functions. Can be queued.
+
 		/// <summary>
-		/// Gets the max number of textures that can be sent to the fragment shader.
+		/// Set the clear color
 		/// </summary>
-		/// <returns>that number.</returns>
-		inline static uint32_t GetMaxTextureSlotsPerShader() {return s_RC->IGetMaxTextureSlotsPerShader();}
-	
+		/// <param name="color">clear color as a vec3</param>
+		inline static void SetClearColor(glm::vec3 color) { s_RC->ISetClearColor(color.r, color.g, color.b); }
+
+		/// <summary>
+		/// Set the clear color
+		/// </summary>
+		/// <param name="color">clear color as a vec4 (alpha is ignored)</param>
+		inline static void SetClearColor(glm::vec4 color) { s_RC->ISetClearColor(color.r, color.g, color.b); }
+
+		/// <summary>
+		/// Set the clear color
+		/// </summary>
+		/// <param name="r">red component of clear color</param>
+		/// <param name="g">green component of clear color</param>
+		/// <param name="b">blue component of clear color</param>
+		inline static void SetClearColor(float r, float g, float b) { s_RC->ISetClearColor(r, g, b); }
+
+		/// <summary>
+		/// Push a new draw type for future draws
+		/// </summary>
+		/// <param name="drawType">the new draw type</param>
+		/// <param name="wireframe">if wireframe should be turned on (false by default)</param>
+		static void PushDrawType(RenderDrawType drawType, bool wireframe = false);
+
+		/// <summary>
+		/// Pop the current drawType for future draws
+		/// </summary>
+		static void PopDrawType();
+
 		/// <summary>
 		/// Enable and Disable depth testing in the rendering system. Should be disabled for 2D.
 		/// </summary>
 		/// <param name="enable"></param>
 		inline static void EnableDepthTesting(bool enable) { s_RC->IEnableDepthTesting(enable); }
 
+		/// <summary>
+		/// Enable backface culling. Front face is defined by Clockwise winding order.
+		/// </summary>
+		/// <param name="enable"></param>
 		inline static void EnableBackfaceCulling(bool enable) { s_RC->IEnableBackfaceCulling(enable); }
 
+	public:
+		//binding functions. Can be queued.
+
+		static void Bind(BindableRef ref, int a, int b);
+
+	public:
+		//Query functions, not queued
+
+		/// <summary>
+		/// Gets the max number of textures that can be sent to the fragment shader.
+		/// </summary>
+		/// <returns>that number.</returns>
+		inline static uint32_t GetMaxTextureSlotsPerShader() { return s_RC->IGetMaxTextureSlotsPerShader(); }
+
+		virtual ~RenderCommand() = default;
 	protected:
 		/// <summary>
 		/// Protected SetClearColor, for underlying implementation to override

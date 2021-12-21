@@ -104,7 +104,7 @@ namespace Tara {
 	/// <summary>
 	/// VertexBuffer class, stores the buffer of data that is on the GPU, holding vertex data.
 	/// </summary>
-	class VertexBuffer {
+	class VertexBuffer : public Bindable {
 	public:
 		
 		/// <summary>
@@ -118,16 +118,6 @@ namespace Tara {
 		VertexBuffer() : m_BufferLayout({}) {}
 
 		virtual ~VertexBuffer() {}
-		
-		/// <summary>
-		/// Bind the buffer
-		/// </summary>
-		virtual void Bind() const = 0;
-		
-		/// <summary>
-		/// Unbind the buffer (not nesecary)
-		/// </summary>
-		virtual void Unbind() const = 0;
 		
 		/// <summary>
 		/// Set the layout of the buffer.
@@ -169,7 +159,7 @@ namespace Tara {
 	/// <summary>
 	/// IndexBuffer class, stores the index draw order for a Draw call
 	/// </summary>
-	class IndexBuffer {
+	class IndexBuffer : public Bindable{
 	public:
 		/// <summary>
 		/// Create a new IndexBuffer
@@ -180,16 +170,6 @@ namespace Tara {
 		static IndexBufferRef Create(const uint32_t* indecies, uint32_t count);
 
 		virtual ~IndexBuffer() {}
-		
-		/// <summary>
-		/// Bind the index buffer
-		/// </summary>
-		virtual void Bind() const = 0;
-		
-		/// <summary>
-		/// unbind the index buffer (not nesecary)
-		/// </summary>
-		virtual void Unbind() const = 0;
 		
 		/// <summary>
 		/// Get the number of indecies to draw

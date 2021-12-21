@@ -84,7 +84,7 @@ namespace Tara {
 		glDeleteFramebuffers(1, &m_FramebufferID);
 	}
 
-	void OpenGLRenderTarget::Bind(int slot) const
+	void OpenGLRenderTarget::ImplBind(int slot, int) const
 	{
 		//bind the texture for rendering
 		glBindTextureUnit(slot, m_TextureColorID);

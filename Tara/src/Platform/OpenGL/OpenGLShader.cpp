@@ -72,14 +72,9 @@ namespace Tara{
 		glDeleteProgram(m_RendererID);
 	}
 
-	void OpenGLShader::Bind() const
+	void OpenGLShader::ImplBind(int, int) const
 	{
 		glUseProgram(m_RendererID);
-	}
-
-	void OpenGLShader::Unbind() const
-	{
-		glUseProgram(0);
 	}
 
 	bool OpenGLShader::ValidUniform(const std::string& name)

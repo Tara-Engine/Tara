@@ -24,17 +24,11 @@ namespace Tara {
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void OpenGLVertexBuffer::Bind() const
+	void OpenGLVertexBuffer::ImplBind(int, int) const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 	}
-
-
-	void OpenGLVertexBuffer::Unbind() const
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
+	
 	void OpenGLVertexBuffer::SetData(const float* data, uint32_t count)
 	{
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, GL_STATIC_DRAW);
@@ -55,14 +49,9 @@ namespace Tara {
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void OpenGLIndexBuffer::Bind() const
+	void OpenGLIndexBuffer::ImplBind(int, int) const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-	}
-
-	void OpenGLIndexBuffer::Unbind() const
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 }

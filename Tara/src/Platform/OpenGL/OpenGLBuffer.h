@@ -9,9 +9,8 @@ namespace Tara {
 		//OpenGLVertexBuffer(void* verteces, uint32_t size);
 		~OpenGLVertexBuffer();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-
+		virtual void ImplBind(int,int) const override;
+		
 		virtual void SetData(const float* data, uint32_t count) override;
 	private:
 		uint32_t m_RendererID;
@@ -25,8 +24,8 @@ namespace Tara {
 
 		//TODO: layout stuff
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
+		virtual void ImplBind(int, int) const override;
+
 		virtual inline uint32_t GetCount() const override { return m_Count; }
 	private:
 		uint32_t m_RendererID;

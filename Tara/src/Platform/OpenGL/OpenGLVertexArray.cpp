@@ -15,14 +15,9 @@ namespace Tara {
 		glDeleteVertexArrays(1, &m_RendererID);
 	}
 
-	void OpenGLVertexArray::Bind() const
+	void OpenGLVertexArray::ImplBind(int, int) const
 	{
 		glBindVertexArray(m_RendererID);
-	}
-
-	void OpenGLVertexArray::Unbind() const
-	{
-		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::AddVertexBuffer(const VertexBufferRef vertexBuffer)

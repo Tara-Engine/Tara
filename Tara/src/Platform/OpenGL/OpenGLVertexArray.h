@@ -9,9 +9,8 @@ namespace Tara {
 		OpenGLVertexArray();
 		~OpenGLVertexArray();
 
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-
+		virtual void ImplBind(int, int) const override;
+		
 		virtual void AddVertexBuffer(const VertexBufferRef vertexBuffer) override;
 		virtual void SetIndexBuffer(const IndexBufferRef indexBuffer) override;
 	private:

@@ -6,6 +6,7 @@ namespace Tara {
 	class OpenGLRenderCommand : public RenderCommand {
 	public:
 		OpenGLRenderCommand();
+		virtual ~OpenGLRenderCommand() = default;
 	protected:
 		virtual void ISetClearColor(float r, float g, float b) override;
 		virtual void ISetDrawType(RenderDrawType drawType, bool wireframe) override;

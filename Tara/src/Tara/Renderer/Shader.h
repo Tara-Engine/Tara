@@ -2,29 +2,20 @@
 #include "glm/glm.hpp"
 #include "Tara/Math/Types.h"
 #include "Tara/Asset/Asset.h"
+#include "Tara/Renderer/Bindable.h"
 
 namespace Tara {
+	REFTYPE(Shader);
+
 	/// <summary>
 	/// Shader class for storing and making shaders
 	/// </summary>
-	class Shader : public Asset{
-		/// <summary>
-		/// Shader reference
-		/// </summary>
-		using ShaderRef = std::shared_ptr<Shader>;
+	class Shader : public Asset, public Bindable{
 	public:
 		Shader(const std::string name)
 			: Asset(name) {}
 
 		virtual ~Shader() {}
-		/// <summary>
-		/// Bind the current shader
-		/// </summary>
-		virtual void Bind() const = 0;
-		/// <summary>
-		/// Unbind the current shader (not nesecary to use)
-		/// </summary>
-		virtual void Unbind() const = 0;
 
 		/// <summary>
 		/// Check if a uniform is valid or not
@@ -167,8 +158,6 @@ namespace Tara {
 		);
 
 	};
-	/// <summary>
-	/// Reference to a Shader class for storing and making shaders
-	/// </summary>
-	using ShaderRef = std::shared_ptr<Shader>;
+
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Tara/Asset/Asset.h"
+#include "Tara/Renderer/Bindable.h"
 
 namespace Tara {
 
@@ -11,7 +12,7 @@ namespace Tara {
 	/// <summary>
 	/// Texture Base Class. All textures are this class
 	/// </summary>
-	class Texture : public Asset {
+	class Texture : public Asset, public Bindable {
 	public:
 		/// <summary>
 		/// Enum for texture filtering modes
@@ -33,11 +34,6 @@ namespace Tara {
 		/// </summary>
 		/// <returns>the height in pixles</returns>
 		virtual uint32_t GetHeight() const = 0;
-		/// <summary>
-		/// Bind the texture for use
-		/// </summary>
-		/// <param slot="index">slot to use</param>
-		virtual void Bind(int slot = 0) const = 0;
 
 		/// <summary>
 		/// Set the texture filtering mode

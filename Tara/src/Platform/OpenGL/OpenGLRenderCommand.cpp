@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "OpenGLRenderCommand.h"
+#include "Tara/Renderer/VertexArray.h"
 
 #include "glad/glad.h"
 

@@ -10,7 +10,7 @@ namespace Tara {
 		~OpenGLTexture2D();
 		virtual inline uint32_t GetWidth()const override { return m_Width; }
 		virtual inline uint32_t GetHeight()const override { return m_Height; }
-		virtual void Bind(int slot)const override;
+		virtual void ImplBind(int slot, int)const override;
 		virtual void SetFiltering(Filtering filter) override;
 		virtual void SetWrap(Wrapping wrap) override;
 		virtual void SetBorderColor(const glm::vec4& color) override;
