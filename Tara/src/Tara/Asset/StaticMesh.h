@@ -58,6 +58,12 @@ namespace Tara {
 		/// <returns></returns>
 		const std::vector<VertexArrayRef>& GetVertexArrays() const { return m_VertexArrays; }
 
+		/// <summary>
+		/// Get the number of vertex arrays in the mesh
+		/// </summary>
+		/// <returns></returns>
+		uint32_t GetArrayCount() const { return m_VertexArrays.size(); }
+
 	private:
 		std::vector<VertexArrayRef> m_VertexArrays;
 

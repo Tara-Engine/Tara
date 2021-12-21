@@ -47,6 +47,7 @@
 #include "Tara/Entities/DynamicMultiChildEntity.h"
 #include "Tara/Entities/TextEntity.h"
 #include "Tara/Entities/TilemapEntity.h"
+#include "Tara/Entities/StaticMeshEntity.h"
 
 //Components
 #include "Tara/Components/ScriptComponent.h"

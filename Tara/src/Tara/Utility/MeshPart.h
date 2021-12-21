@@ -100,8 +100,18 @@ namespace Tara {
 		/// <param name="other"></param>
 		MeshPart(MeshPart&& other) = default;
 
+		/// <summary>
+		/// Explicit copy assignment operator
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		MeshPart& operator=(const MeshPart& other) = default;
 
+		/// <summary>
+		/// Explicit move assignment operator
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
 		MeshPart& operator=(MeshPart&& other) = default;
 
 	public:

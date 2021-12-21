@@ -83,6 +83,9 @@ void ModelBuildLayer::Activate()
 	//part.FlipNormals();
 
 	m_Mesh = Tara::StaticMesh::Create({ part }, "CubeMesh");
+
+
+	auto sme = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({0,0,0}, {0,0,0}, {1,1,1}), m_Mesh, m_Shader, "Static Mesh Entity");
 }
 
 void ModelBuildLayer::Deactivate()
@@ -95,6 +98,7 @@ void ModelBuildLayer::Draw(float deltaTime)
 	Tara::RenderCommand::EnableDepthTesting(true);
 	Tara::RenderCommand::EnableBackfaceCulling(true);
 
+	/*
 	Tara::Renderer::BeginScene(m_Camera->GetCamera());
 
 	auto& vas = m_Mesh->GetVertexArrays();
@@ -103,6 +107,8 @@ void ModelBuildLayer::Draw(float deltaTime)
 	}
 
 	Tara::Renderer::EndScene();
+	*/
+
 	//
 	Layer::Draw(deltaTime);
 }
