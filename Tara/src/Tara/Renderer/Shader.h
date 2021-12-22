@@ -3,9 +3,12 @@
 #include "Tara/Math/Types.h"
 #include "Tara/Asset/Asset.h"
 #include "Tara/Renderer/Bindable.h"
+#include "Tara/Renderer/Uniform.h"
 
 namespace Tara {
 	REFTYPE(Shader);
+
+	
 
 	/// <summary>
 	/// Shader class for storing and making shaders
@@ -24,64 +27,67 @@ namespace Tara {
 		/// <returns>true if uniform is valid, false otherwise</returns>
 		virtual bool ValidUniform(const std::string& name) = 0;
 
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, int value) = 0;
+		void Send(const std::string& name, float value);
+		void Send(const std::string& name, const glm::vec2& value);
+		void Send(const std::string& name, const glm::vec3& value);
+		void Send(const std::string& name, const glm::vec4& value);
+
+		void Send(const std::string& name, int32_t value);
+		void Send(const std::string& name, const glm::ivec2& value);
+		void Send(const std::string& name, const glm::ivec3& value);
+		void Send(const std::string& name, const glm::ivec4& value);
+
+		void Send(const std::string& name, uint32_t value);
+		void Send(const std::string& name, const glm::uvec2& value);
+		void Send(const std::string& name, const glm::uvec3& value);
+		void Send(const std::string& name, const glm::uvec4& value);
+
+		void Send(const std::string& name, float* value, int count);
+		void Send(const std::string& name, glm::vec2* value, int count);
+		void Send(const std::string& name, glm::vec3* value, int count);
+		void Send(const std::string& name, glm::vec4* value, int count);
+
+		void Send(const std::string& name, int32_t* value, int count);
+		void Send(const std::string& name, glm::ivec2* value, int count);
+		void Send(const std::string& name, glm::ivec3* value, int count);
+		void Send(const std::string& name, glm::ivec4* value, int count);
+
+		void Send(const std::string& name, uint32_t* value, int count);
+		void Send(const std::string& name, glm::uvec2* value, int count);
+		void Send(const std::string& name, glm::uvec3* value, int count);
+		void Send(const std::string& name, glm::uvec4* value, int count);
+
+
+		void Send(const std::string& name, const glm::mat2& value);
+		void Send(const std::string& name, const glm::mat3& value);
+		void Send(const std::string& name, const glm::mat4& value);
+
+		void Send(const std::string& name, glm::mat2* value, int count);
+		void Send(const std::string& name, glm::mat3* value, int count);
+		void Send(const std::string& name, glm::mat4* value, int count);
+		void Send(const std::string& name, glm::mat2x3* value, int count);
+		void Send(const std::string& name, glm::mat3x2* value, int count);
+		void Send(const std::string& name, glm::mat2x4* value, int count);
+		void Send(const std::string& name, glm::mat4x2* value, int count);
+		void Send(const std::string& name, glm::mat3x4* value, int count);
+		void Send(const std::string& name, glm::mat4x3* value, int count);
+		
+		inline void Send(const std::string& name, const Vector& value) { Send(name, (glm::vec3)value); };
+		
 
 		/// <summary>
-		/// Send a value to a uniform in the Shader
+		/// Base send data to a uniform. Can be logged with the command queue
 		/// </summary>
-		/// <param name="name">the name of the uniform</param>
-		/// <param name="value">value to send (array of ints)</param>
-		/// <param name="count">number of ints being sent</param>
-		virtual void Send(const std::string& name, int* value, int count) = 0;
+		/// <param name="name"></param>
+		/// <param name="uniform"></param>
+		void Send(const std::string& name, const Uniform& uniform);
 
 		/// <summary>
-		/// Sends a value to a uniform in the Shader
+		/// Implementation-specific Send function
 		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, float value) = 0;
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, const glm::vec2& value) = 0;
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, const glm::vec3& value) = 0;
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		inline virtual void Send(const std::string& name, const Vector& value) { Send(name, (glm::vec3)value); };
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, const glm::vec4& value) = 0;
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, const glm::mat3& value) = 0;
-		/// <summary>
-		/// Sends a value to a uniform in the Shader
-		/// </summary>
-		/// <param name="name">Name of the uniform</param>
-		/// <param name="value">value to send</param>
-		virtual void Send(const std::string& name, const glm::mat4& value) = 0;
-
+		/// <param name="name"></param>
+		/// <param name="uniform"></param>
+		virtual void ImplSend(const std::string& name, const Uniform& uniform) = 0;
 
 	public:
 

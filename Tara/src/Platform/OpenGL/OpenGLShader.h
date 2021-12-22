@@ -17,14 +17,16 @@ namespace Tara {
 		virtual bool ValidUniform(const std::string& name) override;
 
 		//uniform sending
-		virtual void Send(const std::string& name, int value) override;
-		virtual void Send(const std::string& name, int* value, int count) override;
-		virtual void Send(const std::string& name, float value) override;
-		virtual void Send(const std::string& name, const glm::vec2& value) override;
-		virtual void Send(const std::string& name, const glm::vec3& value) override;
-		virtual void Send(const std::string& name, const glm::vec4& value) override;
-		virtual void Send(const std::string& name, const glm::mat3& value) override;
-		virtual void Send(const std::string& name, const glm::mat4& value) override;
+		//virtual void Send(const std::string& name, int value) override;
+		//virtual void Send(const std::string& name, int* value, int count) override;
+		//virtual void Send(const std::string& name, float value) override;
+		//virtual void Send(const std::string& name, const glm::vec2& value) override;
+		//virtual void Send(const std::string& name, const glm::vec3& value) override;
+		//virtual void Send(const std::string& name, const glm::vec4& value) override;
+		//virtual void Send(const std::string& name, const glm::mat3& value) override;
+		//virtual void Send(const std::string& name, const glm::mat4& value) override;
+
+		virtual void ImplSend(const std::string& name, const Uniform& uniform) override;
 
 	public:
 		static uint32_t DatatypeToGLenum(Shader::Datatype type);

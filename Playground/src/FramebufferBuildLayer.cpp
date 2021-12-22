@@ -76,7 +76,7 @@ void FramebufferBuildLayer::Activate()
 	m_DisplayEntity = Tara::CreateEntity<Tara::SpriteEntity>(
 		Tara::EntityNoRef(),
 		weak_from_this(),
-		TRANSFORM_2D(0, 0, 0, 1200, 700),
+		TRANSFORM_2D(0, 700, 0, 1200, -700),
 		"displayEntity",
 		sprite
 	);
@@ -114,7 +114,8 @@ void FramebufferBuildLayer::OnEvent(Tara::Event& e)
 	filter.Call<Tara::WindowResizeEvent>([this](Tara::WindowResizeEvent& ee) {
 		//m_Framebuffer->SetSize(ee.GetWidth(), ee.GetHeight());
 		m_ScreenCamera->GetCamera()->UpdateRenderArea(ee.GetWidth(), ee.GetHeight());
-		m_DisplayEntity->SetWorldScale(Tara::Vector{ (float)ee.GetWidth(), (float)ee.GetHeight(), 1.0f });
+		m_DisplayEntity->SetWorldPosition(Tara::Vector(0, (float)ee.GetHeight(), 0));
+		m_DisplayEntity->SetWorldScale(Tara::Vector{ (float)ee.GetWidth(), -(float)ee.GetHeight(), 1.0f });
 		return false;
 	});
 }

@@ -3,6 +3,7 @@
 #include "Tara/Renderer/Renderer.h"
 #include "Tara/Renderer/VertexArray.h"
 #include "Tara/Renderer/Bindable.h"
+#include "Tara/Renderer/Texture.h"
 
 //platform-specific includes
 //REMEMBER: this SHOULD be wrapped in #ifdefs and whatnot!
@@ -51,6 +52,16 @@ namespace Tara {
 	void RenderCommand::Bind(BindableRef ref, int a, int b)
 	{
 		ref->ImplBind(a, b);
+	}
+
+	void RenderCommand::SendUniform(ShaderRef shader, const std::string& name, const Uniform& data)
+	{
+		shader->ImplSend(name, data);
+	}
+
+	void RenderCommand::RenderToTartet(RenderTargetRef ref, bool render)
+	{
+		ref->ImplRenderTo(render);
 	}
 
 

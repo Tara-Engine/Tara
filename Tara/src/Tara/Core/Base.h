@@ -52,3 +52,4 @@ that should be in every file
 	using name##Ref = std::shared_ptr<name>;
 
 #define NOREFTYPE(name) using name##NoRef = std::weak_ptr<name>;
+

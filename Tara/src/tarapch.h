@@ -1,5 +1,4 @@
 //#pragma once //this is technically a main file, so this is silly to have
-
 //c++ standard stuff
 
 //data structures

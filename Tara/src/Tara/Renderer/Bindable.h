@@ -13,22 +13,11 @@ namespace Tara {
 	class Bindable : public std::enable_shared_from_this<Bindable> {
 	public:
 		/// <summary>
-		/// Bind it with no paramaters
-		/// </summary>
-		inline virtual void Bind() { Bind(0, 0); };
-
-		/// <summary>
-		/// Bind it with one paramater
-		/// </summary>
-		/// <param name="a"></param>
-		inline virtual void Bind(int a) {Bind(a, 0);}
-
-		/// <summary>
 		/// Bind it  with two paramaters
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
-		inline virtual void Bind(int a, int b) { RenderCommand::Bind(shared_from_this(), a, b); }
+		inline virtual void Bind(int a = 0, int b = 0) { RenderCommand::Bind(shared_from_this(), a, b); }
 
 		/// <summary>
 		/// Implementation-specific binding. Called by RenderCommand. Never call manually.

@@ -108,14 +108,21 @@ namespace Tara {
 	/// </summary>
 	class RenderTarget : public Texture2D {
 	public:
+		enum class InternalType {
+			INT8, INT16, INT32, 
+			UINT8, UINT16, UINT32,
+			FLOAT
+		};
+	public:
 		RenderTarget(const std::string& name) : Texture2D(name) {}
 
 		/// <summary>
 		/// Enable rendering to this framebuffer.
 		/// </summary>
 		/// <param name="render">true if you actually want to render to this RenderTarget, false if you want to stop rendering to it</param>
-		virtual void RenderTo(bool render) const = 0;
+		void RenderTo(bool render);
 
+		virtual void ImplRenderTo(bool render) const = 0;
 		/// <summary>
 		/// Set the new size of the RenderTarget
 		/// </summary>
@@ -124,7 +131,19 @@ namespace Tara {
 		virtual void SetSize(uint32_t width, uint32_t height) = 0;
 		
 		/// <summary>
-		/// Create a RenderTarget
+		/// Create a RenderTarget (full version)
+		/// </summary>
+		/// <param name="width">the initial height of the RenderTarget image</param>
+		/// <param name="height">the initial width of the RenderTarget image</param>
+		/// <param name="colorTargets">the number of textures there should be (ie, color outputs of shaders rendering to this)</param>
+		/// <param name="type">the format of the textures. IE, the datatype for storing each component of each pixel</param>
+		/// <param name="name">the name of the asset</param>
+		/// <returns></returns>
+		static RenderTargetRef Create(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, const std::string& name);
+
+
+		/// <summary>
+		/// Create a RenderTarget (Half version)
 		/// </summary>
 		/// <param name="width">the initial height of the RenderTarget image</param>
 		/// <param name="height">the initial width of the RenderTarget image</param>

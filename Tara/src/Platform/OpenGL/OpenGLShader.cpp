@@ -94,7 +94,7 @@ namespace Tara{
 			}
 		}
 	}
-
+	/*
 	void OpenGLShader::Send(const std::string& name, int value)
 	{
 		glUniform1i(GetUniformLocation(name), value);
@@ -134,8 +134,58 @@ namespace Tara{
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 	}
+	*/
 
 
+	void OpenGLShader::ImplSend(const std::string& name, const Uniform& uniform)
+	{
+		auto loc = GetUniformLocation(name);
+		switch (uniform.DataType) {
+		case UniformType::Float1: glUniform1f(loc, uniform.Data.Float1); break;
+		case UniformType::Float2: glUniform2f(loc, uniform.Data.Float2.x, uniform.Data.Float2.y); break;
+		case UniformType::Float3: glUniform3f(loc, uniform.Data.Float3.x, uniform.Data.Float3.y, uniform.Data.Float3.z); break;
+		case UniformType::Float4: glUniform4f(loc, uniform.Data.Float4.x, uniform.Data.Float4.y, uniform.Data.Float4.z, uniform.Data.Float4.w); break;
+
+		case UniformType::Int1: glUniform1i(loc, uniform.Data.Int1); break;
+		case UniformType::Int2: glUniform2i(loc, uniform.Data.Int2.x, uniform.Data.Int2.y); break;
+		case UniformType::Int3: glUniform3i(loc, uniform.Data.Int3.x, uniform.Data.Int3.y, uniform.Data.Int3.z); break;
+		case UniformType::Int4: glUniform4i(loc, uniform.Data.Int4.x, uniform.Data.Int4.y, uniform.Data.Int4.z, uniform.Data.Int4.w); break;
+
+		case UniformType::UInt1: glUniform1ui(loc, uniform.Data.UInt1); break;
+		case UniformType::UInt2: glUniform2ui(loc, uniform.Data.UInt2.x, uniform.Data.UInt2.y); break;
+		case UniformType::UInt3: glUniform3ui(loc, uniform.Data.UInt3.x, uniform.Data.UInt3.y, uniform.Data.UInt3.z); break;
+		case UniformType::UInt4: glUniform4ui(loc, uniform.Data.UInt4.x, uniform.Data.UInt4.y, uniform.Data.UInt4.z, uniform.Data.UInt4.w); break;
+
+		case UniformType::Float1Vector: glUniform1fv(loc, uniform.Data.FloatVector.Count, uniform.Data.FloatVector.Data); break;
+		case UniformType::Float2Vector: glUniform2fv(loc, uniform.Data.FloatVector.Count, uniform.Data.FloatVector.Data); break;
+		case UniformType::Float3Vector: glUniform3fv(loc, uniform.Data.FloatVector.Count, uniform.Data.FloatVector.Data); break;
+		case UniformType::Float4Vector: glUniform4fv(loc, uniform.Data.FloatVector.Count, uniform.Data.FloatVector.Data); break;
+
+		case UniformType::Int1Vector: glUniform1iv(loc, uniform.Data.IntVector.Count, uniform.Data.IntVector.Data); break;
+		case UniformType::Int2Vector: glUniform2iv(loc, uniform.Data.IntVector.Count, uniform.Data.IntVector.Data); break;
+		case UniformType::Int3Vector: glUniform3iv(loc, uniform.Data.IntVector.Count, uniform.Data.IntVector.Data); break;
+		case UniformType::Int4Vector: glUniform4iv(loc, uniform.Data.IntVector.Count, uniform.Data.IntVector.Data); break;
+
+		case UniformType::UInt1Vector: glUniform1uiv(loc, uniform.Data.UIntVector.Count, uniform.Data.UIntVector.Data); break;
+		case UniformType::UInt2Vector: glUniform2uiv(loc, uniform.Data.UIntVector.Count, uniform.Data.UIntVector.Data); break;
+		case UniformType::UInt3Vector: glUniform3uiv(loc, uniform.Data.UIntVector.Count, uniform.Data.UIntVector.Data); break;
+		case UniformType::UInt4Vector: glUniform4uiv(loc, uniform.Data.UIntVector.Count, uniform.Data.UIntVector.Data); break;
+
+		case UniformType::Matrix2Vector: glUniformMatrix2fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		case UniformType::Matrix3Vector: glUniformMatrix3fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		case UniformType::Matrix4Vector: glUniformMatrix4fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		
+		case UniformType::Matrix2x3Vector: glUniformMatrix2x3fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		case UniformType::Matrix3x2Vector: glUniformMatrix3x2fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		
+		case UniformType::Matrix2x4Vector: glUniformMatrix2x4fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		case UniformType::Matrix4x2Vector: glUniformMatrix4x2fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		
+		case UniformType::Matrix3x4Vector: glUniformMatrix3x4fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+		case UniformType::Matrix4x3Vector: glUniformMatrix4x3fv(loc, uniform.Data.FloatVector.Count, GL_FALSE, uniform.Data.FloatVector.Data); break;
+
+		}
+	}
 
 	uint32_t OpenGLShader::DatatypeToGLenum(Shader::Datatype type)
 	{

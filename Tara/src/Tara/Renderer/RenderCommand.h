@@ -1,11 +1,14 @@
 #pragma once
 #include "Tara/Core/Base.h"
+#include "Tara/Renderer/Uniform.h"
 
 namespace Tara {
 	
 	//forward declaration
 	REFTYPE(Bindable);
 	REFTYPE(VertexArray);
+	REFTYPE(Shader);
+	REFTYPE(RenderTarget);
 
 	/// <summary>
 	/// An Enum of the drawing types available to the render backend
@@ -63,7 +66,7 @@ namespace Tara {
 			ENABLE_DEPTH_TEST,
 			ENABLE_BACKFACE_CULLING,
 
-			BIND,
+			BIND, UNIFORM, RENDER
 		};
 
 		union CommandParams {
@@ -89,8 +92,19 @@ namespace Tara {
 			};
 
 			struct BindType {
-				BindableRef bindable;
+				BindableRef Bindable;
 				int	a, b;
+			};
+
+			struct UniformType {
+				ShaderRef Shader;
+				std::string Name;
+				Uniform uniform;
+			};
+
+			struct RenderToTargetType {
+				RenderTargetRef Target;
+				bool Render;
 			};
 		};
 
@@ -177,7 +191,27 @@ namespace Tara {
 	public:
 		//binding functions. Can be queued.
 
+		/// <summary>
+		/// Bind a bindable
+		/// </summary>
+		/// <param name="ref">the bindable</param>
+		/// <param name="a">paramater for the bind</param>
+		/// <param name="b">paramater for the bind</param>
 		static void Bind(BindableRef ref, int a, int b);
+
+		/// <summary>
+		/// Send a uniform to a shader
+		/// </summary>
+		/// <param name="shader">the shader</param>
+		/// <param name="name">the uniform name</param>
+		/// <param name="data">the uniform data</param>
+		static void SendUniform(ShaderRef shader, const std::string& name, const Uniform& data);
+
+		/// <summary>
+		/// Render to a RenderTarget
+		/// </summary>
+		/// <param name="ref">the RenderTarget</param>
+		static void RenderToTartet(RenderTargetRef ref, bool render);
 
 	public:
 		//Query functions, not queued

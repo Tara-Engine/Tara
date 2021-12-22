@@ -3,58 +3,89 @@
 #include "glad/glad.h"
 
 namespace Tara {
-	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, const std::string& name)
+	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, const std::string& name)
 		: RenderTarget(name), m_Width(width), m_Height(height)
 	{
 		//generate the framebuffer
 		glGenFramebuffers(1, &m_FramebufferID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 
+		if (colorTargets > 0){
 
-		//deal with color buffer
-		//generate color buffer texture
-		glGenTextures(1, &m_TextureColorID);
-		glBindTexture(GL_TEXTURE_2D, m_TextureColorID);
-		//make the texture data format
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		//deal with filters.
-		if (Texture::s_DefaultTextureFiltering == Texture::Filtering::Nearest) {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			m_TextureColorIDs.reserve(colorTargets);
+			colorTargets = std::min(colorTargets, 32u); //there are only 32 color target attachments
+
+			m_TextureInternalType = 0;
+			switch (type) {
+			case InternalType::INT8: m_TextureInternalType = GL_BYTE; break;
+			case InternalType::INT16: m_TextureInternalType = GL_SHORT; break;
+			case InternalType::INT32: m_TextureInternalType = GL_INT; break;
+
+			case InternalType::UINT8: m_TextureInternalType = GL_UNSIGNED_BYTE; break;
+			case InternalType::UINT16: m_TextureInternalType = GL_UNSIGNED_SHORT; break;
+			case InternalType::UINT32: m_TextureInternalType = GL_UNSIGNED_INT; break;
+			
+			case InternalType::FLOAT: m_TextureInternalType = GL_FLOAT; break;
+			
+			default: m_TextureInternalType = GL_UNSIGNED_BYTE;
+			}
+			
+
+			for (int i=0;i<colorTargets;i++){
+				uint32_t textureID;
+				//deal with color buffer
+				//generate color buffer texture
+				glGenTextures(1, &textureID);
+
+				m_TextureColorIDs.push_back(textureID);
+
+				glBindTexture(GL_TEXTURE_2D, textureID);
+				//make the texture data format
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+				//deal with filters.
+				if (Texture::s_DefaultTextureFiltering == Texture::Filtering::Nearest) {
+					glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+					glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				}
+				else {
+					glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTextureParameteri(textureID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				}
+
+
+				//deal with wrapping
+				switch (Texture::s_DefaultTextureWrapping) {
+				case Texture::Wrapping::Clamp: {
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				}
+				case Texture::Wrapping::Border: {
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+				}
+				case Texture::Wrapping::Repeat: {
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				}
+				case Texture::Wrapping::Mirror: {
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+					glTextureParameteri(textureID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+				}
+				}
+
+				
+
+				//unbind texture
+				glBindTexture(GL_TEXTURE_2D, 0);
+
+				//attach texture to framebuffer
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureID, 0);
+			}
 		}
 		else {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
 		}
-
-
-		//deal with wrapping
-		switch (Texture::s_DefaultTextureWrapping) {
-		case Texture::Wrapping::Clamp: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		}
-		case Texture::Wrapping::Border: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		}
-		case Texture::Wrapping::Repeat: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		}
-		case Texture::Wrapping::Mirror: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		}
-		}
-
-
-		//unbind texture
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		//attach texture to framebuffer
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureColorID, 0);
-
 
 		//deal with depth and stencil buffer
 		//can be raw data (Renderbuffer) instead of texture
@@ -80,58 +111,66 @@ namespace Tara {
 	{
 		//clean up OpenGL objects
 		glDeleteRenderbuffers(1, &m_BufferDepthStencilID);
-		glDeleteTextures(1, &m_TextureColorID);
+		for (auto& id : m_TextureColorIDs) {
+			glDeleteTextures(1, &id);
+		}
 		glDeleteFramebuffers(1, &m_FramebufferID);
 	}
 
-	void OpenGLRenderTarget::ImplBind(int slot, int) const
+	void OpenGLRenderTarget::ImplBind(int slot, int index) const
 	{
 		//bind the texture for rendering
-		glBindTextureUnit(slot, m_TextureColorID);
+		glBindTextureUnit(slot, m_TextureColorIDs[index]);
 	}
 
 	void OpenGLRenderTarget::SetFiltering(Filtering filter)
 	{
-		if (filter == Texture::Filtering::Nearest) {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		}
-		else {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		for (auto& id : m_TextureColorIDs) {
+			if (filter == Texture::Filtering::Nearest) {
+				glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+			else {
+				glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			}
 		}
 	}
 
 
 	void OpenGLRenderTarget::SetWrap(Wrapping wrap)
 	{
-		switch (wrap) {
-		case Texture::Wrapping::Clamp: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		}
-		case Texture::Wrapping::Border: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		}
-		case Texture::Wrapping::Repeat: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		}
-		case Texture::Wrapping::Mirror: {
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-			glTextureParameteri(m_TextureColorID, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		}
+		for (auto& id : m_TextureColorIDs) {
+			switch (wrap) {
+			case Texture::Wrapping::Clamp: {
+				glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+			case Texture::Wrapping::Border: {
+				glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+				glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			}
+			case Texture::Wrapping::Repeat: {
+				glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			}
+			case Texture::Wrapping::Mirror: {
+				glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+				glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+			}
+			}
 		}
 	}
 
 	void OpenGLRenderTarget::SetBorderColor(const glm::vec4& color)
 	{
-		glTextureParameterfv(m_TextureColorID, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&color);
+		for (auto& id : m_TextureColorIDs) {
+			glTextureParameterfv(id, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&color);
+		}
 	}
 
 
-	void OpenGLRenderTarget::RenderTo(bool render) const
+	void OpenGLRenderTarget::ImplRenderTo(bool render) const
 	{
 		if (this && render) {
 			glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
@@ -145,11 +184,12 @@ namespace Tara {
 	{
 		m_Width = width;
 		m_Height = height;
+		for (auto& id : m_TextureColorIDs){
+			glBindTexture(GL_TEXTURE_2D, id);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 
-		glBindTexture(GL_TEXTURE_2D, m_TextureColorID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		
 		glBindRenderbuffer(GL_RENDERBUFFER, m_BufferDepthStencilID);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);

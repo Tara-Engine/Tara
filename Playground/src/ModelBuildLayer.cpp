@@ -90,6 +90,7 @@ void ModelBuildLayer::Activate()
 
 void ModelBuildLayer::Deactivate()
 {
+	
 }
 
 void ModelBuildLayer::Draw(float deltaTime)
