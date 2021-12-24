@@ -209,6 +209,11 @@ namespace Tara {
         Data = nullptr;
     }
 
+    Uniform::Uniform()
+        :DataType(UniformType::Float1), Data(1)
+    {
+    }
+
     Uniform::Uniform(UniformType type, const UniformData& data)
         :DataType(type), Data(0)
     {

@@ -59,6 +59,8 @@ namespace Tara {
 			//defined in seperate file for readability here.
 			LoadQuadShader();
 		}
+
+		RenderCommand::BeginQueue();
 	}
 
 	void Renderer::EndScene()
@@ -90,6 +92,7 @@ namespace Tara {
 			rt->RenderTo(false);
 		}
 		
+		RenderCommand::ExecuteQueue();
 		//clear camera
 		s_SceneData.camera = nullptr;
 	}

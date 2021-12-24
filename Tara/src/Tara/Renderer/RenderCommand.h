@@ -1,6 +1,7 @@
 #pragma once
 #include "Tara/Core/Base.h"
 #include "Tara/Renderer/Uniform.h"
+#include "tarapch.h"
 
 namespace Tara {
 	
@@ -53,66 +54,7 @@ namespace Tara {
 	/// PlatformRenderCommand instance. (Unique Pointer)
 	/// </summary>
 	class RenderCommand {
-	private:
-		
-		enum class CommandType {
-			CLEAR,
-			DRAW,
-			DRAW_COUNT,
-			
-			SET_CLEAR_COLOR,
-			PUSH_DRAW_TYPE,
-			POP_DRAW_TYPE,
-			ENABLE_DEPTH_TEST,
-			ENABLE_BACKFACE_CULLING,
-
-			BIND, UNIFORM, RENDER
-		};
-
-		union CommandParams {
-			struct VertexArrayForm {
-				VertexArrayRef VertexArray;
-			};
-
-			struct CountForm {
-				uint32_t Count;
-			};
-
-			struct ColorForm {
-				float r, g, b, a;
-			};
-
-			struct DrawTypeForm {
-				RenderDrawType Type;
-				bool Wireframe;
-			};
-
-			struct BoolType {
-				bool Enable;
-			};
-
-			struct BindType {
-				BindableRef Bindable;
-				int	a, b;
-			};
-
-			struct UniformType {
-				ShaderRef Shader;
-				std::string Name;
-				Uniform uniform;
-			};
-
-			struct RenderToTargetType {
-				RenderTargetRef Target;
-				bool Render;
-			};
-		};
-
-		struct Command {
-			CommandType Type;
-			bool IsDeferred;
-			CommandParams Params;
-		};
+	
 
 	public:
 		/// <summary>
@@ -120,26 +62,30 @@ namespace Tara {
 		/// </summary>
 		static void Init();
 
+		static void BeginQueue();
+
+		static void ExecuteQueue();
+
 	public:
 		//Drawing functions. Can be queued.
 
 		/// <summary>
 		/// clear the screen
 		/// </summary>
-		inline static void Clear() { s_RC->IClear(); }
+		static void Clear();
 		
 		/// <summary>
 		/// Draw the current VertexArray. Does not bind the VertexArray passed to it.
 		/// </summary>
 		/// <param name="vertexArray"></param>
-		inline static void Draw(VertexArrayRef vertexArray) { s_RC->IDraw(vertexArray); }
+		static void Draw(VertexArrayRef vertexArray);
 
 		/// <summary>
 		/// Draw the current VertexArray, but a specific count of vertecies instead of via an IndexBuffer. 
 		/// Does not bind the VertexArray passed to it.
 		/// </summary>
 		/// <param name="vertexArray"></param>
-		inline static void DrawCount(uint32_t count) { s_RC->IDrawCount(count); }
+		static void DrawCount(uint32_t count);
 
 	public:
 		//State change functions. Can be queued.
@@ -148,13 +94,13 @@ namespace Tara {
 		/// Set the clear color
 		/// </summary>
 		/// <param name="color">clear color as a vec3</param>
-		inline static void SetClearColor(glm::vec3 color) { s_RC->ISetClearColor(color.r, color.g, color.b); }
+		inline static void SetClearColor(glm::vec3 color) { SetClearColor(color.r, color.g, color.b); }
 
 		/// <summary>
 		/// Set the clear color
 		/// </summary>
 		/// <param name="color">clear color as a vec4 (alpha is ignored)</param>
-		inline static void SetClearColor(glm::vec4 color) { s_RC->ISetClearColor(color.r, color.g, color.b); }
+		inline static void SetClearColor(glm::vec4 color) { SetClearColor(color.r, color.g, color.b); }
 
 		/// <summary>
 		/// Set the clear color
@@ -162,7 +108,7 @@ namespace Tara {
 		/// <param name="r">red component of clear color</param>
 		/// <param name="g">green component of clear color</param>
 		/// <param name="b">blue component of clear color</param>
-		inline static void SetClearColor(float r, float g, float b) { s_RC->ISetClearColor(r, g, b); }
+		static void SetClearColor(float r, float g, float b);
 
 		/// <summary>
 		/// Push a new draw type for future draws
@@ -180,13 +126,13 @@ namespace Tara {
 		/// Enable and Disable depth testing in the rendering system. Should be disabled for 2D.
 		/// </summary>
 		/// <param name="enable"></param>
-		inline static void EnableDepthTesting(bool enable) { s_RC->IEnableDepthTesting(enable); }
+		static void EnableDepthTesting(bool enable);
 
 		/// <summary>
 		/// Enable backface culling. Front face is defined by Clockwise winding order.
 		/// </summary>
 		/// <param name="enable"></param>
-		inline static void EnableBackfaceCulling(bool enable) { s_RC->IEnableBackfaceCulling(enable); }
+		static void EnableBackfaceCulling(bool enable);
 
 	public:
 		//binding functions. Can be queued.
@@ -272,17 +218,85 @@ namespace Tara {
 		/// <param name="enable"></param>
 		virtual void IEnableBackfaceCulling(bool enable) = 0;
 	private:
+		//Command Queue structures
+		struct CommandFormDraw {
+			VertexArrayRef VertexArray;
+		};
 
+		struct CommandFormDrawCount {
+			uint32_t Count;
+		};
+
+		struct CommandFormSetClearColor {
+			float r, g, b;
+		};
+
+		struct CommandFormBool {
+			bool Enable;
+		};
+
+		struct CommandFormBind {
+			BindableRef Bindable;
+			int	a, b;
+		};
+
+		struct CommandFormUniform {
+			ShaderRef Shader;
+			std::string Name;
+			Uniform uniform;
+		};
+
+		struct CommandFormRenderToTarget {
+			RenderTargetRef Target;
+			bool Render;
+		};
+		enum class CommandType {
+			CLEAR = 0,
+			DRAW = 1,
+			DRAW_COUNT = 2,
+
+			SET_CLEAR_COLOR = 3,
+			PUSH_DRAW_TYPE = 4,
+			POP_DRAW_TYPE = 5,
+			ENABLE_DEPTH_TEST = 6,
+			ENABLE_BACKFACE_CULLING = 7,
+
+			BIND = 8,
+			UNIFORM = 9,
+			RENDER_TO_TARGET = 10
+		};
+
+		//Drawtype
 		struct DrawType {
 			RenderDrawType Type;
 			bool WireFrame;
 		};
 
+		//queueable render-related command
+		struct Command {
+			CommandType Type;
+			std::variant<
+				CommandFormDraw,
+				CommandFormDrawCount,
+				CommandFormSetClearColor,
+				DrawType,
+				CommandFormBool,
+				CommandFormBind,
+				CommandFormUniform,
+				CommandFormRenderToTarget
+			> Params;
+		};
+
+		
+
 		/// <summary>
 		/// the unique pointer to the underlying RenderCommand instance.
 		/// </summary>
 		static std::unique_ptr<RenderCommand> s_RC;
-		static std::list<DrawType> m_DrawTypeStack;
+		static std::list<DrawType> s_DrawTypeStack;
+		static std::vector<Command> s_CommandQueue;
+
+		static bool s_EnqueingCommands;
 	};
 
 }

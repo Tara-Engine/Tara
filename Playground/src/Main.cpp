@@ -386,9 +386,9 @@ int main(int argc, char** argv) {
 	//add layers to scene...
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<DemoLayer>());
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<TestingLayer>());
-	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
+	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<FramebufferBuildLayer>());
 	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<UIBuildLayer>());
-	//Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<ModelBuildLayer>());
+	Tara::Application::Get()->GetScene()->PushLayer(std::make_shared<ModelBuildLayer>());
 	//run
 	Tara::Application::Get()->Run();
 

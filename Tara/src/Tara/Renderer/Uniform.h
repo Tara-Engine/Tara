@@ -92,6 +92,7 @@ namespace Tara {
 	struct Uniform {
 		UniformType DataType;
 		UniformData Data;
+		Uniform();
 		Uniform(UniformType type, const UniformData& data);
 		Uniform(UniformType type, UniformData&& data);
 		Uniform(const Uniform& other);
