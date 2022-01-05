@@ -18,6 +18,7 @@
 #include "Tara/Renderer/RenderCommand.h"
 #include "Tara/Renderer/Texture.h"
 #include "Tara/Renderer/Camera.h"
+#include "Tara/Renderer/MaterialBase.h"
 
 //Core
 #include "Tara/Core/Scene.h"
@@ -34,6 +35,7 @@
 #include "Tara/Asset/Tileset.h"
 #include "Tara/Asset/Patch.h"
 #include "Tara/Asset/StaticMesh.h"
+#include "Tara/Asset/Material.h"
 
 //math
 #include "Tara/Math/Types.h"

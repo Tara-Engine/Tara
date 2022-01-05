@@ -15,8 +15,8 @@ namespace Tara {
 		/// <summary>
 		/// Bind it  with two paramaters
 		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
+		/// <param name="a">this paramater is used for the GPU (mainly with textures)</param>
+		/// <param name="b">this paramater is used to select what to bind (ie, multiple textures in a RenderTarget)</param>
 		inline virtual void Bind(int a = 0, int b = 0) { RenderCommand::Bind(shared_from_this(), a, b); }
 
 		/// <summary>

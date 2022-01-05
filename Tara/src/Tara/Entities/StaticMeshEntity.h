@@ -2,6 +2,7 @@
 #include "Tara/Core/Layer.h"
 #include "Tara/Core/Entity.h"
 #include "Tara/Asset/StaticMesh.h"
+#include "Tara/Renderer/MaterialBase.h"
 
 namespace Tara {
 
@@ -15,7 +16,7 @@ namespace Tara {
 			LayerNoRef owningLayer,
 			Transform transform = TRANSFORM_DEFAULT,
 			StaticMeshRef mesh = nullptr,
-			ShaderRef shader = nullptr,
+			MaterialBaseRef material = nullptr,
 			const std::string& name = "StaticMeshEntity"
 		);
 
@@ -27,13 +28,13 @@ namespace Tara {
 
 		inline const StaticMeshRef& GetStaticMesh() const { return m_StaticMesh; }
 		
-		void SetShader(int shaderID, ShaderRef shader);
+		void SetMaterial(int materialID, MaterialBaseRef material);
 
-		const ShaderRef& GetShader(int shaderID) const;
+		const MaterialBaseRef& GetMaterial(int materialID) const;
 
 	private:
 		StaticMeshRef m_StaticMesh;
-		std::vector<ShaderRef> m_Shaders;
+		std::vector<MaterialBaseRef> m_Materials;
 
 	};
 

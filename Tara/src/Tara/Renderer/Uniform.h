@@ -31,6 +31,12 @@ namespace Tara {
 			int32_t Elements;
 			float* Data;
 			FloatVectorType();
+			/// <summary>
+			/// Create a new FloatVectorType
+			/// </summary>
+			/// <param name="data">pointer to data</param>
+			/// <param name="Count">the number of floats per element</param>
+			/// <param name="Elements">the element count</param>
 			FloatVectorType(const float* data, int32_t Count, int32_t Elements);
 			FloatVectorType(const FloatVectorType& other);
 			FloatVectorType(FloatVectorType&& other);
@@ -46,6 +52,12 @@ namespace Tara {
 			int32_t Elements;
 			int32_t* Data;
 			IntVectorType();
+			/// <summary>
+			/// Create a new IntVectorType
+			/// </summary>
+			/// <param name="data">pointer to data</param>
+			/// <param name="Count">the number of floats per element</param>
+			/// <param name="Elements">the element count</param>
 			IntVectorType(const int32_t* data, int32_t Count, int32_t Elements);
 			IntVectorType(const IntVectorType& other);
 			IntVectorType(IntVectorType&& other);
@@ -61,6 +73,12 @@ namespace Tara {
 			int32_t Elements;
 			uint32_t* Data;
 			UIntVectorType();
+			/// <summary>
+			/// Create a new UIntVectorType
+			/// </summary>
+			/// <param name="data">pointer to data</param>
+			/// <param name="Count">the number of floats per element</param>
+			/// <param name="Elements">the element count</param>
 			UIntVectorType(const uint32_t* data, int32_t Count, int32_t Elements);
 			UIntVectorType(const UIntVectorType& other);
 			UIntVectorType(UIntVectorType&& other);

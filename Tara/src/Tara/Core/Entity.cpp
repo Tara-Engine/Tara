@@ -10,10 +10,12 @@
 //disable MSVC warning C4003. It has to do with not enough params in a function-like macro, which is being done intentionally here.
 
 namespace Tara{
+    
     Entity::Entity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, const std::string& name)
-        :m_Parent(parent), 
+        :m_Transform(transform), m_RenderFilterBits(~0), m_Name(name),
         m_OwningLayer((parent.lock() && !owningLayer.lock()) ? parent.lock()->GetOwningLayer() : owningLayer), 
-        m_Name(name), m_Transform(transform), m_RenderFilterBits(~0)
+        m_Parent(parent),
+        m_Exists(true), m_UpdateChildrenFirst(true), m_UpdateComponentsFirst(true), m_DrawChildrenFirst(false), m_Visible(true)
     {
         CHECK_NOTNULL_F(m_OwningLayer.lock(), "the owning layer of a newly created entity should never be null!");
     }
@@ -24,7 +26,7 @@ namespace Tara{
             ref->m_Parent.lock()->AddChild(ref); //auto cast to weak_ptr
         }
         else {
-            bool result = ref->m_OwningLayer.lock()->AddEntity(ref);//auto cast to weak_ptr
+            ref->m_OwningLayer.lock()->AddEntity(ref);//auto cast to weak_ptr
             //LOG_S(INFO) << "Entity Registered! Name: [" << ref->GetName() << "] Sucess? " << result;
         }
     }

@@ -22,11 +22,19 @@ void ModelBuildLayer::Activate()
 	Tara::CreateComponent<EditorCameraControllerComponent>(m_Camera, 1.0f, "EditorCameraControllerComponent");
 
 	//make a basic shader
+	/*
 	std::unordered_map<Tara::Shader::TargetStage, std::string> shaderSources;
 	shaderSources[Tara::Shader::TargetStage::Vertex] = "assets/basic.vertex.glsl";
 	shaderSources[Tara::Shader::TargetStage::Pixel] = "assets/basic.fragment.glsl";
 	m_Shader = Tara::Shader::Create("BasicShader", Tara::Shader::SourceType::TextFiles, shaderSources);
+	*/
 
+	const static std::string materialSource = R"V0G0N(
+	vec4 diffuse(){
+		return v_Color * vec4(1,0,1,1);
+	}
+	)V0G0N";
+	m_Material = Tara::Material::Create(materialSource, Tara::Shader::SourceType::Strings, "BasicMaterial");
 
 	//make a MeshPart for rendering a cube
 	
@@ -85,7 +93,7 @@ void ModelBuildLayer::Activate()
 	m_Mesh = Tara::StaticMesh::Create({ part }, "CubeMesh");
 
 
-	auto sme = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({0,0,0}, {0,0,0}, {1,1,1}), m_Mesh, m_Shader, "Static Mesh Entity");
+	auto sme = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({0,0,0}, {0,0,0}, {1,1,1}), m_Mesh, m_Material, "Static Mesh Entity");
 }
 
 void ModelBuildLayer::Deactivate()

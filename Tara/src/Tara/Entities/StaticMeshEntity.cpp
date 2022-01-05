@@ -3,28 +3,29 @@
 #include "Tara/Renderer/Renderer.h"
 
 namespace Tara{
-	StaticMeshEntity::StaticMeshEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, StaticMeshRef mesh, ShaderRef shader, const std::string& name)
-		: Entity(parent, owningLayer, transform, name), m_StaticMesh(mesh), m_Shaders(mesh->GetArrayCount(), shader)
+	StaticMeshEntity::StaticMeshEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, StaticMeshRef mesh, MaterialBaseRef material, const std::string& name)
+		: Entity(parent, owningLayer, transform, name), m_StaticMesh(mesh), m_Materials(mesh->GetArrayCount(), material)
 	{}
 
 	void StaticMeshEntity::OnDraw(float deltaTime)
 	{
 		for (int i = 0; i < m_StaticMesh->GetArrayCount();i++) {
-			Renderer::Draw(m_StaticMesh->GetVertexArrays()[i], m_Shaders[i], m_Transform);
+			m_Materials[i]->Use();
+			Renderer::Draw(m_StaticMesh->GetVertexArrays()[i], m_Materials[i]->GetShader(), m_Transform);
 		}
 	}
 
-	void StaticMeshEntity::SetShader(int shaderID, ShaderRef shader)
+	void StaticMeshEntity::SetMaterial(int materialID, MaterialBaseRef material)
 	{
-		if (shaderID < m_StaticMesh->GetArrayCount()) {
-			m_Shaders[shaderID] = shader;
+		if (materialID < m_StaticMesh->GetArrayCount()) {
+			m_Materials[materialID] = material;
 		}
 	}
 
-	const ShaderRef& StaticMeshEntity::GetShader(int shaderID) const
+	const MaterialBaseRef& StaticMeshEntity::GetMaterial(int materialID) const
 	{
-		if (shaderID < m_StaticMesh->GetArrayCount()) {
-			return m_Shaders[shaderID];
+		if (materialID < m_StaticMesh->GetArrayCount()) {
+			return m_Materials[materialID];
 		}
 		return nullptr;
 	}

@@ -21,5 +21,7 @@ private:
 	Tara::CameraEntityRef m_Camera;
 
 	Tara::ShaderRef m_Shader;
+	Tara::MaterialBaseRef m_Material;
+
 	Tara::StaticMeshRef m_Mesh;
 };
