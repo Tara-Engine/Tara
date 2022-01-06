@@ -19,3 +19,22 @@ vec4 v_Color;
 vec2 v_UV;
 ```
 These are immutable.
+
+## Lit Materials:
+```
+vec3 normal()
+vec3 diffuse()
+vec3 specular()
+vec3 emissive()
+float metallic()
+float roughness()
+float ambientOcclusion()
+
+vec3 PixelNormal //predefined
+
+```
+
+# Lighting Materials
+```
+vec4 color()
+```

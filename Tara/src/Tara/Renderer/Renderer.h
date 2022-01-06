@@ -109,6 +109,7 @@ namespace Tara {
 		/// </summary>
 		struct SceneData {
 			CameraRef camera;
+			RenderTargetRef target;
 		};
 
 	private:

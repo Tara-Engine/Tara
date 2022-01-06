@@ -11,16 +11,22 @@ namespace Tara {
 	class Material : public MaterialBase, public Asset {
 	public:
 
-		Material(const std::string& source, Shader::SourceType sourceType, const std::string& name);
+		Material(MaterialType type, const std::string& source, Shader::SourceType sourceType, const std::string& name);
 		
 		~Material();
 
-		static MaterialRef Create(const std::string& source, Shader::SourceType sourceType, const std::string& name);
+		static MaterialRef Create(MaterialType type, const std::string& source, Shader::SourceType sourceType, const std::string& name);
 
 		/// <summary>
 		/// Use this material. Binds the underlying shader and sets up the uniforms.
 		/// </summary>
 		virtual void Use() override;
+
+		/// <summary>
+		/// Get the material types
+		/// </summary>
+		/// <returns></returns>
+		inline virtual MaterialType GetType() override { return m_Type; };
 
 		/// <summary>
 		/// Get the shader being used.
@@ -87,5 +93,10 @@ namespace Tara {
 		ShaderRef m_Shader;
 		//map of paramater names to the values
 		std::unordered_map<std::string, std::pair<MaterialParamaterType, MaterialParamater>> m_Paramaters;
+		const MaterialType m_Type;
+	private:
+		static std::unordered_map<MaterialType, std::string> SourcePartsVertex;
+		static std::unordered_map<MaterialType, std::string> SourcePartsFragmentBegin;
+		static std::unordered_map<MaterialType, std::string> SourcePartsFragmentEnd;
 	};
 }

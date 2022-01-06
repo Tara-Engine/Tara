@@ -122,7 +122,19 @@ namespace Tara {
 		/// <param name="render">true if you actually want to render to this RenderTarget, false if you want to stop rendering to it</param>
 		void RenderTo(bool render);
 
+		/// <summary>
+		/// Unqueued enable rendering to this framebuffer.
+		/// </summary>
+		/// <param name="render"></param>
 		virtual void ImplRenderTo(bool render) const = 0;
+		
+		/// <summary>
+		/// Copy the depth from this RenderTarget to a different (or the default) RenderTarget.
+		/// this *WILL* change which RenderTarget is currently bound and indeed will then bind the other RenderTarget.
+		/// </summary>
+		/// <param name="other">The rendertarget to copy to.</param>
+		virtual void BlitDepthToOther(RenderTargetRef other) = 0;
+
 		/// <summary>
 		/// Set the new size of the RenderTarget
 		/// </summary>

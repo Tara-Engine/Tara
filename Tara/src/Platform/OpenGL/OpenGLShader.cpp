@@ -246,6 +246,7 @@ namespace Tara{
 				std::vector<char> infoLog(maxLength);
 				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 				LOG_S(ERROR) << "Shader Compilation Error [" << (uint32_t)index << "]: " << infoLog.data();
+				LOG_S(ERROR) << "Shader Code: [" << std::endl << source << std::endl << "]";
 
 				//delete unused shader
 				for (uint8_t s = 0; s < index; s++) {

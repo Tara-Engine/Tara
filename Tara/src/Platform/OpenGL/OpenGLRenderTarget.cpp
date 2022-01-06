@@ -2,6 +2,8 @@
 #include "OpenGLRenderTarget.h"
 #include "glad/glad.h"
 
+#include "Tara/Core/Application.h"
+
 namespace Tara {
 	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, const std::string& name)
 		: RenderTarget(name), m_Width(width), m_Height(height)
@@ -193,6 +195,52 @@ namespace Tara {
 		glBindRenderbuffer(GL_RENDERBUFFER, m_BufferDepthStencilID);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	}
+
+	void OpenGLRenderTarget::BlitDepthToOther(RenderTargetRef other)
+	{
+		std::shared_ptr<OpenGLRenderTarget> otherGL = std::dynamic_pointer_cast<OpenGLRenderTarget>(other);
+		if (otherGL || !other) {
+			//the other is invalid (default framebuffer) or a valid OpenGLRenderTarget
+
+			//Get the data, accounting for this or other being null (default framebuffer)
+			uint32_t source = 0;
+			uint32_t sourceWidth = Application::Get()->GetWindow()->GetWidth();
+			uint32_t sourceHeight = Application::Get()->GetWindow()->GetHeight();
+
+			uint32_t dest = 0;
+			uint32_t destWidth = sourceWidth;
+			uint32_t destHeight = sourceHeight;
+			if (this) {
+				source = m_FramebufferID;
+				sourceWidth = GetWidth();
+				sourceHeight = GetHeight();
+			}
+			if (otherGL) {
+				dest = otherGL->m_FramebufferID;
+				destWidth = otherGL->GetWidth();
+				destHeight = otherGL->GetHeight();
+			}
+			if (source == dest){
+				LOG_S(WARNING) << "Attempted to copy the depth buffer from a RenderTarget to itself. Ignored.";
+				return;
+			}
+			//bind buffers and copy
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, source);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest);
+			glBlitFramebuffer(0, 0, sourceWidth, sourceHeight, 0, 0, destWidth, destHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+			//done, immedately bind other buffer as RenderTarget
+			if (otherGL){
+				otherGL->ImplRenderTo(true);
+			}
+			else {
+				ImplRenderTo(false);
+			}
+		}
+		else {
+			//other is invalid, ie, not an OpenGLRenderTarget, but is still valid. This is an error
+			LOG_S(WARNING) << "Attempted to copy the depth buffer from a non-OpenGL RenderTarget to an OpenGL RenderTarget, an invalid operation. Ignored.";
+		}
 	}
 
 }

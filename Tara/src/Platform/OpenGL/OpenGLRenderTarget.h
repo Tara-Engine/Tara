@@ -17,6 +17,8 @@ namespace Tara {
 
 		virtual void ImplRenderTo(bool render) const override;
 		virtual void SetSize(uint32_t width, uint32_t height) override;
+
+		virtual void BlitDepthToOther(RenderTargetRef other) override;
 	private:
 		std::string m_Path;
 		uint32_t m_Width, m_Height;

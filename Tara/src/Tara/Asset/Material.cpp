@@ -5,8 +5,210 @@
 #include "Tara/Asset/AssetLibrary.h"
 
 namespace Tara{
-	Material::Material(const std::string& source, Shader::SourceType sourceType, const std::string& name)
-		: Asset(name)
+
+	std::unordered_map<MaterialType, std::string> Material::SourcePartsVertex = {
+		{
+			MaterialType::UNLIT,
+			R"V0G0N(
+			//UNLIT
+			#version 450 core
+			layout(location=0) in vec3 a_Position;
+			layout(location=1) in vec3 a_Normal;
+			layout(location=2) in vec4 a_Color;
+			layout(location=3) in vec2 a_UV;
+			
+			uniform mat4 u_MatrixViewProjection;
+			uniform mat4 u_MatrixModel;
+			
+			out vec3 v_WorldNorm;
+			out vec3 v_WorldPos;
+			out vec4 v_Color;
+			out vec2 v_UV;
+			
+			void main(){
+				v_WorldNorm = vec3(inverse(transpose(u_MatrixModel)) * vec4(a_Normal, 1));
+				v_WorldPos = vec3(u_MatrixModel * vec4(a_Position, 1));
+				v_Color = a_Color;
+				
+				v_UV = a_UV;
+				
+				gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
+			}
+
+			)V0G0N"
+		}, 
+		{
+			MaterialType::LIT,
+			R"V0G0N(
+			//LIT
+			#version 450 core
+			layout(location=0) in vec3 a_Position;
+			layout(location=1) in vec3 a_Normal;
+			layout(location=2) in vec4 a_Color;
+			layout(location=3) in vec2 a_UV;
+			
+			uniform mat4 u_MatrixViewProjection;
+			uniform mat4 u_MatrixModel;
+			
+			out vec3 v_WorldNorm;
+			out vec3 v_WorldPos;
+			out vec4 v_Color;
+			out vec2 v_UV;
+			
+			void main(){
+				v_WorldNorm = vec3(inverse(transpose(u_MatrixModel)) * vec4(a_Normal, 1));
+				v_WorldPos = vec3(u_MatrixModel * vec4(a_Position, 1));
+				v_Color = a_Color;
+				
+				v_UV = a_UV;
+				
+				gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
+			}
+
+			)V0G0N"
+		},
+		{
+			MaterialType::LIGHTING,
+			R"V0G0N(
+			//LIGHTING
+			#version 450 core
+			layout(location=0) in vec2 a_Position;
+			layout(location=1) in vec2 a_UV;
+			
+			out vec2 v_UV;
+			
+			void main(){
+				v_UV = a_UV;
+				gl_Position =  vec4(a_Position, 0, 1);
+			}
+
+			)V0G0N"
+		},
+	};
+
+	std::unordered_map<MaterialType, std::string> Material::SourcePartsFragmentBegin = {
+		{
+			MaterialType::UNLIT,
+			R"V0G0N(
+			//UNLIT
+			#version 450 core
+			layout(location=0)out vec4 outColor;
+			
+			uniform vec3 u_CameraPositionWS;
+			uniform vec3 u_CameraForwardVector;
+			
+			in vec3 v_WorldNorm;
+			in vec3 v_WorldPos;
+			in vec4 v_Color;
+			in vec2 v_UV;
+			)V0G0N"
+		},
+		{
+			MaterialType::LIT,
+			R"V0G0N(
+			//LIT
+			#version 450 core
+			layout(location=0)out vec4 ColorMetallic;
+			layout(location=1)out vec4 SpecularRoughness;
+			layout(location=2)out vec4 EmissiveAO;
+			layout(location=3)out vec4 WorldSpaceNormal;
+			layout(location=4)out vec4 WorldSpacePosition;
+			
+			uniform vec3 u_CameraPositionWS;
+			uniform vec3 u_CameraForwardVector;
+			
+			in vec3 v_WorldNorm;
+			in vec3 v_WorldPos;
+			in vec4 v_Color;
+			in vec2 v_UV;
+
+			vec3 PixelNormal = vec3(0);
+			)V0G0N"
+		},
+		{
+			MaterialType::LIGHTING,
+			R"V0G0N(
+			//LIGHTING
+			#version 450 core
+			layout(location=0)out vec4 outColor;
+
+			uniform sampler2D u_ColorMetallicSampler;
+			uniform sampler2D u_SpecularRoughnessSampler;
+			uniform sampler2D u_EmissiveAOSampler;
+			uniform sampler2D u_WorldSpaceNormalSampler;
+			uniform sampler2D u_WorldSpacePositionSampler;
+			
+			in vec2 v_UV;
+
+			float Metallic         = 0;
+			float Roughness        = 0;
+			float AmbientOcclusion = 0;
+			vec3 Diffuse            = vec3(0);
+			vec3 Specular           = vec3(0);
+			vec3 Emissive           = vec3(0);
+			vec3 WorldSpaceNormal   = vec3(0);
+			vec3 WorldSpacePosition = vec3(0);
+			
+			)V0G0N"
+		},
+	};
+
+	std::unordered_map<MaterialType, std::string> Material::SourcePartsFragmentEnd = {
+		{
+			//THIS ONE MUST BE CHANGED!
+			MaterialType::UNLIT,
+			R"V0G0N(
+			//UNLIT
+			void main(){
+				float da = dot(normalize(v_WorldNorm), normalize(u_CameraPositionWS-v_WorldPos));
+				float db = dot(normalize(v_WorldNorm), normalize(u_CameraForwardVector));
+				da = clamp(da, 0, 1);
+				db = clamp(db, 0, 1);
+				outColor = vec4(vec3((da + db + 1)/3), 1) * diffuse();
+			
+			}
+			)V0G0N"
+		},
+		{
+			MaterialType::LIT,
+			R"V0G0N(
+			//LIT
+			void main(){
+				PixelNormal = (v_WorldNorm + normal().xyz)/2;
+
+				ColorMetallic = vec4(diffuse().xyz, metallic());
+				SpecularRoughness = vec4(specular().xyz, roughness());
+				EmissiveAO = vec4(emissive().xyz, ambientOcclusion());
+				WorldSpaceNormal = PixelNormal;
+				WorldSpacePosition = v_WorldPos;
+			}
+			)V0G0N"
+		},
+		{
+			MaterialType::LIGHTING,
+			R"V0G0N(
+			//LIGHTING
+			void main(){
+				vec3 Diffuse            = texture(u_ColorMetallicSampler, v_UV).xyz;
+				float Metallic          = texture(u_ColorMetallicSampler, v_UV).w;
+				vec3 Specular           = texture(u_SpecularRoughnessSampler, v_UV).xyz;
+				float Roughness         = texture(u_SpecularRoughnessSampler, v_UV).w;
+				vec3 Emissive           = texture(u_EmissiveAOSampler, v_UV).xyz;
+				float AmbientOcclusion  = texture(u_EmissiveAOSampler, v_UV).w;
+				vec3 WorldSpaceNormal   = texture(u_WorldSpaceNormalSampler, v_UV).xyz;
+				vec3 WorldSpacePosition = texture(u_WorldSpacePositionSampler, v_UV).xyz;
+				
+				outColor = color();
+			}
+			)V0G0N"
+		},
+	};
+
+
+
+
+	Material::Material(MaterialType type, const std::string& source, Shader::SourceType sourceType, const std::string& name)
+		: Asset(name), m_Type(type)
 	{
 		if (sourceType == Shader::SourceType::Strings) {
 			ShaderFromString(source);
@@ -23,11 +225,11 @@ namespace Tara{
 	{
 	}
 
-	MaterialRef Material::Create(const std::string& source, Shader::SourceType sourceType, const std::string& name)
+	MaterialRef Material::Create(MaterialType type, const std::string& source, Shader::SourceType sourceType, const std::string& name)
 	{
 		auto ref = AssetLibrary::Get()->GetAssetIf<Material>(name);
 		if (ref == nullptr) {
-			ref = std::make_shared<Material>(source, sourceType, name);
+			ref = std::make_shared<Material>(type, source, sourceType, name);
 			AssetLibrary::Get()->RegisterAsset(ref);
 		}
 		return ref;
@@ -102,58 +304,20 @@ namespace Tara{
 
 	void Material::ShaderFromString(const std::string& source)
 	{
-		static const std::string vertexSource = R"V0G0N(
-			#version 450 core
-			layout(location=0) in vec3 a_Position;
-			layout(location=1) in vec3 a_Normal;
-			layout(location=2) in vec4 a_Color;
-			layout(location=3) in vec2 a_UV;
-			
-			uniform mat4 u_MatrixViewProjection;
-			uniform mat4 u_MatrixModel;
-			
-			out vec3 v_WorldNorm;
-			out vec3 v_WorldPos;
-			out vec4 v_Color;
-			out vec2 v_UV;
-			
-			void main(){
-				v_WorldNorm = vec3(inverse(transpose(u_MatrixModel)) * vec4(a_Normal, 1));
-				v_WorldPos = vec3(u_MatrixModel * vec4(a_Position, 1));
-				v_Color = a_Color;
-				
-				v_UV = a_UV;
-				
-				gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
-			}
+		std::string typestr = "ERR";
+		switch (m_Type) {
+		case MaterialType::LIGHTING: {typestr = "LIGHTING"; break; }
+		case MaterialType::LIT: {typestr = "LIT"; break; }
+		case MaterialType::UNLIT: {typestr = "UNLIT"; break; }
+		}
+		LOG_S(INFO) << "Compiling Material: " << GetAssetName() << "Type: " << typestr;
 
-		)V0G0N";
+		
+		const std::string& vertexSource = SourcePartsVertex[m_Type];
 
-		static const std::string fragmentBegin = R"V0G0N(
-			#version 450 core
-			layout(location=0)out vec4 color;
-			
-			uniform vec3 u_CameraPositionWS;
-			uniform vec3 u_CameraForwardVector;
-			
-			in vec3 v_WorldNorm;
-			in vec3 v_WorldPos;
-			in vec4 v_Color;
-			in vec2 v_UV;
-		)V0G0N";
+		const std::string& fragmentBegin = SourcePartsFragmentBegin[m_Type];
 
-		//TODO when deferred rendering is implemented, this will be MASSIVELY changed
-		static const std::string fragmentEnd = R"V0G0N(
-			
-			void main(){
-				float da = dot(normalize(v_WorldNorm), normalize(u_CameraPositionWS-v_WorldPos));
-				float db = dot(normalize(v_WorldNorm), normalize(u_CameraForwardVector));
-				da = clamp(da, 0, 1);
-				db = clamp(db, 0, 1);
-				color = vec4(vec3((da + db + 1)/3), 1) * diffuse();
-			
-			}
-		)V0G0N";
+		const std::string& fragmentEnd = SourcePartsFragmentEnd[m_Type];
 
 		std::string fragmentSource = fragmentBegin + source + fragmentEnd;
 

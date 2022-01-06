@@ -37,7 +37,14 @@ namespace Tara {
 		Texture2DRef
 	>;
 
-
+	/// <summary>
+	/// The type of material. UNLIT is rendered in a Forward manner, while LIT is rendered in a Deferred manner. LIGHTING is used to calculate lighting.
+	/// </summary>
+	enum class MaterialType {
+		LIGHTING = 0b0000,
+		UNLIT = 0b0001, 
+		LIT = 0b0010, 
+	};
 
 	class MaterialBase {
 	public:
@@ -87,6 +94,12 @@ namespace Tara {
 		/// Use this material. Binds the underlying shader and sets up the uniforms.
 		/// </summary>
 		virtual void Use() = 0;
+
+		/// <summary>
+		/// Get the material types
+		/// </summary>
+		/// <returns></returns>
+		virtual MaterialType GetType() = 0;
 
 		/// <summary>
 		/// Get the shader being used.

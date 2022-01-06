@@ -10,6 +10,7 @@ namespace Tara {
 	REFTYPE(VertexArray);
 	REFTYPE(Shader);
 	REFTYPE(RenderTarget);
+	REFTYPE(MaterialBase);
 
 	/// <summary>
 	/// An Enum of the drawing types available to the render backend
@@ -64,7 +65,7 @@ namespace Tara {
 
 		static void BeginQueue();
 
-		static void ExecuteQueue();
+		static void ExecuteQueue(RenderTargetRef target);
 
 	public:
 		//Drawing functions. Can be queued.
@@ -134,6 +135,8 @@ namespace Tara {
 		/// <param name="enable"></param>
 		static void EnableBackfaceCulling(bool enable);
 
+		
+
 	public:
 		//binding functions. Can be queued.
 
@@ -167,6 +170,21 @@ namespace Tara {
 		/// </summary>
 		/// <returns>that number.</returns>
 		inline static uint32_t GetMaxTextureSlotsPerShader() { return s_RC->IGetMaxTextureSlotsPerShader(); }
+
+		/// <summary>
+		/// Enable/Disable future commands to be treated as Deferred. NOT QUEUED, but effects what queue future commands enter.
+		/// </summary>
+		/// <param name="enable"></param>
+		inline static void EnableDeferred(bool enable) { s_CurrentModeDeferred = enable; }
+
+		//set the lighting material
+		inline static void SetLightingMaterial(MaterialBaseRef lighting) { s_LightingMaterial = lighting; }
+
+		/// <summary>
+		/// Get the ligting material
+		/// </summary>
+		/// <returns></returns>
+		inline static const MaterialBaseRef& GetLightingMaterial() { return s_LightingMaterial; }
 
 		virtual ~RenderCommand() = default;
 	protected:
@@ -217,6 +235,7 @@ namespace Tara {
 		/// </summary>
 		/// <param name="enable"></param>
 		virtual void IEnableBackfaceCulling(bool enable) = 0;
+
 	private:
 		//Command Queue structures
 		struct CommandFormDraw {
@@ -288,15 +307,22 @@ namespace Tara {
 		};
 
 		
+		static void PushCommand(Command& c);
+
+		static void ExecuteCommand(const Command& c);
 
 		/// <summary>
 		/// the unique pointer to the underlying RenderCommand instance.
 		/// </summary>
 		static std::unique_ptr<RenderCommand> s_RC;
 		static std::list<DrawType> s_DrawTypeStack;
-		static std::vector<Command> s_CommandQueue;
-
+		static std::vector<Command> s_CommandQueueDeferred;
+		static std::vector<Command> s_CommandQueueForward;
+		static bool s_CurrentModeDeferred;
 		static bool s_EnqueingCommands;
+		static RenderTargetRef s_GBuffer;
+		static VertexArrayRef s_ScreenQuad;
+		static MaterialBaseRef s_LightingMaterial;
 	};
 
 }

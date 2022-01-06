@@ -25,12 +25,10 @@ namespace Tara {
 
 	void Renderer::BeginScene(const CameraRef camera)
 	{
+		//save camera and target for future commands and queue execution
 		s_SceneData.camera = camera;
-		auto rt = camera->GetRenderTarget();
-		if (rt) {
-			rt->RenderTo(true);
-			RenderCommand::Clear();
-		}
+		s_SceneData.target = camera->GetRenderTarget();
+		
 
 		//if the Renderer has not initialized its quad related stuff, do it
 		if (!s_InitializedQuadDraw){
@@ -60,6 +58,7 @@ namespace Tara {
 			LoadQuadShader();
 		}
 
+		//begin command queue
 		RenderCommand::BeginQueue();
 	}
 
@@ -86,15 +85,12 @@ namespace Tara {
 		}
 		s_QuadGroups.clear();
 		
-		//unset render target
-		auto rt = s_SceneData.camera->GetRenderTarget();
-		if (rt) {
-			rt->RenderTo(false);
-		}
 		
-		RenderCommand::ExecuteQueue();
-		//clear camera
+		//renderTarget setting/unsetting done in the queue execution
+		RenderCommand::ExecuteQueue(s_SceneData.target);
+		//clear Scene Data
 		s_SceneData.camera = nullptr;
+		s_SceneData.target = nullptr;
 	}
 
 	void Renderer::Draw(VertexArrayRef vertexArray, ShaderRef shader, Transform transform)
