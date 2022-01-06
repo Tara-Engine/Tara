@@ -64,11 +64,23 @@ namespace Tara {
 
 	private:
 		/// <summary>
-		/// Load the Material's shader and paramaters from a direct string source
+		/// Load the Material's shader from a direct string source
 		/// </summary>
 		/// <param name="source"></param>
-		void LoadFromString(const std::string& source);
+		void ShaderFromString(const std::string& source);
 
+		/// <summary>
+		/// Load the Material's paramaters from a direct string source
+		/// </summary>
+		/// <param name="source"></param>
+		void ParamatersFromString(const std::string& source);
+
+		/// <summary>
+		/// Read a text file in from source
+		/// </summary>
+		/// <param name="filename">the file name</param>
+		/// <returns>the returned contents</returns>
+		static std::string ReadSourceTextFile(const std::string& filename);
 
 	private:
 		//the actual shader

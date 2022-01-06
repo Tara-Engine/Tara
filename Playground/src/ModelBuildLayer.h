@@ -15,13 +15,13 @@ public:
 
 	virtual void Draw(float deltaTime) override;
 
-	//virtual void OnEvent(Tara::Event& e) override;
+	virtual void OnEvent(Tara::Event& e) override;
 
+	Tara::MaterialBaseRef m_Material;
 private:
 	Tara::CameraEntityRef m_Camera;
 
 	Tara::ShaderRef m_Shader;
-	Tara::MaterialBaseRef m_Material;
 
 	Tara::StaticMeshRef m_Mesh;
 };

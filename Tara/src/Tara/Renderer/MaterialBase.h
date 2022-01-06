@@ -6,6 +6,7 @@ namespace Tara {
 	REFTYPE(MaterialBase);
 
 	enum class MaterialParamaterType {
+		INVALID, //for Invalid types
 		Float1, Float2, Float3, Float4,
 		Int1, Int2, Int3, Int4,
 		UInt1, UInt2, UInt3, UInt4,
@@ -65,6 +66,21 @@ namespace Tara {
 		/// <param name="bindingB">the selector for binding (will not change)</param>
 		/// <returns></returns>
 		static Uniform MaterialParamaterToUniform(const MaterialParamater& data, MaterialParamaterType type, int32_t& bindingA, int32_t bindingB);
+
+		/// <summary>
+		/// Get a material paramater type from the glsl string of that type
+		/// </summary>
+		/// <param name="type">the glsl type name</param>
+		/// <param name="isVector">if its a vector</param>
+		/// <returns>the MaterialParamaterType</returns>
+		static MaterialParamaterType MaterialParamaterTypeFromString(const std::string type, bool isVector);
+
+		/// <summary>
+		/// Get the default MaterialParamater value for any given type
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		static MaterialParamater DefaultMaterialParamaterFromType(MaterialParamaterType type);
 	public:
 
 		/// <summary>

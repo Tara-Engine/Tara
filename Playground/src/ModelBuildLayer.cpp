@@ -29,12 +29,16 @@ void ModelBuildLayer::Activate()
 	m_Shader = Tara::Shader::Create("BasicShader", Tara::Shader::SourceType::TextFiles, shaderSources);
 	*/
 
+	/*
 	const static std::string materialSource = R"V0G0N(
+	uniform vec4 tintColor;
 	vec4 diffuse(){
-		return v_Color * vec4(1,0,1,1);
+		return v_Color * tintColor;
 	}
 	)V0G0N";
-	m_Material = Tara::Material::Create(materialSource, Tara::Shader::SourceType::Strings, "BasicMaterial");
+	*/
+	m_Material = Tara::Material::Create("assets/material1.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
+	m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 0, 1, 1));
 
 	//make a MeshPart for rendering a cube
 	
@@ -120,5 +124,18 @@ void ModelBuildLayer::Draw(float deltaTime)
 
 	//
 	Layer::Draw(deltaTime);
+}
+
+void ModelBuildLayer::OnEvent(Tara::Event& e)
+{
+	Layer::OnEvent(e);
+
+	Tara::EventFilter filter(e);
+	filter.Call<Tara::KeyPressEvent>([this](Tara::KeyPressEvent& ee) {
+		if (ee.GetKey() == TARA_KEY_G){
+			this->m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 1, 0, 1));
+		}
+		return false;
+	});
 }
 

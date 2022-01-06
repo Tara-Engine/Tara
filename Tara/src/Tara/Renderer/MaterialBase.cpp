@@ -348,4 +348,152 @@ namespace Tara {
 		return Uniform{ uniformType, std::move(uniformData) };
 	}
 
+
+	MaterialParamaterType MaterialBase::MaterialParamaterTypeFromString(const std::string type, bool isVector)
+	{
+		if (type == "float") {
+			if (isVector) { return MaterialParamaterType::Float1Vector; }
+			else { return MaterialParamaterType::Float1; }
+		}
+		else if (type == "vec2") {
+			if (isVector) { return MaterialParamaterType::Float2Vector; }
+			else { return MaterialParamaterType::Float2; }
+		}
+		else if (type == "vec3") {
+			if (isVector) { return MaterialParamaterType::Float3Vector; }
+			else { return MaterialParamaterType::Float3; }
+		}
+		else if (type == "vec4") {
+			if (isVector) { return MaterialParamaterType::Float4Vector; }
+			else { return MaterialParamaterType::Float4; }
+		}
+		else if (type == "int") {
+			if (isVector) { return MaterialParamaterType::Int1Vector; }
+			else { return MaterialParamaterType::Int1; }
+		}
+		else if (type == "ivec2") {
+			if (isVector) { return MaterialParamaterType::Int2Vector; }
+			else { return MaterialParamaterType::Int2; }
+		}
+		else if (type == "ivec3") {
+			if (isVector) { return MaterialParamaterType::Int3Vector; }
+			else { return MaterialParamaterType::Int3; }
+		}
+		else if (type == "ivec4") {
+			if (isVector) { return MaterialParamaterType::Int4Vector; }
+			else { return MaterialParamaterType::Int4; }
+		}
+		else if (type == "uint") {
+			if (isVector) { return MaterialParamaterType::UInt1Vector; }
+			else { return MaterialParamaterType::UInt1; }
+		}
+		else if (type == "uvec2") {
+			if (isVector) { return MaterialParamaterType::UInt2Vector; }
+			else { return MaterialParamaterType::UInt2; }
+		}
+		else if (type == "uvec3") {
+			if (isVector) { return MaterialParamaterType::UInt3Vector; }
+			else { return MaterialParamaterType::UInt3; }
+		}
+		else if (type == "uvec4") {
+			if (isVector) { return MaterialParamaterType::UInt4Vector; }
+			else { return MaterialParamaterType::UInt4; }
+		}
+		else if (type == "mat2") {
+			return MaterialParamaterType::Matrix2Vector;
+		}
+		else if (type == "mat3") {
+			return MaterialParamaterType::Matrix3Vector;
+		}
+		else if (type == "mat4") {
+			return MaterialParamaterType::Matrix4Vector;
+		}
+		else if (type == "mat2x3") {
+			return MaterialParamaterType::Matrix2x3Vector;
+		}
+		else if (type == "mat3x2") {
+			return MaterialParamaterType::Matrix3x2Vector;
+		}
+		else if (type == "mat2x4") {
+			return MaterialParamaterType::Matrix2x4Vector;
+		}
+		else if (type == "mat4x2") {
+			return MaterialParamaterType::Matrix4x2Vector;
+		}
+		else if (type == "mat3x4") {
+			return MaterialParamaterType::Matrix3x4Vector;
+		}
+		else if (type == "mat4x3") {
+			return MaterialParamaterType::Matrix4x3Vector;
+		}
+		else if (type == "sampler1D" || type == "isampler1D" || type == "usampler1D") {
+			return MaterialParamaterType::Sampler1D;
+		}
+		else if (type == "sampler2D" || type == "isampler2D" || type == "usampler2D") {
+			return MaterialParamaterType::Sampler2D;
+		}
+		else if (type == "sampler3D" || type == "isampler3D" || type == "usampler3D") {
+			return MaterialParamaterType::Sampler3D;
+		}
+		else if (type == "samplerCube" || type == "isamplerCube" || type == "usamplerCube") {
+			return MaterialParamaterType::SamplerCube;
+		}
+		else if (type == "sampler1DArray" || type == "isampler1DArray" || type == "usampler1DArray") {
+			return MaterialParamaterType::Sampler1DArray;
+		}
+		else if (type == "sampler2DArray" || type == "isampler2DArray" || type == "usampler2DArray") {
+			return MaterialParamaterType::Sampler2DArray;
+		}
+		else {
+			LOG_S(WARNING) << "Unknown Material Paramater Type : '" << type << "'. If you are using a custom struct, don't do this!";
+			return MaterialParamaterType::INVALID;
+		}
+	}
+
+	MaterialParamater MaterialBase::DefaultMaterialParamaterFromType(MaterialParamaterType type)
+	{
+		switch (type) {
+		case MaterialParamaterType::Float1: return 0.0f;
+		case MaterialParamaterType::Float2: return glm::vec2(0);
+		case MaterialParamaterType::Float3: return glm::vec3(0);
+		case MaterialParamaterType::Float4: return glm::vec4(0);
+		case MaterialParamaterType::Int1: return 0;
+		case MaterialParamaterType::Int2: return glm::ivec2(0);
+		case MaterialParamaterType::Int3: return glm::ivec3(0);
+		case MaterialParamaterType::Int4: return glm::ivec4(0);
+		case MaterialParamaterType::UInt1: return 0u;
+		case MaterialParamaterType::UInt2: return glm::uvec2(0);
+		case MaterialParamaterType::UInt3: return glm::uvec3(0);
+		case MaterialParamaterType::UInt4: return glm::uvec4(0);
+			
+		case MaterialParamaterType::Float1Vector: return std::vector<float>();
+		case MaterialParamaterType::Float2Vector: return std::vector<glm::vec2>();
+		case MaterialParamaterType::Float3Vector: return std::vector<glm::vec3>();
+		case MaterialParamaterType::Float4Vector: return std::vector<glm::vec4>();
+		case MaterialParamaterType::Int1Vector: return std::vector<int32_t>();
+		case MaterialParamaterType::Int2Vector: return std::vector<glm::ivec2>();
+		case MaterialParamaterType::Int3Vector: return std::vector<glm::ivec3>();
+		case MaterialParamaterType::Int4Vector: return std::vector<glm::ivec4>();
+		case MaterialParamaterType::UInt1Vector: return std::vector<uint32_t>();
+		case MaterialParamaterType::UInt2Vector: return std::vector<glm::uvec2>();
+		case MaterialParamaterType::UInt3Vector: return std::vector<glm::uvec3>();
+		case MaterialParamaterType::UInt4Vector: return std::vector<glm::uvec4>();
+
+		case MaterialParamaterType::Matrix2Vector: return std::vector<glm::mat2>();
+		case MaterialParamaterType::Matrix3Vector: return std::vector<glm::mat3>();
+		case MaterialParamaterType::Matrix4Vector: return std::vector<glm::mat4>();
+		
+		case MaterialParamaterType::Matrix2x3Vector: return std::vector<glm::mat2x3>();
+		case MaterialParamaterType::Matrix3x2Vector: return std::vector<glm::mat3x2>();
+		case MaterialParamaterType::Matrix2x4Vector: return std::vector<glm::mat2x4>();
+		case MaterialParamaterType::Matrix4x2Vector: return std::vector<glm::mat4x2>();
+		case MaterialParamaterType::Matrix3x4Vector: return std::vector<glm::mat3x4>();
+		case MaterialParamaterType::Matrix4x3Vector: return std::vector<glm::mat4x3>();
+
+		case MaterialParamaterType::Sampler2D: return Texture2DRef(nullptr);
+
+		default: return 0.0f;
+		}
+	}
+
 }

@@ -1,5 +1,7 @@
 #include "tarapch.h"
 #include "Material.h"
+#include <regex>
+#include <fstream>
 #include "Tara/Asset/AssetLibrary.h"
 
 namespace Tara{
@@ -7,7 +9,13 @@ namespace Tara{
 		: Asset(name)
 	{
 		if (sourceType == Shader::SourceType::Strings) {
-			LoadFromString(source);
+			ShaderFromString(source);
+			ParamatersFromString(source);
+		}
+		else if (sourceType == Shader::SourceType::TextFiles) {
+			std::string readSource = Material::ReadSourceTextFile(source);
+			ShaderFromString(readSource);
+			ParamatersFromString(readSource);
 		}
 	}
 
@@ -92,7 +100,7 @@ namespace Tara{
 		}
 	}
 
-	void Material::LoadFromString(const std::string& source)
+	void Material::ShaderFromString(const std::string& source)
 	{
 		static const std::string vertexSource = R"V0G0N(
 			#version 450 core
@@ -155,7 +163,48 @@ namespace Tara{
 		m_Shader = Shader::Create(GetAssetName() + "_Shader", Shader::SourceType::Strings, sources);
 	}
 
+	void Material::ParamatersFromString(const std::string& source)
+	{
 
+		std::istringstream iss(source);
+
+		for (std::string code; std::getline(iss, code); ) {
+
+			std::regex filter{ ".*(uniform) ([a-zA-Z][a-zA-Z0-9]+) ([a-zA-Z][a-zA-Z0-9_-]+)(\\[[0-9]+\\])?.*" };
+
+			std::smatch sm;
+			std::regex_match(code.cbegin(), code.cend(), sm, filter);
+
+			if (sm.size() >= 4) {
+				std::string typeName = sm[2];
+				std::string paramName = sm[3];
+				bool vector = (sm[4] != "");
+
+				MaterialParamaterType type = MaterialBase::MaterialParamaterTypeFromString(typeName, vector);
+				if (type != MaterialParamaterType::INVALID){
+					m_Paramaters[paramName] = std::make_pair(type, MaterialBase::DefaultMaterialParamaterFromType(type));
+				}
+			}
+		}
+
+	}
+
+	std::string Material::ReadSourceTextFile(const std::string& filename)
+	{
+		std::string result;
+		std::ifstream in(filename, std::ios::in | std::ios::binary);
+		if (in) {
+			in.seekg(0, std::ios::end); //find end of file
+			result.resize(in.tellg()); //resize string
+			in.seekg(0, std::ios::beg); //return to begin
+			in.read(&result[0], result.size()); //read file
+			in.close();
+		}
+		else {
+			ABORT_F("Error! Attempted to open an invalid material source file: %s", filename.c_str());
+		}
+		return result;
+	}
 
 
 
