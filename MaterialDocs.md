@@ -37,4 +37,15 @@ vec3 PixelNormal //predefined
 # Lighting Materials
 ```
 vec4 color()
+
+uniform vec3 u_CameraPositionWS;
+uniform vec3 u_CameraForwardVector;
+float Metallic         = 0;
+float Roughness        = 0;
+float AmbientOcclusion = 0;
+vec3 Diffuse            = vec3(0);
+vec3 Specular           = vec3(0);
+vec3 Emissive           = vec3(0);
+vec3 WorldSpaceNormal   = vec3(0);
+vec3 WorldSpacePosition = vec3(0);
 ```

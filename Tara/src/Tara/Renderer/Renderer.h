@@ -9,7 +9,7 @@
 #include "Tara/Asset/Patch.h"
 
 namespace Tara {
-
+	
 	/// <summary>
 	/// A enum of the types of rendering backends available
 	/// </summary>
@@ -17,8 +17,12 @@ namespace Tara {
 		None = 0,
 		OpenGl
 	};
-
+	class RenderCommand;
 	
+	struct RenderSceneData {
+		CameraRef camera;
+		RenderTargetRef target;
+	};
 
 	/// <summary>
 	/// Renderer
@@ -27,6 +31,7 @@ namespace Tara {
 	/// UI rendering should be done with Renderer2D <NOT MADE YET> that renders in screenspace
 	/// </summary>
 	class Renderer {
+		friend class RenderCommand;
 	public:
 		/// <summary>
 		/// Get the rendering backend
@@ -104,13 +109,11 @@ namespace Tara {
 			std::vector<Texture2DRef> TextureNames;
 		};
 
+	
 		/// <summary>
 		/// Structure that holds data about the current scene.
 		/// </summary>
-		struct SceneData {
-			CameraRef camera;
-			RenderTargetRef target;
-		};
+		
 
 	private:
 
@@ -122,7 +125,7 @@ namespace Tara {
 		/// <summary>
 		/// Stored scene data.
 		/// </summary>
-		static SceneData s_SceneData;
+		static RenderSceneData s_SceneData;
 
 		static uint32_t s_MaxTextures;
 

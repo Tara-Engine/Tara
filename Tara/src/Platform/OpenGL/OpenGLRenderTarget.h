@@ -26,5 +26,6 @@ namespace Tara {
 		std::vector<uint32_t> m_TextureColorIDs;
 		uint32_t m_BufferDepthStencilID;
 		uint32_t m_TextureInternalType;
+		uint32_t m_TextureInternalFormat;
 	};
 }

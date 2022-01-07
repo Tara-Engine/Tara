@@ -9,7 +9,7 @@
 namespace Tara {
 	//default to OpenGL renderbackend
 	RenderBackend Renderer::s_RenderBackend = RenderBackend::OpenGl;
-	Renderer::SceneData Renderer::s_SceneData = { nullptr };
+	RenderSceneData Renderer::s_SceneData = { nullptr };
 
 
 	/*****************************************************************
@@ -87,7 +87,7 @@ namespace Tara {
 		
 		
 		//renderTarget setting/unsetting done in the queue execution
-		RenderCommand::ExecuteQueue(s_SceneData.target);
+		RenderCommand::ExecuteQueue(s_SceneData);
 		//clear Scene Data
 		s_SceneData.camera = nullptr;
 		s_SceneData.target = nullptr;

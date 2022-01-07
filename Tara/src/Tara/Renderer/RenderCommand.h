@@ -1,6 +1,7 @@
 #pragma once
 #include "Tara/Core/Base.h"
 #include "Tara/Renderer/Uniform.h"
+//#include "Tara/Renderer/Renderer.h"
 #include "tarapch.h"
 
 namespace Tara {
@@ -11,6 +12,7 @@ namespace Tara {
 	REFTYPE(Shader);
 	REFTYPE(RenderTarget);
 	REFTYPE(MaterialBase);
+	struct RenderSceneData;
 
 	/// <summary>
 	/// An Enum of the drawing types available to the render backend
@@ -65,7 +67,8 @@ namespace Tara {
 
 		static void BeginQueue();
 
-		static void ExecuteQueue(RenderTargetRef target);
+		//static void ExecuteQueue(RenderTargetRef target);
+		static void ExecuteQueue(const RenderSceneData& sceneData);
 
 	public:
 		//Drawing functions. Can be queued.

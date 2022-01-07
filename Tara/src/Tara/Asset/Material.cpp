@@ -138,6 +138,9 @@ namespace Tara{
 			uniform sampler2D u_WorldSpaceNormalSampler;
 			uniform sampler2D u_WorldSpacePositionSampler;
 			
+			uniform vec3 u_CameraPositionWS;
+			uniform vec3 u_CameraForwardVector;
+
 			in vec2 v_UV;
 
 			float Metallic         = 0;
@@ -155,17 +158,11 @@ namespace Tara{
 
 	std::unordered_map<MaterialType, std::string> Material::SourcePartsFragmentEnd = {
 		{
-			//THIS ONE MUST BE CHANGED!
 			MaterialType::UNLIT,
 			R"V0G0N(
 			//UNLIT
 			void main(){
-				float da = dot(normalize(v_WorldNorm), normalize(u_CameraPositionWS-v_WorldPos));
-				float db = dot(normalize(v_WorldNorm), normalize(u_CameraForwardVector));
-				da = clamp(da, 0, 1);
-				db = clamp(db, 0, 1);
-				outColor = vec4(vec3((da + db + 1)/3), 1) * diffuse();
-			
+				outColor = diffuse();
 			}
 			)V0G0N"
 		},
@@ -174,13 +171,13 @@ namespace Tara{
 			R"V0G0N(
 			//LIT
 			void main(){
-				PixelNormal = (v_WorldNorm + normal().xyz)/2;
+				PixelNormal = normalize(v_WorldNorm + normal().xyz);
 
-				ColorMetallic = vec4(diffuse().xyz, metallic());
-				SpecularRoughness = vec4(specular().xyz, roughness());
-				EmissiveAO = vec4(emissive().xyz, ambientOcclusion());
-				WorldSpaceNormal = PixelNormal;
-				WorldSpacePosition = v_WorldPos;
+				ColorMetallic = vec4(diffuse().xyz, metallic() + 1);
+				SpecularRoughness = vec4(specular().xyz, roughness() + 1);
+				EmissiveAO = vec4(emissive().xyz, ambientOcclusion() + 1);
+				WorldSpaceNormal = vec4(PixelNormal,1);
+				WorldSpacePosition = vec4(v_WorldPos,1);
 			}
 			)V0G0N"
 		},
@@ -189,14 +186,14 @@ namespace Tara{
 			R"V0G0N(
 			//LIGHTING
 			void main(){
-				vec3 Diffuse            = texture(u_ColorMetallicSampler, v_UV).xyz;
-				float Metallic          = texture(u_ColorMetallicSampler, v_UV).w;
-				vec3 Specular           = texture(u_SpecularRoughnessSampler, v_UV).xyz;
-				float Roughness         = texture(u_SpecularRoughnessSampler, v_UV).w;
-				vec3 Emissive           = texture(u_EmissiveAOSampler, v_UV).xyz;
-				float AmbientOcclusion  = texture(u_EmissiveAOSampler, v_UV).w;
-				vec3 WorldSpaceNormal   = texture(u_WorldSpaceNormalSampler, v_UV).xyz;
-				vec3 WorldSpacePosition = texture(u_WorldSpacePositionSampler, v_UV).xyz;
+				Diffuse            = texture(u_ColorMetallicSampler, v_UV).xyz;
+				Metallic          = texture(u_ColorMetallicSampler, v_UV).w -1;
+				Specular           = texture(u_SpecularRoughnessSampler, v_UV).xyz;
+				Roughness         = texture(u_SpecularRoughnessSampler, v_UV).w -1;
+				Emissive           = texture(u_EmissiveAOSampler, v_UV).xyz;
+				AmbientOcclusion  = texture(u_EmissiveAOSampler, v_UV).w -1;
+				WorldSpaceNormal   = texture(u_WorldSpaceNormalSampler, v_UV).xyz;
+				WorldSpacePosition = texture(u_WorldSpacePositionSampler, v_UV).xyz;
 				
 				outColor = color();
 			}
@@ -237,6 +234,12 @@ namespace Tara{
 
 	void Material::Use()
 	{
+		if (m_Type == MaterialType::LIT) {
+			RenderCommand::EnableDeferred(true);
+		}
+		else {
+			RenderCommand::EnableDeferred(false);
+		}
 		m_Shader->Bind();
 		int32_t bindSlot;
 		for (auto& param : m_Paramaters) {

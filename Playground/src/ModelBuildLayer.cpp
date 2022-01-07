@@ -37,8 +37,8 @@ void ModelBuildLayer::Activate()
 	}
 	)V0G0N";
 	*/
-	m_Material = Tara::Material::Create(Tara::MaterialType::UNLIT, "assets/material1.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
-	m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 0, 1, 1));
+	m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material2deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
+	m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
 
 	//light material
 	const static std::string lightingMaterialSource = R"V0G0N(
@@ -46,7 +46,7 @@ void ModelBuildLayer::Activate()
 		return vec4(Diffuse, 1);
 	}
 	)V0G0N";
-	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, lightingMaterialSource, Tara::Shader::SourceType::Strings, "LightingMaterial");
+	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingCamera.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
 	Tara::RenderCommand::SetLightingMaterial(lightMaterial);
 	//make a MeshPart for rendering a cube
 	

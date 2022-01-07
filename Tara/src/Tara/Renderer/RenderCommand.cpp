@@ -45,7 +45,7 @@ namespace Tara {
 		s_CurrentModeDeferred = false;
 	}
 
-	void RenderCommand::ExecuteQueue(RenderTargetRef target)
+	void RenderCommand::ExecuteQueue(const RenderSceneData& sceneData)
 	{
 		s_EnqueingCommands = false; //MUST do first, or some will try and enqueue while running this
 		
@@ -70,8 +70,8 @@ namespace Tara {
 			}
 			
 			//End rendering to GBuffer, blit its depth to the passed RenderTarget
-			if (target) {
-				target->RenderTo(true);
+			if (sceneData.target) {
+				sceneData.target->RenderTo(true);
 			}
 			else {
 				s_GBuffer->RenderTo(false);
@@ -81,10 +81,10 @@ namespace Tara {
 				//load the ScreenQuad
 				//{0,0,0,  0, 0,-1, 1,1,1,1, 1,0}, {1,0,0,  0, 0,-1, 1,1,1,1, 0,0}, {1,1,0,  0, 0,-1, 1,1,1,1, 0,1}, {0,1,0,  0, 0,-1, 1,1,1,1, 1,1}
 				static float verts[]{
-					-1.0f, -1.0f, 1.0f, 0.0f, //Bottom left
-					-1.0f, 1.0f, 1.0f, 1.0f,  //Bottom right
-					1.0f, 1.0f, 0.0f, 1.0f,   //Top right
-					1.0f, -1.0f, 0.0f, 0.0f,  //Top left
+					-1.0f, -1.0f, 0.0f, 0.0f, //Bottom left
+					-1.0f, 1.0f,  0.0f, 1.0f,  //Bottom right
+					1.0f, 1.0f,   1.0f, 1.0f,   //Top right
+					1.0f, -1.0f,  1.0f, 0.0f,  //Top left
 				};
 				static uint32_t indices[]{
 					0, 1, 2, 2, 3, 0
@@ -109,28 +109,38 @@ namespace Tara {
 			uniform sampler2D u_WorldSpaceNormalSampler;
 			uniform sampler2D u_WorldSpacePositionSampler;
 			*/
+			auto& shader = s_LightingMaterial->GetShader();
+			
+			//These are all guaranteed to be used
 			s_GBuffer->ImplBind(0, 0);
-			s_LightingMaterial->GetShader()->Send("u_ColorMetallicSampler", 0);
+			shader->Send("u_ColorMetallicSampler", 0);
 			s_GBuffer->ImplBind(1, 1);
-			s_LightingMaterial->GetShader()->Send("u_SpecularRoughnessSampler", 1);
+			shader->Send("u_SpecularRoughnessSampler", 1);
 			s_GBuffer->ImplBind(2, 2);
-			s_LightingMaterial->GetShader()->Send("u_EmissiveAOSampler", 2);
+			shader->Send("u_EmissiveAOSampler", 2);
 			s_GBuffer->ImplBind(3, 3);
-			s_LightingMaterial->GetShader()->Send("u_WorldSpaceNormalSampler", 3);
+			shader->Send("u_WorldSpaceNormalSampler", 3);
 			s_GBuffer->ImplBind(4, 4);
-			s_LightingMaterial->GetShader()->Send("u_WorldSpacePositionSampler", 4);
-
+			shader->Send("u_WorldSpacePositionSampler", 4);
+			//these might be optimized away
+			if (shader->ValidUniform("u_CameraPositionWS")) {
+				shader->Send("u_CameraPositionWS", sceneData.camera->GetPosition());
+			}
+			if (shader->ValidUniform("u_CameraForwardVector")) {
+				shader->Send("u_CameraForwardVector", sceneData.camera->GetRotation().GetForwardVector());
+			}
+			
 			s_ScreenQuad->ImplBind(0,0); //non-cached version
 			RenderCommand::Draw(s_ScreenQuad);
 
 			//copy depth
-			s_GBuffer->BlitDepthToOther(target);
+			s_GBuffer->BlitDepthToOther(sceneData.target);
 
 		}
 		else {
 			LOG_S(WARNING) << "No lighting material given to RenderCommand, thus, no deferred rendering will take place";
-			if (target) {
-				target->RenderTo(true);
+			if (sceneData.target) {
+				sceneData.target->RenderTo(true);
 			}
 		}
 
@@ -150,8 +160,8 @@ namespace Tara {
 
 		//unset the target RenderTarget
 		//if target is nullptr, then it should be fine.
-		if (target){
-			target->RenderTo(false);
+		if (sceneData.target){
+			sceneData.target->RenderTo(false);
 		}
 	}
 

@@ -13,26 +13,28 @@ namespace Tara {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 
 		if (colorTargets > 0){
+			LOG_S(INFO) << "RenderTarget being made with " << colorTargets << " colorTargets";
 
 			m_TextureColorIDs.reserve(colorTargets);
 			colorTargets = std::min(colorTargets, 32u); //there are only 32 color target attachments
 
 			m_TextureInternalType = 0;
+			m_TextureInternalFormat = 0;
 			switch (type) {
-			case InternalType::INT8: m_TextureInternalType = GL_BYTE; break;
-			case InternalType::INT16: m_TextureInternalType = GL_SHORT; break;
-			case InternalType::INT32: m_TextureInternalType = GL_INT; break;
+			case InternalType::INT8: m_TextureInternalType = GL_BYTE; m_TextureInternalFormat = GL_RGBA8I; break;
+			case InternalType::INT16: m_TextureInternalType = GL_SHORT; m_TextureInternalFormat = GL_RGBA16I; break;
+			case InternalType::INT32: m_TextureInternalType = GL_INT; m_TextureInternalFormat = GL_RGBA32I; break;
 
-			case InternalType::UINT8: m_TextureInternalType = GL_UNSIGNED_BYTE; break;
-			case InternalType::UINT16: m_TextureInternalType = GL_UNSIGNED_SHORT; break;
-			case InternalType::UINT32: m_TextureInternalType = GL_UNSIGNED_INT; break;
+			case InternalType::UINT8: m_TextureInternalType = GL_UNSIGNED_BYTE; m_TextureInternalFormat = GL_RGBA8UI; break;
+			case InternalType::UINT16: m_TextureInternalType = GL_UNSIGNED_SHORT; m_TextureInternalFormat = GL_RGBA16UI; break;
+			case InternalType::UINT32: m_TextureInternalType = GL_UNSIGNED_INT; m_TextureInternalFormat = GL_RGBA32UI; break;
 			
-			case InternalType::FLOAT: m_TextureInternalType = GL_FLOAT; break;
+			case InternalType::FLOAT: m_TextureInternalType = GL_FLOAT; m_TextureInternalFormat = GL_RGBA32F;  break;
 			
 			default: m_TextureInternalType = GL_UNSIGNED_BYTE;
 			}
 			
-
+			std::vector<uint32_t> attachments(colorTargets);
 			for (int i=0;i<colorTargets;i++){
 				uint32_t textureID;
 				//deal with color buffer
@@ -43,7 +45,7 @@ namespace Tara {
 
 				glBindTexture(GL_TEXTURE_2D, textureID);
 				//make the texture data format
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+				glTexImage2D(GL_TEXTURE_2D, 0, m_TextureInternalFormat, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
 				//deal with filters.
 				if (Texture::s_DefaultTextureFiltering == Texture::Filtering::Nearest) {
 					glTextureParameteri(textureID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -77,12 +79,14 @@ namespace Tara {
 
 				
 
-				//unbind texture
-				glBindTexture(GL_TEXTURE_2D, 0);
 
 				//attach texture to framebuffer
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureID, 0);
+				attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+				//unbind texture
+				glBindTexture(GL_TEXTURE_2D, 0);
 			}
+			glDrawBuffers(colorTargets, attachments.data());
 		}
 		else {
 			glDrawBuffer(GL_NONE);
@@ -176,6 +180,9 @@ namespace Tara {
 	{
 		if (this && render) {
 			glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
+			std::vector<uint32_t> attachments(m_TextureColorIDs.size());
+			std::iota(attachments.begin(), attachments.end(), GL_COLOR_ATTACHMENT0);
+			glDrawBuffers(attachments.size(), attachments.data());
 		}
 		else {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -188,7 +195,7 @@ namespace Tara {
 		m_Height = height;
 		for (auto& id : m_TextureColorIDs){
 			glBindTexture(GL_TEXTURE_2D, id);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, m_TextureInternalFormat, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
