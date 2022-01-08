@@ -47,7 +47,7 @@ void ModelBuildLayer::Activate()
 	}
 	)V0G0N";
 	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingCamera.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
-	Tara::RenderCommand::SetLightingMaterial(lightMaterial);
+	m_Camera->GetCamera()->SetLightingMaterial(lightMaterial);
 	//make a MeshPart for rendering a cube
 	
 	/*

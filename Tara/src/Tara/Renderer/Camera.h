@@ -1,6 +1,7 @@
 #pragma once
 #include "Tara/Math/Types.h"
 #include "Tara/Renderer/Texture.h"
+#include "Tara/Renderer/MaterialBase.h"
 
 namespace Tara {
 
@@ -144,6 +145,18 @@ namespace Tara {
 		/// <param name="bits"></param>
 		inline void SetRenderFilterBits(uint32_t bits) { m_RenderFilterBits = bits; }
 
+		/// <summary>
+		/// Get the camera's lighting material
+		/// </summary>
+		/// <returns></returns>
+		inline const MaterialBaseRef& GetLightingMaterial() { return m_LightingMaterial; }
+
+		/// <summary>
+		/// Set the camera's lighting material. Silently fails if the material is not of the Lighting type
+		/// </summary>
+		/// <param name="mat"></param>
+		inline void SetLightingMaterial(MaterialBaseRef mat) { if (mat->GetType() == MaterialType::LIGHTING) { m_LightingMaterial = mat; } }
+
 	protected:
 		inline virtual void UpdateProjectionMatrix() { return; }
 
@@ -156,6 +169,7 @@ namespace Tara {
 		glm::mat4 m_ProjectionMatrix;
 		RenderTargetRef m_RenderTarget;
 		uint32_t m_RenderFilterBits;
+		MaterialBaseRef m_LightingMaterial;
 	};
 
 	/// <summary>

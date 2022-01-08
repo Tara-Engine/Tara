@@ -65,10 +65,25 @@ namespace Tara {
 		/// </summary>
 		static void Init();
 
+		/// <summary>
+		/// Begin a render command queue (both forward and deferred)
+		/// </summary>
 		static void BeginQueue();
 
-		//static void ExecuteQueue(RenderTargetRef target);
-		static void ExecuteQueue(const RenderSceneData& sceneData);
+		/// <summary>
+		/// Execute a render command queue (forward or deferred, depending on current mode)
+		/// </summary>
+		static void ExecuteQueue();
+
+		/// <summary>
+		/// Discard a render command queue (forward or deferred, depending on current mode)
+		/// </summary>
+		static void DiscardQueue();
+
+		/// <summary>
+		/// Stop enqueuing commands. Queues are not cleared.
+		/// </summary>
+		inline static void StopQueue() { s_EnqueingCommands = false; };
 
 	public:
 		//Drawing functions. Can be queued.
@@ -149,7 +164,7 @@ namespace Tara {
 		/// <param name="ref">the bindable</param>
 		/// <param name="a">paramater for the bind</param>
 		/// <param name="b">paramater for the bind</param>
-		static void Bind(BindableRef ref, int a, int b);
+		static void Bind(BindableRef ref, bool binding, int a, int b);
 
 		/// <summary>
 		/// Send a uniform to a shader
@@ -179,15 +194,6 @@ namespace Tara {
 		/// </summary>
 		/// <param name="enable"></param>
 		inline static void EnableDeferred(bool enable) { s_CurrentModeDeferred = enable; }
-
-		//set the lighting material
-		inline static void SetLightingMaterial(MaterialBaseRef lighting) { s_LightingMaterial = lighting; }
-
-		/// <summary>
-		/// Get the ligting material
-		/// </summary>
-		/// <returns></returns>
-		inline static const MaterialBaseRef& GetLightingMaterial() { return s_LightingMaterial; }
 
 		virtual ~RenderCommand() = default;
 	protected:
@@ -259,6 +265,7 @@ namespace Tara {
 
 		struct CommandFormBind {
 			BindableRef Bindable;
+			bool bind;
 			int	a, b;
 		};
 
@@ -323,9 +330,6 @@ namespace Tara {
 		static std::vector<Command> s_CommandQueueForward;
 		static bool s_CurrentModeDeferred;
 		static bool s_EnqueingCommands;
-		static RenderTargetRef s_GBuffer;
-		static VertexArrayRef s_ScreenQuad;
-		static MaterialBaseRef s_LightingMaterial;
 	};
 
 }

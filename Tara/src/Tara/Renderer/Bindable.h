@@ -17,7 +17,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="a">this paramater is used for the GPU (mainly with textures)</param>
 		/// <param name="b">this paramater is used to select what to bind (ie, multiple textures in a RenderTarget)</param>
-		inline virtual void Bind(int a = 0, int b = 0) { RenderCommand::Bind(shared_from_this(), a, b); }
+		inline virtual void Bind(int a = 0, int b = 0) { RenderCommand::Bind(shared_from_this(), true, a, b); }
+
+		/// <summary>
+		/// Unbind
+		/// </summary>
+		inline virtual void Unbind() { RenderCommand::Bind(shared_from_this(), false, 0, 0); }
 
 		/// <summary>
 		/// Implementation-specific binding. Called by RenderCommand. Never call manually.
@@ -26,6 +31,10 @@ namespace Tara {
 		/// <param name="b"></param>
 		virtual void ImplBind(int a, int b) const = 0;
 
+		/// <summary>
+		/// Unbind
+		/// </summary>
+		virtual void ImplUnbind() const = 0;
 	};
 
 }

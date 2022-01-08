@@ -20,6 +20,11 @@ namespace Tara {
 		glBindVertexArray(m_RendererID);
 	}
 
+	void OpenGLVertexArray::ImplUnbind() const
+	{
+		glBindVertexArray(0);
+	}
+
 	void OpenGLVertexArray::AddVertexBuffer(const VertexBufferRef vertexBuffer)
 	{
 		DCHECK_F(!vertexBuffer->GetLayout().GetElements().empty(), "Vertex Buffer has no layout!");

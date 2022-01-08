@@ -10,6 +10,7 @@ namespace Tara {
 		virtual inline uint32_t GetWidth()const override { return m_Width; }
 		virtual inline uint32_t GetHeight()const override { return m_Height; }
 		virtual void ImplBind(int slot, int)const override;
+		virtual void ImplUnbind() const override;
 		virtual void SetFiltering(Filtering filter) override;
 
 		virtual void SetWrap(Wrapping wrap) override;

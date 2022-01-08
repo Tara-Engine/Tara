@@ -12,6 +12,7 @@ namespace Tara {
 		~OpenGLShader();
 
 		virtual void ImplBind(int, int) const override;
+		virtual void ImplUnbind() const override;
 		
 		//uniform checking
 		virtual bool ValidUniform(const std::string& name) override;

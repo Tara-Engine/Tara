@@ -85,8 +85,20 @@ namespace Tara {
 		static void Patch(const Transform& transform, const PatchRef& patch, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
 
 	private:
+		/// <summary>
+		/// Loads the quad shader
+		/// </summary>
 		static void LoadQuadShader();
 
+		/// <summary>
+		/// Renders the batched quads
+		/// </summary>
+		static void RenderQuads();
+
+		/// <summary>
+		/// Render the scene, executing all queues, deferred rendering, lighting, etc.
+		/// </summary>
+		static void SceneRender();
 
 	private:
 
@@ -126,12 +138,22 @@ namespace Tara {
 		/// Stored scene data.
 		/// </summary>
 		static RenderSceneData s_SceneData;
+		
+		/// <summary>
+		/// The Gbuffer for the current render
+		/// </summary>
+		static RenderTargetRef s_GBuffer;
+		/// <summary>
+		/// full screen quad for rendering the GBuffer
+		/// </summary>
+		static VertexArrayRef s_ScreenQuad;
 
+		//max textures number
 		static uint32_t s_MaxTextures;
 
+		//batched quad stuff
 		static VertexArrayRef s_QuadArray;
 		static ShaderRef s_QuadShader;
-
 		static std::vector<QuadGroup> s_QuadGroups;
 	};
 

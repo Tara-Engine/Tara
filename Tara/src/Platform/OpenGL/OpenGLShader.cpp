@@ -77,6 +77,11 @@ namespace Tara{
 		glUseProgram(m_RendererID);
 	}
 
+	void OpenGLShader::ImplUnbind() const
+	{
+		glUseProgram(0);
+	}
+
 	bool OpenGLShader::ValidUniform(const std::string& name)
 	{
 		auto cache = m_UniformCache.find(name);

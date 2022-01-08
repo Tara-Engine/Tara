@@ -129,6 +129,11 @@ namespace Tara {
 		glBindTextureUnit(slot, m_TextureColorIDs[index]);
 	}
 
+	void OpenGLRenderTarget::ImplUnbind() const
+	{
+		//pass
+	}
+
 	void OpenGLRenderTarget::SetFiltering(Filtering filter)
 	{
 		for (auto& id : m_TextureColorIDs) {

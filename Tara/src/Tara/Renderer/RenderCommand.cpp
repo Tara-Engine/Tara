@@ -21,9 +21,6 @@ namespace Tara {
 	std::vector<RenderCommand::Command> RenderCommand::s_CommandQueueDeferred;
 	bool RenderCommand::s_EnqueingCommands = false;
 	bool RenderCommand::s_CurrentModeDeferred = false;
-	RenderTargetRef RenderCommand::s_GBuffer = nullptr;
-	VertexArrayRef RenderCommand::s_ScreenQuad = nullptr;
-	MaterialBaseRef RenderCommand::s_LightingMaterial = nullptr;
 
 	//RenderCommand inititalization
 	void RenderCommand::Init()
@@ -43,125 +40,57 @@ namespace Tara {
 	{
 		s_EnqueingCommands = true;
 		s_CurrentModeDeferred = false;
+
+		//clear queues
+		auto size = s_CommandQueueDeferred.size();
+		s_CommandQueueDeferred.clear();
+		s_CommandQueueDeferred.reserve(size);
+		
+		size = s_CommandQueueForward.size();
+		s_CommandQueueForward.clear();
+		s_CommandQueueForward.reserve(size);
 	}
 
-	void RenderCommand::ExecuteQueue(const RenderSceneData& sceneData)
+	void RenderCommand::ExecuteQueue()
 	{
 		s_EnqueingCommands = false; //MUST do first, or some will try and enqueue while running this
 		
-		
-		if (s_LightingMaterial) {
-			auto window = Application::Get()->GetWindow();
-			if (s_GBuffer == nullptr) {
-				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, "gBuffer");
-			}
-			else {
-				//check for resize
-				if (window->GetWidth() != s_GBuffer->GetWidth() || window->GetHeight() != s_GBuffer->GetHeight()) {
-					s_GBuffer->SetSize(window->GetWidth(), window->GetHeight());
-				}
-			}
-			s_GBuffer->RenderTo(true);
-			RenderCommand::Clear();
-
+		if (s_CurrentModeDeferred) {
 			//render deferred queue
 			for (auto& command : s_CommandQueueDeferred) {
 				ExecuteCommand(command);
 			}
-			
-			//End rendering to GBuffer, blit its depth to the passed RenderTarget
-			if (sceneData.target) {
-				sceneData.target->RenderTo(true);
-			}
-			else {
-				s_GBuffer->RenderTo(false);
-			}
-			//render the quad
-			if (!s_ScreenQuad) {
-				//load the ScreenQuad
-				//{0,0,0,  0, 0,-1, 1,1,1,1, 1,0}, {1,0,0,  0, 0,-1, 1,1,1,1, 0,0}, {1,1,0,  0, 0,-1, 1,1,1,1, 0,1}, {0,1,0,  0, 0,-1, 1,1,1,1, 1,1}
-				static float verts[]{
-					-1.0f, -1.0f, 0.0f, 0.0f, //Bottom left
-					-1.0f, 1.0f,  0.0f, 1.0f,  //Bottom right
-					1.0f, 1.0f,   1.0f, 1.0f,   //Top right
-					1.0f, -1.0f,  1.0f, 0.0f,  //Top left
-				};
-				static uint32_t indices[]{
-					0, 1, 2, 2, 3, 0
-				};
-				VertexBufferRef vb = VertexBuffer::Create(verts, sizeof(verts) / sizeof(float));
-				vb->SetLayout({ 
-					{Shader::Datatype::Float2, "Position", false}, 
-					{Shader::Datatype::Float2, "UV", false}
-				});
-				IndexBufferRef ib = IndexBuffer::Create(indices, 6);
-				s_ScreenQuad = VertexArray::Create();
-				s_ScreenQuad->AddVertexBuffer(vb);
-				s_ScreenQuad->SetIndexBuffer(ib);
+
+			auto size = s_CommandQueueDeferred.size();
+			s_CommandQueueDeferred.clear();
+			s_CommandQueueDeferred.reserve(size);
+		}
+		else{
+			//execute the forward queue
+			for (auto& command : s_CommandQueueForward) {
+				ExecuteCommand(command);
 			}
 
-			//render the screen quad with light material
-			s_LightingMaterial->Use();
-			/*
-			uniform sampler2D u_ColorMetallicSampler;
-			uniform sampler2D u_SpecularRoughnessSampler;
-			uniform sampler2D u_EmissiveAOSampler;
-			uniform sampler2D u_WorldSpaceNormalSampler;
-			uniform sampler2D u_WorldSpacePositionSampler;
-			*/
-			auto& shader = s_LightingMaterial->GetShader();
-			
-			//These are all guaranteed to be used
-			s_GBuffer->ImplBind(0, 0);
-			shader->Send("u_ColorMetallicSampler", 0);
-			s_GBuffer->ImplBind(1, 1);
-			shader->Send("u_SpecularRoughnessSampler", 1);
-			s_GBuffer->ImplBind(2, 2);
-			shader->Send("u_EmissiveAOSampler", 2);
-			s_GBuffer->ImplBind(3, 3);
-			shader->Send("u_WorldSpaceNormalSampler", 3);
-			s_GBuffer->ImplBind(4, 4);
-			shader->Send("u_WorldSpacePositionSampler", 4);
-			//these might be optimized away
-			if (shader->ValidUniform("u_CameraPositionWS")) {
-				shader->Send("u_CameraPositionWS", sceneData.camera->GetPosition());
-			}
-			if (shader->ValidUniform("u_CameraForwardVector")) {
-				shader->Send("u_CameraForwardVector", sceneData.camera->GetRotation().GetForwardVector());
-			}
-			
-			s_ScreenQuad->ImplBind(0,0); //non-cached version
-			RenderCommand::Draw(s_ScreenQuad);
+			//clear the queues, but leave the size
+			auto size = s_CommandQueueForward.size();
+			s_CommandQueueForward.clear();
+			s_CommandQueueForward.reserve(size);
+		}
+	}
 
-			//copy depth
-			s_GBuffer->BlitDepthToOther(sceneData.target);
-
+	void RenderCommand::DiscardQueue()
+	{
+		if (s_CurrentModeDeferred) {
+			//render deferred queue
+			auto size = s_CommandQueueDeferred.size();
+			s_CommandQueueDeferred.clear();
+			s_CommandQueueDeferred.reserve(size);
 		}
 		else {
-			LOG_S(WARNING) << "No lighting material given to RenderCommand, thus, no deferred rendering will take place";
-			if (sceneData.target) {
-				sceneData.target->RenderTo(true);
-			}
-		}
-
-		//execute the forward queue
-		for (auto& command : s_CommandQueueForward) {
-			ExecuteCommand(command);
-		}
-
-		//clear the queues, but leave the size
-		auto size = s_CommandQueueForward.size();
-		s_CommandQueueForward.clear();
-		s_CommandQueueForward.reserve(size);
-
-		size = s_CommandQueueDeferred.size();
-		s_CommandQueueDeferred.clear();
-		s_CommandQueueDeferred.reserve(size);
-
-		//unset the target RenderTarget
-		//if target is nullptr, then it should be fine.
-		if (sceneData.target){
-			sceneData.target->RenderTo(false);
+			//execute the forward queue
+			auto size = s_CommandQueueForward.size();
+			s_CommandQueueForward.clear();
+			s_CommandQueueForward.reserve(size);
 		}
 	}
 
@@ -260,13 +189,18 @@ namespace Tara {
 		}
 	}
 
-	void RenderCommand::Bind(BindableRef ref, int a, int b)
+	void RenderCommand::Bind(BindableRef ref, bool binding, int a, int b)
 	{
 		if (s_EnqueingCommands) {
-			Command c{ CommandType::BIND, CommandFormBind{ref, a, b} };
+			Command c{ CommandType::BIND, CommandFormBind{ref, binding, a, b} };
 			PushCommand(c);
 		}else{
-			ref->ImplBind(a, b);
+			if (binding){
+				ref->ImplBind(a, b);
+			}
+			else {
+				ref->ImplUnbind();
+			}
 		}
 	}
 
@@ -343,7 +277,12 @@ namespace Tara {
 		}
 		case CommandType::BIND: {
 			auto p = std::get<CommandFormBind>(command.Params);
-			p.Bindable->ImplBind(p.a, p.b);
+			if (p.bind) {
+				p.Bindable->ImplBind(p.a, p.b);
+			}
+			else {
+				p.Bindable->ImplUnbind();
+			}
 			break;
 		}
 		case CommandType::UNIFORM: {

@@ -10,6 +10,7 @@ namespace Tara {
 		~OpenGLVertexBuffer();
 
 		virtual void ImplBind(int,int) const override;
+		virtual void ImplUnbind() const override;
 		
 		virtual void SetData(const float* data, uint32_t count) override;
 	private:
@@ -25,6 +26,7 @@ namespace Tara {
 		//TODO: layout stuff
 
 		virtual void ImplBind(int, int) const override;
+		virtual void ImplUnbind() const override;
 
 		virtual inline uint32_t GetCount() const override { return m_Count; }
 	private:

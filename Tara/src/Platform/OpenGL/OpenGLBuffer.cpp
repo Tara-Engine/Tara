@@ -28,6 +28,11 @@ namespace Tara {
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 	}
+
+	void OpenGLVertexBuffer::ImplUnbind() const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
 	
 	void OpenGLVertexBuffer::SetData(const float* data, uint32_t count)
 	{
@@ -52,6 +57,11 @@ namespace Tara {
 	void OpenGLIndexBuffer::ImplBind(int, int) const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+	}
+
+	void OpenGLIndexBuffer::ImplUnbind() const
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 }

@@ -32,6 +32,10 @@ namespace Tara{
 		glBindTextureUnit(slot, m_RendererID);
 	}
 
+	void OpenGLTexture2D::ImplUnbind() const
+	{
+	}
+
 	void OpenGLTexture2D::SetFiltering(Texture::Filtering filter)
 	{
 		if (filter == Texture::Filtering::Nearest) {

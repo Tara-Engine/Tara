@@ -2,6 +2,7 @@
 #include "Tara/Renderer/Renderer.h"
 #include "Tara/Renderer/RenderCommand.h"
 #include "Tara/Math/BoundingBox.h"
+#include "Tara/Core/Application.h"
 //#include "Tara/Renderer/VertexArray.h"
 //#include "Tara/Renderer/Shader.h"
 //#include "Tara/Math/Types.h"
@@ -10,7 +11,9 @@ namespace Tara {
 	//default to OpenGL renderbackend
 	RenderBackend Renderer::s_RenderBackend = RenderBackend::OpenGl;
 	RenderSceneData Renderer::s_SceneData = { nullptr };
-
+	
+	RenderTargetRef Renderer::s_GBuffer = nullptr;
+	VertexArrayRef Renderer::s_ScreenQuad = nullptr;
 
 	/*****************************************************************
 	 *                    Quad Rendering Constants                   *
@@ -64,30 +67,12 @@ namespace Tara {
 
 	void Renderer::EndScene()
 	{
-		//execute batch rendering
-		s_QuadShader->Bind();
-		s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
-		s_QuadArray->Bind();
-		for (const auto& group : s_QuadGroups) {
-			s_QuadArray->GetVertexBuffers()[0]->SetData((float*)group.Quads.data(), (uint32_t)group.Quads.size() * 18); //the 18 is not a "magic number", it is the number of floats in a QuadData struct.
-			uint32_t index = 0;
-			for (auto texture : group.TextureNames) {
-				if (texture) {
-					texture->Bind(index);
-					s_QuadShader->Send("u_Texture" + std::to_string(index), (int)index);
-					index++;
-				}
-			}
-			RenderCommand::PushDrawType(RenderDrawType::Points);
-			RenderCommand::DrawCount((uint32_t)group.Quads.size());
-			RenderCommand::PopDrawType();
-			//glDrawArrays(GL_POINTS, 0, m_Quads.size());
-		}
-		s_QuadGroups.clear();
+		//render the batched quads
+		RenderQuads();
 		
+		//render the scene, deferred, lighting, etc.
+		SceneRender();
 		
-		//renderTarget setting/unsetting done in the queue execution
-		RenderCommand::ExecuteQueue(s_SceneData);
 		//clear Scene Data
 		s_SceneData.camera = nullptr;
 		s_SceneData.target = nullptr;
@@ -119,6 +104,7 @@ namespace Tara {
 		}
 		
 		RenderCommand::Draw(vertexArray);
+		vertexArray->Unbind(); //Leaving this bound could cause manual VertexBuffer / IndexBuffer creation to effect this vertexArray, so, unbind it.
 	}
 
 	void Renderer::Quad(const Transform& transform, glm::vec4 color, const Texture2DRef& texture, glm::vec2 minUV, glm::vec2 maxUV)
@@ -233,4 +219,134 @@ namespace Tara {
 		}
 	}
 
+
+	void Renderer::RenderQuads()
+	{
+		if (s_QuadGroups.size() > 0){
+			//RenderCommand::EnableDeferred(false);
+			//execute batch rendering
+			s_QuadShader->Bind();
+			s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
+			s_QuadArray->Bind();
+			for (const auto& group : s_QuadGroups) {
+				s_QuadArray->GetVertexBuffers()[0]->SetData((float*)group.Quads.data(), (uint32_t)group.Quads.size() * 18); //the 18 is not a "magic number", it is the number of floats in a QuadData struct.
+				uint32_t index = 0;
+				for (auto texture : group.TextureNames) {
+					if (texture) {
+						texture->Bind(index);
+						s_QuadShader->Send("u_Texture" + std::to_string(index), (int)index);
+						index++;
+					}
+				}
+				RenderCommand::PushDrawType(RenderDrawType::Points);
+				RenderCommand::DrawCount((uint32_t)group.Quads.size());
+				RenderCommand::PopDrawType();
+				//glDrawArrays(GL_POINTS, 0, m_Quads.size());
+			}
+			s_QuadGroups.clear();
+		}
+	}
+
+
+	void Renderer::SceneRender()
+	{
+		RenderCommand::StopQueue();
+
+		auto& lightingMat = s_SceneData.camera->GetLightingMaterial();
+		if (lightingMat) {
+			auto window = Application::Get()->GetWindow();
+			if (s_GBuffer == nullptr) {
+				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, "gBuffer");
+			}
+			else {
+				//check for resize
+				if (window->GetWidth() != s_GBuffer->GetWidth() || window->GetHeight() != s_GBuffer->GetHeight()) {
+					s_GBuffer->SetSize(window->GetWidth(), window->GetHeight());
+				}
+			}
+			s_GBuffer->RenderTo(true);
+			RenderCommand::Clear();
+
+			RenderCommand::EnableDeferred(true);
+			RenderCommand::ExecuteQueue();
+
+			//End rendering to GBuffer, blit its depth to the passed RenderTarget
+			if (s_SceneData.target) {
+				s_SceneData.target->RenderTo(true);
+			}
+			else {
+				s_GBuffer->RenderTo(false);
+			}
+			//render the quad
+			if (!s_ScreenQuad) {
+				//load the ScreenQuad
+				static float verts[]{
+					-1.0f, -1.0f, 0.0f, 0.0f, //Bottom left
+					-1.0f, 1.0f,  0.0f, 1.0f,  //Bottom right
+					1.0f, 1.0f,   1.0f, 1.0f,   //Top right
+					1.0f, -1.0f,  1.0f, 0.0f,  //Top left
+				};
+				static uint32_t indices[]{
+					0, 1, 2, 2, 3, 0
+				};
+				s_ScreenQuad = VertexArray::Create(); //create and bind this first in case there is another VertexArray bound.
+				s_ScreenQuad->ImplBind(0,0);
+				VertexBufferRef vb = VertexBuffer::Create(verts, sizeof(verts) / sizeof(float));
+				vb->SetLayout({
+					{Shader::Datatype::Float2, "Position", false},
+					{Shader::Datatype::Float2, "UV", false}
+					});
+				IndexBufferRef ib = IndexBuffer::Create(indices, 6);
+				s_ScreenQuad->AddVertexBuffer(vb);
+				s_ScreenQuad->SetIndexBuffer(ib);
+			}
+
+			//render the screen quad with light material
+			lightingMat->Use();
+			auto& shader = lightingMat->GetShader();
+
+			//These are all guaranteed to be used
+			s_GBuffer->ImplBind(0, 0);
+			shader->Send("u_ColorMetallicSampler", 0);
+			s_GBuffer->ImplBind(1, 1);
+			shader->Send("u_SpecularRoughnessSampler", 1);
+			s_GBuffer->ImplBind(2, 2);
+			shader->Send("u_EmissiveAOSampler", 2);
+			s_GBuffer->ImplBind(3, 3);
+			shader->Send("u_WorldSpaceNormalSampler", 3);
+			s_GBuffer->ImplBind(4, 4);
+			shader->Send("u_WorldSpacePositionSampler", 4);
+
+			//these might be optimized away
+			if (shader->ValidUniform("u_CameraPositionWS")) {
+				shader->Send("u_CameraPositionWS", s_SceneData.camera->GetPosition());
+			}
+			if (shader->ValidUniform("u_CameraForwardVector")) {
+				shader->Send("u_CameraForwardVector", s_SceneData.camera->GetRotation().GetForwardVector());
+			}
+
+			s_ScreenQuad->ImplBind(0, 0); //non-cached version
+			RenderCommand::Draw(s_ScreenQuad);
+
+			//copy depth
+			s_GBuffer->BlitDepthToOther(s_SceneData.target);
+		}
+		else {
+			LOG_S(WARNING) << "No lighting material in the camera, thus, no deferred rendering will take place";
+			if (s_SceneData.target) {
+				s_SceneData.target->RenderTo(true);
+			}
+			//discard the deferred queue
+			RenderCommand::EnableDeferred(true);
+			RenderCommand::DiscardQueue();
+		}
+		RenderCommand::EnableDeferred(false);
+		RenderCommand::ExecuteQueue();
+
+		//unset the target RenderTarget
+		//if target is nullptr, then it should be fine.
+		if (s_SceneData.target) {
+			s_SceneData.target->RenderTo(false);
+		}
+	}
 }
