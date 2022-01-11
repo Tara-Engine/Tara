@@ -273,6 +273,30 @@ namespace Tara {
 		inline void SetAspectRatio(float aspect) { m_AspectRatio = aspect; UpdateProjectionMatrix(); }
 
 		/// <summary>
+		/// Set the near clipping plane. Silently fails if <= 0
+		/// </summary>
+		/// <param name="plane"></param>
+		inline void SetNearClipPlane(float plane) { if (plane > 0) { m_NearClipPlane = plane; UpdateProjectionMatrix();} }
+
+		/// <summary>
+		/// Set the far clipping plane. Silently fails if <= near clipping plane
+		/// </summary>
+		/// <param name="plane"></param>
+		inline void SetFarClipPlane(float plane) { if (plane > m_NearClipPlane) { m_FarClipPlane = plane; UpdateProjectionMatrix();} }
+
+		/// <summary>
+		/// Get the Near clipping plane
+		/// </summary>
+		/// <returns></returns>
+		inline float GetNearClipPlane() { return m_NearClipPlane; }
+
+		/// <summary>
+		/// Get the Far clipping plane
+		/// </summary>
+		/// <returns></returns>
+		inline float GetFarClipPlane() { return m_FarClipPlane; }
+
+		/// <summary>
 		/// Update the size of the area being rendered to (chages the apsect ratio). Triggers a projection matrix update, so, might be slower than expected.
 		/// </summary>
 		/// <param name="width">the new width</param>
@@ -292,6 +316,8 @@ namespace Tara {
 	private:
 		float m_FOV;
 		float m_AspectRatio;
+		float m_NearClipPlane;
+		float m_FarClipPlane;
 	};
 
 	/// <summary>

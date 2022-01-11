@@ -497,6 +497,11 @@ namespace Tara{
 		);
 	}
 
+	Rotator::operator glm::vec3() const
+	{
+		//This is IN ORDER of the axis they effect!
+		return glm::vec3(Pitch, Yaw, Roll);
+	}
 
 	Vector Rotator::RotateVector(const Vector& vec) const
 	{

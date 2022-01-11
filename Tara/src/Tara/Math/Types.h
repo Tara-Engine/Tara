@@ -328,6 +328,11 @@ namespace Tara {
 		glm::quat ToQuaternion() const;
 
 		/// <summary>
+		/// vec3 casting
+		/// </summary>
+		operator glm::vec3() const;
+
+		/// <summary>
 		/// Rotate a vector by oneself
 		/// </summary>
 		/// <param name="vec">the vector to rotate</param>

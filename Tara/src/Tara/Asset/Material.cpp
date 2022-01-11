@@ -137,9 +137,16 @@ namespace Tara{
 			uniform sampler2D u_EmissiveAOSampler;
 			uniform sampler2D u_WorldSpaceNormalSampler;
 			uniform sampler2D u_WorldSpacePositionSampler;
-			
+
+			uniform vec2 u_TargetSize;			
 			uniform vec3 u_CameraPositionWS;
 			uniform vec3 u_CameraForwardVector;
+
+			uniform int u_LightCount;
+			uniform vec3 u_LightPositions[128];
+			uniform vec3 u_LightForwardVectors[128]; //Pitch, Yaw, Roll
+			uniform vec3 u_LightColors[128];
+			uniform vec4 u_LightTypeIntensitieCustoms[128];
 
 			in vec2 v_UV;
 
@@ -151,7 +158,13 @@ namespace Tara{
 			vec3 Emissive           = vec3(0);
 			vec3 WorldSpaceNormal   = vec3(0);
 			vec3 WorldSpacePosition = vec3(0);
-			
+
+			const int LightType_Point		= 0;			
+			const int LightType_Spot		= 1;			
+			const int LightType_Directional	= 2;			
+			const int LightType_Ambient		= 3;			
+			const int LightType_Rect		= 4;			
+
 			)V0G0N"
 		},
 	};

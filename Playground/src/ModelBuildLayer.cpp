@@ -1,6 +1,6 @@
 #include "ModelBuildLayer.h"
 #include "EditorCameraControllerComponent.h"
-
+#include <random>
 
 
 ModelBuildLayer::ModelBuildLayer()
@@ -15,7 +15,7 @@ ModelBuildLayer::~ModelBuildLayer()
 void ModelBuildLayer::Activate()
 {
 	//camera creation
-	m_Camera = Tara::CreateEntity<Tara::CameraEntity>(Tara::EntityNoRef(), weak_from_this(), 
+	m_Camera = Tara::CreateEntity<Tara::CameraEntity>(Tara::EntityNoRef(), weak_from_this(),
 		Tara::Camera::ProjectionType::Perspective, Tara::Transform{ {0.5,0.5,3},{0,0,0},{1,1,1} });
 	m_Camera->SetPerspectiveFOV(90);
 	SetLayerCamera(m_Camera);
@@ -46,13 +46,52 @@ void ModelBuildLayer::Activate()
 		return vec4(Diffuse, 1);
 	}
 	)V0G0N";
-	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingCamera.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
+	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingPhong.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
 	m_Camera->GetCamera()->SetLightingMaterial(lightMaterial);
 	//make a MeshPart for rendering a cube
-	
-	/*
-	*/
+	std::dynamic_pointer_cast<Tara::PerspectiveCamera>(m_Camera->GetCamera())->SetFarClipPlane(500);
 
+
+	//make a good scene for lighting tests
+	Tara::MeshMaker planeMaker(Tara::MeshMaker::Mode::QUADS);
+	//{0,1,0,  0, 1, 0, 1,1,1,1, 0,1}, {1,1,0,  0, 1, 0, 1,1,1,1, 1,1}, {1,1,1,  0, 1, 0, 1,1,1,1, 1,0}, {0,1,1,  0, 1, 0, 1,1,1,1, 0,0}, //Top(+Y)
+	planeMaker.Vertex({ 0,0,0 }); planeMaker.TextureCoord(glm::vec2(0,1)); planeMaker.Color({1,1,1,1});
+	planeMaker.Vertex({ 1,0,0 }); planeMaker.TextureCoord(glm::vec2(1,1)); planeMaker.Color({1,1,1,1});
+	planeMaker.Vertex({ 1,0,1 }); planeMaker.TextureCoord(glm::vec2(1,0)); planeMaker.Color({1,1,1,1});
+	planeMaker.Vertex({ 0,0,1 }); planeMaker.TextureCoord(glm::vec2(0,0)); planeMaker.Color({1,1,1,1});
+	Tara::MeshPart planePart = planeMaker.GetMeshPart();
+	planePart.CalculateNormals();
+	planePart.Transform(Tara::Transform({-16,0,-16}, {0,0,0}, {32,32,32}).GetTransformMatrix());
+	auto planeMesh = Tara::StaticMesh::Create({ planePart }, "PlaneMesh");
+	auto planeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,-8.5,0 }, { 0,0,0 }, { 10,10,10 }), planeMesh, m_Material, "StaticMesh Entity - Plane");
+	
+	
+	Tara::MeshPart invertedCube = Tara::MeshPart::UnitCube();
+	invertedCube.Transform(Tara::Transform({-8,-8,-8}, {0,0,0}, {16,16,16}).GetTransformMatrix());
+	invertedCube.FlipTriangles();
+	auto invertedCubeMesh = Tara::StaticMesh::Create({ invertedCube }, "InvertedCubeMesh");
+	auto invertedCubeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), invertedCubeMesh, m_Material, "Static Mesh Entity");
+
+	Tara::MeshPart cube = Tara::MeshPart::UnitCube();
+	auto cubeMesh = Tara::StaticMesh::Create({ cube }, "CubeMesh");
+	std::random_device rd;
+	for (int i = 0; i < 16; i++) {
+		Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform(
+			{
+				(float)(rd() % 16) - 8,
+				(float)(rd() % 16) - 8,
+				(float)(rd() % 16) - 8
+			}, {
+				(float)(rd() % 360) - 180,
+				(float)(rd() % 180) - 90,
+				(float)(rd() % 360) - 180
+			}, {1,1,1}
+		), cubeMesh, m_Material, "StaticMeshEntity1");
+	}
+	
+	auto light = Tara::CreateEntity<Tara::LightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+
+	/*
 	Tara::MeshMaker mm(Tara::MeshMaker::Mode::QUADS);
 	mm.SetCombineRule(Tara::MeshMaker::CombineRules::IF_SECOND_DEFAULT);
 
@@ -106,6 +145,11 @@ void ModelBuildLayer::Activate()
 
 
 	auto sme = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({0,0,0}, {0,0,0}, {1,1,1}), m_Mesh, m_Material, "Static Mesh Entity");
+	*/
+
+
+
+
 }
 
 void ModelBuildLayer::Deactivate()

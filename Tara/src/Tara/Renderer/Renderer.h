@@ -7,6 +7,7 @@
 #include "Tara/Renderer/Texture.h"
 #include "Tara/Asset/Font.h"
 #include "Tara/Asset/Patch.h"
+#include "Tara/Renderer/Light.h"
 
 namespace Tara {
 	
@@ -19,9 +20,12 @@ namespace Tara {
 	};
 	class RenderCommand;
 	
+	
+
 	struct RenderSceneData {
 		CameraRef camera;
 		RenderTargetRef target;
+		std::vector<LightData> lights;
 	};
 
 	/// <summary>
@@ -83,6 +87,15 @@ namespace Tara {
 		/// <param name="patch">the patch to render</param>
 		/// <param name="color">the tint color</param>
 		static void Patch(const Transform& transform, const PatchRef& patch, glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f });
+
+		/// <summary>
+		/// Draw a light into the world
+		/// </summary>
+		/// <param name="transform">the light's transform</param>
+		/// <param name="color">the light's color</param>
+		/// <param name="intensity">the light's intensity</param>
+		/// <param name="angle">the spotlight angle, if a spotlight. ranges from 0 to 1</param>
+		static void Light(const LightData& light);
 
 	private:
 		/// <summary>

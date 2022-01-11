@@ -76,6 +76,9 @@ namespace Tara {
 		//clear Scene Data
 		s_SceneData.camera = nullptr;
 		s_SceneData.target = nullptr;
+		auto size = s_SceneData.lights.size();
+		s_SceneData.lights.clear();
+		s_SceneData.lights.reserve(size);
 	}
 
 	void Renderer::Draw(VertexArrayRef vertexArray, ShaderRef shader, Transform transform)
@@ -219,6 +222,10 @@ namespace Tara {
 		}
 	}
 
+	void Renderer::Light(const LightData& light)
+	{
+		s_SceneData.lights.push_back(light);
+	}
 
 	void Renderer::RenderQuads()
 	{
@@ -254,6 +261,7 @@ namespace Tara {
 
 		auto& lightingMat = s_SceneData.camera->GetLightingMaterial();
 		if (lightingMat) {
+			
 			auto window = Application::Get()->GetWindow();
 			if (s_GBuffer == nullptr) {
 				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, "gBuffer");
@@ -317,12 +325,64 @@ namespace Tara {
 			s_GBuffer->ImplBind(4, 4);
 			shader->Send("u_WorldSpacePositionSampler", 4);
 
-			//these might be optimized away
+			//these might be optimized away if the specific material does not use them
+			if (shader->ValidUniform("u_TargetSize")) {
+				glm::vec2 size;
+				if (s_SceneData.target) {
+					size = glm::vec2(s_SceneData.target->GetWidth(), s_SceneData.target->GetHeight());
+				}
+				else {
+					size = glm::vec2(Application::Get()->GetWindow()->GetWidth(), Application::Get()->GetWindow()->GetHeight());
+				}
+				shader->Send("u_TargetSize", size);
+			}
 			if (shader->ValidUniform("u_CameraPositionWS")) {
 				shader->Send("u_CameraPositionWS", s_SceneData.camera->GetPosition());
 			}
 			if (shader->ValidUniform("u_CameraForwardVector")) {
 				shader->Send("u_CameraForwardVector", s_SceneData.camera->GetRotation().GetForwardVector());
+			}
+
+			//deal with lights
+			std::vector<glm::vec3> lightPos;
+			std::vector<glm::vec3> lightRot;
+			std::vector<glm::vec3> lightColor;
+			std::vector<glm::vec3> lightTypeIntensityCustom;
+			size_t lightCount = s_SceneData.lights.size();
+			if (lightCount > 128) {
+				lightCount = 128;
+			}
+			lightPos.reserve(lightCount);
+			lightRot.reserve(lightCount);
+			lightColor.reserve(lightCount);
+			lightTypeIntensityCustom.reserve(lightCount);
+
+			for (int i = 0; i < lightCount;i++) {
+				auto& light = s_SceneData.lights[i];
+				lightPos.push_back((glm::vec3)light.Position);
+				lightRot.push_back((glm::vec3)(light.ForwardVector));
+				lightColor.push_back((glm::vec3)light.Color);
+				lightTypeIntensityCustom.push_back(glm::vec4((float)light.Type, light.Intensity, light.Custom1, light.Custom2));
+			}
+
+			//uniform int u_LightCount;
+			if (shader->ValidUniform("u_LightCount")) {
+				shader->Send("u_LightCount", (int32_t)lightCount);
+			}
+			if (shader->ValidUniform("u_LightPositions")) {
+				shader->Send("u_LightPositions", lightPos.data(), lightCount);
+			}
+			if (shader->ValidUniform("u_LightForwardVectors")) {
+				shader->Send("u_LightForwardVectors", lightRot.data(), lightCount);
+			}
+			if (shader->ValidUniform("u_LightColors")) {
+				shader->Send("u_LightColors", lightColor.data(), lightCount);
+			}
+			else{
+				LOG_S(WARNING) << "Colorsess Light Shader!";
+			}
+			if (shader->ValidUniform("u_LightTypeIntensitieCustoms")) {
+				shader->Send("u_LightTypeIntensitieCustoms", lightTypeIntensityCustom.data(), lightCount);
 			}
 
 			s_ScreenQuad->ImplBind(0, 0); //non-cached version

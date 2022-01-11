@@ -35,17 +35,68 @@ vec3 PixelNormal //predefined
 ```
 
 # Lighting Materials
+
 ```
 vec4 color()
 
+uniform vec2 u_TargetSize;
 uniform vec3 u_CameraPositionWS;
 uniform vec3 u_CameraForwardVector;
-float Metallic         = 0;
-float Roughness        = 0;
-float AmbientOcclusion = 0;
-vec3 Diffuse            = vec3(0);
-vec3 Specular           = vec3(0);
-vec3 Emissive           = vec3(0);
-vec3 WorldSpaceNormal   = vec3(0);
-vec3 WorldSpacePosition = vec3(0);
+
+uniform int u_LightCount;
+uniform vec3 u_LightPositions[128];
+uniform vec3 u_LightForwardVectors[128]; //forward vector
+uniform vec3 u_LightColors[128];
+uniform vec4 u_LightTypeIntensitieCustoms[128]; {type, intensity, custom1, custom2}
+
+float Metallic
+float Roughness
+float AmbientOcclusion
+vec3 Diffuse
+vec3 Specular
+vec3 Emissive
+vec3 WorldSpaceNormal
+vec3 WorldSpacePosition
+
+//light types
 ```
+
+## Light Types
+Base [7 floats]
+	vec3 Pos
+	vec3 Color
+	float intensity
+
+PointLight [+5 floats]
+	...
+	[
+		vec3 ForwardDirection
+		float SourceRadius
+		float SourceLength
+	]
+	
+SpotLight [+4 floats / +5 floats, 1 sampler]
+	...
+	vec3 ForwardDirection
+	float angle
+	[
+		float falloff
+		sampler1d /2d LightTexture
+	]
+	
+DirectionalLight [7 floats]
+	vec3 Color
+	vec3 ForwardDirection
+	float intensity
+
+AmbientLight [4 floats]
+	vec3 Color
+	float intensity
+	
+RectLight [+6 floats]
+	...
+	vec3 ForwardDirection
+	float angle
+	vec2 size
+
+
