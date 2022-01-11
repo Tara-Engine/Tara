@@ -12,7 +12,7 @@ namespace Tara {
 		virtual void ImplBind(int,int) const override;
 		virtual void ImplUnbind() const override;
 		
-		virtual void SetData(const float* data, uint32_t count) override;
+		virtual void ImplSetData(const float* data, uint32_t count) override;
 	private:
 		uint32_t m_RendererID;
 	};

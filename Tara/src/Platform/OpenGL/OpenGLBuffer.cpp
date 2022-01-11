@@ -34,7 +34,7 @@ namespace Tara {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	
-	void OpenGLVertexBuffer::SetData(const float* data, uint32_t count)
+	void OpenGLVertexBuffer::ImplSetData(const float* data, uint32_t count)
 	{
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, GL_STATIC_DRAW);
 	}

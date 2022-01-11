@@ -13,7 +13,7 @@ namespace Tara {
 	RenderSceneData Renderer::s_SceneData = { nullptr };
 	
 	RenderTargetRef Renderer::s_GBuffer = nullptr;
-	VertexArrayRef Renderer::s_ScreenQuad = nullptr;
+	//VertexArrayRef Renderer::s_ScreenQuad = nullptr;
 
 	/*****************************************************************
 	 *                    Quad Rendering Constants                   *
@@ -230,11 +230,13 @@ namespace Tara {
 	void Renderer::RenderQuads()
 	{
 		if (s_QuadGroups.size() > 0){
-			//RenderCommand::EnableDeferred(false);
+			RenderCommand::EnableDeferred(false);
+			RenderCommand::EnableBackfaceCulling(false);
 			//execute batch rendering
 			s_QuadShader->Bind();
 			s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
 			s_QuadArray->Bind();
+			s_QuadArray->GetVertexBuffers()[0]->Bind();
 			for (const auto& group : s_QuadGroups) {
 				s_QuadArray->GetVertexBuffers()[0]->SetData((float*)group.Quads.data(), (uint32_t)group.Quads.size() * 18); //the 18 is not a "magic number", it is the number of floats in a QuadData struct.
 				uint32_t index = 0;
@@ -245,11 +247,15 @@ namespace Tara {
 						index++;
 					}
 				}
+				s_QuadArray->Bind();
 				RenderCommand::PushDrawType(RenderDrawType::Points);
 				RenderCommand::DrawCount((uint32_t)group.Quads.size());
 				RenderCommand::PopDrawType();
 				//glDrawArrays(GL_POINTS, 0, m_Quads.size());
 			}
+			s_QuadArray->GetVertexBuffers()[0]->Unbind();
+			s_QuadArray->Unbind();
+			s_QuadShader->Unbind();
 			s_QuadGroups.clear();
 		}
 	}
@@ -261,7 +267,8 @@ namespace Tara {
 
 		auto& lightingMat = s_SceneData.camera->GetLightingMaterial();
 		if (lightingMat) {
-			
+			RenderCommand::SetBlendMode(RenderBlendMode::REPLACE);
+
 			auto window = Application::Get()->GetWindow();
 			if (s_GBuffer == nullptr) {
 				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, "gBuffer");
@@ -286,27 +293,29 @@ namespace Tara {
 				s_GBuffer->RenderTo(false);
 			}
 			//render the quad
-			if (!s_ScreenQuad) {
+			VertexArrayRef screenQuad;
+			{
 				//load the ScreenQuad
-				static float verts[]{
+				float verts[]{
 					-1.0f, -1.0f, 0.0f, 0.0f, //Bottom left
 					-1.0f, 1.0f,  0.0f, 1.0f,  //Bottom right
 					1.0f, 1.0f,   1.0f, 1.0f,   //Top right
 					1.0f, -1.0f,  1.0f, 0.0f,  //Top left
 				};
-				static uint32_t indices[]{
+				uint32_t indices[]{
 					0, 1, 2, 2, 3, 0
 				};
-				s_ScreenQuad = VertexArray::Create(); //create and bind this first in case there is another VertexArray bound.
-				s_ScreenQuad->ImplBind(0,0);
+				screenQuad = VertexArray::Create(); //create and bind this first in case there is another VertexArray bound.
+				screenQuad->ImplBind(0,0);
 				VertexBufferRef vb = VertexBuffer::Create(verts, sizeof(verts) / sizeof(float));
+				//vb->ImplBind(0, 0);
 				vb->SetLayout({
 					{Shader::Datatype::Float2, "Position", false},
 					{Shader::Datatype::Float2, "UV", false}
 					});
 				IndexBufferRef ib = IndexBuffer::Create(indices, 6);
-				s_ScreenQuad->AddVertexBuffer(vb);
-				s_ScreenQuad->SetIndexBuffer(ib);
+				screenQuad->AddVertexBuffer(vb);
+				screenQuad->SetIndexBuffer(ib);
 			}
 
 			//render the screen quad with light material
@@ -347,7 +356,7 @@ namespace Tara {
 			std::vector<glm::vec3> lightPos;
 			std::vector<glm::vec3> lightRot;
 			std::vector<glm::vec3> lightColor;
-			std::vector<glm::vec3> lightTypeIntensityCustom;
+			std::vector<glm::vec4> lightTypeIntensityCustom;
 			size_t lightCount = s_SceneData.lights.size();
 			if (lightCount > 128) {
 				lightCount = 128;
@@ -378,21 +387,18 @@ namespace Tara {
 			if (shader->ValidUniform("u_LightColors")) {
 				shader->Send("u_LightColors", lightColor.data(), lightCount);
 			}
-			else{
-				LOG_S(WARNING) << "Colorsess Light Shader!";
-			}
 			if (shader->ValidUniform("u_LightTypeIntensitieCustoms")) {
 				shader->Send("u_LightTypeIntensitieCustoms", lightTypeIntensityCustom.data(), lightCount);
 			}
 
-			s_ScreenQuad->ImplBind(0, 0); //non-cached version
-			RenderCommand::Draw(s_ScreenQuad);
+			screenQuad->ImplBind(0, 0); //non-cached version
+			RenderCommand::Draw(screenQuad);
 
 			//copy depth
 			s_GBuffer->BlitDepthToOther(s_SceneData.target);
 		}
 		else {
-			LOG_S(WARNING) << "No lighting material in the camera, thus, no deferred rendering will take place";
+			//LOG_S(WARNING) << "No lighting material in the camera, thus, no deferred rendering will take place";
 			if (s_SceneData.target) {
 				s_SceneData.target->RenderTo(true);
 			}
@@ -400,6 +406,7 @@ namespace Tara {
 			RenderCommand::EnableDeferred(true);
 			RenderCommand::DiscardQueue();
 		}
+		RenderCommand::SetBlendMode(RenderBlendMode::NORMAL);
 		RenderCommand::EnableDeferred(false);
 		RenderCommand::ExecuteQueue();
 

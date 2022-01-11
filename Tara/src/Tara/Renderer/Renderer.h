@@ -159,7 +159,7 @@ namespace Tara {
 		/// <summary>
 		/// full screen quad for rendering the GBuffer
 		/// </summary>
-		static VertexArrayRef s_ScreenQuad;
+		//static VertexArrayRef s_ScreenQuad;
 
 		//max textures number
 		static uint32_t s_MaxTextures;

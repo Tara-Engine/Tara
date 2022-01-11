@@ -2,6 +2,7 @@
 #include "RenderCommand.h"
 #include "Tara/Renderer/Renderer.h"
 #include "Tara/Renderer/VertexArray.h"
+#include "Tara/Renderer/Buffer.h"
 #include "Tara/Renderer/Bindable.h"
 #include "Tara/Renderer/Texture.h"
 #include "Tara/Core/Application.h"
@@ -189,6 +190,17 @@ namespace Tara {
 		}
 	}
 
+	void RenderCommand::SetBlendMode(RenderBlendMode mode)
+	{
+		if (s_EnqueingCommands) {
+			Command c{ CommandType::SET_BLENDMODE, CommandFormBlend{mode} };
+			PushCommand(c);
+		}
+		else {
+			s_RC->ISetBlendMode(mode);
+		}
+	}
+
 	void RenderCommand::Bind(BindableRef ref, bool binding, int a, int b)
 	{
 		if (s_EnqueingCommands) {
@@ -222,6 +234,19 @@ namespace Tara {
 		}
 		else {
 			ref->ImplRenderTo(render);
+		}
+	}
+
+	void RenderCommand::SetVertexBufferData(VertexBufferRef ref, const float* data, uint32_t count)
+	{
+		if (s_EnqueingCommands) {
+			float* dataCopy = new float[count];
+			memcpy(dataCopy, data, count * sizeof(float));
+			Command c{ CommandType::SET_VERTEX_BUFFER_DATA, CommandFormSetVertexBufferData{ref, dataCopy, count} };
+			PushCommand(c);
+		}
+		else {
+			ref->ImplSetData(data, count);
 		}
 	}
 
@@ -259,7 +284,7 @@ namespace Tara {
 			break;
 		}
 		case CommandType::PUSH_DRAW_TYPE: {
-			auto p = std::get<DrawType>(command.Params);
+			auto p = std::get<CommandFormDrawType>(command.Params);
 			PushDrawType(p.Type, p.WireFrame);
 			break;
 		}
@@ -273,6 +298,10 @@ namespace Tara {
 		}
 		case CommandType::ENABLE_BACKFACE_CULLING: {
 			s_RC->IEnableBackfaceCulling(std::get<CommandFormBool>(command.Params).Enable);
+			break;
+		}
+		case CommandType::SET_BLENDMODE: {
+			s_RC->ISetBlendMode(std::get<CommandFormBlend>(command.Params));
 			break;
 		}
 		case CommandType::BIND: {
@@ -294,6 +323,11 @@ namespace Tara {
 			auto p = std::get<CommandFormRenderToTarget>(command.Params);
 			p.Target->ImplRenderTo(p.Render);
 			break;
+		}
+		case CommandType::SET_VERTEX_BUFFER_DATA: {
+			auto p = std::get<CommandFormSetVertexBufferData>(command.Params);
+			p.Target->ImplSetData(p.Data, p.Count);
+			delete[] p.Data;
 		}
 		}
 	}

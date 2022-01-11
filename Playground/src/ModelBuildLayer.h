@@ -24,4 +24,6 @@ private:
 	Tara::ShaderRef m_Shader;
 
 	Tara::StaticMeshRef m_Mesh;
+
+	Tara::LightEntityRef m_Light;
 };

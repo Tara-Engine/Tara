@@ -59,6 +59,11 @@ vec3 WorldSpaceNormal
 vec3 WorldSpacePosition
 
 //light types
+const int LightType_Point		= 0;			
+const int LightType_Spot		= 1;			
+const int LightType_Directional	= 2;			
+const int LightType_Ambient		= 3;			
+const int LightType_Rect		= 4;		
 ```
 
 ## Light Types

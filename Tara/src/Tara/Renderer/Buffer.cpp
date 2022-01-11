@@ -16,6 +16,11 @@ namespace Tara{
         return VertexBufferRef();
     }
 
+    void VertexBuffer::SetData(const float* data, uint32_t count)
+    {
+        RenderCommand::SetVertexBufferData(std::dynamic_pointer_cast<VertexBuffer>(shared_from_this()), data, count);
+    }
+
     /*
     VertexBufferRef VertexBuffer::Create(void* vertices, uint32_t size)
     {

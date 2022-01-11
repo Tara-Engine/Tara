@@ -12,6 +12,7 @@ namespace Tara {
 	REFTYPE(Shader);
 	REFTYPE(RenderTarget);
 	REFTYPE(MaterialBase);
+	REFTYPE(VertexBuffer);
 	struct RenderSceneData;
 
 	/// <summary>
@@ -50,6 +51,13 @@ namespace Tara {
 		/// Draw a triangle fan
 		/// </summary>
 		TriangleFan
+	};
+
+	enum class RenderBlendMode {
+		NORMAL,
+		ADD,
+		MULTIPLY,
+		REPLACE
 	};
 
 	/// <summary>
@@ -153,7 +161,11 @@ namespace Tara {
 		/// <param name="enable"></param>
 		static void EnableBackfaceCulling(bool enable);
 
-		
+		/// <summary>
+		/// Set the Renderer's blend mode
+		/// </summary>
+		/// <param name="mode"></param>
+		static void SetBlendMode(RenderBlendMode mode);
 
 	public:
 		//binding functions. Can be queued.
@@ -179,6 +191,14 @@ namespace Tara {
 		/// </summary>
 		/// <param name="ref">the RenderTarget</param>
 		static void RenderToTartet(RenderTargetRef ref, bool render);
+
+		/// <summary>
+		/// Set the data in a vertex buffer
+		/// </summary>
+		/// <param name="ref">the vertex buffer</param>
+		/// <param name="data">the data as float array</param>
+		/// <param name="count">the float count</param>
+		static void SetVertexBufferData(VertexBufferRef ref, const float* data, uint32_t count);
 
 	public:
 		//Query functions, not queued
@@ -245,6 +265,12 @@ namespace Tara {
 		/// <param name="enable"></param>
 		virtual void IEnableBackfaceCulling(bool enable) = 0;
 
+		/// <summary>
+		/// Protected SetBlendMode for underlying implementation to override
+		/// </summary>
+		/// <param name="mode"></param>
+		virtual void ISetBlendMode(RenderBlendMode mode) = 0;
+
 	private:
 		//Command Queue structures
 		struct CommandFormDraw {
@@ -279,6 +305,13 @@ namespace Tara {
 			RenderTargetRef Target;
 			bool Render;
 		};
+
+		struct CommandFormSetVertexBufferData {
+			VertexBufferRef Target;
+			float* Data; //This will have to be memory-managed
+			uint32_t Count;
+		};
+
 		enum class CommandType {
 			CLEAR = 0,
 			DRAW = 1,
@@ -289,10 +322,12 @@ namespace Tara {
 			POP_DRAW_TYPE = 5,
 			ENABLE_DEPTH_TEST = 6,
 			ENABLE_BACKFACE_CULLING = 7,
+			SET_BLENDMODE = 8,
 
-			BIND = 8,
-			UNIFORM = 9,
-			RENDER_TO_TARGET = 10
+			BIND = 9,
+			UNIFORM = 10,
+			RENDER_TO_TARGET = 11,
+			SET_VERTEX_BUFFER_DATA = 12,
 		};
 
 		//Drawtype
@@ -300,6 +335,9 @@ namespace Tara {
 			RenderDrawType Type;
 			bool WireFrame;
 		};
+		using CommandFormDrawType = DrawType;
+
+		using CommandFormBlend = RenderBlendMode;
 
 		//queueable render-related command
 		struct Command {
@@ -308,11 +346,13 @@ namespace Tara {
 				CommandFormDraw,
 				CommandFormDrawCount,
 				CommandFormSetClearColor,
-				DrawType,
+				CommandFormDrawType,
 				CommandFormBool,
+				CommandFormBlend,
 				CommandFormBind,
 				CommandFormUniform,
-				CommandFormRenderToTarget
+				CommandFormRenderToTarget,
+				CommandFormSetVertexBufferData
 			> Params;
 		};
 

@@ -22,6 +22,8 @@ namespace Tara{
 		//blending
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//gamma correction
+		glEnable(GL_FRAMEBUFFER_SRGB);
 	}
 
 	void OpenGLRenderCommand::ISetClearColor(float r, float g, float b)
@@ -94,6 +96,29 @@ namespace Tara{
 		}
 	}
 
+	void OpenGLRenderCommand::ISetBlendMode(RenderBlendMode mode)
+	{
+		switch (mode) {
+		case RenderBlendMode::NORMAL : {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		}
+		case RenderBlendMode::ADD: {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
+			break;
+		}
+		case RenderBlendMode::MULTIPLY: {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		}
+		case RenderBlendMode::REPLACE: {
+			glDisable(GL_BLEND);
+		}
+		}
+	}
+
 	void OpenGLRenderCommand::GLError(
 		uint32_t source,
 		uint32_t type,
@@ -143,10 +168,10 @@ namespace Tara{
 		case GL_OUT_OF_MEMORY: {ss << "Out of Memory"; break; }
 		case GL_STACK_OVERFLOW: {ss << "Stack Overflow"; break; }
 		case GL_STACK_UNDERFLOW: {ss << "Stack Underflow"; break; }
-		default: {ss << "Not an Error"; }
+		default: {ss << "See message"; }
 		}
 		ss << "] Message: ";
-		VLOG_S(level) << ss.str() << message;
+		VLOG_S(level) << ss.str() << message;// << std::endl << "Stacktrace: " << std::endl << loguru::stacktrace(1).c_str();
 	}
 
 }

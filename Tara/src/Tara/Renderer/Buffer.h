@@ -132,12 +132,18 @@ namespace Tara {
 		const BufferLayout& GetLayout() const { return m_BufferLayout; }
 
 		/// <summary>
-		/// Set the data in the buffer
+		/// Set the data in the buffer. Can be queued.
 		/// </summary>
 		/// <param name="data">the new data</param>
 		/// <param name="count">the new count, in number of floats</param>
-		virtual void SetData(const float* data, uint32_t count) = 0;
+		virtual void SetData(const float* data, uint32_t count);
 
+		/// <summary>
+		/// Implementation-specific set the data in the buffer. Not queued
+		/// </summary>
+		/// <param name="data">the data to set</param>
+		/// <param name="count">the float count</param>
+		virtual void ImplSetData(const float* data, uint32_t count) = 0;
 	public:
 		
 
