@@ -3,6 +3,7 @@
 #include "Tara/Renderer/RenderCommand.h"
 #include "Tara/Math/BoundingBox.h"
 #include "Tara/Core/Application.h"
+#include "Tara/Utility/MeshMaker.h"
 //#include "Tara/Renderer/VertexArray.h"
 //#include "Tara/Renderer/Shader.h"
 //#include "Tara/Math/Types.h"
@@ -13,7 +14,8 @@ namespace Tara {
 	RenderSceneData Renderer::s_SceneData = { nullptr };
 	
 	RenderTargetRef Renderer::s_GBuffer = nullptr;
-	VertexArrayRef Renderer::s_ScreenQuad = nullptr;
+	StaticMeshRef Renderer::s_ScreenQuadMesh = nullptr;
+	StaticMeshRef Renderer::s_LightSphereMesh = nullptr;
 
 	/*****************************************************************
 	 *                    Quad Rendering Constants                   *
@@ -295,28 +297,19 @@ namespace Tara {
 			}
 			//render the quad
 			//VertexArrayRef screenQuad;
-			if (!s_ScreenQuad){
+			if (!s_ScreenQuadMesh){
 				//load the ScreenQuad
-				float verts[]{
-					-1.0f, -1.0f, 0.0f, 0.0f, //Bottom left
-					-1.0f, 1.0f,  0.0f, 1.0f,  //Bottom right
-					1.0f, 1.0f,   1.0f, 1.0f,   //Top right
-					1.0f, -1.0f,  1.0f, 0.0f,  //Top left
-				};
-				uint32_t indices[]{
-					0, 1, 2, 2, 3, 0
-				};
-				s_ScreenQuad = VertexArray::Create(); //create and bind this first in case there is another VertexArray bound.
-				s_ScreenQuad->ImplBind(0,0);
-				VertexBufferRef vb = VertexBuffer::Create(verts, sizeof(verts) / sizeof(float));
-				//vb->ImplBind(0, 0);
-				vb->SetLayout({
-					{Shader::Datatype::Float2, "Position", false},
-					{Shader::Datatype::Float2, "UV", false}
-					});
-				IndexBufferRef ib = IndexBuffer::Create(indices, 6);
-				s_ScreenQuad->AddVertexBuffer(vb);
-				s_ScreenQuad->SetIndexBuffer(ib);
+				MeshMaker mm(MeshMaker::Mode::QUADS);
+				mm.Vertex(-1, -1, 0); mm.TextureCoord(0, 0); mm.Color(1, 1, 1, 1);
+				mm.Vertex(-1,  1, 0); mm.TextureCoord(0, 1); mm.Color(1, 1, 1, 1);
+				mm.Vertex( 1,  1, 0); mm.TextureCoord(1, 1); mm.Color(1, 1, 1, 1);
+				mm.Vertex( 1, -1, 0); mm.TextureCoord(1, 0); mm.Color(1, 1, 1, 1);
+				s_ScreenQuadMesh = StaticMesh::Create({ mm.GetMeshPart() }, "__ScreenQuadMesh__");
+			}
+			if (!s_LightSphereMesh) {
+				auto sphere = MeshPart::UnitSphere();
+				sphere.FlipWindings();
+				s_LightSphereMesh = StaticMesh::Create({ sphere }, "__LightSphereMesh__");
 			}
 
 			//render the screen quad with light material
@@ -354,46 +347,69 @@ namespace Tara {
 			}
 
 			//deal with lights
-			std::vector<glm::vec3> lightPos;
-			std::vector<glm::vec3> lightRot;
-			std::vector<glm::vec3> lightColor;
-			std::vector<glm::vec4> lightTypeIntensityCustom;
-			size_t lightCount = s_SceneData.lights.size();
-			if (lightCount > 128) {
-				lightCount = 128;
-			}
-			lightPos.reserve(lightCount);
-			lightRot.reserve(lightCount);
-			lightColor.reserve(lightCount);
-			lightTypeIntensityCustom.reserve(lightCount);
+			
+			RenderCommand::SetBlendMode(RenderBlendMode::ADD);
+			RenderCommand::EnableDepthTesting(false);
+			for (auto& light : s_SceneData.lights) {
+				//auto& light = s_SceneData.lights[i];
+				
+				//uniform int u_LightCount;
+				if (shader->ValidUniform("u_LightPosition")) {
+					shader->Send("u_LightPosition", light.Position);
+				}
+				if (shader->ValidUniform("u_LightForwardVector")) {
+					shader->Send("u_LightForwardVector", light.ForwardVector);
+				}
+				if (shader->ValidUniform("u_LightColor")) {
+					shader->Send("u_LightColor", (glm::vec3)light.Color);
+				}
+				if (shader->ValidUniform("u_LightType")) {
+					shader->Send("u_LightType", (int32_t)light.Type);
+				}
+				if (shader->ValidUniform("u_LightIntensity")) {
+					shader->Send("u_LightIntensity", light.Intensity);
+				}
+				if (shader->ValidUniform("u_LightParam1")) {
+					shader->Send("u_LightParam1", light.Custom1);
+				}
+				if (shader->ValidUniform("u_LightParam2")) {
+					shader->Send("u_LightParam2", light.Custom2);
+				}
+				if (shader->ValidUniform("u_LightRadius")) {
+					shader->Send("u_LightRadius", light.MaxRadius);
+				}
 
-			for (int i = 0; i < lightCount;i++) {
-				auto& light = s_SceneData.lights[i];
-				lightPos.push_back((glm::vec3)light.Position);
-				lightRot.push_back((glm::vec3)(light.ForwardVector));
-				lightColor.push_back((glm::vec3)light.Color);
-				lightTypeIntensityCustom.push_back(glm::vec4((float)light.Type, light.Intensity, light.Custom1, light.Custom2));
+				if (light.MaxRadius <= 0 || light.MaxRadius == std::numeric_limits<float>::infinity()) {
+					auto vertArray = s_ScreenQuadMesh->GetVertexArrays()[0];
+					vertArray->ImplBind(0,0);
+					//send identity matricies
+					if (shader->ValidUniform("u_MatrixViewProjection")) {
+						shader->Send("u_MatrixViewProjection", glm::mat4(1.0f));
+					}
+					if (shader->ValidUniform("u_MatrixModel")) {
+						shader->Send("u_MatrixModel", glm::mat4(1.0f));
+					}
+					
+					RenderCommand::Draw(vertArray);
+					vertArray->ImplUnbind();
+				}
+				else {
+					auto vertArray = s_LightSphereMesh->GetVertexArrays()[0];
+					vertArray->ImplBind(0, 0);
+
+					if (shader->ValidUniform("u_MatrixViewProjection")) {
+						shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
+					}
+					if (shader->ValidUniform("u_MatrixModel")) {
+						shader->Send("u_MatrixModel", Transform(light.Position, Rotator::FromForwardVector(light.ForwardVector), {light.MaxRadius}).GetTransformMatrix());
+					}
+					
+					RenderCommand::Draw(vertArray);
+					vertArray->ImplUnbind();
+				}
 			}
 
-			//uniform int u_LightCount;
-			if (shader->ValidUniform("u_LightCount")) {
-				shader->Send("u_LightCount", (int32_t)lightCount);
-			}
-			if (shader->ValidUniform("u_LightPositions")) {
-				shader->Send("u_LightPositions", lightPos.data(), lightCount);
-			}
-			if (shader->ValidUniform("u_LightForwardVectors")) {
-				shader->Send("u_LightForwardVectors", lightRot.data(), lightCount);
-			}
-			if (shader->ValidUniform("u_LightColors")) {
-				shader->Send("u_LightColors", lightColor.data(), lightCount);
-			}
-			if (shader->ValidUniform("u_LightTypeIntensitieCustoms")) {
-				shader->Send("u_LightTypeIntensitieCustoms", lightTypeIntensityCustom.data(), lightCount);
-			}
-
-			s_ScreenQuad->ImplBind(0, 0); //non-cached version
-			RenderCommand::Draw(s_ScreenQuad);
+			
 
 			//copy depth
 			s_GBuffer->BlitDepthToOther(s_SceneData.target);

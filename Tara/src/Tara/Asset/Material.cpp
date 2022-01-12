@@ -72,14 +72,22 @@ namespace Tara{
 			R"V0G0N(
 			//LIGHTING
 			#version 450 core
-			layout(location=0) in vec2 a_Position;
-			layout(location=1) in vec2 a_UV;
+			layout(location=0) in vec3 a_Position;
+			layout(location=1) in vec3 a_Normal;
+			layout(location=2) in vec4 a_Color;
+			layout(location=3) in vec2 a_UV;
 			
+			uniform mat4 u_MatrixViewProjection;
+			uniform mat4 u_MatrixModel;
+
 			out vec2 v_UV;
 			
 			void main(){
-				v_UV = a_UV;
-				gl_Position =  vec4(a_Position, 0, 1);
+				//v_UV = a_UV;
+				vec4 screenPos =  u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
+				vec2 applScreenPos = vec2(screenPos.x / screenPos.w, screenPos.y / screenPos.w);
+				v_UV = vec2((applScreenPos.x+1)/2, (applScreenPos.y+1)/2);
+				gl_Position = screenPos;
 			}
 
 			)V0G0N"
@@ -131,7 +139,9 @@ namespace Tara{
 			//LIGHTING
 			#version 450 core
 			layout(location=0)out vec4 outColor;
-
+			
+			layout(pixel_center_integer) in vec4 gl_FragCoord;
+			
 			uniform sampler2D u_ColorMetallicSampler;
 			uniform sampler2D u_SpecularRoughnessSampler;
 			uniform sampler2D u_EmissiveAOSampler;
@@ -142,11 +152,16 @@ namespace Tara{
 			uniform vec3 u_CameraPositionWS;
 			uniform vec3 u_CameraForwardVector;
 
-			uniform int u_LightCount;
-			uniform vec3 u_LightPositions[128];
-			uniform vec3 u_LightForwardVectors[128]; //Pitch, Yaw, Roll
-			uniform vec3 u_LightColors[128];
-			uniform vec4 u_LightTypeIntensitieCustoms[128];
+			//uniform int u_LightCount;
+			uniform vec3 u_LightPosition;//s[128];
+			uniform vec3 u_LightForwardVector;//s[128];
+			uniform vec3 u_LightColor;//s[128];
+			uniform int u_LightType;
+			uniform float u_LightIntensity;
+			uniform float u_LightParam1;
+			uniform float u_LightParam2;
+			uniform float u_LightRadius;
+			//uniform vec4 u_LightTypeIntensitieCustoms;//[128];
 
 			in vec2 v_UV;
 
@@ -158,6 +173,7 @@ namespace Tara{
 			vec3 Emissive           = vec3(0);
 			vec3 WorldSpaceNormal   = vec3(0);
 			vec3 WorldSpacePosition = vec3(0);
+			vec2 UVs				= vec2(0);
 
 			const int LightType_Point		= 0;			
 			const int LightType_Spot		= 1;			
@@ -199,14 +215,16 @@ namespace Tara{
 			R"V0G0N(
 			//LIGHTING
 			void main(){
-				Diffuse            = texture(u_ColorMetallicSampler, v_UV).xyz;
-				Metallic          = texture(u_ColorMetallicSampler, v_UV).w -1;
-				Specular           = texture(u_SpecularRoughnessSampler, v_UV).xyz;
-				Roughness         = texture(u_SpecularRoughnessSampler, v_UV).w -1;
-				Emissive           = texture(u_EmissiveAOSampler, v_UV).xyz;
-				AmbientOcclusion  = texture(u_EmissiveAOSampler, v_UV).w -1;
-				WorldSpaceNormal   = texture(u_WorldSpaceNormalSampler, v_UV).xyz;
-				WorldSpacePosition = texture(u_WorldSpacePositionSampler, v_UV).xyz;
+				UVs = vec2(gl_FragCoord.x / u_TargetSize.x, gl_FragCoord.y / u_TargetSize.y );
+				
+				Diffuse            = texture(u_ColorMetallicSampler, UVs).xyz;
+				Metallic          = texture(u_ColorMetallicSampler, UVs).w -1;
+				Specular           = texture(u_SpecularRoughnessSampler, UVs).xyz;
+				Roughness         = texture(u_SpecularRoughnessSampler, UVs).w -1;
+				Emissive           = texture(u_EmissiveAOSampler, UVs).xyz;
+				AmbientOcclusion  = texture(u_EmissiveAOSampler, UVs).w -1;
+				WorldSpaceNormal   = texture(u_WorldSpaceNormalSampler, UVs).xyz;
+				WorldSpacePosition = texture(u_WorldSpacePositionSampler, UVs).xyz;
 				
 				outColor = color();
 			}

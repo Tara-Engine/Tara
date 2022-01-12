@@ -43,11 +43,24 @@ uniform vec2 u_TargetSize;
 uniform vec3 u_CameraPositionWS;
 uniform vec3 u_CameraForwardVector;
 
+/*
 uniform int u_LightCount;
 uniform vec3 u_LightPositions[128];
 uniform vec3 u_LightForwardVectors[128]; //forward vector
 uniform vec3 u_LightColors[128];
 uniform vec4 u_LightTypeIntensitieCustoms[128]; {type, intensity, custom1, custom2}
+*/
+
+uniform vec3 u_LightPosition;
+uniform vec3 u_LightForwardVector; //forward vector
+uniform vec3 u_LightColor;
+uniform int u_LightType;
+uniform float u_LightIntensity;
+uniform float u_LightParam1;
+uniform float u_LightParam2;
+uniform float u_LightRadius;
+
+
 
 float Metallic
 float Roughness

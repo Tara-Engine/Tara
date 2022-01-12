@@ -4,22 +4,20 @@
 #include "Tara/Renderer/Light.h"
 
 namespace Tara {
+	REFTYPE(DirectionalLightEntity);
+	NOREFTYPE(DirectionalLightEntity);
 
-	REFTYPE(PointLightEntity);
-	NOREFTYPE(PointLightEntity);
-
-	class PointLightEntity : public Entity, public LightBase {
+	class DirectionalLightEntity : public Entity, public LightBase {
 	public:
-
-		PointLightEntity(
+		DirectionalLightEntity(
 			EntityNoRef parent, LayerNoRef owningLayer,
 			Transform transform = TRANSFORM_DEFAULT,
 			Vector lightColor = { 1,1,1 },
 			float lightIntensity = 1.0f,
-			const std::string& name = "PointLightEntity"
+			const std::string& name = "AmbientLightEntity"
 		);
 
-		virtual ~PointLightEntity() = default;
+		virtual ~DirectionalLightEntity() = default;
 
 		virtual void OnDraw(float deltaTime) override;
 
@@ -42,10 +40,10 @@ namespace Tara {
 		/// </summary>
 		/// <param name="drawing"></param>
 		inline void SetDrawingEditorLogo(bool drawing) { m_DrawingEditorLogo = drawing; }
-
 	private:
 		bool m_DrawingEditorLogo;
 	private:
 		static Texture2DRef s_EditorLogo;
 	};
+
 }

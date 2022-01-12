@@ -98,14 +98,40 @@ void ModelBuildLayer::Activate()
 	}
 
 	Tara::PointLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/PointLightLogo.png"));
+	Tara::AmbientLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/AmbientLightLogo.png"));
+	Tara::DirectionalLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/DirectionallightLogo.png"));
+	Tara::SpotLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/SpotLightLogo.png"));
 
 	auto light1 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({   0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 	auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({  12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 	auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+	
+	auto light4 = Tara::CreateEntity<Tara::AmbientLightEntity>(
+		Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,1,0 }, { 0,0,0 }, { 1,1,1 }), 
+		Tara::Vector(1, 1, 1), 0.2, "AmbientLightEntity"
+	);
+	auto light5 = Tara::CreateEntity<Tara::DirectionalLightEntity>(
+		Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,-1,0 }, { 0,15,45 }, { 1,1,1 }), 
+		Tara::Vector(1, 1, 1), 0.0125, "DirectionalLightEntity"
+	);
+
+	auto light6 = Tara::CreateEntity<Tara::SpotLightEntity>(
+		Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 2,-1,2 }, { 0,45,-45 }, { 1,1,1 }),
+		Tara::Vector(0, 0.5, 1), 4, 35, "SpotLightEntity"
+	);
+	light6->SetSpotlightInnerAngle(25);
+
 
 	light1->SetDrawingEditorLogo(true);
 	light2->SetDrawingEditorLogo(true);
 	light3->SetDrawingEditorLogo(true);
+	light4->SetDrawingEditorLogo(true);
+	light5->SetDrawingEditorLogo(true);
+	light6->SetDrawingEditorLogo(true);
+
+	light1->SetLightRadiusFromIntensity();
+	light2->SetLightRadiusFromIntensity();
+	light3->SetLightRadiusFromIntensity();
 
 	m_Light = light1;
 
@@ -209,9 +235,9 @@ void ModelBuildLayer::Activate()
 					else {
 						intensity -= 1;
 					}
-					light1->SetLightIntensity(intensity);
-					light2->SetLightIntensity(intensity);
-					light3->SetLightIntensity(intensity);
+					light1->SetLightIntensity(intensity); light1->SetLightRadiusFromIntensity();
+					light2->SetLightIntensity(intensity); light2->SetLightRadiusFromIntensity();
+					light3->SetLightIntensity(intensity); light3->SetLightRadiusFromIntensity();
 					return true;
 				});
 		});
@@ -236,9 +262,9 @@ void ModelBuildLayer::Activate()
 					else {
 						intensity += 1;
 					}
-					light1->SetLightIntensity(intensity);
-					light2->SetLightIntensity(intensity);
-					light3->SetLightIntensity(intensity);
+					light1->SetLightIntensity(intensity); light1->SetLightRadiusFromIntensity();
+					light2->SetLightIntensity(intensity); light2->SetLightRadiusFromIntensity();
+					light3->SetLightIntensity(intensity); light3->SetLightRadiusFromIntensity();
 					return true;
 				});
 		});

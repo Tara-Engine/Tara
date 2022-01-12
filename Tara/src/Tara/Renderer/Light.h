@@ -21,14 +21,15 @@ namespace Tara {
 		Vector Position;
 		Vector Color;
 		float Intensity;
+		float MaxRadius;
 		LightType Type;
 		Vector ForwardVector;
 		float Custom1;
 		float Custom2;
 		//Texture2Dref FalloffTexture
 
-		LightData(Vector pos, Vector color, float intensity, LightType type, Vector forward = {0,0,0}, float custom1 = 0.0f, float custom2 = 0.0f)
-			:Position(pos), Color(color), Intensity(intensity), Type(type), ForwardVector(forward), Custom1(custom1), Custom2(custom2)
+		LightData(Vector pos, Vector color, float intensity, float maxRadius, LightType type, Vector forward = { 0,0,0 }, float custom1 = 0.0f, float custom2 = 0.0f)
+			:Position(pos), Color(color), Intensity(intensity), MaxRadius(maxRadius), Type(type), ForwardVector(forward), Custom1(custom1), Custom2(custom2)
 		{}
 	};
 
@@ -37,8 +38,8 @@ namespace Tara {
 	/// </summary>
 	class LightBase {
 	public:
-		LightBase(Vector color, float intensity, LightType type)
-			: m_LightColor(color), m_LightIntensity(intensity), m_LightType(type)
+		LightBase(Vector color, float intensity, float radius, LightType type)
+			: m_LightColor(color), m_LightIntensity(intensity), m_LightRadius(radius), m_LightType(type)
 		{}
 
 		/// <summary>
@@ -60,6 +61,12 @@ namespace Tara {
 		virtual float GetLightIntensity() { return m_LightIntensity; }
 
 		/// <summary>
+		/// Get the Light Effect radius
+		/// </summary>
+		/// <returns></returns>
+		virtual float GetLightRadius() { return m_LightRadius; }
+
+		/// <summary>
 		/// Get the light type
 		/// </summary>
 		/// <returns></returns>
@@ -77,6 +84,16 @@ namespace Tara {
 		/// <param name="intensity"></param>
 		virtual void SetLightIntensity(float intensity) { m_LightIntensity = intensity; }
 
+		/// <summary>
+		/// Set the Light Effect Radius
+		/// </summary>
+		/// <param name="radius"></param>
+		virtual void SetLightRadius(float radius) { m_LightRadius = radius; }
+
+
+		virtual void SetLightRadiusFromIntensity(float constant = 1.0f, float linear = 0.07, float quadratic = 0.017) {
+			m_LightRadius = (-linear + std::sqrtf(linear * linear - 4 * quadratic * (constant - (256.0f / 1.0f) * m_LightIntensity))) / (2 * quadratic);
+		}
 		//intentional no setter for m_LightType
 
 		//intentionally protected so that the derrived classes can directly interact
@@ -89,6 +106,12 @@ namespace Tara {
 		/// The Intensity of the Light
 		/// </summary>
 		float m_LightIntensity;
+
+		/// <summary>
+		/// The effect area of the light
+		/// </summary>
+		float m_LightRadius;
+
 		/// <summary>
 		/// The Type of the Light
 		/// Intentionally not const, though it could be

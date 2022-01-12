@@ -52,6 +52,9 @@
 #include "Tara/Entities/TilemapEntity.h"
 #include "Tara/Entities/StaticMeshEntity.h"
 #include "Tara/Entities/PointLightEntity.h"
+#include "Tara/Entities/AmbientLightEntity.h"
+#include "Tara/Entities/DirectionalLightEntity.h"
+#include "Tara/Entities/SpotLightEntity.h"
 
 //Components
 #include "Tara/Components/ScriptComponent.h"

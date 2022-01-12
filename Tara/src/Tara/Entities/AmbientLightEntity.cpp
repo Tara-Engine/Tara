@@ -1,20 +1,17 @@
 #include "tarapch.h"
-#include "PointLightEntity.h"
+#include "AmbientLightEntity.h"
 #include "Tara/Renderer/Renderer.h"
 
 namespace Tara{
+	Texture2DRef AmbientLightEntity::s_EditorLogo = nullptr;
 
-	Texture2DRef PointLightEntity::s_EditorLogo = nullptr;
-
-	PointLightEntity::PointLightEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, Vector lightColor, float lightIntensity, const std::string& name)
-		: Entity(parent, owningLayer, transform, name), 
-		LightBase(lightColor, lightIntensity, 1, LightType::POINT),
+	AmbientLightEntity::AmbientLightEntity(EntityNoRef parent, LayerNoRef owningLayer, Transform transform, Vector lightColor, float lightIntensity, const std::string& name)
+		: Entity(parent, owningLayer, transform, name),
+		LightBase(lightColor, lightIntensity, 0, LightType::AMBIENT),
 		m_DrawingEditorLogo(false)
-	{
-		SetLightRadiusFromIntensity();
-	}
+	{}
 
-	void PointLightEntity::OnDraw(float deltaTime)
+	void AmbientLightEntity::OnDraw(float deltaTime)
 	{
 		Renderer::Light(GetLightData());
 		if (s_EditorLogo && m_DrawingEditorLogo) {
@@ -25,11 +22,10 @@ namespace Tara{
 		}
 	}
 
-	LightData PointLightEntity::GetLightData()
+	LightData AmbientLightEntity::GetLightData()
 	{
 		return LightData(GetWorldPosition(), GetLightColor(), GetLightIntensity(), GetLightRadius(), GetLightType());
 	}
-
 
 
 }

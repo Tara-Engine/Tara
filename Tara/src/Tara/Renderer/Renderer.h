@@ -8,6 +8,8 @@
 #include "Tara/Asset/Font.h"
 #include "Tara/Asset/Patch.h"
 #include "Tara/Renderer/Light.h"
+#include "Tara/Asset/StaticMesh.h"
+#include "Tara/Renderer/MaterialBase.h"
 
 namespace Tara {
 	
@@ -167,7 +169,8 @@ namespace Tara {
 		/// <summary>
 		/// full screen quad for rendering the GBuffer
 		/// </summary>
-		static VertexArrayRef s_ScreenQuad;
+		static StaticMeshRef s_ScreenQuadMesh;
+		static StaticMeshRef s_LightSphereMesh;
 
 		//max textures number
 		static uint32_t s_MaxTextures;
