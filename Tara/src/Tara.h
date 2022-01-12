@@ -50,7 +50,7 @@
 #include "Tara/Entities/TextEntity.h"
 #include "Tara/Entities/TilemapEntity.h"
 #include "Tara/Entities/StaticMeshEntity.h"
-#include "Tara/Entities/LightEntity.h"
+#include "Tara/Entities/PointLightEntity.h"
 
 //Components
 #include "Tara/Components/ScriptComponent.h"

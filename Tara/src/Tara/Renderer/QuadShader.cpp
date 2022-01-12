@@ -70,9 +70,16 @@ mat4 Rotate(vec3 axis, float angle){
 }
 
 mat4 Transform(vec3 position, vec3 rotation, vec3 scale){
+	//roll = x
+	//pitch = y
+	//yaw = z
+    //the negatives in the axis make it match the glm c++ side functions.
 	mat4 m_scale = Scale(scale);
 	mat4 m_pos = Translate(position);
-	mat4 m_rot = Rotate(vec3(0.0, 0.0, 1.0), rotation.x) * Rotate(vec3(1.0, 0.0, 0.0), rotation.y) * Rotate(vec3(0.0,1.0,0.0), rotation.z);
+	mat4 m_rot = 
+		Rotate(vec3(0.0,-1.0,0.0), rotation.z)*
+		Rotate(vec3(-1.0, 0.0, 0.0), rotation.y) * 
+		Rotate(vec3(0.0, 0.0, -1.0), rotation.x); 
 	return m_pos * m_rot * m_scale;
 }
 

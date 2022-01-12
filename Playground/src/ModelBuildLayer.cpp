@@ -43,6 +43,9 @@ void ModelBuildLayer::Activate()
 	m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material2deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
 	m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
 
+	auto litMat2 = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material3deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial2");
+	litMat2->SetVector4Paramater("tintColor", glm::vec4(0, 1, 1, 1));
+
 	//light material
 	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingPhong.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
 	m_Camera->GetCamera()->SetLightingMaterial(lightMaterial);
@@ -61,7 +64,7 @@ void ModelBuildLayer::Activate()
 	planePart.CalculateNormals();
 	planePart.Transform(Tara::Transform({-16,0,-16}, {0,0,0}, {32,32,32}).GetTransformMatrix());
 	auto planeMesh = Tara::StaticMesh::Create({ planePart }, "PlaneMesh");
-	auto planeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,-8.5,0 }, { 0,0,0 }, { 10,10,10 }), planeMesh, m_Material, "StaticMesh Entity - Plane");
+	auto planeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,-8.5,0 }, { 0,0,0 }, { 10,10,10 }), planeMesh, litMat2, "StaticMesh Entity - Plane");
 	
 	
 	Tara::MeshPart invertedCube = Tara::MeshPart::UnitCube();
@@ -86,13 +89,32 @@ void ModelBuildLayer::Activate()
 			}, {1,1,1}
 		), cubeMesh, m_Material, "StaticMeshEntity1");
 	}
-	
-	m_Light =     Tara::CreateEntity<Tara::LightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({   0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
-	auto light2 = Tara::CreateEntity<Tara::LightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({  12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
-	auto light3 = Tara::CreateEntity<Tara::LightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 
-	auto sprite = Tara::Sprite::Create(Tara::Texture2D::Create("assets/Widget_Base.png"), 1, 1, "WigetSprite");
-	auto spriteEntity = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+	Tara::PointLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/PointlightLogo.png"));
+
+	m_Light =     Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({   0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+	auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({  12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+	auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+
+	m_Light->SetDrawingEditorLogo(true);
+	light2->SetDrawingEditorLogo(true);
+	light3->SetDrawingEditorLogo(true);
+
+	//auto sprite = Tara::Sprite::Create(Tara::Texture2D::Create("assets/Widget_Base.png"), 1, 1, "WigetSprite");
+	//auto spriteEntity = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
+	
+	//auto centerCube = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({0,0,0}, {0,0,0}, { 0.5,0.5,0.5 }), cubeMesh, m_Material, "StaticMeshEntity1");
+	
+	/*
+	Tara::CreateComponent<Tara::LambdaComponent>(spriteEntity, LAMBDA_BEGIN_PLAY_DEFAULT,
+		[this](Tara::LambdaComponent* self, float deltaTime) {
+			Tara::Vector forward = (self->GetParent().lock()->GetWorldPosition() - this->m_Camera->GetWorldPosition()).Normalize();
+			LOG_S(INFO) << "Camera Rot: " << this->m_Camera->GetWorldRotation();
+			LOG_S(INFO) << "Forward: " << forward << "  Rotation: " << Tara::Rotator::FromForwardVector(forward);
+			self->GetParent().lock()->SetWorldRotation(Tara::Rotator::FromForwardVector(forward));
+		},
+		LAMBDA_EVENT_DEFAULT);
+	*/
 
 	/*
 	//UI Stuff (on a different Layer made here!)

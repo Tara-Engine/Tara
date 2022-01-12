@@ -25,5 +25,5 @@ private:
 
 	Tara::StaticMeshRef m_Mesh;
 
-	Tara::LightEntityRef m_Light;
+	Tara::PointLightEntityRef m_Light;
 };

@@ -97,6 +97,12 @@ namespace Tara {
 		/// <param name="angle">the spotlight angle, if a spotlight. ranges from 0 to 1</param>
 		static void Light(const LightData& light);
 
+		/// <summary>
+		/// Get the current scene data. Non-modifiable reference. Used inside of OnDraw functions to query info about the current scene that may change how they render.
+		/// </summary>
+		/// <returns></returns>
+		inline static const RenderSceneData& GetCurrentSceneData() { return s_SceneData; };
+
 	private:
 		/// <summary>
 		/// Loads the quad shader
@@ -112,6 +118,8 @@ namespace Tara {
 		/// Render the scene, executing all queues, deferred rendering, lighting, etc.
 		/// </summary>
 		static void SceneRender();
+
+		
 
 	private:
 

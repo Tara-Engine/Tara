@@ -17,9 +17,10 @@ vec4 color(){
 			float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 			
 			//specular (no intensity yet)
+			float specPower = pow(2, (1-Roughness)*8);
 			vec3 viewDir = normalize(u_CameraPositionWS - WorldSpacePosition);
 			vec3 reflectDir = reflect(-lightDir, WorldSpaceNormal);
-			float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+			float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), specPower);
 			
 			//accColor = accColor + vec3(attenuation);
 			accColor = accColor + attenuation * ((diffuseFactor * (Diffuse * u_LightColors[i])) + (specularFactor * (Specular * u_LightColors[i])));

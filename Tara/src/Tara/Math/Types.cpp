@@ -514,6 +514,13 @@ namespace Tara{
 		));
 	}
 
+	Rotator Rotator::FromForwardVector(Vector forward)
+	{
+		float yaw = atan2f(forward.x,  forward.z);
+		float pitch = -atan2f(forward.y, sqrtf(forward.x*forward.x + forward.z*forward.z));
+		return Rotator(0, glm::degrees(pitch), glm::degrees(yaw));
+	}
+
 	sol::table Rotator::ToScriptTable() const
 	{
 		//TODO: when lua side library for tables, complete, replace this
