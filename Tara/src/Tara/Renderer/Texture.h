@@ -52,6 +52,8 @@ namespace Tara {
 		/// </summary>
 		/// <param name="color"></param>
 		virtual void SetBorderColor(const glm::vec4& color) = 0;
+
+		
 	public:
 		/// <summary>
 		/// Set the default texture filtering mode for all newly created textures

@@ -30,6 +30,7 @@ namespace Tara{
 		//glActiveTexture(GL_TEXTURE0 + slot);
 		//glBindTexture(GL_TEXTURE_2D, m_RendererID);
 		glBindTextureUnit(slot, m_RendererID);
+		//m_LastBindPoint = slot;
 	}
 
 	void OpenGLTexture2D::ImplUnbind() const

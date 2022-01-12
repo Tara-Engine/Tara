@@ -1,4 +1,5 @@
 uniform vec4 tintColor;
+uniform float roughnessValue;
 
 vec3 diffuse(){
 	return  vec3(v_Color * tintColor);
@@ -21,7 +22,7 @@ float metallic(){
 }
 
 float roughness(){
-	return 1.0;
+	return roughnessValue;
 }
 
 float ambientOcclusion(){

@@ -20,7 +20,10 @@ void ModelBuildLayer::Activate()
 	m_Camera->SetPerspectiveFOV(90);
 	SetLayerCamera(m_Camera);
 	Tara::CreateComponent<EditorCameraControllerComponent>(m_Camera, 1.0f, "EditorCameraControllerComponent");
+	std::dynamic_pointer_cast<Tara::PerspectiveCamera>(m_Camera->GetCamera())->SetFarClipPlane(500);
 
+	auto basicTexture = Tara::Texture2D::Create("assets/Widget_Base.png");
+	auto wallTexture = Tara::Texture2D::Create("assets/wall.png");
 	//make a basic shader
 	/*
 	std::unordered_map<Tara::Shader::TargetStage, std::string> shaderSources;
@@ -40,19 +43,23 @@ void ModelBuildLayer::Activate()
 	auto unlitMat = Tara::Material::Create(Tara::MaterialType::UNLIT, "assets/material1.glsl", Tara::Shader::SourceType::TextFiles, "UnlitMaterial");
 	unlitMat->SetVector4Paramater("tintColor", glm::vec4(0, 0, 1, 1));
 
-	m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material2deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
+	m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material3deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
 	m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
+	m_Material->SetScalarParamater("roughnessValue", 1.0f);
+	m_Material->SetTextureParmamter("diffuseTexture", basicTexture);
 
-	auto litMat2 = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material3deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial2");
+	auto litMat2 = m_Material->CreateInstance("BaseMaterialInstance");
 	litMat2->SetVector4Paramater("tintColor", glm::vec4(0, 1, 1, 1));
+	litMat2->SetScalarParamater("roughnessValue", 0.1f);
+	litMat2->SetTextureParmamter("diffuseTexture", wallTexture);
 
 	//light material
 	auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingPhong.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
 	m_Camera->GetCamera()->SetLightingMaterial(lightMaterial);
+	
+	
 	//make a MeshPart for rendering a cube
-	std::dynamic_pointer_cast<Tara::PerspectiveCamera>(m_Camera->GetCamera())->SetFarClipPlane(500);
-
-
+	
 	//make a good scene for lighting tests
 	Tara::MeshMaker planeMaker(Tara::MeshMaker::Mode::QUADS);
 	//{0,1,0,  0, 1, 0, 1,1,1,1, 0,1}, {1,1,0,  0, 1, 0, 1,1,1,1, 1,1}, {1,1,1,  0, 1, 0, 1,1,1,1, 1,0}, {0,1,1,  0, 1, 0, 1,1,1,1, 0,0}, //Top(+Y)

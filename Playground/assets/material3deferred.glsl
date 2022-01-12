@@ -1,7 +1,9 @@
 uniform vec4 tintColor;
+uniform sampler2D diffuseTexture;
+uniform float roughnessValue;
 
 vec3 diffuse(){
-	return  vec3(tintColor);
+	return  vec3(tintColor) * vec3(texture(diffuseTexture, v_UV));
 }
 
 vec3 normal(){
@@ -21,7 +23,7 @@ float metallic(){
 }
 
 float roughness(){
-	return 0.1;
+	return roughnessValue;
 }
 
 float ambientOcclusion(){

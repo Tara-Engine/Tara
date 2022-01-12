@@ -11,6 +11,7 @@ namespace Tara {
 		inline virtual uint32_t GetHeight()const override { return m_Height; };
 		virtual void ImplBind(int slot, int)const override;
 		virtual void ImplUnbind() const override;
+		//inline virtual std::pair<int32_t, int32_t> GetLastBindPoint() const override { return std::make_pair(m_LastBindPoint.first, m_LastBindPoint.second); }
 		virtual void SetFiltering(Filtering filter) override;
 
 		virtual void SetWrap(Wrapping wrap) override;
@@ -28,5 +29,6 @@ namespace Tara {
 		uint32_t m_BufferDepthStencilID;
 		uint32_t m_TextureInternalType;
 		uint32_t m_TextureInternalFormat;
+		//mutable std::pair<int32_t, int32_t> m_LastBindPoint;
 	};
 }

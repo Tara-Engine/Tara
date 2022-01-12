@@ -6,7 +6,7 @@
 
 namespace Tara {
 	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, const std::string& name)
-		: RenderTarget(name), m_Width(width), m_Height(height)
+		: RenderTarget(name), m_Width(width), m_Height(height)//, m_LastBindPoint(std::make_pair(0,0))
 	{
 		//generate the framebuffer
 		glGenFramebuffers(1, &m_FramebufferID);
@@ -127,6 +127,7 @@ namespace Tara {
 	{
 		//bind the texture for rendering
 		glBindTextureUnit(slot, m_TextureColorIDs[index]);
+		//m_LastBindPoint = std::make_pair(slot, index);
 	}
 
 	void OpenGLRenderTarget::ImplUnbind() const

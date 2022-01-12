@@ -254,7 +254,7 @@ namespace Tara{
 			RenderCommand::EnableDeferred(false);
 		}
 		m_Shader->Bind();
-		int32_t bindSlot;
+		int32_t bindSlot = 0;
 		for (auto& param : m_Paramaters) {
 			Uniform u = MaterialBase::MaterialParamaterToUniform(param.second.second, param.second.first, bindSlot, 0);
 			m_Shader->Send(param.first, u);

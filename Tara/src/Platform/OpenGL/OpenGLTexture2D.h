@@ -12,6 +12,7 @@ namespace Tara {
 		virtual inline uint32_t GetHeight()const override { return m_Height; }
 		virtual void ImplBind(int slot, int)const override;
 		virtual void ImplUnbind() const override;
+		//inline virtual std::pair<int32_t, int32_t> GetLastBindPoint() const override { return std::make_pair(m_LastBindPoint, 0); }
 		virtual void SetFiltering(Filtering filter) override;
 		virtual void SetWrap(Wrapping wrap) override;
 		virtual void SetBorderColor(const glm::vec4& color) override;
@@ -22,6 +23,6 @@ namespace Tara {
 		std::string m_Path;   
 		uint32_t m_Width, m_Height;
 		uint32_t m_RendererID;
-
+		//mutable int32_t m_LastBindPoint;
 	};
 }

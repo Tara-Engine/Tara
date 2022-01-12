@@ -4,6 +4,7 @@
 
 namespace Tara {
 	REFTYPE(MaterialBase);
+	REFTYPE(MaterialInstance);
 
 	enum class MaterialParamaterType {
 		INVALID, //for Invalid types
@@ -46,7 +47,7 @@ namespace Tara {
 		LIT = 0b0010, 
 	};
 
-	class MaterialBase {
+	class MaterialBase : public std::enable_shared_from_this<MaterialBase> {
 	public:
 		/// <summary>
 		/// Get the MaterialParamaterType from a MaterialParamater variable.
@@ -140,6 +141,21 @@ namespace Tara {
 		/// <param name="name">the paramater name</param>
 		/// <param name="value">the paramater value</param>
 		virtual void SetParamater(const std::string& name, MaterialParamater value) = 0;
+
+		/// <summary>
+		/// Create a new MaterialInstance from this Material
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		virtual MaterialInstanceRef CreateInstance(const std::string name);
+
+		/// <summary>
+		/// Create a new MaterialInstance from this Material. 
+		/// The new instance is not registered with the Asset Library. 
+		/// Useful for temporary Instances
+		/// </summary>
+		/// <returns></returns>
+		virtual MaterialInstanceRef CreateInstanceUnregistered();
 
 		inline virtual void SetScalarParamater(const std::string& name, float value) { SetParamater(name, value); }
 		inline virtual void SetScalarParamater(const std::string& name, int32_t value) { SetParamater(name, value); }

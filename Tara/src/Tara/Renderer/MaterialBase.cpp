@@ -1,5 +1,7 @@
 #include "tarapch.h"
 #include "MaterialBase.h"
+#include "Tara/Asset/MaterialInstance.h"
+#include "Tara/Asset/AssetLibrary.h"
 
 namespace Tara {
 
@@ -494,6 +496,23 @@ namespace Tara {
 
 		default: return 0.0f;
 		}
+	}
+
+	MaterialInstanceRef MaterialBase::CreateInstance(const std::string name)
+	{
+		auto ref = AssetLibrary::Get()->GetAssetIf<MaterialInstance>(name);
+		if (ref == nullptr) {
+			ref = std::make_shared<MaterialInstance>(shared_from_this(), name);
+			AssetLibrary::Get()->RegisterAsset(ref);
+			return ref;
+		}
+		LOG_S(WARNING) << "Attemtped to create a MaterialInstance with an already existing name";
+		return nullptr;
+	}
+
+	MaterialInstanceRef MaterialBase::CreateInstanceUnregistered()
+	{
+		return std::make_shared<MaterialInstance>(shared_from_this(), "__UNREGISTERED__");
 	}
 
 }

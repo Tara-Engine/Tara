@@ -36,6 +36,7 @@
 #include "Tara/Asset/Patch.h"
 #include "Tara/Asset/StaticMesh.h"
 #include "Tara/Asset/Material.h"
+#include "Tara/Asset/MaterialInstance.h"
 
 //math
 #include "Tara/Math/Types.h"
