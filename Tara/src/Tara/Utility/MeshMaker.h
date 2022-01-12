@@ -153,10 +153,19 @@ namespace Tara {
 	private:
 		/// <summary>
 		/// Add a new vertex, respecting combining rules. Internal use only
+		/// ONLY returns the index to use
 		/// </summary>
 		/// <param name="vertex"></param>
 		/// <returns></returns>
 		uint32_t AddNewVertex(const Tara::Vertex& vertex);
+
+		/// <summary>
+		/// Add a new triangle, from the indices of its verts
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		void AddNewTriangle(uint32_t a, uint32_t b, uint32_t c);
 
 	private:
 		std::vector<Tara::Vertex> m_Vertices;

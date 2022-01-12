@@ -169,6 +169,11 @@ namespace Tara {
 		/// <returns></returns>
 		static MeshPart UnitCube();
 
+		/// <summary>
+		/// Create a Sphere. UVs are not provided. Needs more work, there are also normal issues
+		/// </summary>
+		/// <returns></returns>
+		static MeshPart UnitSphere(int32_t strips_v = 16, int32_t strips_h = 32);
 	public:
 		//other utility
 

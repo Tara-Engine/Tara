@@ -13,7 +13,7 @@ namespace Tara {
 	RenderSceneData Renderer::s_SceneData = { nullptr };
 	
 	RenderTargetRef Renderer::s_GBuffer = nullptr;
-	//VertexArrayRef Renderer::s_ScreenQuad = nullptr;
+	VertexArrayRef Renderer::s_ScreenQuad = nullptr;
 
 	/*****************************************************************
 	 *                    Quad Rendering Constants                   *
@@ -232,6 +232,7 @@ namespace Tara {
 		if (s_QuadGroups.size() > 0){
 			RenderCommand::EnableDeferred(false);
 			RenderCommand::EnableBackfaceCulling(false);
+			RenderCommand::EnableDepthTesting(false);
 			//execute batch rendering
 			s_QuadShader->Bind();
 			s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
@@ -264,7 +265,7 @@ namespace Tara {
 	void Renderer::SceneRender()
 	{
 		RenderCommand::StopQueue();
-
+		RenderCommand::EnableDepthTesting(true);
 		auto& lightingMat = s_SceneData.camera->GetLightingMaterial();
 		if (lightingMat) {
 			RenderCommand::SetBlendMode(RenderBlendMode::REPLACE);
@@ -293,8 +294,8 @@ namespace Tara {
 				s_GBuffer->RenderTo(false);
 			}
 			//render the quad
-			VertexArrayRef screenQuad;
-			{
+			//VertexArrayRef screenQuad;
+			if (!s_ScreenQuad){
 				//load the ScreenQuad
 				float verts[]{
 					-1.0f, -1.0f, 0.0f, 0.0f, //Bottom left
@@ -305,8 +306,8 @@ namespace Tara {
 				uint32_t indices[]{
 					0, 1, 2, 2, 3, 0
 				};
-				screenQuad = VertexArray::Create(); //create and bind this first in case there is another VertexArray bound.
-				screenQuad->ImplBind(0,0);
+				s_ScreenQuad = VertexArray::Create(); //create and bind this first in case there is another VertexArray bound.
+				s_ScreenQuad->ImplBind(0,0);
 				VertexBufferRef vb = VertexBuffer::Create(verts, sizeof(verts) / sizeof(float));
 				//vb->ImplBind(0, 0);
 				vb->SetLayout({
@@ -314,8 +315,8 @@ namespace Tara {
 					{Shader::Datatype::Float2, "UV", false}
 					});
 				IndexBufferRef ib = IndexBuffer::Create(indices, 6);
-				screenQuad->AddVertexBuffer(vb);
-				screenQuad->SetIndexBuffer(ib);
+				s_ScreenQuad->AddVertexBuffer(vb);
+				s_ScreenQuad->SetIndexBuffer(ib);
 			}
 
 			//render the screen quad with light material
@@ -391,8 +392,8 @@ namespace Tara {
 				shader->Send("u_LightTypeIntensitieCustoms", lightTypeIntensityCustom.data(), lightCount);
 			}
 
-			screenQuad->ImplBind(0, 0); //non-cached version
-			RenderCommand::Draw(screenQuad);
+			s_ScreenQuad->ImplBind(0, 0); //non-cached version
+			RenderCommand::Draw(s_ScreenQuad);
 
 			//copy depth
 			s_GBuffer->BlitDepthToOther(s_SceneData.target);

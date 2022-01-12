@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "MeshMaker.h"
+#include "Tara/Math/Functions.h"
 
 namespace Tara{
 	MeshMaker::MeshMaker(Mode mode)
@@ -68,10 +69,11 @@ namespace Tara{
 				//should *only* be 2.
 				
 				//move the three triangles over.
+				uint32_t indices[3];
 				for (int i = 0; i < 3; i++) {
-					AddNewVertex(m_WorkingPrimitive[i]);
+					indices[i] = AddNewVertex(m_WorkingPrimitive[i]);
 				}
-
+				AddNewTriangle(indices[0], indices[1], indices[2]);
 				m_WorkingIndex = -1;
 			}
 
@@ -85,18 +87,22 @@ namespace Tara{
 
 				if (m_IndexCache[0] > -1 && m_IndexCache[1] > -1) {
 					//if the index cache is valid, then use those indecies. update the second cached with the current third
-					m_Indices.push_back(m_IndexCache[0]);
-					m_Indices.push_back(m_IndexCache[1]);
+					//m_Indices.push_back(m_IndexCache[0]);
+					//m_Indices.push_back(m_IndexCache[1]);
 					
-					m_IndexCache[1] = AddNewVertex(m_WorkingPrimitive[2]);
+					uint32_t index = AddNewVertex(m_WorkingPrimitive[2]);
+					AddNewTriangle(m_IndexCache[0], m_IndexCache[1], index);
+					m_IndexCache[1] = index;
 				}
 				else {
 					//if the index cache is not valid, its the first bit of the strip, add all three and cache the first and third indecies
 					m_IndexCache[0] = AddNewVertex(m_WorkingPrimitive[0]);
 
-					AddNewVertex(m_WorkingPrimitive[1]);
+					uint32_t index = AddNewVertex(m_WorkingPrimitive[1]);
 					
 					m_IndexCache[1] = AddNewVertex(m_WorkingPrimitive[2]);
+
+					AddNewTriangle(m_IndexCache[0], index, m_IndexCache[1]);
 				}
 
 				//decrease by one (IE, reset to the second primitive.)
@@ -112,18 +118,22 @@ namespace Tara{
 
 				if (m_IndexCache[0] > -1 && m_IndexCache[1] > -1) {
 					//if the index cache is valid, then use those indecies. slide the cache down and update it with current third
-					m_Indices.push_back(m_IndexCache[0]);
-					m_Indices.push_back(m_IndexCache[1]);
+					//m_Indices.push_back();
+					//m_Indices.push_back(m_IndexCache[1]);
+					uint32_t index = AddNewVertex(m_WorkingPrimitive[2]);
+					AddNewTriangle(m_IndexCache[0], m_IndexCache[1], index);
 					m_IndexCache[0] = m_IndexCache[1];
-					m_IndexCache[1] = AddNewVertex(m_WorkingPrimitive[2]);
+					m_IndexCache[1] = index;
 				}
 				else {
 					//if the index cache is not valid, its the first bit of the strip, add all three and cache the second and third indecies
-					AddNewVertex(m_WorkingPrimitive[0]);
+					uint32_t index = AddNewVertex(m_WorkingPrimitive[0]);
 					
 					m_IndexCache[0] = AddNewVertex(m_WorkingPrimitive[1]);
 					
 					m_IndexCache[1] = AddNewVertex(m_WorkingPrimitive[2]);
+
+					AddNewTriangle(index, m_IndexCache[0], m_IndexCache[1]);
 				}
 
 				//decrease by one (IE, reset to the second primitive.)
@@ -143,13 +153,13 @@ namespace Tara{
 
 				uint32_t firstIndex = AddNewVertex(m_WorkingPrimitive[0]);
 
-				AddNewVertex(m_WorkingPrimitive[1]);
+				uint32_t secondIndex = AddNewVertex(m_WorkingPrimitive[1]);
 
-				m_Indices.push_back(AddNewVertex(m_WorkingPrimitive[2]));
+				uint32_t thirdIndex = AddNewVertex(m_WorkingPrimitive[2]);
 
-				AddNewVertex(m_WorkingPrimitive[3]);
-				
-				m_Indices.push_back(firstIndex);
+				AddNewTriangle(firstIndex, secondIndex, thirdIndex);
+
+				AddNewTriangle(thirdIndex, AddNewVertex(m_WorkingPrimitive[3]), firstIndex);
 
 				m_WorkingIndex = -1;
 			}
@@ -191,15 +201,15 @@ namespace Tara{
 		case CombineRules::IF_SECOND_DEFAULT: {
 			addDefault = true;
 			if (
-				vertex.Normal == Tara::Vector{ 0, 0, 0 } && 
-				vertex.Color == glm::vec4{ 1,1,1,1 } && 
-				vertex.UV == glm::vec2{ 0,0 }
+				NearlyEqual(vertex.Normal, Tara::Vector{ 0, 0, 0 }) &&
+				NearlyEqual(vertex.Color, glm::vec4{ 1,1,1,1 }) && 
+				NearlyEqual(vertex.UV, glm::vec2{ 0,0 })
 			){
 				//check if there is a matching position already vertex
 				for (uint32_t i = 0; i < m_Vertices.size(); i++) {
 					if (m_Vertices[i].Position == vertex.Position) {
 						//found a matching position. Use that instead
-						m_Indices.push_back(i);
+						//m_Indices.push_back(i);
 						index = i;
 						addDefault = false;
 						break;
@@ -213,12 +223,12 @@ namespace Tara{
 			addDefault = true; 
 			for (uint32_t i = 0; i < m_Vertices.size(); i++) {
 				if (
-					m_Vertices[i].Position == vertex.Position &&
-					m_Vertices[i].Color == vertex.Color && 
-					m_Vertices[i].UV == vertex.UV
+					NearlyEqual(m_Vertices[i].Position, vertex.Position) &&
+					NearlyEqual(m_Vertices[i].Color, vertex.Color) && 
+					NearlyEqual(m_Vertices[i].UV, vertex.UV)
 				) {
 					//found a matching position. Use that instead
-					m_Indices.push_back(i);
+					//m_Indices.push_back(i);
 					index = i;
 					addDefault = false;
 					break;
@@ -231,13 +241,13 @@ namespace Tara{
 			addDefault = true;
 			for (uint32_t i = 0; i < m_Vertices.size(); i++) {
 				if (
-					m_Vertices[i].Position == vertex.Position &&
-					m_Vertices[i].Normal == vertex.Normal &&
-					m_Vertices[i].Color == vertex.Color &&
-					m_Vertices[i].UV == vertex.UV
+					NearlyEqual(m_Vertices[i].Position, vertex.Position) &&
+					NearlyEqual(m_Vertices[i].Normal, vertex.Normal) &&
+					NearlyEqual(m_Vertices[i].Color, vertex.Color) &&
+					NearlyEqual(m_Vertices[i].UV, vertex.UV)
 					) {
 					//found a matching position. Use that instead
-					m_Indices.push_back(i);
+					//m_Indices.push_back(i);
 					index = i;
 					addDefault = false;
 					break;
@@ -251,10 +261,20 @@ namespace Tara{
 		if (addDefault) {
 			m_Vertices.push_back(vertex);
 			index = m_Vertices.size() - 1;
-			m_Indices.push_back(index);
+			//m_Indices.push_back(index);
 		}
 
 		return index;
+	}
+
+	void MeshMaker::AddNewTriangle(uint32_t a, uint32_t b, uint32_t c)
+	{
+		//if any are the same, ignore!
+		if (a != b && a != c && b != c) {
+			m_Indices.push_back(a);
+			m_Indices.push_back(b);
+			m_Indices.push_back(c);
+		}
 	}
 
 

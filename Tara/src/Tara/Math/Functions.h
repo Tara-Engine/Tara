@@ -70,4 +70,45 @@ namespace Tara {
 		return a * (1 - v) + b * v;
 	}
 
+	/// <summary>
+	/// Nearly Equal function. Check if two things are within Delta of each other
+	/// </summary>
+	/// <returns></returns>
+	inline bool NearlyEqual(float a, float b, float delta = 0.001) {
+		return abs(a - b) < delta;
+	}
+
+	/// <summary>
+	/// Nearly Equal function. Check if two things are within Delta of each other
+	/// </summary>
+	/// <returns></returns>
+	inline bool NearlyEqual(glm::vec2 a, glm::vec2 b, float delta = 0.001) {
+		return abs(a - b).x < delta && abs(a - b).y < delta;
+	}
+
+	/// <summary>
+	/// Nearly Equal function. Check if two things are within Delta of each other
+	/// </summary>
+	/// <returns></returns>
+	inline bool NearlyEqual(glm::vec3 a, glm::vec3 b, float delta = 0.001) {
+		return abs(a - b).x < delta && abs(a - b).y < delta && abs(a - b).z < delta;
+	}
+
+	/// <summary>
+	/// Nearly Equal function. Check if two things are within Delta of each other
+	/// </summary>
+	/// <returns></returns>
+	inline bool NearlyEqual(Vector a, Vector b, float delta = 0.001) {
+		return abs(a - b).x < delta && abs(a - b).y < delta && abs(a - b).z < delta;
+	}
+
+	/// <summary>
+	/// Nearly Equal function. Check if two things are within Delta of each other
+	/// </summary>
+	/// <returns></returns>
+	inline bool NearlyEqual(glm::vec4 a, glm::vec4 b, float delta = 0.001) {
+		return abs(a - b).x < delta && abs(a - b).y < delta && abs(a - b).z < delta && abs(a - b).w < delta;
+	}
+
+	
 }

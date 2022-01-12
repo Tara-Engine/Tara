@@ -1,5 +1,6 @@
 #include "tarapch.h"
 #include "MeshPart.h"
+#include "Tara/Utility/MeshMaker.h"
 
 namespace Tara{
 
@@ -91,6 +92,105 @@ namespace Tara{
 				16,17,18,18,19,16,	//Top(+Y) 
 				20,22,21,22,20,23	//Bottom(-Y) 
 			});
+	}
+
+	MeshPart MeshPart::UnitSphere(int32_t strips_v, int32_t strips_h)
+	{
+		MeshMaker mm(MeshMaker::Mode::TRIANGLE_FAN);
+		mm.SetCombineRule(MeshMaker::CombineRules::IF_SECOND_DEFAULT);
+		float theta_v = glm::radians(180.0f / strips_v);
+		float theta_h = glm::radians(360.0f / strips_h);
+		float angle_v = glm::radians(-180.0f);
+		for (int v = 0; v < strips_v; v++) {
+			float angle_h = glm::radians(-180.0f);
+
+			if (v == 0) {
+				//start triangle fan
+				mm.Vertex(Vector{ 0,-0.5,0 });
+
+				mm.Vertex(Vector{
+						sinf(angle_h) * sinf(angle_v + theta_v) * 0.5,
+						cosf(angle_v + theta_v) * 0.5,
+						cosf(angle_h) * sinf(angle_v + theta_v) * 0.5
+					});
+
+			}
+			else if (v == strips_v - 1) {
+				mm.Vertex(Vector{ 0,0.5,0 });
+
+				mm.Vertex(Vector{
+						sinf(angle_h + theta_h) * sinf(angle_v) * 0.5,
+						cosf(angle_v) * 0.5,
+						cosf(angle_h + theta_h) * sinf(angle_v) * 0.5
+					});
+
+				angle_h *= -1;
+
+			}
+
+			for (int h = 0; h < strips_h; h++) {
+
+				if (v == 0) {
+					//Draw upside down triangle fan
+					mm.Vertex(Vector{
+						sinf(angle_h + theta_h) * sinf(angle_v + theta_v) * 0.5,
+						cosf(angle_v + theta_v) * 0.5,
+						cosf(angle_h + theta_h) * sinf(angle_v + theta_v) * 0.5
+						});
+
+				}
+				else if (v == strips_v - 1) {
+
+
+					mm.Vertex(Vector{
+						sinf(angle_h) * sinf(angle_v) * 0.5,
+						cosf(angle_v) * 0.5,
+						cosf(angle_h) * sinf(angle_v) * 0.5
+						});
+
+					angle_h -= 2 * theta_h;
+				}
+				else {
+					mm.Vertex(Vector{
+						sinf(angle_h) * sinf(angle_v) * 0.5,
+						cosf(angle_v) * 0.5,
+						cosf(angle_h) * sinf(angle_v) * 0.5
+						});
+
+					mm.Vertex(Vector{
+						sinf(angle_h) * sinf(angle_v + theta_v) * 0.5,
+						cosf(angle_v + theta_v) * 0.5,
+						cosf(angle_h) * sinf(angle_v + theta_v) * 0.5
+						});
+
+					mm.Vertex(Vector{
+						sinf(angle_h + theta_h) * sinf(angle_v + theta_v) * 0.5,
+						cosf(angle_v + theta_v) * 0.5,
+						cosf(angle_h + theta_h) * sinf(angle_v + theta_v) * 0.5
+						});
+
+					mm.Vertex(Vector{
+						sinf(angle_h + theta_h) * sinf(angle_v) * 0.5,
+						cosf(angle_v) * 0.5,
+						cosf(angle_h + theta_h) * sinf(angle_v) * 0.5
+						});
+				}
+
+				angle_h += theta_h;
+			}
+			if (v == 0) {
+				mm.PushPrimitive();
+				mm.SetMode(MeshMaker::Mode::QUADS);
+			}
+			else if (v == strips_v - 2) {
+				mm.PushPrimitive();
+				mm.SetMode(MeshMaker::Mode::TRIANGLE_FAN);
+			}
+			angle_v += theta_v;
+		}
+		Tara::MeshPart spherePart = mm.GetMeshPart();
+		spherePart.CalculateNormals();
+		return spherePart;
 	}
 
 	VertexArrayRef MeshPart::ToVertexArray() const

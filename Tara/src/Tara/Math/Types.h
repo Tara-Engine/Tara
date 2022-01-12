@@ -440,6 +440,9 @@ namespace Tara {
 	
 }
 
+inline Tara::Vector abs(Tara::Vector v) {
+	return Tara::Vector(abs(v.x), abs(v.y), abs(v.z));
+}
 
 //Logging stuff
 inline std::ostream& operator<< (std::ostream& out, const Tara::Vector& v)

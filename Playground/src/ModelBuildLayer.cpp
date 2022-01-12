@@ -97,15 +97,30 @@ void ModelBuildLayer::Activate()
 		), cubeMesh, m_Material, "StaticMeshEntity1");
 	}
 
-	Tara::PointLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/PointlightLogo.png"));
+	Tara::PointLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/PointLightLogo.png"));
 
-	m_Light =     Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({   0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+	auto light1 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({   0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 	auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({  12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 	auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 
-	m_Light->SetDrawingEditorLogo(true);
+	light1->SetDrawingEditorLogo(true);
 	light2->SetDrawingEditorLogo(true);
 	light3->SetDrawingEditorLogo(true);
+
+	m_Light = light1;
+
+
+	//create a unit sphere
+	auto sphereMesh = Tara::StaticMesh::Create({Tara::MeshPart::UnitSphere()}, "SphereMesh");
+	auto sphereObject = Tara::CreateEntity<Tara::StaticMeshEntity>(
+		Tara::EntityNoRef(), weak_from_this(), 
+		Tara::Transform({ 0,-2,0 }, { 0,0,0 }, { 1,1,1 }), 
+		sphereMesh, m_Material, "Static Mesh Entity"
+	);
+
+
+
+
 
 	//auto sprite = Tara::Sprite::Create(Tara::Texture2D::Create("assets/Widget_Base.png"), 1, 1, "WigetSprite");
 	//auto spriteEntity = Tara::CreateEntity<Tara::SpriteEntity>(Tara::EntityNoRef(), weak_from_this(), TRANSFORM_DEFAULT, "sprite", sprite);
@@ -123,7 +138,7 @@ void ModelBuildLayer::Activate()
 		LAMBDA_EVENT_DEFAULT);
 	*/
 
-	/*
+	
 	//UI Stuff (on a different Layer made here!)
 	Tara::LayerRef UILayer = std::make_shared<Tara::Layer>();
 	Tara::Application::Get()->GetScene()->PushOverlay(UILayer);
@@ -138,29 +153,100 @@ void ModelBuildLayer::Activate()
 	auto patchFrame = Tara::Patch::Create(Tara::Texture2D::Create("assets/Frame.png"), "PatchFrame");
 	patchFrame->SetBorderPixels(2, 2, 31, 2);
 
-	//auto patchButtonNormal = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Normal.png"), "PatchButtonNormal");
-	//patchButtonNormal->SetBorderPixels(5, 5, 5, 5);
-	//
-	//auto patchButtonHover = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Hover.png"), "PatchButtonHover");
-	//patchButtonHover->SetBorderPixels(5, 5, 5, 5);
-	//
-	//auto patchButtonClicked = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Clicked.png"), "PatchButtonClicked");
-	//patchButtonClicked->SetBorderPixels(5, 5, 5, 5);
-	//
-	//auto patchButtonDisabled = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Disabled.png"), "PatchButtonDisabled");
-	//patchButtonDisabled->SetBorderPixels(5, 5, 5, 5);
+	auto patchButtonNormal = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Normal.png"), "PatchButtonNormal");
+	patchButtonNormal->SetBorderPixels(5, 5, 5, 5);
+	
+	auto patchButtonHover = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Hover.png"), "PatchButtonHover");
+	patchButtonHover->SetBorderPixels(5, 5, 5, 5);
+	
+	auto patchButtonClicked = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Clicked.png"), "PatchButtonClicked");
+	patchButtonClicked->SetBorderPixels(5, 5, 5, 5);
+	
+	auto patchButtonDisabled = Tara::Patch::Create(Tara::Texture2D::Create("assets/Button_Disabled.png"), "PatchButtonDisabled");
+	patchButtonDisabled->SetBorderPixels(5, 5, 5, 5);
 
 	auto base = Tara::CreateEntity<Tara::UIBaseEntity>(Tara::EntityNoRef(), UILayer, "UIBaseEntity");
 	base->SetBorder(0, 0, 0, 0);
 
 	auto frame = Tara::CreateEntity<Tara::UIFrameEntity>(base, PARENT_LAYER, patchFrame, 28.0f, "Basic Frame");
 	frame->SetBorder(frame->GetBorder() + 5.0f);
+	
 
 	auto list = Tara::CreateEntity<Tara::UIListEntity>(frame, PARENT_LAYER, "UIListEntity");
 	list->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
 	list->SetSpacing(5, 5);
-	*/
+	
+	auto text = Tara::CreateEntity<Tara::UITextEntity>(list, PARENT_LAYER, font, "Text Entity");
+	text->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+	text->SetText("Light Strength: ?");
+	text->SetTextSize(32);
 
+	Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT,
+		[light1](Tara::LambdaComponent* self, float deltaTime) {
+			std::stringstream ss;
+			ss << "Light Strength: " << light1->GetLightIntensity();
+			std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock())->SetText(ss.str());
+		},
+	LAMBDA_EVENT_DEFAULT);
+
+	auto hlist = Tara::CreateEntity<Tara::UIListEntity>(list, PARENT_LAYER, "UIListEntity");
+	hlist->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+	hlist->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
+	hlist->SetSpacing(5, 5);
+
+	auto buttonLess = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+	buttonLess->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	buttonLess->SetBorderFromPatch();
+	buttonLess->SetTint({ 1, 1, 1, 1 });
+	Tara::CreateComponent<Tara::LambdaComponent>(buttonLess, LAMBDA_BEGIN_PLAY_DEFAULT,LAMBDA_UPDATE_DEFAULT,
+		[light1, light2, light3](Tara::LambdaComponent* self, Tara::Event& e) {
+			Tara::EventFilter filter(e);
+			filter.Call<Tara::UIToggleEvent>([light1, light2, light3](Tara::UIToggleEvent& ee) {
+					float intensity = light1->GetLightIntensity();
+					if (intensity <= 1) {
+						intensity /= 2;
+					}
+					else {
+						intensity -= 1;
+					}
+					light1->SetLightIntensity(intensity);
+					light2->SetLightIntensity(intensity);
+					light3->SetLightIntensity(intensity);
+					return true;
+				});
+		});
+
+	auto textLess = Tara::CreateEntity<Tara::UITextEntity>(buttonLess, PARENT_LAYER, font, "Text Entity");
+	textLess->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+	textLess->SetText("<<");
+	textLess->SetTextSize(32);
+
+	auto buttonMore = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+	buttonMore->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+	buttonMore->SetBorderFromPatch();
+	buttonMore->SetTint({ 1, 1, 1, 1 });
+	Tara::CreateComponent<Tara::LambdaComponent>(buttonMore, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+		[light1, light2, light3](Tara::LambdaComponent* self, Tara::Event& e) {
+			Tara::EventFilter filter(e);
+			filter.Call<Tara::UIToggleEvent>([light1, light2, light3](Tara::UIToggleEvent& ee) {
+					float intensity = light1->GetLightIntensity();
+					if (intensity <= 1) {
+						intensity *= 2;
+					}
+					else {
+						intensity += 1;
+					}
+					light1->SetLightIntensity(intensity);
+					light2->SetLightIntensity(intensity);
+					light3->SetLightIntensity(intensity);
+					return true;
+				});
+		});
+
+	auto textMore = Tara::CreateEntity<Tara::UITextEntity>(buttonMore, PARENT_LAYER, font, "Text Entity");
+	textMore->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+	textMore->SetText(">>");
+	textMore->SetTextSize(32);
 
 	/*
 	Tara::MeshMaker mm(Tara::MeshMaker::Mode::QUADS);
