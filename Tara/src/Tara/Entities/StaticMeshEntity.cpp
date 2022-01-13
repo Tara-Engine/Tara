@@ -9,10 +9,7 @@ namespace Tara{
 
 	void StaticMeshEntity::OnDraw(float deltaTime)
 	{
-		for (int i = 0; i < m_StaticMesh->GetArrayCount();i++) {
-			m_Materials[i]->Use();
-			Renderer::Draw(m_StaticMesh->GetVertexArrays()[i], m_Materials[i]->GetShader(), m_Transform);
-		}
+		Renderer::StaticMesh(GetWorldTransform(), m_StaticMesh, m_Materials);
 	}
 
 	void StaticMeshEntity::SetMaterial(int materialID, MaterialBaseRef material)

@@ -13,7 +13,7 @@ namespace Tara {
 
 		Material(MaterialType type, const std::string& source, Shader::SourceType sourceType, const std::string& name);
 		
-		~Material();
+		~Material() = default;
 
 		static MaterialRef Create(MaterialType type, const std::string& source, Shader::SourceType sourceType, const std::string& name);
 
@@ -70,6 +70,13 @@ namespace Tara {
 
 	private:
 		/// <summary>
+		/// Run the source through the preprocessor, to see what should be included
+		/// </summary>
+		/// <param name="source"></param>
+		/// <returns></returns>
+		std::string PreprocessSource(const std::string& source);
+
+		/// <summary>
 		/// Load the Material's shader from a direct string source
 		/// </summary>
 		/// <param name="source"></param>
@@ -98,5 +105,6 @@ namespace Tara {
 		static std::unordered_map<MaterialType, std::string> SourcePartsVertex;
 		static std::unordered_map<MaterialType, std::string> SourcePartsFragmentBegin;
 		static std::unordered_map<MaterialType, std::string> SourcePartsFragmentEnd;
+		static std::unordered_map<std::string, std::string> SourceIncludes;
 	};
 }

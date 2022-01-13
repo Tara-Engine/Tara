@@ -100,6 +100,14 @@ namespace Tara {
 		static void Light(const LightData& light);
 
 		/// <summary>
+		/// Render a Static Mesh
+		/// </summary>
+		/// <param name="mesh"></param>
+		/// <param name="materials"></param>
+		/// <param name="transform"></param>
+		static void StaticMesh(const Transform& transform, const StaticMeshRef& mesh, const std::vector<MaterialBaseRef>& materials);
+
+		/// <summary>
 		/// Get the current scene data. Non-modifiable reference. Used inside of OnDraw functions to query info about the current scene that may change how they render.
 		/// </summary>
 		/// <returns></returns>

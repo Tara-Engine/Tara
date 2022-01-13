@@ -229,6 +229,24 @@ namespace Tara {
 		s_SceneData.lights.push_back(light);
 	}
 
+	void Renderer::StaticMesh(const Transform& transform, const StaticMeshRef& mesh, const std::vector<MaterialBaseRef>& materials)
+	{
+		if (materials.size() == 0) {
+			LOG_S(WARNING) << "Attemtped to render a static mesh with no materials";
+			return;
+		}
+		int j = 0;
+		auto& vertexArrays = mesh->GetVertexArrays();
+		for (int i = 0; i < mesh->GetArrayCount(); i++) {
+			materials[j]->Use();
+			Draw(vertexArrays[i], materials[j]->GetShader(), transform);
+			//take into account that the materials list may be shorter than the number of mesh parts
+			if (materials.size() > j + 1) {
+				j++;
+			}
+		}
+	}
+
 	void Renderer::RenderQuads()
 	{
 		if (s_QuadGroups.size() > 0){
