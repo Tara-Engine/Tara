@@ -43,6 +43,18 @@ namespace Tara {
         return ss.str();
     }
 
+    bool AssetLibrary::ForgetAsset(AssetRef asset)
+    {
+        if (asset && m_Assets.size()>0) {
+            auto ast = m_Assets.find(asset->GetAssetName());
+            if (ast != m_Assets.end()) {
+                m_Assets.erase(asset->GetAssetName());
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     std::string GetAssetNameFromPath(const std::string& path)
     {

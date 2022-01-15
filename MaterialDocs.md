@@ -68,6 +68,9 @@ uniform float u_LightIntensity;
 uniform float u_LightParam1;
 uniform float u_LightParam2;
 uniform float u_LightRadius;
+uniform mat4 u_LightProjectionMatrix;
+uniform sampler2D u_LightDepthMapPlanar;
+uniform float u_LightDepthMapSize;
 
 vec2 UVs; //this is calculated from the fragment location on the screen, not passed from vertex shader.
 
@@ -79,6 +82,7 @@ vec3 Specular
 vec3 Emissive
 vec3 WorldSpaceNormal
 vec3 WorldSpacePosition
+float Depth
 
 //light types
 const int LightType_Point		= 0;			

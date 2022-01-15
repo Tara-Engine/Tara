@@ -96,6 +96,18 @@ namespace Tara{
 		}
 	}
 
+	void OpenGLRenderCommand::IEnableFrontfaceCulling(bool enable)
+	{
+		if (enable) {
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			glFrontFace(GL_CW); //This is to match DirectX!
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+		}
+	}
+
 	void OpenGLRenderCommand::ISetBlendMode(RenderBlendMode mode)
 	{
 		switch (mode) {

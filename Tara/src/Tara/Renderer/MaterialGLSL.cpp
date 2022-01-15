@@ -1,5 +1,5 @@
 #include "tarapch.h"
-#include "Material.h"
+#include "Tara/Asset/Material.h"
 
 /*
 The purpose of this file is to contain all the inline GLSL code for the material system, as it is growing fast
@@ -148,16 +148,19 @@ uniform vec2 u_TargetSize;
 uniform vec3 u_CameraPositionWS;
 uniform vec3 u_CameraForwardVector;
 
-//uniform int u_LightCount;
-uniform vec3 u_LightPosition;//s[128];
-uniform vec3 u_LightForwardVector;//s[128];
-uniform vec3 u_LightColor;//s[128];
+uniform vec3 u_LightPosition;
+uniform vec3 u_LightForwardVector;
+uniform vec3 u_LightColor;
 uniform int u_LightType;
 uniform float u_LightIntensity;
 uniform float u_LightParam1;
 uniform float u_LightParam2;
 uniform float u_LightRadius;
-//uniform vec4 u_LightTypeIntensitieCustoms;//[128];
+uniform float u_CameraNearClipPlane;
+uniform float u_CameraFarClipPlane;
+uniform mat4 u_LightProjectionMatrix;
+uniform sampler2D u_LightDepthMapPlanar;
+uniform float u_LightDepthMapSize;
 
 float Metallic         = 0;
 float Roughness        = 0;
@@ -167,6 +170,7 @@ vec3 Specular           = vec3(0);
 vec3 Emissive           = vec3(0);
 vec3 WorldSpaceNormal   = vec3(0);
 vec3 WorldSpacePosition = vec3(0);
+float Depth				= 0;
 vec2 UVs				= vec2(0);
 
 const int LightType_Point		= 0;			
@@ -211,15 +215,16 @@ void main(){
 void main(){
 	UVs = vec2(gl_FragCoord.x / u_TargetSize.x, gl_FragCoord.y / u_TargetSize.y );
 	
-	Diffuse            = texture(u_ColorMetallicSampler, UVs).xyz;
-	Metallic          = texture(u_ColorMetallicSampler, UVs).w -1;
-	Specular           = texture(u_SpecularRoughnessSampler, UVs).xyz;
-	Roughness         = texture(u_SpecularRoughnessSampler, UVs).w -1;
-	Emissive           = texture(u_EmissiveAOSampler, UVs).xyz;
-	AmbientOcclusion  = texture(u_EmissiveAOSampler, UVs).w -1;
-	WorldSpaceNormal   = texture(u_WorldSpaceNormalSampler, UVs).xyz;
+	Diffuse = texture(u_ColorMetallicSampler, UVs).xyz;
+	Metallic = texture(u_ColorMetallicSampler, UVs).w -1;
+	Specular = texture(u_SpecularRoughnessSampler, UVs).xyz;
+	Roughness = texture(u_SpecularRoughnessSampler, UVs).w -1;
+	Emissive = texture(u_EmissiveAOSampler, UVs).xyz;
+	AmbientOcclusion = texture(u_EmissiveAOSampler, UVs).w -1;
+	WorldSpaceNormal = texture(u_WorldSpaceNormalSampler, UVs).xyz;
 	WorldSpacePosition = texture(u_WorldSpacePositionSampler, UVs).xyz;
-	
+	Depth = length(WorldSpacePosition - u_CameraPositionWS) / u_CameraFarClipPlane;
+
 	outColor = color();
 }
 )V0G0N"

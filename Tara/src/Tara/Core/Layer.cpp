@@ -43,6 +43,21 @@ namespace Tara{
 
 	void Layer::Draw(float deltaTime)
 	{
+		for (auto& lightRef : m_LightQueue) {
+			Tara::Renderer::BeginModelDepthScene(lightRef);
+			uint32_t cameraBits = ~0;
+			if (m_LayerCamera) {
+				cameraBits = m_LayerCamera->GetCamera()->GetRenderFilterBits();
+			}
+			for (auto entity : GetEntityList()) {
+				if (entity) {
+					entity->Draw(deltaTime, cameraBits);
+				}
+			}
+			Tara::Renderer::EndScene();
+		}
+
+		//first, draw all lights
 		for (auto& cameranoref : m_CameraQueue) {
 			auto camera = cameranoref.lock();
 			if (camera) {
@@ -57,7 +72,7 @@ namespace Tara{
 				Tara::Renderer::EndScene();
 			}
 		}
-		
+		m_LightQueue.clear();
 		m_CameraQueue.clear();
 	}
 
@@ -251,6 +266,13 @@ namespace Tara{
 			}
 		}
 		return Overlaps;
+	}
+
+	void Layer::EnqueLight(LightBaseRef light)
+	{
+		if (light->ShouldDrawDepth()) {
+			m_LightQueue.insert(light);
+		}
 	}
 
 	

@@ -2,6 +2,7 @@
 #include "Tara/Math/Types.h"
 
 namespace Tara {
+	REFTYPE(LightBase);
 
 	/// <summary>
 	/// Light Type
@@ -36,7 +37,7 @@ namespace Tara {
 	/// <summary>
 	/// pure virtual Base class for all LightEntities. They have this in addition to Entity
 	/// </summary>
-	class LightBase {
+	class LightBase /* : std::enable_shared_from_this<LightBase>*/ {
 	public:
 		LightBase(Vector color, float intensity, float radius, LightType type)
 			: m_LightColor(color), m_LightIntensity(intensity), m_LightRadius(radius), m_LightType(type)
@@ -90,10 +91,34 @@ namespace Tara {
 		/// <param name="radius"></param>
 		virtual void SetLightRadius(float radius) { m_LightRadius = radius; }
 
-
+		/// <summary>
+		/// Set the light radius, based on its intensity
+		/// </summary>
+		/// <param name="constant">constant falloff factor, normally 1.0</param>
+		/// <param name="linear">linear falloff factor, defaults to 0.07</param>
+		/// <param name="quadratic">quadratic falloff factor, defaults to 0.017</param>
 		virtual void SetLightRadiusFromIntensity(float constant = 1.0f, float linear = 0.07, float quadratic = 0.017) {
 			m_LightRadius = (-linear + std::sqrtf(linear * linear - 4 * quadratic * (constant - (256.0f / 1.0f) * m_LightIntensity))) / (2 * quadratic);
 		}
+
+		/// <summary>
+		/// Get the Depth Target for a light
+		/// </summary>
+		/// <returns></returns>
+		virtual RenderTargetRef GetDepthTarget() { return nullptr; };
+
+		/// <summary>
+		/// Get the projection matrix for this light
+		/// </summary>
+		/// <returns></returns>
+		inline virtual glm::mat4 GetLightProjectionMatrix() { return glm::mat4(1.0); };
+
+		/// <summary>
+		/// Get if the light should render its depth buffer
+		/// </summary>
+		/// <returns></returns>
+		inline virtual bool ShouldDrawDepth() { return false; }
+
 		//intentional no setter for m_LightType
 
 		//intentionally protected so that the derrived classes can directly interact

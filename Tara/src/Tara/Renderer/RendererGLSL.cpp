@@ -177,6 +177,51 @@ void main(){
 			break;
 		}
 		}
-		s_QuadShader = Shader::Create("D_QuadShader", Shader::SourceType::Strings, sources);
+		s_QuadShader = Shader::Create("__QuadShader__", Shader::SourceType::Strings, sources);
 	}
+
+
+	void Tara::Renderer::LoadMeshDepthShader()
+	{
+		std::unordered_map<Shader::TargetStage, std::string> sources;
+		switch (Renderer::GetRenderBackend()) {
+		case RenderBackend::None: { break; }
+		case RenderBackend::OpenGl: {
+			//fill the sources map with a bunch of strings
+			sources[Shader::TargetStage::Vertex] = R"V0G0N(
+#version 450 core
+layout(location=0) in vec3 aPos;
+//layout(location=1) in vec3 a_Normal;
+//layout(location=2) in vec4 a_Color;
+//layout(location=3) in vec2 a_UV;
+
+uniform mat4 u_MatrixViewProjection;
+uniform mat4 u_MatrixModel;
+
+out vec3 v_FragmentPosWS;
+void main()
+{
+	v_FragmentPosWS = vec3(u_MatrixModel * vec4(aPos, 1.0));
+    gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(aPos, 1.0);
+}  
+)V0G0N";
+
+
+			sources[Shader::TargetStage::Pixel] = R"V0G0N(
+#version 450 core
+uniform vec3 u_CameraPositionWS;
+in vec3 v_FragmentPosWS;
+uniform float u_FarClipPlane;
+void main()
+{         
+	//gl_FragDepth = (v_FragmentPosWS.z)/50.0;
+    gl_FragDepth = length(v_FragmentPosWS - u_CameraPositionWS) / u_FarClipPlane;
+}  
+)V0G0N";
+			break;
+		}
+		}
+		s_MeshDepthShader = Shader::Create("__ModelDepthShader__", Shader::SourceType::Strings, sources);
+	}
+
 }

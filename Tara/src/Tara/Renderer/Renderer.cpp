@@ -9,30 +9,40 @@
 //#include "Tara/Math/Types.h"
 
 namespace Tara {
-	//default to OpenGL renderbackend
+	
+
+	/*****************************************************************
+	 *                       Rendering Constants                     *
+	 *****************************************************************/
+
+	static bool s_InitializedQuadDraw = false;
+	static bool s_InitializedDepthDraw = false;
+
+	VertexArrayRef Renderer::s_QuadArray = nullptr;
+	ShaderRef Renderer::s_QuadShader = nullptr;
+	uint32_t Renderer::s_MaxTextures = 16;
+	std::vector<Renderer::QuadGroup> Renderer::s_QuadGroups;
+	
+	ShaderRef Renderer::s_MeshDepthShader = nullptr;
+	
 	RenderBackend Renderer::s_RenderBackend = RenderBackend::OpenGl;
-	RenderSceneData Renderer::s_SceneData = { nullptr };
+	RenderSceneData Renderer::s_SceneData = { nullptr, nullptr };
 	
 	RenderTargetRef Renderer::s_GBuffer = nullptr;
 	StaticMeshRef Renderer::s_ScreenQuadMesh = nullptr;
 	StaticMeshRef Renderer::s_LightSphereMesh = nullptr;
 
 	/*****************************************************************
-	 *                    Quad Rendering Constants                   *
+	 *                       Rendering Functions                     *
 	 *****************************************************************/
-
-	static bool s_InitializedQuadDraw = false;
-
-	VertexArrayRef Renderer::s_QuadArray = nullptr;
-	ShaderRef Renderer::s_QuadShader = nullptr;
-	uint32_t Renderer::s_MaxTextures = 16;
-	std::vector<Renderer::QuadGroup> Renderer::s_QuadGroups;
 
 	void Renderer::BeginScene(const CameraRef camera)
 	{
 		//save camera and target for future commands and queue execution
 		s_SceneData.camera = camera;
 		s_SceneData.target = camera->GetRenderTarget();
+		s_SceneData.light = nullptr;
+		s_SceneData.renderPass = RenderPass::Standard;
 		
 
 		//if the Renderer has not initialized its quad related stuff, do it
@@ -67,24 +77,61 @@ namespace Tara {
 		RenderCommand::BeginQueue();
 	}
 
+	void Tara::Renderer::BeginModelDepthScene(const LightBaseRef light)
+	{
+		s_SceneData.camera = nullptr;
+		s_SceneData.target = light->GetDepthTarget();
+		s_SceneData.light = light;
+		s_SceneData.renderPass = RenderPass::ModelDepth;
+
+		if (!s_InitializedDepthDraw) {
+			LoadMeshDepthShader();
+			s_InitializedDepthDraw = true;
+		}
+
+		if (s_SceneData.target) {
+			s_SceneData.target->RenderTo(true);
+		}
+		RenderCommand::EnableFrontfaceCulling(true);
+		RenderCommand::EnableDepthTesting(true);
+		RenderCommand::Clear();
+		//Don't queue these draws, for now
+	}
+
 	void Renderer::EndScene()
 	{
-		//render the batched quads
-		RenderQuads();
-		
-		//render the scene, deferred, lighting, etc.
-		SceneRender();
-		
-		//clear Scene Data
-		s_SceneData.camera = nullptr;
-		s_SceneData.target = nullptr;
-		auto size = s_SceneData.lights.size();
-		s_SceneData.lights.clear();
-		s_SceneData.lights.reserve(size);
+		if (s_SceneData.renderPass == RenderPass::Standard) {
+			//render the batched quads
+			RenderQuads();
+			
+			//render the scene, deferred, lighting, etc.
+			SceneRender();
+			
+			//clear Scene Data
+			s_SceneData.camera = nullptr;
+			s_SceneData.target = nullptr;
+			auto size = s_SceneData.lights.size();
+			s_SceneData.lights.clear();
+			s_SceneData.lights.reserve(size);
+		}
+		else {
+			//LOG_S(ERROR) << "Renderer::EndScene not supported for ModelDepth render passes yet";
+			if (s_SceneData.target) {
+				s_SceneData.target->RenderTo(false);
+			}
+			s_SceneData.camera = nullptr;
+			s_SceneData.light = nullptr;
+			s_SceneData.target = nullptr;
+
+			RenderCommand::EnableFrontfaceCulling(false);
+		}
 	}
 
 	void Renderer::Draw(VertexArrayRef vertexArray, ShaderRef shader, Transform transform)
 	{
+		if (s_SceneData.renderPass != RenderPass::Standard) {
+			return;
+		}
 		vertexArray->Bind();
 		shader->Bind();
 		if (shader->ValidUniform("u_MatrixViewProjection")) {
@@ -114,6 +161,9 @@ namespace Tara {
 
 	void Renderer::Quad(const Transform& transform, glm::vec4 color, const Texture2DRef& texture, glm::vec2 minUV, glm::vec2 maxUV)
 	{
+		if (s_SceneData.renderPass != RenderPass::Standard) {
+			return;
+		}
 		//Create the QuadData struct
 		QuadData data = {
 			transform,
@@ -174,6 +224,9 @@ namespace Tara {
 
 	void Tara::Renderer::Text(const Transform& transform, const std::string& text, FontRef font, glm::vec4 color)
 	{
+		if (s_SceneData.renderPass != RenderPass::Standard) {
+			return;
+		}
 		Transform t(transform);
 		if (s_SceneData.camera->GetProjectionType() != Camera::ProjectionType::Screen) {
 			t.Scale.y *= -1;
@@ -189,6 +242,9 @@ namespace Tara {
 	
 	void Renderer::Patch(const Transform& transform, const PatchRef& patch, glm::vec4 color)
 	{
+		if (s_SceneData.renderPass != RenderPass::Standard) {
+			return;
+		}
 		Transform offset{ transform.Position, transform.Rotation, {1.0f, 1.0f, transform.Scale.z} };
 		auto muv = patch->GetMiddleUVs();
 		auto mp = patch->GetMiddleOffsets(glm::vec2(transform.Scale.x, transform.Scale.y));
@@ -224,26 +280,56 @@ namespace Tara {
 		}
 	}
 
-	void Renderer::Light(const LightData& light)
+	void Renderer::Light(const LightBaseRef& light)
 	{
+		if (s_SceneData.renderPass != RenderPass::Standard) {
+			return;
+		}
 		s_SceneData.lights.push_back(light);
 	}
 
 	void Renderer::StaticMesh(const Transform& transform, const StaticMeshRef& mesh, const std::vector<MaterialBaseRef>& materials)
 	{
-		if (materials.size() == 0) {
-			LOG_S(WARNING) << "Attemtped to render a static mesh with no materials";
-			return;
-		}
-		int j = 0;
-		auto& vertexArrays = mesh->GetVertexArrays();
-		for (int i = 0; i < mesh->GetArrayCount(); i++) {
-			materials[j]->Use();
-			Draw(vertexArrays[i], materials[j]->GetShader(), transform);
-			//take into account that the materials list may be shorter than the number of mesh parts
-			if (materials.size() > j + 1) {
-				j++;
+		if (s_SceneData.renderPass == RenderPass::Standard) {
+			if (materials.size() == 0) {
+				LOG_S(WARNING) << "Attemtped to render a static mesh with no materials";
+				return;
 			}
+			int j = 0;
+			auto& vertexArrays = mesh->GetVertexArrays();
+			for (int i = 0; i < mesh->GetArrayCount(); i++) {
+				materials[j]->Use();
+				Draw(vertexArrays[i], materials[j]->GetShader(), transform);
+				//take into account that the materials list may be shorter than the number of mesh parts
+				if (materials.size() > j + 1) {
+					j++;
+				}
+			}
+		}
+		else {
+			
+			auto& vertexArrays = mesh->GetVertexArrays();
+			s_MeshDepthShader->Bind();
+			auto lightData = s_SceneData.light->GetLightData();
+			if (s_MeshDepthShader->ValidUniform("u_MatrixViewProjection")) {
+				s_MeshDepthShader->Send("u_MatrixViewProjection", s_SceneData.light->GetLightProjectionMatrix());
+			}
+			if (s_MeshDepthShader->ValidUniform("u_MatrixModel")) {
+				s_MeshDepthShader->Send("u_MatrixModel", transform.GetTransformMatrix());
+			}
+			if (s_MeshDepthShader->ValidUniform("u_CameraPositionWS")) {
+				s_MeshDepthShader->Send("u_CameraPositionWS", lightData.Position);
+			}
+			if (s_MeshDepthShader->ValidUniform("u_FarClipPlane")) {
+				s_MeshDepthShader->Send("u_FarClipPlane", lightData.MaxRadius);
+			}
+			//u_FarClipPlane
+			for (int i = 0; i < mesh->GetArrayCount(); i++) {
+				vertexArrays[i]->Bind();
+				RenderCommand::Draw(vertexArrays[i]);
+			}
+			vertexArrays[vertexArrays.size()-1]->Unbind(); //Leaving this bound could cause manual VertexBuffer / IndexBuffer creation to effect this vertexArray, so, unbind it.
+
 		}
 	}
 
@@ -252,7 +338,9 @@ namespace Tara {
 		if (s_QuadGroups.size() > 0){
 			RenderCommand::EnableDeferred(false);
 			RenderCommand::EnableBackfaceCulling(false);
-			RenderCommand::EnableDepthTesting(false);
+			if (s_SceneData.camera->GetProjectionType() == Camera::ProjectionType::Screen) {
+				RenderCommand::EnableDepthTesting(false);
+			}
 			//execute batch rendering
 			s_QuadShader->Bind();
 			s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
@@ -292,7 +380,7 @@ namespace Tara {
 
 			auto window = Application::Get()->GetWindow();
 			if (s_GBuffer == nullptr) {
-				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, "gBuffer");
+				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, false, "gBuffer");
 			}
 			else {
 				//check for resize
@@ -302,7 +390,7 @@ namespace Tara {
 			}
 			s_GBuffer->RenderTo(true);
 			RenderCommand::Clear();
-
+			RenderCommand::EnableBackfaceCulling(true);
 			RenderCommand::EnableDeferred(true);
 			RenderCommand::ExecuteQueue();
 
@@ -346,6 +434,7 @@ namespace Tara {
 			s_GBuffer->ImplBind(4, 4);
 			shader->Send("u_WorldSpacePositionSampler", 4);
 
+
 			//these might be optimized away if the specific material does not use them
 			if (shader->ValidUniform("u_TargetSize")) {
 				glm::vec2 size;
@@ -363,41 +452,69 @@ namespace Tara {
 			if (shader->ValidUniform("u_CameraForwardVector")) {
 				shader->Send("u_CameraForwardVector", s_SceneData.camera->GetRotation().GetForwardVector());
 			}
+			if (shader->ValidUniform("u_CameraNearClipPlane")) {
+				shader->Send("u_CameraNearClipPlane", s_SceneData.camera->GetNearClipPlane());
+			}
+			if (shader->ValidUniform("u_CameraFarClipPlane")) {
+				shader->Send("u_CameraFarClipPlane", s_SceneData.camera->GetFarClipPlane());
+			}
 
 			//deal with lights
 			
 			RenderCommand::SetBlendMode(RenderBlendMode::ADD);
 			RenderCommand::EnableDepthTesting(false);
+			float originalFarPlane = s_SceneData.camera->GetFarClipPlane();
+			if (originalFarPlane != 1.0f) {
+				s_SceneData.camera->SetFarClipPlane(originalFarPlane * 2);
+			}
+
 			for (auto& light : s_SceneData.lights) {
 				//auto& light = s_SceneData.lights[i];
-				
+				auto lightData = light->GetLightData();
 				//uniform int u_LightCount;
 				if (shader->ValidUniform("u_LightPosition")) {
-					shader->Send("u_LightPosition", light.Position);
+					shader->Send("u_LightPosition", lightData.Position);
 				}
 				if (shader->ValidUniform("u_LightForwardVector")) {
-					shader->Send("u_LightForwardVector", light.ForwardVector);
+					shader->Send("u_LightForwardVector", lightData.ForwardVector);
 				}
 				if (shader->ValidUniform("u_LightColor")) {
-					shader->Send("u_LightColor", (glm::vec3)light.Color);
+					shader->Send("u_LightColor", (glm::vec3)lightData.Color);
 				}
 				if (shader->ValidUniform("u_LightType")) {
-					shader->Send("u_LightType", (int32_t)light.Type);
+					shader->Send("u_LightType", (int32_t)lightData.Type);
 				}
 				if (shader->ValidUniform("u_LightIntensity")) {
-					shader->Send("u_LightIntensity", light.Intensity);
+					shader->Send("u_LightIntensity", lightData.Intensity);
 				}
 				if (shader->ValidUniform("u_LightParam1")) {
-					shader->Send("u_LightParam1", light.Custom1);
+					shader->Send("u_LightParam1", lightData.Custom1);
 				}
 				if (shader->ValidUniform("u_LightParam2")) {
-					shader->Send("u_LightParam2", light.Custom2);
+					shader->Send("u_LightParam2", lightData.Custom2);
 				}
 				if (shader->ValidUniform("u_LightRadius")) {
-					shader->Send("u_LightRadius", light.MaxRadius);
+					if (lightData.MaxRadius < 0) { //invert if less than 0
+						shader->Send("u_LightRadius", -lightData.MaxRadius);
+					}
+					else {
+						shader->Send("u_LightRadius", lightData.MaxRadius);
+					}
+				}
+				if (light->ShouldDrawDepth()){
+					if (shader->ValidUniform("u_LightProjectionMatrix")) {
+						shader->Send("u_LightProjectionMatrix", light->GetLightProjectionMatrix());
+					}
+					if (shader->ValidUniform("u_LightDepthMapPlanar")) {
+						light->GetDepthTarget()->ImplBind(5, 0);
+						shader->Send("u_LightDepthMapPlanar", 5);
+					}
+					if (shader->ValidUniform("u_LightDepthMapSize")) {
+						shader->Send("u_LightDepthMapSize", (float)light->GetDepthTarget()->GetWidth());
+					}
 				}
 
-				if (light.MaxRadius <= 0 || light.MaxRadius == std::numeric_limits<float>::infinity()) {
+				if (lightData.MaxRadius <= 0 || lightData.MaxRadius == std::numeric_limits<float>::infinity()) {
 					auto vertArray = s_ScreenQuadMesh->GetVertexArrays()[0];
 					vertArray->ImplBind(0,0);
 					//send identity matricies
@@ -419,14 +536,16 @@ namespace Tara {
 						shader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
 					}
 					if (shader->ValidUniform("u_MatrixModel")) {
-						shader->Send("u_MatrixModel", Transform(light.Position, Rotator::FromForwardVector(light.ForwardVector), {light.MaxRadius}).GetTransformMatrix());
+						shader->Send("u_MatrixModel", Transform(lightData.Position, Rotator::FromForwardVector(lightData.ForwardVector), { lightData.MaxRadius}).GetTransformMatrix());
 					}
 					
 					RenderCommand::Draw(vertArray);
 					vertArray->ImplUnbind();
 				}
 			}
-
+			if (originalFarPlane != 1.0f) {
+				s_SceneData.camera->SetFarClipPlane(originalFarPlane);
+			}
 			
 
 			//copy depth
@@ -442,6 +561,7 @@ namespace Tara {
 			RenderCommand::DiscardQueue();
 		}
 		RenderCommand::SetBlendMode(RenderBlendMode::NORMAL);
+		RenderCommand::EnableDepthTesting(true);
 		RenderCommand::EnableDeferred(false);
 		RenderCommand::ExecuteQueue();
 

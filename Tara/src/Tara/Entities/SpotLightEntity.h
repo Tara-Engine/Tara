@@ -20,9 +20,18 @@ namespace Tara {
 
 		virtual ~SpotLightEntity() = default;
 
+		virtual void OnUpdate(float deltaTime) override;
+
 		virtual void OnDraw(float deltaTime) override;
 
 		virtual LightData GetLightData() override;
+
+		inline virtual RenderTargetRef GetDepthTarget() override { return m_DepthTarget; };
+
+		virtual glm::mat4 GetLightProjectionMatrix() override;
+
+		inline virtual bool ShouldDrawDepth() override { return true; }
+
 
 		/// <summary>
 		/// Set the class-wide editor logo for this type of light
@@ -72,6 +81,7 @@ namespace Tara {
 		float m_SpotlightAngle;
 		float m_SpotlightInnerAngle;
 		bool m_DrawingEditorLogo;
+		RenderTargetRef m_DepthTarget;
 	private:
 		static Texture2DRef s_EditorLogo;
 	};

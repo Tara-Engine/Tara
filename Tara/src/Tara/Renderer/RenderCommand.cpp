@@ -190,6 +190,17 @@ namespace Tara {
 		}
 	}
 
+	void RenderCommand::EnableFrontfaceCulling(bool enable)
+	{
+		if (s_EnqueingCommands) {
+			Command c{ CommandType::ENABLE_FRONTFACE_CULLING, CommandFormBool{enable} };
+			PushCommand(c);
+		}
+		else {
+			s_RC->IEnableFrontfaceCulling(enable);
+		}
+	}
+
 	void RenderCommand::SetBlendMode(RenderBlendMode mode)
 	{
 		if (s_EnqueingCommands) {
@@ -298,6 +309,10 @@ namespace Tara {
 		}
 		case CommandType::ENABLE_BACKFACE_CULLING: {
 			s_RC->IEnableBackfaceCulling(std::get<CommandFormBool>(command.Params).Enable);
+			break;
+		}
+		case CommandType::ENABLE_FRONTFACE_CULLING: {
+			s_RC->IEnableFrontfaceCulling(std::get<CommandFormBool>(command.Params).Enable);
 			break;
 		}
 		case CommandType::SET_BLENDMODE: {

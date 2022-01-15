@@ -162,6 +162,12 @@ namespace Tara {
 		static void EnableBackfaceCulling(bool enable);
 
 		/// <summary>
+		/// Enabel frontface culling. Front face is defined by Clockwise winding order.
+		/// </summary>
+		/// <param name="enable"></param>
+		static void EnableFrontfaceCulling(bool enable);
+
+		/// <summary>
 		/// Set the Renderer's blend mode
 		/// </summary>
 		/// <param name="mode"></param>
@@ -266,6 +272,12 @@ namespace Tara {
 		virtual void IEnableBackfaceCulling(bool enable) = 0;
 
 		/// <summary>
+		/// Protected EnableFrontfaceCulling for underlying implementation to override
+		/// </summary>
+		/// <param name="enable"></param>
+		virtual void IEnableFrontfaceCulling(bool enable) = 0;
+
+		/// <summary>
 		/// Protected SetBlendMode for underlying implementation to override
 		/// </summary>
 		/// <param name="mode"></param>
@@ -314,20 +326,21 @@ namespace Tara {
 
 		enum class CommandType {
 			CLEAR = 0,
-			DRAW = 1,
-			DRAW_COUNT = 2,
+			DRAW,
+			DRAW_COUNT,
 
-			SET_CLEAR_COLOR = 3,
-			PUSH_DRAW_TYPE = 4,
-			POP_DRAW_TYPE = 5,
-			ENABLE_DEPTH_TEST = 6,
-			ENABLE_BACKFACE_CULLING = 7,
-			SET_BLENDMODE = 8,
+			SET_CLEAR_COLOR,
+			PUSH_DRAW_TYPE,
+			POP_DRAW_TYPE,
+			ENABLE_DEPTH_TEST,
+			ENABLE_BACKFACE_CULLING,
+			ENABLE_FRONTFACE_CULLING,
+			SET_BLENDMODE,
 
-			BIND = 9,
-			UNIFORM = 10,
-			RENDER_TO_TARGET = 11,
-			SET_VERTEX_BUFFER_DATA = 12,
+			BIND,
+			UNIFORM,
+			RENDER_TO_TARGET,
+			SET_VERTEX_BUFFER_DATA,
 		};
 
 		//Drawtype

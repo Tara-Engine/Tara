@@ -1,6 +1,6 @@
 #pragma once
 #include "Tara/Math/Types.h"
-#include "Tara/Renderer/Texture.h"
+#include "Tara/Renderer/RenderTarget.h"
 #include "Tara/Renderer/MaterialBase.h"
 
 namespace Tara {
@@ -38,7 +38,9 @@ namespace Tara {
 			m_Type(type),
 			m_ProjectionMatrix(1),
 			m_RenderTarget(nullptr),
-			m_RenderFilterBits(~0)
+			m_RenderFilterBits(~0),
+			m_NearClipPlane(-1),
+			m_FarClipPlane(1)
 		{}
 
 		virtual ~Camera() = default;
@@ -105,6 +107,30 @@ namespace Tara {
 		virtual glm::mat4 GetViewProjectionMatrix() const {return GetProjectionMatrix() * GetViewMatrix();}
 		
 		/// <summary>
+		/// Set the near clipping plane. Silently fails if <= 0
+		/// </summary>
+		/// <param name="plane"></param>
+		inline void SetNearClipPlane(float plane) { if (plane > 0) { m_NearClipPlane = plane; UpdateProjectionMatrix(); } }
+
+		/// <summary>
+		/// Set the far clipping plane. Silently fails if <= near clipping plane
+		/// </summary>
+		/// <param name="plane"></param>
+		inline void SetFarClipPlane(float plane) { if (plane > m_NearClipPlane) { m_FarClipPlane = plane; UpdateProjectionMatrix(); } }
+
+		/// <summary>
+		/// Get the Near clipping plane
+		/// </summary>
+		/// <returns></returns>
+		inline float GetNearClipPlane() { return m_NearClipPlane; }
+
+		/// <summary>
+		/// Get the Far clipping plane
+		/// </summary>
+		/// <returns></returns>
+		inline float GetFarClipPlane() { return m_FarClipPlane; }
+
+		/// <summary>
 		/// Get the render target of a camera
 		/// </summary>
 		/// <returns></returns>
@@ -159,8 +185,7 @@ namespace Tara {
 
 	protected:
 		inline virtual void UpdateProjectionMatrix() { return; }
-
-	
+		
 		std::pair<float, float> GetRenderTargetSize() const;
 
 	protected:
@@ -170,6 +195,8 @@ namespace Tara {
 		RenderTargetRef m_RenderTarget;
 		uint32_t m_RenderFilterBits;
 		MaterialBaseRef m_LightingMaterial;
+		float m_NearClipPlane;
+		float m_FarClipPlane;
 	};
 
 	/// <summary>
@@ -273,30 +300,6 @@ namespace Tara {
 		inline void SetAspectRatio(float aspect) { m_AspectRatio = aspect; UpdateProjectionMatrix(); }
 
 		/// <summary>
-		/// Set the near clipping plane. Silently fails if <= 0
-		/// </summary>
-		/// <param name="plane"></param>
-		inline void SetNearClipPlane(float plane) { if (plane > 0) { m_NearClipPlane = plane; UpdateProjectionMatrix();} }
-
-		/// <summary>
-		/// Set the far clipping plane. Silently fails if <= near clipping plane
-		/// </summary>
-		/// <param name="plane"></param>
-		inline void SetFarClipPlane(float plane) { if (plane > m_NearClipPlane) { m_FarClipPlane = plane; UpdateProjectionMatrix();} }
-
-		/// <summary>
-		/// Get the Near clipping plane
-		/// </summary>
-		/// <returns></returns>
-		inline float GetNearClipPlane() { return m_NearClipPlane; }
-
-		/// <summary>
-		/// Get the Far clipping plane
-		/// </summary>
-		/// <returns></returns>
-		inline float GetFarClipPlane() { return m_FarClipPlane; }
-
-		/// <summary>
 		/// Update the size of the area being rendered to (chages the apsect ratio). Triggers a projection matrix update, so, might be slower than expected.
 		/// </summary>
 		/// <param name="width">the new width</param>
@@ -316,8 +319,6 @@ namespace Tara {
 	private:
 		float m_FOV;
 		float m_AspectRatio;
-		float m_NearClipPlane;
-		float m_FarClipPlane;
 	};
 
 	/// <summary>

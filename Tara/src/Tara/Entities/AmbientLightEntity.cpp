@@ -13,8 +13,8 @@ namespace Tara{
 
 	void AmbientLightEntity::OnDraw(float deltaTime)
 	{
-		Renderer::Light(GetLightData());
-		if (s_EditorLogo && m_DrawingEditorLogo) {
+		Renderer::Light(std::dynamic_pointer_cast<AmbientLightEntity>(shared_from_this()));
+		if (s_EditorLogo && m_DrawingEditorLogo && Renderer::GetCurrentSceneData().renderPass == RenderPass::Standard) {
 			auto camPos = Renderer::GetCurrentSceneData().camera->GetPosition();
 			Vector forward = (GetWorldPosition() - camPos).Normalize();
 			Transform transform = Transform(GetWorldPosition() - Vector{ 0.5, 0.5, 0.5 }, Rotator::FromForwardVector(forward), { 1,1,1 });

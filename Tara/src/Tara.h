@@ -17,6 +17,7 @@
 #include "Tara/Renderer/Shader.h"
 #include "Tara/Renderer/RenderCommand.h"
 #include "Tara/Renderer/Texture.h"
+#include "Tara/Renderer/RenderTarget.h"
 #include "Tara/Renderer/Camera.h"
 #include "Tara/Renderer/MaterialBase.h"
 

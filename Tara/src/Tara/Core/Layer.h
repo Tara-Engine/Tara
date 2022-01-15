@@ -10,7 +10,8 @@ namespace Tara {
 
 	struct Manifold;
 
-	REFTYPE(Layer)
+	REFTYPE(Layer);
+	REFTYPE(LightBase);
 
 	/// <summary>
 	/// Layer Class. Layers are "Draw slices" of a scene. 
@@ -171,6 +172,8 @@ namespace Tara {
 			m_CameraQueue.insert(camera);
 		}
 
+		void EnqueLight(LightBaseRef light);
+
 	protected:
 		/// <summary>
 		/// Get a const ref to the list of entities that are root in this layer
@@ -189,6 +192,11 @@ namespace Tara {
 				return std::hash<void*>()(t.lock().get());
 			}
 		};
+		struct LightBaseHasher {
+			std::size_t operator()(const LightBaseRef& t) const {
+				return std::hash<void*>()(t.get());
+			}
+		};
 
 		std::list<EntityRef> m_Entities;
 		std::list<EntityNoRef> m_DestroyedEntities;
@@ -196,6 +204,7 @@ namespace Tara {
 		std::list<std::pair<EventListenerNoRef, bool>> m_ListenerQueue;
 		std::list<Manifold> m_FrameManifoldQueue;
 		std::unordered_set<CameraEntityNoRef, CameraHasher> m_CameraQueue;
+		std::unordered_set<LightBaseRef, LightBaseHasher> m_LightQueue;
 		CameraEntityRef m_LayerCamera; //intentonally an owning pointer
 		bool m_Dead = false; //used by Scene to destroy layers
 		bool m_InEventHandler = false;

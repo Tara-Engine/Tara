@@ -467,20 +467,20 @@ namespace Tara {
 		virtual void ListenForEvents(bool enable = true) final override;
 
 
-protected:
+	protected:
 		/// <summary>
 		/// Update the entity. Should not be manually called
 		/// </summary>
 		/// <param name="deltaTime"></param>
 		void Update(float deltaTime);
-		
+	
 		/// <summary>
 		/// Draw the entity. Should not be manually called.
 		/// </summary>
 		/// <param name="deltaTime"></param>
 		void Draw(float deltaTime, const uint32_t& cameraBits);
 
-
+	protected:
 		/// <summary>
 		/// Get a const ref to the list of children
 		/// </summary>

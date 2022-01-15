@@ -5,8 +5,8 @@
 #include "Tara/Core/Application.h"
 
 namespace Tara {
-	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, const std::string& name)
-		: RenderTarget(name), m_Width(width), m_Height(height)//, m_LastBindPoint(std::make_pair(0,0))
+	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool useTextureForDepth, const std::string& name)
+		: RenderTarget(name), m_Width(width), m_Height(height), m_DepthIsTexture(useTextureForDepth)
 	{
 		//generate the framebuffer
 		glGenFramebuffers(1, &m_FramebufferID);
@@ -94,15 +94,63 @@ namespace Tara {
 		}
 
 		//deal with depth and stencil buffer
-		//can be raw data (Renderbuffer) instead of texture
-		//make render buffer object, setup
-		glGenRenderbuffers(1, &m_BufferDepthStencilID);
-		glBindRenderbuffer(GL_RENDERBUFFER, m_BufferDepthStencilID);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		if (useTextureForDepth) {
+			uint32_t depthTexture;
+			glGenTextures(1, &depthTexture);
+
+			m_TextureColorIDs.push_back(depthTexture);
+
+			glBindTexture(GL_TEXTURE_2D, depthTexture);
+			//make the texture data format
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_Width, m_Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			//deal with filters.
+			if (Texture::s_DefaultTextureFiltering == Texture::Filtering::Nearest) {
+				glTextureParameteri(depthTexture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTextureParameteri(depthTexture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+			else {
+				glTextureParameteri(depthTexture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTextureParameteri(depthTexture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			}
+
+
+			//deal with wrapping
+			switch (Texture::s_DefaultTextureWrapping) {
+			case Texture::Wrapping::Clamp: {
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			}
+			case Texture::Wrapping::Border: {
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			}
+			case Texture::Wrapping::Repeat: {
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			}
+			case Texture::Wrapping::Mirror: {
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+				glTextureParameteri(depthTexture, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+			}
+			}
+
+			//attach texture to framebuffer
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+			//unbind texture
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else {
+			//can be raw data (Renderbuffer) instead of texture
+			//make render buffer object, setup
+			glGenRenderbuffers(1, &m_BufferDepthStencilID);
+			glBindRenderbuffer(GL_RENDERBUFFER, m_BufferDepthStencilID);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+			glBindRenderbuffer(GL_RENDERBUFFER, 0);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_BufferDepthStencilID);
+		}
+		
 
 		//attach to frame buffer
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_BufferDepthStencilID);
 
 		//error check (sanity!)
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -116,7 +164,9 @@ namespace Tara {
 	OpenGLRenderTarget::~OpenGLRenderTarget()
 	{
 		//clean up OpenGL objects
-		glDeleteRenderbuffers(1, &m_BufferDepthStencilID);
+		if (!m_DepthIsTexture) {
+			glDeleteRenderbuffers(1, &m_BufferDepthStencilID);
+		}
 		for (auto& id : m_TextureColorIDs) {
 			glDeleteTextures(1, &id);
 		}
@@ -126,7 +176,12 @@ namespace Tara {
 	void OpenGLRenderTarget::ImplBind(int slot, int index) const
 	{
 		//bind the texture for rendering
-		glBindTextureUnit(slot, m_TextureColorIDs[index]);
+		if (index < m_TextureColorIDs.size()) {
+			glBindTextureUnit(slot, m_TextureColorIDs[index]);
+		}
+		else {
+			LOG_S(WARNING) << "Attemtpted to bind an invalid index in a RenderTarget: " << index << " is greater than the number of textures (" << m_TextureColorIDs.size() << ")";
+		}
 		//m_LastBindPoint = std::make_pair(slot, index);
 	}
 
@@ -184,14 +239,17 @@ namespace Tara {
 
 	void OpenGLRenderTarget::ImplRenderTo(bool render) const
 	{
-		if (this && render) {
+		if (render) {
 			glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
-			std::vector<uint32_t> attachments(m_TextureColorIDs.size());
+			std::vector<uint32_t> attachments(m_TextureColorIDs.size() - ((m_DepthIsTexture)?1:0));
 			std::iota(attachments.begin(), attachments.end(), GL_COLOR_ATTACHMENT0);
 			glDrawBuffers(attachments.size(), attachments.data());
+			glViewport(0, 0, m_Width, m_Height);
 		}
 		else {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			auto& window = Application::Get()->GetWindow();
+			glViewport(0, 0, window->GetWidth(), window->GetHeight());
 		}
 	}
 
@@ -199,15 +257,32 @@ namespace Tara {
 	{
 		m_Width = width;
 		m_Height = height;
-		for (auto& id : m_TextureColorIDs){
+		if (m_DepthIsTexture) {
+			
+			for (int i = 0; i < m_TextureColorIDs.size() - 1;i++) {
+				uint32_t id = m_TextureColorIDs[i];
+				glBindTexture(GL_TEXTURE_2D, id);
+				glTexImage2D(GL_TEXTURE_2D, 0, m_TextureInternalFormat, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+				//glBindTexture(GL_TEXTURE_2D, 0);
+			}
+
+			uint32_t id = *(m_TextureColorIDs.end());
 			glBindTexture(GL_TEXTURE_2D, id);
-			glTexImage2D(GL_TEXTURE_2D, 0, m_TextureInternalFormat, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_Width, m_Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
+		else {
 
-		glBindRenderbuffer(GL_RENDERBUFFER, m_BufferDepthStencilID);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+			for (auto& id : m_TextureColorIDs){
+				glBindTexture(GL_TEXTURE_2D, id);
+				glTexImage2D(GL_TEXTURE_2D, 0, m_TextureInternalFormat, m_Width, m_Height, 0, GL_RGBA, m_TextureInternalType, NULL);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+
+			glBindRenderbuffer(GL_RENDERBUFFER, m_BufferDepthStencilID);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+			glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		}
 	}
 
 	void OpenGLRenderTarget::BlitDepthToOther(RenderTargetRef other)
@@ -239,9 +314,9 @@ namespace Tara {
 				return;
 			}
 			//bind buffers and copy
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, source);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest);
-			glBlitFramebuffer(0, 0, sourceWidth, sourceHeight, 0, 0, destWidth, destHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+			//glBindFramebuffer(GL_READ_FRAMEBUFFER, source);
+			//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dest);
+			glBlitNamedFramebuffer(source, dest, 0, 0, sourceWidth, sourceHeight, 0, 0, destWidth, destHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 			//done, immedately bind other buffer as RenderTarget
 			if (otherGL){
 				otherGL->ImplRenderTo(true);

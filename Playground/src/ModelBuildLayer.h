@@ -20,10 +20,14 @@ public:
 	Tara::MaterialBaseRef m_Material;
 private:
 	Tara::CameraEntityRef m_Camera;
+	Tara::CameraEntityRef m_ScreenCamera;
 
 	Tara::ShaderRef m_Shader;
 
 	Tara::StaticMeshRef m_Mesh;
 
 	Tara::PointLightEntityRef m_Light;
+	Tara::DirectionalLightEntityRef m_DirectionalLight;
+
+	Tara::RenderTargetRef m_DepthTarget;
 };

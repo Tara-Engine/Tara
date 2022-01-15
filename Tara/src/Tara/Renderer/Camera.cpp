@@ -92,8 +92,8 @@ namespace Tara {
 			float height = width / aspectRatio;
 			m_Extent.Top = height / 2.0f;
 			m_Extent.Bottom = -m_Extent.Top;
-			m_Extent.Near = -1.0f;
-			m_Extent.Far = 1.0f;
+			m_Extent.Near = m_NearClipPlane;
+			m_Extent.Far = m_FarClipPlane;
 
 			m_ProjectionMatrix = glm::ortho(
 				m_Extent.Left, m_Extent.Right,
@@ -117,8 +117,8 @@ namespace Tara {
 			LOG_S(INFO) << "Ortho Camera Resize: Aspect: " << aspectRatio << " Width: " << width << " Height:" << height;
 			m_Extent.Top = height / 2.0f;
 			m_Extent.Bottom = -m_Extent.Top;
-			m_Extent.Near = -1.0f;
-			m_Extent.Far = 1.0f;
+			m_Extent.Near = m_NearClipPlane;
+			m_Extent.Far = m_FarClipPlane;
 		}
 		m_ProjectionMatrix = glm::ortho(
 			m_Extent.Left, m_Extent.Right,
@@ -129,8 +129,10 @@ namespace Tara {
 	
 
 	PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio)
-		: Camera(ProjectionType::Perspective), m_FOV(fov), m_AspectRatio(aspectRatio), m_NearClipPlane(0.1), m_FarClipPlane(100)
+		: Camera(ProjectionType::Perspective), m_FOV(fov), m_AspectRatio(aspectRatio)
 	{
+		m_NearClipPlane = 0.1;
+		m_FarClipPlane = 100;
 		UpdateProjectionMatrix();
 	}
 
@@ -252,8 +254,8 @@ namespace Tara {
 		float height = width / aspectRatio;
 		extent.Top = height / 2.0f;
 		extent.Bottom = -extent.Top;
-		extent.Near = -1.0f;
-		extent.Far = 1.0f;
+		extent.Near = m_NearClipPlane;
+		extent.Far = m_FarClipPlane;
 		
 		m_ProjectionMatrix = glm::ortho(
 			extent.Left, extent.Right,

@@ -4,7 +4,7 @@
 #include "Tara/Renderer/VertexArray.h"
 #include "Tara/Renderer/Camera.h"
 #include "Tara/Math/Types.h"
-#include "Tara/Renderer/Texture.h"
+#include "Tara/Renderer/RenderTarget.h"
 #include "Tara/Asset/Font.h"
 #include "Tara/Asset/Patch.h"
 #include "Tara/Renderer/Light.h"
@@ -22,12 +22,17 @@ namespace Tara {
 	};
 	class RenderCommand;
 	
-	
+	enum class RenderPass {
+		Standard = 0,
+		ModelDepth
+	};
 
 	struct RenderSceneData {
 		CameraRef camera;
+		LightBaseRef light;
 		RenderTargetRef target;
-		std::vector<LightData> lights;
+		RenderPass renderPass;
+		std::vector<LightBaseRef> lights;
 	};
 
 	/// <summary>
@@ -50,6 +55,12 @@ namespace Tara {
 		/// </summary>
 		/// <param name="camera">the camera to render with</param>
 		static void BeginScene(const CameraRef camera);
+
+		/// <summary>
+		/// Begin a scene, rendering the model depth, for shading purposes.
+		/// </summary>
+		/// <param name="camera"></param>
+		static void BeginModelDepthScene(const LightBaseRef light);//TODO: change to light
 
 		/// <summary>
 		/// End the current scene
@@ -97,7 +108,7 @@ namespace Tara {
 		/// <param name="color">the light's color</param>
 		/// <param name="intensity">the light's intensity</param>
 		/// <param name="angle">the spotlight angle, if a spotlight. ranges from 0 to 1</param>
-		static void Light(const LightData& light);
+		static void Light(const LightBaseRef& light);
 
 		/// <summary>
 		/// Render a Static Mesh
@@ -118,6 +129,11 @@ namespace Tara {
 		/// Loads the quad shader
 		/// </summary>
 		static void LoadQuadShader();
+
+		/// <summary>
+		/// Loads the Model Depth Shader
+		/// </summary>
+		static void LoadMeshDepthShader();
 
 		/// <summary>
 		/// Renders the batched quads
@@ -187,6 +203,9 @@ namespace Tara {
 		static VertexArrayRef s_QuadArray;
 		static ShaderRef s_QuadShader;
 		static std::vector<QuadGroup> s_QuadGroups;
+
+		//depth draw stuff
+		static ShaderRef s_MeshDepthShader;
 	};
 
 }

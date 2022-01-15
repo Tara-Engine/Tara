@@ -17,6 +17,7 @@ namespace Tara {
 		virtual uint32_t IGetMaxTextureSlotsPerShader() override;
 		virtual void IEnableDepthTesting(bool enable) override;
 		virtual void IEnableBackfaceCulling(bool enable) override;
+		virtual void IEnableFrontfaceCulling(bool enable) override;
 		virtual void ISetBlendMode(RenderBlendMode mode) override;
 	public:
 		static void GLError(

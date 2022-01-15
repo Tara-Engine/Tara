@@ -53,6 +53,8 @@ namespace Tara {
 		AssetLibrary(AssetLibrary const&) = delete;
 		void operator=(AssetLibrary const&) = delete;
 
+		//Forget about an asset. Ie, remove it from the asset manager
+		bool ForgetAsset(AssetRef asset);
 
 	private:
 		/// <summary>
