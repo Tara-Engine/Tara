@@ -1,5 +1,7 @@
 #include <phong>
 
+
+
 vec4 color(){
 	vec2 phongResults = Phong(0.07, 0.017);	
 	
@@ -35,8 +37,17 @@ vec4 color(){
 		
 		shadowValue = (closestDepth > lightDepth || lightDepth > 1.0 || fragProjCoords.x > 1 || fragProjCoords.y > 1 || fragProjCoords.x < 0 || fragProjCoords.y < 0) ? 1.0 : 0.0;
 	}
+	else if(u_LightType == LightType_Point){
+		vec3 fragmentToLight = WorldSpacePosition - u_LightPosition;
+		float lightDepth = length(fragmentToLight) / u_LightRadius;
+		float closestDepth = texture(u_LightDepthMapPanoramic, fragmentToLight).r;
+		
+		shadowValue = (closestDepth > lightDepth || lightDepth > 1.0) ? 1.0 : 0.0;
+	}
 	
 	
-	resultColor = resultColor * shadowValue; //fog*shadow
+
+	resultColor = resultColor * shadowValue; 
+	
 	return vec4(resultColor, 1);
 }

@@ -7,6 +7,7 @@ namespace Tara {
 
 	REFTYPE(Textuyre);
 	REFTYPE(Texture2D);
+	REFTYPE(TextureCubemap);
 	
 
 	/// <summary>
@@ -75,7 +76,7 @@ namespace Tara {
 	/// <summary>
 	/// 2D Image Texture, as loaded from a file
 	/// </summary>
-	class Texture2D : public Texture {
+	class Texture2D : virtual public Texture {
 	public:
 		Texture2D(const std::string& name) : Texture(name) {}
 		virtual ~Texture2D() = default;
@@ -103,6 +104,13 @@ namespace Tara {
 		static Texture2DRef Create(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name);
 	};
 
-
+	/// <summary>
+	/// Base class for cubemap textures. Add importing later.
+	/// </summary>
+	class TextureCubemap : virtual public Texture {
+	public:
+		TextureCubemap(const std::string& name) : Texture(name) {}
+		virtual ~TextureCubemap() = default;
+	};
 	
 }

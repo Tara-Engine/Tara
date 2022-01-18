@@ -184,6 +184,7 @@ void main(){
 	void Tara::Renderer::LoadMeshDepthShader()
 	{
 		std::unordered_map<Shader::TargetStage, std::string> sources;
+		std::unordered_map<Shader::TargetStage, std::string> sourcesPanoramic;
 		switch (Renderer::GetRenderBackend()) {
 		case RenderBackend::None: { break; }
 		case RenderBackend::OpenGl: {
@@ -191,18 +192,15 @@ void main(){
 			sources[Shader::TargetStage::Vertex] = R"V0G0N(
 #version 450 core
 layout(location=0) in vec3 aPos;
-//layout(location=1) in vec3 a_Normal;
-//layout(location=2) in vec4 a_Color;
-//layout(location=3) in vec2 a_UV;
 
 uniform mat4 u_MatrixViewProjection;
 uniform mat4 u_MatrixModel;
 
-out vec3 v_FragmentPosWS;
+out vec4 v_FragmentPosWS;
 void main()
 {
-	v_FragmentPosWS = vec3(u_MatrixModel * vec4(aPos, 1.0));
-    gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(aPos, 1.0);
+	v_FragmentPosWS = u_MatrixModel * vec4(aPos, 1.0);
+    gl_Position = u_MatrixViewProjection * v_FragmentPosWS;
 }  
 )V0G0N";
 
@@ -210,18 +208,66 @@ void main()
 			sources[Shader::TargetStage::Pixel] = R"V0G0N(
 #version 450 core
 uniform vec3 u_CameraPositionWS;
-in vec3 v_FragmentPosWS;
 uniform float u_FarClipPlane;
+in vec4 v_FragmentPosWS;
 void main()
 {         
-	//gl_FragDepth = (v_FragmentPosWS.z)/50.0;
-    gl_FragDepth = length(v_FragmentPosWS - u_CameraPositionWS) / u_FarClipPlane;
+    gl_FragDepth = length(v_FragmentPosWS.xyz - u_CameraPositionWS) / u_FarClipPlane;
 }  
 )V0G0N";
+
+			sourcesPanoramic[Shader::TargetStage::Vertex] = R"V0G0N(
+#version 450 core
+layout(location=0) in vec3 aPos;
+
+uniform mat4 u_MatrixModel;
+
+void main()
+{
+    gl_Position = u_MatrixModel * vec4(aPos, 1.0);
+}
+)V0G0N";
+			
+			sourcesPanoramic[Shader::TargetStage::Geometry] = R"V0G0N(
+#version 450 core
+layout (triangles) in;
+layout (triangle_strip, max_vertices=18) out;
+
+uniform mat4 u_MatrixViewProjection[6];
+out vec4 v_FragmentPosWS;
+
+void main(){
+	for(int face = 0; face < 6; ++face){
+		for(int i=0;i<3;++i){
+			gl_Layer = face; //control which face of cubemap to render to
+			v_FragmentPosWS = gl_in[i].gl_Position;
+			gl_Position = u_MatrixViewProjection[face] * v_FragmentPosWS;
+			EmitVertex();
+		}
+		EndPrimitive();
+	}
+}
+
+)V0G0N";
+			sourcesPanoramic[Shader::TargetStage::Pixel] = R"V0G0N(
+#version 450 core
+uniform vec3 u_CameraPositionWS;
+uniform float u_FarClipPlane;
+in vec4 v_FragmentPosWS;
+void main()
+{         
+    gl_FragDepth = length(v_FragmentPosWS.xyz - u_CameraPositionWS) / u_FarClipPlane;
+}  
+)V0G0N";
+
 			break;
 		}
 		}
 		s_MeshDepthShader = Shader::Create("__ModelDepthShader__", Shader::SourceType::Strings, sources);
+		s_MeshDepthPanoramicShader = Shader::Create("__ModelDepthPanoramicShader__", Shader::SourceType::Strings, sourcesPanoramic);
+
+
+
 	}
 
 }

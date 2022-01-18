@@ -24,11 +24,12 @@ namespace Tara {
 	std::vector<Renderer::QuadGroup> Renderer::s_QuadGroups;
 	
 	ShaderRef Renderer::s_MeshDepthShader = nullptr;
+	ShaderRef Renderer::s_MeshDepthPanoramicShader = nullptr;
 	
 	RenderBackend Renderer::s_RenderBackend = RenderBackend::OpenGl;
 	RenderSceneData Renderer::s_SceneData = { nullptr, nullptr };
 	
-	RenderTargetRef Renderer::s_GBuffer = nullptr;
+	RenderTarget2DRef Renderer::s_GBuffer = nullptr;
 	StaticMeshRef Renderer::s_ScreenQuadMesh = nullptr;
 	StaticMeshRef Renderer::s_LightSphereMesh = nullptr;
 
@@ -309,25 +310,63 @@ namespace Tara {
 		else {
 			
 			auto& vertexArrays = mesh->GetVertexArrays();
-			s_MeshDepthShader->Bind();
 			auto lightData = s_SceneData.light->GetLightData();
-			if (s_MeshDepthShader->ValidUniform("u_MatrixViewProjection")) {
-				s_MeshDepthShader->Send("u_MatrixViewProjection", s_SceneData.light->GetLightProjectionMatrix());
+			ShaderRef shader = nullptr;
+			//if (s_SceneData.light->DepthIsPanoramic()) {
+			//	s_MeshDepthPanoramicShader->Bind();
+			//	shader = s_MeshDepthPanoramicShader;
+			//}
+			//else {
+			s_MeshDepthShader->Bind();
+			shader = s_MeshDepthShader;
+			//}
+			
+			if (shader->ValidUniform("u_MatrixModel")) {
+				shader->Send("u_MatrixModel", transform.GetTransformMatrix());
 			}
-			if (s_MeshDepthShader->ValidUniform("u_MatrixModel")) {
-				s_MeshDepthShader->Send("u_MatrixModel", transform.GetTransformMatrix());
+			if (shader->ValidUniform("u_CameraPositionWS")) {
+				shader->Send("u_CameraPositionWS", lightData.Position);
 			}
-			if (s_MeshDepthShader->ValidUniform("u_CameraPositionWS")) {
-				s_MeshDepthShader->Send("u_CameraPositionWS", lightData.Position);
+			if (shader->ValidUniform("u_FarClipPlane")) {
+				shader->Send("u_FarClipPlane", lightData.MaxRadius);
 			}
-			if (s_MeshDepthShader->ValidUniform("u_FarClipPlane")) {
-				s_MeshDepthShader->Send("u_FarClipPlane", lightData.MaxRadius);
+			
+			if (s_SceneData.light->DepthIsPanoramic()) {
+					glm::mat4 proj = s_SceneData.light->GetLightProjectionMatrix();
+					std::vector<glm::mat4> viewProjMatricies;
+					viewProjMatricies.reserve(6);
+					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 1.0f, 0.0f, 0.0f}, { 0.0f,-1.0f, 0.0f}));
+					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{-1.0f, 0.0f, 0.0f}, { 0.0f,-1.0f, 0.0f}));
+					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 1.0f, 0.0f}, { 0.0f, 0.0f, 1.0f}));
+					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f,-1.0f, 0.0f}, { 0.0f, 0.0f,-1.0f}));
+					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 0.0f, 1.0f}, { 0.0f,-1.0f, 0.0f}));
+					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 0.0f,-1.0f}, { 0.0f,-1.0f, 0.0f}));
+					
+					
+				for (int i = 0; i < mesh->GetArrayCount(); i++) {
+					vertexArrays[i]->Bind();
+					for(int j=0;j<6;j++){
+						std::dynamic_pointer_cast<RenderTargetCubemap>(s_SceneData.target)->SetTargetedFace((RenderTargetCubemap::Face)j);
+						if (shader->ValidUniform("u_MatrixViewProjection")){
+							shader->Send("u_MatrixViewProjection", viewProjMatricies[j]);
+						}
+						RenderCommand::Draw(vertexArrays[i]);
+					}
+				}
+				std::dynamic_pointer_cast<RenderTargetCubemap>(s_SceneData.target)->SetTargetFaceAll();
 			}
+			else {
+				if (shader->ValidUniform("u_MatrixViewProjection")) {
+					shader->Send("u_MatrixViewProjection", s_SceneData.light->GetLightProjectionMatrix());
+				}
+				for (int i = 0; i < mesh->GetArrayCount(); i++) {
+					vertexArrays[i]->Bind();
+					RenderCommand::Draw(vertexArrays[i]);
+				}
+			}
+
 			//u_FarClipPlane
-			for (int i = 0; i < mesh->GetArrayCount(); i++) {
-				vertexArrays[i]->Bind();
-				RenderCommand::Draw(vertexArrays[i]);
-			}
+			
 			vertexArrays[vertexArrays.size()-1]->Unbind(); //Leaving this bound could cause manual VertexBuffer / IndexBuffer creation to effect this vertexArray, so, unbind it.
 
 		}
@@ -380,7 +419,7 @@ namespace Tara {
 
 			auto window = Application::Get()->GetWindow();
 			if (s_GBuffer == nullptr) {
-				s_GBuffer = RenderTarget::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, false, "gBuffer");
+				s_GBuffer = RenderTarget2D::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, false, "gBuffer");
 			}
 			else {
 				//check for resize
@@ -505,9 +544,17 @@ namespace Tara {
 					if (shader->ValidUniform("u_LightProjectionMatrix")) {
 						shader->Send("u_LightProjectionMatrix", light->GetLightProjectionMatrix());
 					}
-					if (shader->ValidUniform("u_LightDepthMapPlanar")) {
-						light->GetDepthTarget()->ImplBind(5, 0);
-						shader->Send("u_LightDepthMapPlanar", 5);
+					if (light->DepthIsPanoramic()) {
+						if (shader->ValidUniform("u_LightDepthMapPanoramic")) {
+							light->GetDepthTarget()->ImplBind(5, 0);
+							shader->Send("u_LightDepthMapPanoramic", 5);
+						}
+					}
+					else {
+						if (shader->ValidUniform("u_LightDepthMapPlanar")) {
+							light->GetDepthTarget()->ImplBind(6, 0);
+							shader->Send("u_LightDepthMapPlanar", 6);
+						}
 					}
 					if (shader->ValidUniform("u_LightDepthMapSize")) {
 						shader->Send("u_LightDepthMapSize", (float)light->GetDepthTarget()->GetWidth());

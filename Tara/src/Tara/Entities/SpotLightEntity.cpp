@@ -18,7 +18,7 @@ namespace Tara{
 		srand((uint32_t)(this));
 		std::stringstream ss;
 		ss << "__SpotlightDepthMap__:" << rand();
-		m_DepthTarget = RenderTarget::Create(1024, 1024, 0, RenderTarget::InternalType::FLOAT, true, ss.str());
+		m_DepthTarget = RenderTarget2D::Create(1024, 1024, 0, RenderTarget::InternalType::FLOAT, true, ss.str());
 		AssetLibrary::Get()->ForgetAsset(m_DepthTarget); //should not be in asset lib anyway
 		m_DepthTarget->SetDefaultTextureWrapping(Texture::Wrapping::Border);
 		m_DepthTarget->SetBorderColor({ 1,1,1,1 });

@@ -35,7 +35,8 @@ namespace Tara {
 		std::vector<glm::mat2x3>, std::vector<glm::mat3x2>,
 		std::vector<glm::mat2x4>, std::vector<glm::mat4x2>,
 		std::vector<glm::mat3x4>, std::vector<glm::mat4x3>,
-		Texture2DRef
+		Texture2DRef,
+		TextureCubemapRef
 	>;
 
 	/// <summary>

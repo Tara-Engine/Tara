@@ -6,14 +6,17 @@
 #include "Tara/Renderer/Texture.h"
 
 namespace Tara {
+	REFTYPE(RenderTarget2D)
 	REFTYPE(RenderTarget);
+	REFTYPE(RenderTargetCubemap);
 
+	
 
 	/// <summary>
-	/// RenderTarget are special Texture2D objects that can be rendered to.
+	/// RenderTarget are special Texture objects that can be rendered to.
 	/// Create a Camera and give it a RenderTarget to do this!
 	/// </summary>
-	class RenderTarget : public Texture2D {
+	class RenderTarget : virtual public Texture {
 	public:
 		enum class InternalType {
 			INT8, INT16, INT32,
@@ -21,7 +24,7 @@ namespace Tara {
 			FLOAT
 		};
 	public:
-		RenderTarget(const std::string& name) : Texture2D(name) {}
+		RenderTarget(const std::string& name) : Texture(name) {};
 
 		/// <summary>
 		/// Enable rendering to this framebuffer.
@@ -55,6 +58,17 @@ namespace Tara {
 		/// <returns></returns>
 		virtual uint32_t GetTextureCount() = 0;
 
+		
+	};
+
+	/// <summary>
+	/// 2D RenderTargets are the most standard to use
+	/// </summary>
+	class RenderTarget2D : public RenderTarget, public Texture2D {
+	public:
+		RenderTarget2D(const std::string& name) : RenderTarget(name), Texture2D(name) {}
+		virtual ~RenderTarget2D() = default;
+
 		/// <summary>
 		/// Create a RenderTarget (full version)
 		/// </summary>
@@ -65,7 +79,7 @@ namespace Tara {
 		/// <param name="depthIsTexture">if true, the depth buffer is a texture, located at the end of the texture list</param>
 		/// <param name="name">the name of the asset</param>
 		/// <returns></returns>
-		static RenderTargetRef Create(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool depthIsTexture, const std::string& name);
+		static RenderTarget2DRef Create(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool depthIsTexture, const std::string& name);
 
 
 		/// <summary>
@@ -75,7 +89,56 @@ namespace Tara {
 		/// <param name="height">the initial width of the RenderTarget image</param>
 		/// <param name="name">the name of the asset</param>
 		/// <returns>Reference to the new RenderTarget</returns>
-		static RenderTargetRef Create(uint32_t width, uint32_t height, const std::string& name);
+		static RenderTarget2DRef Create(uint32_t width, uint32_t height, const std::string& name);
 	};
 
+	/// <summary>
+	/// RenderTarget Cubemap
+	/// </summary>
+	class RenderTargetCubemap : public RenderTarget, public TextureCubemap {
+	public:
+		enum class Face {
+			POSITIVE_X = 0,
+			NEGATIVE_X = 1,
+			POSITIVE_Y = 2,
+			NEGATIVE_Y = 3,
+			POSITIVE_Z = 4,
+			NEGATIVE_Z = 5
+		};
+
+	public:
+		RenderTargetCubemap(const std::string& name) : RenderTarget(name), TextureCubemap(name) {}
+		virtual ~RenderTargetCubemap() = default;
+
+		/// <summary>
+		/// Target a singlular face. this *will* bind the framebuffer
+		/// </summary>
+		/// <param name="face"></param>
+		virtual void SetTargetedFace(Face face) = 0;
+
+		/// <summary>
+		/// Target all the faces
+		/// </summary>
+		virtual void SetTargetFaceAll() = 0;
+
+		/// <summary>
+		/// Create a cubemap render target.
+		/// Note that thre is always at least one image, as the depth buffer is always a cubemap texture.
+		/// </summary>
+		/// <param name="width">the width of the cube tiles</param>
+		/// <param name="height">the height of the cube tiles</param>
+		/// <param name="colorTargets">the number of color targets</param>
+		/// <param name="type">the internal format type</param>
+		/// <param name="name">the asset name</param>
+		/// <returns></returns>
+		static RenderTargetCubemapRef Create(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, const std::string& name);
+		
+		/// <summary>
+		/// This function is useless for cubemaps
+		/// </summary>
+		/// <param name="other"></param>
+		inline virtual void BlitDepthToOther(RenderTargetRef other) override {};
+
+
+	};
 }

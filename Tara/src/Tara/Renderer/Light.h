@@ -119,6 +119,12 @@ namespace Tara {
 		/// <returns></returns>
 		inline virtual bool ShouldDrawDepth() { return false; }
 
+		/// <summary>
+		/// This should return true if and only if the depth is panoramic.
+		/// </summary>
+		/// <returns></returns>
+		inline virtual bool DepthIsPanoramic() { return false; }
+
 		//intentional no setter for m_LightType
 
 		//intentionally protected so that the derrived classes can directly interact

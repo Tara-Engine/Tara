@@ -3,10 +3,10 @@
 
 namespace Tara {
 
-	class OpenGLRenderTarget : public RenderTarget {
+	class OpenGLRenderTarget2D : public RenderTarget2D {
 	public:
-		OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool useTextureForDepth, const std::string& name);
-		~OpenGLRenderTarget();
+		OpenGLRenderTarget2D(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool useTextureForDepth, const std::string& name);
+		~OpenGLRenderTarget2D();
 		inline virtual uint32_t GetWidth()const override { return m_Width; };
 		inline virtual uint32_t GetHeight()const override { return m_Height; };
 		virtual void ImplBind(int slot, int)const override;
@@ -24,7 +24,6 @@ namespace Tara {
 
 		virtual void BlitDepthToOther(RenderTargetRef other) override;
 	private:
-		std::string m_Path;
 		uint32_t m_Width, m_Height;
 		uint32_t m_FramebufferID;
 		std::vector<uint32_t> m_TextureColorIDs;

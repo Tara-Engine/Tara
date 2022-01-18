@@ -68,7 +68,7 @@ void FramebufferBuildLayer::Activate()
 	//m_ScreenCamera = std::make_shared<Tara::ScreenCamera>();
 	//m_ScreenCamera->UpdateRenderArea(1200, 700); //manual width/height. Will not auto-update in test
 
-	auto framebuffer = Tara::RenderTarget::Create(1200, 700, "framebuffer"); //also matching screen size
+	auto framebuffer = Tara::RenderTarget2D::Create(1200, 700, "framebuffer"); //also matching screen size
 	camera->GetCamera()->SetRenderTarget(framebuffer); //make a framebuffer
 	
 	auto sprite = Tara::Sprite::Create(framebuffer, 1, 1, "framebufferSprite");

@@ -23,7 +23,18 @@ namespace Tara {
 
 		virtual void OnDraw(float deltaTime) override;
 
+		virtual void OnUpdate(float deltaTime) override;
+
 		virtual LightData GetLightData() override;
+
+
+		inline virtual RenderTargetRef GetDepthTarget() override { return m_DepthTarget; };
+
+		virtual glm::mat4 GetLightProjectionMatrix() override;
+
+		inline virtual bool ShouldDrawDepth() override { return true; }
+
+		inline virtual bool DepthIsPanoramic() override { return true; }
 
 		/// <summary>
 		/// Set the class-wide editor logo for this type of light
@@ -45,6 +56,7 @@ namespace Tara {
 
 	private:
 		bool m_DrawingEditorLogo;
+		RenderTargetCubemapRef m_DepthTarget;
 	private:
 		static Texture2DRef s_EditorLogo;
 	};

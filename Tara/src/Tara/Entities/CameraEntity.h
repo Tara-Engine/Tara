@@ -122,13 +122,13 @@ namespace Tara {
 		/// Get the internal camera render target
 		/// </summary>
 		/// <returns></returns>
-		const RenderTargetRef& GetRenderTarget() const { return m_Camera->GetRenderTarget(); }
+		const RenderTarget2DRef& GetRenderTarget() const { return m_Camera->GetRenderTarget(); }
 
 		/// <summary>
 		/// Set the internal camera render target
 		/// </summary>
 		/// <param name="target"></param>
-		void SetRenderTarget(const RenderTargetRef& target) { m_Camera->SetRenderTarget(target); }
+		void SetRenderTarget(const RenderTarget2DRef& target) { m_Camera->SetRenderTarget(target); }
 
 		/// <summary>
 		/// Get a ray from the camera's position and rotation

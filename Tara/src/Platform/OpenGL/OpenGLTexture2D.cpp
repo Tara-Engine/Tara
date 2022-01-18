@@ -8,14 +8,14 @@
 
 namespace Tara{
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path, const std::string& name)
-		: Texture2D(name), m_Path(path), m_Width(0), m_Height(0), m_RendererID(0)
+		: Texture(name), Texture2D(name), m_Path(path), m_Width(0), m_Height(0), m_RendererID(0)
 	{
 		LoadFromFile();
 		LOG_S(1) << "Image Loaded from File: " << path;
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const uint8_t* bytes, uint32_t width, uint32_t height, uint32_t bytesPerPixel, const std::string& name)
-		: Texture2D(name), m_Path(""), m_Width(width), m_Height(height), m_RendererID(0)
+		: Texture(name), Texture2D(name), m_Path(""), m_Width(width), m_Height(height), m_RendererID(0)
 	{
 		LoadFromArray(bytes, bytesPerPixel);
 	}

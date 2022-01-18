@@ -189,7 +189,7 @@ namespace Tara {
 		/// <summary>
 		/// The Gbuffer for the current render
 		/// </summary>
-		static RenderTargetRef s_GBuffer;
+		static RenderTarget2DRef s_GBuffer;
 		/// <summary>
 		/// full screen quad for rendering the GBuffer
 		/// </summary>
@@ -206,6 +206,7 @@ namespace Tara {
 
 		//depth draw stuff
 		static ShaderRef s_MeshDepthShader;
+		static ShaderRef s_MeshDepthPanoramicShader;
 	};
 
 }

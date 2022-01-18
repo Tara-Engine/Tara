@@ -120,6 +120,10 @@ namespace Tara {
 			return MaterialParamaterType::Sampler2D;
 		}
 
+		else if (std::holds_alternative<TextureCubemapRef>(data)) {
+		return MaterialParamaterType::SamplerCube;
+		}
+
 		LOG_S(WARNING) << "Unknown MatieralParamaterType in the data";
 		return MaterialParamaterType::Float1;
 	}
@@ -338,6 +342,12 @@ namespace Tara {
 			std::get<Texture2DRef>(data)->Bind(bindingA++, bindingB);
 			break;
 		}
+		case MaterialParamaterType::SamplerCube: {
+			uniformType = UniformType::Int1;
+			uniformData.Int1 = bindingA;
+			std::get<TextureCubemapRef>(data)->Bind(bindingA++, bindingB);
+			break;
+		}
 
 		default: {
 			uniformType = UniformType::Float1;
@@ -493,6 +503,7 @@ namespace Tara {
 		case MaterialParamaterType::Matrix4x3Vector: return std::vector<glm::mat4x3>();
 
 		case MaterialParamaterType::Sampler2D: return Texture2DRef(nullptr);
+		case MaterialParamaterType::SamplerCube: return TextureCubemapRef(nullptr);
 
 		default: return 0.0f;
 		}

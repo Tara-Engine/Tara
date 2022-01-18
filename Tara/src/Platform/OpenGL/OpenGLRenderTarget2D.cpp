@@ -1,19 +1,19 @@
 #include "tarapch.h"
-#include "OpenGLRenderTarget.h"
+#include "OpenGLRenderTarget2D.h"
 #include "glad/glad.h"
 
 #include "Tara/Core/Application.h"
 
 namespace Tara {
-	OpenGLRenderTarget::OpenGLRenderTarget(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool useTextureForDepth, const std::string& name)
-		: RenderTarget(name), m_Width(width), m_Height(height), m_DepthIsTexture(useTextureForDepth)
+	OpenGLRenderTarget2D::OpenGLRenderTarget2D(uint32_t width, uint32_t height, uint32_t colorTargets, InternalType type, bool useTextureForDepth, const std::string& name)
+		: Texture(name), RenderTarget2D(name), m_Width(width), m_Height(height), m_DepthIsTexture(useTextureForDepth)
 	{
 		//generate the framebuffer
 		glGenFramebuffers(1, &m_FramebufferID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
 
 		if (colorTargets > 0){
-			LOG_S(INFO) << "RenderTarget being made with " << colorTargets << " colorTargets";
+			LOG_S(INFO) << "RenderTarget2D being made with " << colorTargets << " colorTargets";
 
 			m_TextureColorIDs.reserve(colorTargets);
 			colorTargets = std::min(colorTargets, 32u); //there are only 32 color target attachments
@@ -161,7 +161,7 @@ namespace Tara {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	OpenGLRenderTarget::~OpenGLRenderTarget()
+	OpenGLRenderTarget2D::~OpenGLRenderTarget2D()
 	{
 		//clean up OpenGL objects
 		if (!m_DepthIsTexture) {
@@ -173,7 +173,7 @@ namespace Tara {
 		glDeleteFramebuffers(1, &m_FramebufferID);
 	}
 
-	void OpenGLRenderTarget::ImplBind(int slot, int index) const
+	void OpenGLRenderTarget2D::ImplBind(int slot, int index) const
 	{
 		//bind the texture for rendering
 		if (index < m_TextureColorIDs.size()) {
@@ -185,12 +185,12 @@ namespace Tara {
 		//m_LastBindPoint = std::make_pair(slot, index);
 	}
 
-	void OpenGLRenderTarget::ImplUnbind() const
+	void OpenGLRenderTarget2D::ImplUnbind() const
 	{
 		//pass
 	}
 
-	void OpenGLRenderTarget::SetFiltering(Filtering filter)
+	void OpenGLRenderTarget2D::SetFiltering(Filtering filter)
 	{
 		for (auto& id : m_TextureColorIDs) {
 			if (filter == Texture::Filtering::Nearest) {
@@ -205,7 +205,7 @@ namespace Tara {
 	}
 
 
-	void OpenGLRenderTarget::SetWrap(Wrapping wrap)
+	void OpenGLRenderTarget2D::SetWrap(Wrapping wrap)
 	{
 		for (auto& id : m_TextureColorIDs) {
 			switch (wrap) {
@@ -229,7 +229,7 @@ namespace Tara {
 		}
 	}
 
-	void OpenGLRenderTarget::SetBorderColor(const glm::vec4& color)
+	void OpenGLRenderTarget2D::SetBorderColor(const glm::vec4& color)
 	{
 		for (auto& id : m_TextureColorIDs) {
 			glTextureParameterfv(id, GL_TEXTURE_BORDER_COLOR, (GLfloat*)&color);
@@ -237,7 +237,7 @@ namespace Tara {
 	}
 
 
-	void OpenGLRenderTarget::ImplRenderTo(bool render) const
+	void OpenGLRenderTarget2D::ImplRenderTo(bool render) const
 	{
 		if (render) {
 			glBindFramebuffer(GL_FRAMEBUFFER, m_FramebufferID);
@@ -253,7 +253,7 @@ namespace Tara {
 		}
 	}
 
-	void OpenGLRenderTarget::SetSize(uint32_t width, uint32_t height)
+	void OpenGLRenderTarget2D::SetSize(uint32_t width, uint32_t height)
 	{
 		m_Width = width;
 		m_Height = height;
@@ -285,25 +285,21 @@ namespace Tara {
 		}
 	}
 
-	void OpenGLRenderTarget::BlitDepthToOther(RenderTargetRef other)
+	void OpenGLRenderTarget2D::BlitDepthToOther(RenderTargetRef other)
 	{
-		std::shared_ptr<OpenGLRenderTarget> otherGL = std::dynamic_pointer_cast<OpenGLRenderTarget>(other);
+		std::shared_ptr<OpenGLRenderTarget2D> otherGL = std::dynamic_pointer_cast<OpenGLRenderTarget2D>(other);
 		if (otherGL || !other) {
 			//the other is invalid (default framebuffer) or a valid OpenGLRenderTarget
 
 			//Get the data, accounting for this or other being null (default framebuffer)
-			uint32_t source = 0;
-			uint32_t sourceWidth = Application::Get()->GetWindow()->GetWidth();
-			uint32_t sourceHeight = Application::Get()->GetWindow()->GetHeight();
+			uint32_t source = m_FramebufferID;
+			uint32_t sourceWidth = GetWidth();
+			uint32_t sourceHeight = GetHeight();
 
 			uint32_t dest = 0;
-			uint32_t destWidth = sourceWidth;
-			uint32_t destHeight = sourceHeight;
-			if (this) {
-				source = m_FramebufferID;
-				sourceWidth = GetWidth();
-				sourceHeight = GetHeight();
-			}
+			uint32_t destWidth = Application::Get()->GetWindow()->GetWidth();
+			uint32_t destHeight = Application::Get()->GetWindow()->GetHeight();
+			
 			if (otherGL) {
 				dest = otherGL->m_FramebufferID;
 				destWidth = otherGL->GetWidth();

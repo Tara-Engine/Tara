@@ -134,13 +134,13 @@ namespace Tara {
 		/// Get the render target of a camera
 		/// </summary>
 		/// <returns></returns>
-		const RenderTargetRef& GetRenderTarget() const { return m_RenderTarget; }
+		const RenderTarget2DRef& GetRenderTarget() const { return m_RenderTarget; }
 
 		/// <summary>
 		/// Set the render target of a camera
 		/// </summary>
 		/// <param name="target"></param>
-		void SetRenderTarget(const RenderTargetRef& target) { m_RenderTarget = target; }
+		void SetRenderTarget(const RenderTarget2DRef& target) { m_RenderTarget = target; }
 
 	public:
 		/// <summary>
@@ -192,7 +192,7 @@ namespace Tara {
 		Transform m_Transform;
 		const ProjectionType m_Type;
 		glm::mat4 m_ProjectionMatrix;
-		RenderTargetRef m_RenderTarget;
+		RenderTarget2DRef m_RenderTarget;
 		uint32_t m_RenderFilterBits;
 		MaterialBaseRef m_LightingMaterial;
 		float m_NearClipPlane;

@@ -81,7 +81,7 @@ namespace Tara {
 		float m_SpotlightAngle;
 		float m_SpotlightInnerAngle;
 		bool m_DrawingEditorLogo;
-		RenderTargetRef m_DepthTarget;
+		RenderTarget2DRef m_DepthTarget;
 	private:
 		static Texture2DRef s_EditorLogo;
 	};

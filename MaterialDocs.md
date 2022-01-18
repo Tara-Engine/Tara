@@ -70,6 +70,7 @@ uniform float u_LightParam2;
 uniform float u_LightRadius;
 uniform mat4 u_LightProjectionMatrix;
 uniform sampler2D u_LightDepthMapPlanar;
+uniform samplerCube u_LightDepthMapPanoramic;
 uniform float u_LightDepthMapSize;
 
 vec2 UVs; //this is calculated from the fragment location on the screen, not passed from vertex shader.

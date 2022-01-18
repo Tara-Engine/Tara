@@ -160,6 +160,7 @@ uniform float u_CameraNearClipPlane;
 uniform float u_CameraFarClipPlane;
 uniform mat4 u_LightProjectionMatrix;
 uniform sampler2D u_LightDepthMapPlanar;
+uniform samplerCube  u_LightDepthMapPanoramic;
 uniform float u_LightDepthMapSize;
 
 float Metallic         = 0;
@@ -241,6 +242,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 		vec3 lightDir = normalize(u_LightPosition - WorldSpacePosition);
 		float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 		float specularFactor = pow(max(dot(normalize(u_CameraPositionWS - WorldSpacePosition), reflect(-lightDir, WorldSpaceNormal)), 0.0), pow(2, (1-Roughness)*8));
+		if(diffuseFactor == 0.0) {specularFactor = 0.0;}
 		return vec2(diffuseFactor*attenuation, specularFactor*attenuation);
 	}
 	else if (u_LightType == LightType_Spot){
@@ -252,6 +254,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 			float attenuation = min(((u_LightIntensity *intensity) / (1 +  attenuationLinear + lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
 			float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 			float specularFactor = pow(max(dot(normalize(u_CameraPositionWS - WorldSpacePosition), reflect(-lightDir, WorldSpaceNormal)), 0.0), pow(2, (1-Roughness)*8));
+			if(diffuseFactor == 0.0) {specularFactor = 0.0;}
 			return vec2(diffuseFactor*attenuation, specularFactor*attenuation);
 		}else{
 			discard; //if outside spotlight effect, ignore pixel entirely!
@@ -261,7 +264,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 		vec3 lightDir = normalize(-u_LightForwardVector);
 		float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 		float specularFactor = pow(max(dot(normalize(u_CameraPositionWS - WorldSpacePosition), reflect(-lightDir, WorldSpaceNormal)), 0.0), pow(2, (1-Roughness)*8));
-		
+		if(diffuseFactor == 0.0) {specularFactor = 0.0;}
 		return vec2(u_LightIntensity * diffuseFactor, u_LightIntensity * specularFactor);
 	}
 	else if (u_LightType == LightType_Ambient){

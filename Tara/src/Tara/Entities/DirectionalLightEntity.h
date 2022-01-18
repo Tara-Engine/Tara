@@ -74,7 +74,7 @@ namespace Tara {
 		inline void SetDrawingEditorLogo(bool drawing) { m_DrawingEditorLogo = drawing; }
 	private:
 		bool m_DrawingEditorLogo;
-		RenderTargetRef m_DepthTarget;
+		RenderTarget2DRef m_DepthTarget;
 		float m_BackDistance;
 		float m_ShadowScale;
 	private:

@@ -77,7 +77,7 @@ void ModelBuildLayer::Activate()
 		invertedCube.Transform(Tara::Transform({ -8,-8,-8 }, { 0,0,0 }, { 16,16,16 }).GetTransformMatrix());
 		invertedCube.FlipTriangles();
 		auto invertedCubeMesh = Tara::StaticMesh::Create({ invertedCube }, "InvertedCubeMesh");
-		//auto invertedCubeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), invertedCubeMesh, m_Material, "Static Mesh Entity");
+		auto invertedCubeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), invertedCubeMesh, m_Material, "Static Mesh Entity");
 
 		Tara::MeshPart cube = Tara::MeshPart::UnitCube();
 		auto cubeMesh = Tara::StaticMesh::Create({ cube }, "CubeMesh");
@@ -101,21 +101,21 @@ void ModelBuildLayer::Activate()
 		Tara::DirectionalLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/DirectionallightLogo.png"));
 		Tara::SpotLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/SpotLightLogo.png"));
 
-		/*
 		auto light1 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+		/*
 		auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 		auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 		*/
-
+		m_Light = light1;
 		auto light4 = Tara::CreateEntity<Tara::AmbientLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,1,0 }, { 0,0,0 }, { 1,1,1 }),
 			Tara::Vector(1, 1, 1), 1, "AmbientLightEntity"
 			);
-		auto light5 = Tara::CreateEntity<Tara::DirectionalLightEntity>(
-			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,7,0 }, { 0,-36,0 }, { 1,1,1 }),
-			Tara::Vector(1, 1, 1), 0.5, "DirectionalLightEntity"
-			);
-		m_DirectionalLight = light5;
+		//auto light5 = Tara::CreateEntity<Tara::DirectionalLightEntity>(
+		//	Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,7,0 }, { 0,-36,0 }, { 1,1,1 }),
+		//	Tara::Vector(1, 1, 1), 0.5, "DirectionalLightEntity"
+		//	);
+		//m_DirectionalLight = light5;
 
 		/*
 		auto light6 = Tara::CreateEntity<Tara::SpotLightEntity>(
@@ -132,11 +132,11 @@ void ModelBuildLayer::Activate()
 		*/
 		//m_SpotLight = light6;
 
-		//light1->SetDrawingEditorLogo(true);
+		light1->SetDrawingEditorLogo(true);
 		//light2->SetDrawingEditorLogo(true);
 		//light3->SetDrawingEditorLogo(true);
 		light4->SetDrawingEditorLogo(true);
-		light5->SetDrawingEditorLogo(true);
+		//light5->SetDrawingEditorLogo(true);
 		//light6->SetDrawingEditorLogo(true);
 		//light7->SetDrawingEditorLogo(true);
 
@@ -370,6 +370,7 @@ void ModelBuildLayer::Draw(float deltaTime)
 	
 
 	//some fake UI
+	/*
 	Tara::Renderer::BeginScene(m_ScreenCamera->GetCamera());
 	Tara::RenderCommand::EnableDepthTesting(false);
 	Tara::RenderCommand::EnableBackfaceCulling(false);
@@ -377,11 +378,11 @@ void ModelBuildLayer::Draw(float deltaTime)
 	glm::vec2 size = glm::vec2((float)window->GetWidth(), (float)window->GetHeight());
 	Tara::Renderer::Quad(
 		TRANSFORM_2D(size.x - 200, 200, 0, 150, -150),
-		{ 1,1,1,1 }, m_DirectionalLight->GetDepthTarget()
+		{ 1,1,1,1 }, std::dynamic_pointer_cast<Tara::RenderTarget2D>(m_DirectionalLight->GetDepthTarget())
 	);
 
 	Tara::Renderer::EndScene();
-	
+	*/
 }
 
 void ModelBuildLayer::OnEvent(Tara::Event& e)
@@ -393,7 +394,7 @@ void ModelBuildLayer::OnEvent(Tara::Event& e)
 			LOG_S(INFO) << "Camera Transform" << m_Camera->GetWorldTransform();
 		}
 		if (ee.GetKey() == TARA_KEY_T) {
-			//m_Camera->SetWorldPosition(m_SpotLight->GetWorldPosition());
+			m_Camera->SetWorldPosition(m_Light->GetWorldPosition());
 		}
 		return false;
 	});

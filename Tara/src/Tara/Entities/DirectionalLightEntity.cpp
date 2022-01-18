@@ -17,7 +17,7 @@ namespace Tara {
 		srand((uint32_t)(this));
 		std::stringstream ss;
 		ss << "__DirectionalLightDepthMap__:" << rand();
-		m_DepthTarget = RenderTarget::Create(4096, 4096, 0, RenderTarget::InternalType::FLOAT, true, ss.str());
+		m_DepthTarget = RenderTarget2D::Create(4096, 4096, 0, RenderTarget::InternalType::FLOAT, true, ss.str());
 		AssetLibrary::Get()->ForgetAsset(m_DepthTarget); //should not be in asset lib anyway
 		m_DepthTarget->SetWrap(Texture::Wrapping::Border);
 		m_DepthTarget->SetFiltering(Texture::Filtering::Linear);
