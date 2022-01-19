@@ -102,22 +102,21 @@ void ModelBuildLayer::Activate()
 		Tara::SpotLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/SpotLightLogo.png"));
 
 		auto light1 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
-		/*
 		auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 		auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -12,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
-		*/
+		
 		m_Light = light1;
 		auto light4 = Tara::CreateEntity<Tara::AmbientLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,1,0 }, { 0,0,0 }, { 1,1,1 }),
 			Tara::Vector(1, 1, 1), 1, "AmbientLightEntity"
 			);
-		//auto light5 = Tara::CreateEntity<Tara::DirectionalLightEntity>(
-		//	Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,7,0 }, { 0,-36,0 }, { 1,1,1 }),
-		//	Tara::Vector(1, 1, 1), 0.5, "DirectionalLightEntity"
-		//	);
-		//m_DirectionalLight = light5;
+		auto light5 = Tara::CreateEntity<Tara::DirectionalLightEntity>(
+			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,7,0 }, { 0,-36,45 }, { 1,1,1 }),
+			Tara::Vector(1, 1, 1), 0.5, "DirectionalLightEntity"
+			);
+		m_DirectionalLight = light5;
 
-		/*
+		
 		auto light6 = Tara::CreateEntity<Tara::SpotLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,6,0 }, { 0,-90,0 }, { 1,1,1 }),
 			Tara::Vector(0, 0.5, 1), 4, 35, "SpotLightEntity"
@@ -129,16 +128,16 @@ void ModelBuildLayer::Activate()
 			Tara::Vector(0, 1, 0.5), 4, 35, "SpotLightEntity"
 			);
 		light7->SetSpotlightInnerAngle(25);
-		*/
+		
 		//m_SpotLight = light6;
 
 		light1->SetDrawingEditorLogo(true);
-		//light2->SetDrawingEditorLogo(true);
-		//light3->SetDrawingEditorLogo(true);
+		light2->SetDrawingEditorLogo(true);
+		light3->SetDrawingEditorLogo(true);
 		light4->SetDrawingEditorLogo(true);
-		//light5->SetDrawingEditorLogo(true);
-		//light6->SetDrawingEditorLogo(true);
-		//light7->SetDrawingEditorLogo(true);
+		light5->SetDrawingEditorLogo(true);
+		light6->SetDrawingEditorLogo(true);
+		light7->SetDrawingEditorLogo(true);
 
 
 		//m_Light = light1;

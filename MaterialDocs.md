@@ -98,7 +98,7 @@ There are several things that can be `#include`d into a material, like in C++. T
 
 ## phong
 `#include <phong>`
-gives access to the `Phong(...)` function.
+gives access to the `Phong(...)` function. ONLY works for Lighting Materials.
 
 Functions:
 ```
@@ -107,6 +107,18 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic);
 The Phong function calculates Phong lighting for the light, with the provided attentuation factors.
 Good default values are `(0.07, 0.017)`. As for the return value it is a vec2 of either `{diffuseFactor, specularFactor}` or `{ambientFactor, 0}`, depending on the light type. (ie, the first for all lights but AmbientLight, and the second for AmbientLight). Since both diffuse and ambient factors are usually treated in the same way (multiplied by the light color, and the diffuse color of the material) this is fairly safe to ignore.
 
+## shadow
+`#include <shadow>`
+Gives access to the `Shadow(...)` function, for calculating light shadows. ONLY works for Lighting Materials.
+
+Functions:
+```
+float Shadow(float diskRadius);
+float GetLightDepth(vec3 position);
+```
+Shadow calculates the shadow multiplier for the current pixel. It can be directly multiplied with the result of calculating the lighting. It is not a boolean, but does contain values between 0.0 and 1.0, depending on the disk radius. (contains optimizations for when the radius is 0.0, in which case it is boolean 0.0 or 1.0). If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned. If the distance to the light is greater than its radius, then 1.0 is returned.
+
+GetLightDepth returns the stored depth for a specific position for the current light. This is normalized to be between 0.0 and 1.0, with 1.0 being equivilent to the light radius. If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned.
 
 
 

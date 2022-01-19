@@ -273,5 +273,61 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 }
 )V0G0N"
 		},
+		{"shadow", R"V0G0N(
+float GetLightDepth(vec3 position){
+	if(u_LightType == LightType_Spot || u_LightType == LightType_Directional){
+		vec4 fragPosLight = u_LightProjectionMatrix * vec4(position, 1.0); //project
+		vec3 fragProjCoords = fragPosLight.xyz / fragPosLight.w; //divide by w to apply projection
+		fragProjCoords = (fragProjCoords +1) / 2.0; //Adjust UV coords for [-1, 1] to [0, 1]
+		if(fragProjCoords.x > 1 || fragProjCoords.y > 1 || fragProjCoords.x < 0 || fragProjCoords.y < 0){
+			return 1.0;
+		}
+		return texture(u_LightDepthMapPlanar, fragProjCoords.xy).r;
+	}
+	else if(u_LightType == LightType_Point){
+		vec3 fragmentToLight = position - u_LightPosition; //get vector
+		return texture(u_LightDepthMapPanoramic, fragmentToLight).r;
+	}
+	else{
+		return 1.0;
+	}
+}
+float Shadow(float diskRadius){
+	if (u_LightType == LightType_Spot || u_LightType == LightType_Directional || u_LightType == LightType_Point){
+		float lightDepth = length(WorldSpacePosition - u_LightPosition) / u_LightRadius;
+		if (lightDepth > 1){
+			return 1.0;
+		}
+		if (diskRadius == 0.0){
+			float closestDepth = GetLightDepth(WorldSpacePosition);
+			if (closestDepth > lightDepth){
+				return 1.0;
+			}else{
+				return 0.0;
+			}
+		}
+		else{
+			float shadowValue = 0.0;
+			int samples = 20;
+			vec3 sampleOffsetDirections[20] = vec3[](
+				vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+				vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+				vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+				vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+				vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+			);
+			for (int i=0;i<samples;i++){
+				float closestDepth = GetLightDepth(WorldSpacePosition + (sampleOffsetDirections[i] * diskRadius));
+				if (closestDepth > lightDepth){
+					shadowValue += 1.0;
+				}
+			}
+			return shadowValue / float(samples);
+		}
+	}else{
+		return 1.0;
+	}
+}
+)V0G0N"}
 	};
 }
