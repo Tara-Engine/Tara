@@ -16,8 +16,9 @@ namespace Tara {
 #version 450 core
 layout(location=0) in vec3 a_Position;
 layout(location=1) in vec3 a_Normal;
-layout(location=2) in vec4 a_Color;
-layout(location=3) in vec2 a_UV;
+layout(location=2) in vec3 a_Tangent;
+layout(location=3) in vec4 a_Color;
+layout(location=4) in vec2 a_UV;
 
 uniform mat4 u_MatrixViewProjection;
 uniform mat4 u_MatrixModel;
@@ -46,8 +47,9 @@ void main(){
 #version 450 core
 layout(location=0) in vec3 a_Position;
 layout(location=1) in vec3 a_Normal;
-layout(location=2) in vec4 a_Color;
-layout(location=3) in vec2 a_UV;
+layout(location=2) in vec3 a_Tangent;
+layout(location=3) in vec4 a_Color;
+layout(location=4) in vec2 a_UV;
 
 uniform mat4 u_MatrixViewProjection;
 uniform mat4 u_MatrixModel;
@@ -56,6 +58,7 @@ out vec3 v_WorldNorm;
 out vec3 v_WorldPos;
 out vec4 v_Color;
 out vec2 v_UV;
+out mat3 v_MatrixTBN;
 
 void main(){
 	v_WorldNorm = vec3(inverse(transpose(u_MatrixModel)) * vec4(a_Normal, 1));
@@ -64,6 +67,11 @@ void main(){
 	
 	v_UV = a_UV;
 	
+	vec3 T = normalize(vec3(u_MatrixModel * vec4(a_Tangent, 0.0)));
+	vec3 N = normalize(vec3(u_MatrixModel * vec4(a_Normal, 0.0)));
+	vec3 B = cross(N, T);
+	v_MatrixTBN = mat3(T, B, N);
+
 	gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
 }
 
@@ -76,8 +84,9 @@ void main(){
 #version 450 core
 layout(location=0) in vec3 a_Position;
 layout(location=1) in vec3 a_Normal;
-layout(location=2) in vec4 a_Color;
-layout(location=3) in vec2 a_UV;
+layout(location=2) in vec3 a_Tangent;
+layout(location=3) in vec4 a_Color;
+layout(location=4) in vec2 a_UV;
 
 uniform mat4 u_MatrixViewProjection;
 uniform mat4 u_MatrixModel;
@@ -125,6 +134,7 @@ in vec3 v_WorldNorm;
 in vec3 v_WorldPos;
 in vec4 v_Color;
 in vec2 v_UV;
+in mat3 v_MatrixTBN;
 
 vec3 PixelNormal = vec3(0);
 )V0G0N"
@@ -199,7 +209,10 @@ void main(){
 			R"V0G0N(
 //LIT
 void main(){
-	PixelNormal = normalize(v_WorldNorm + normal().xyz);
+	PixelNormal = normalize(v_MatrixTBN * normal().xyz);
+	if(PixelNormal == vec3(0,0,0)){
+		PixelNormal = v_WorldNorm;
+	}
 
 	ColorMetallic = vec4(diffuse().xyz, metallic() + 1);
 	SpecularRoughness = vec4(specular().xyz, roughness() + 1);
@@ -272,7 +285,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 	}
 }
 )V0G0N"
-		},
+		}, //Phong
 		{"shadow", R"V0G0N(
 float GetLightDepth(vec3 position){
 	if(u_LightType == LightType_Spot || u_LightType == LightType_Directional){
@@ -328,6 +341,8 @@ float Shadow(float diskRadius){
 		return 1.0;
 	}
 }
-)V0G0N"}
+)V0G0N"
+		}, //Shadow
+
 	};
 }

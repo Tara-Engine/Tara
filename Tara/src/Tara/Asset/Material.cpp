@@ -171,8 +171,8 @@ namespace Tara{
 
 			std::smatch sm;
 			std::regex_match(code.cbegin(), code.cend(), sm, filter);
-
-			if (sm.size() >= 4) {
+			//the check for '/' is to eliminate comments. YES, this can be bypassed with a space starting the line.
+			if (sm.size() >= 4 && code[0] != '/') {
 				std::string typeName = sm[2];
 				std::string paramName = sm[3];
 				bool vector = (sm[4] != "");

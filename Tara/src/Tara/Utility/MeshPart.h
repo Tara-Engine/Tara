@@ -11,6 +11,7 @@ namespace Tara {
 	struct Vertex {
 		Vector Position;
 		Vector Normal;
+		Vector Tangent;
 		glm::vec4 Color;
 		glm::vec2 UV;
 
@@ -22,7 +23,7 @@ namespace Tara {
 		/// <param name="color">the Color of the vertex, defaults to {1,1,1,1} (Opaque White)</param>
 		/// <param name="uv">the UV coordinate of the vertex, defaults to {0,0}</param>
 		Vertex(Vector pos, Vector norm = { 0,1,0 }, glm::vec4 color = { 1,1,1,1 }, glm::vec2 uv = { 0,0 })
-			:Position(pos), Normal(norm), Color(color), UV(uv)
+			:Position(pos), Normal(norm), Tangent(0), Color(color), UV(uv)
 		{}
 
 		/// <summary>
@@ -41,7 +42,7 @@ namespace Tara {
 		/// <param name="u">U texture coordinate, defaults to 0</param>
 		/// <param name="v">V texture coordinate, defaults to 0</param>
 		Vertex(float x = 0, float y = 0, float z = 0, float nx = 0, float ny = 0, float nz = 0, float r = 1, float g = 1, float b = 1, float a = 1, float u = 0, float v = 0)
-			:Position(x, y, z), Normal(nx, ny, nz), Color(r, g, b, a), UV(u, v)
+			:Position(x, y, z), Normal(nx, ny, nz), Tangent(0), Color(r, g, b, a), UV(u, v)
 		{}
 
 	};
@@ -54,6 +55,7 @@ namespace Tara {
 	const BufferLayout VERTEX_LAYOUT = BufferLayout({
 		{Tara::Shader::Datatype::Float3, "Position", false},
 		{Tara::Shader::Datatype::Float3, "Normal", false},
+		{Tara::Shader::Datatype::Float3, "Tangent", false},
 		{Tara::Shader::Datatype::Float4, "Color", false},
 		{Tara::Shader::Datatype::Float2, "UV", false},
 	});
@@ -148,6 +150,13 @@ namespace Tara {
 		/// </summary>
 		/// <returns>A reference to itself </returns>
 		MeshPart& ClearNormals();
+
+		/// <summary>
+		/// Using the existing normals and UVs, calculate the Tangent and Bitangent for the mesh
+		/// A division by 0 error is likely if you have not set up the mesh's UVs
+		/// </summary>
+		/// <returns></returns>
+		MeshPart& CalculateTangents();
 
 		/// <summary>
 		/// Transform the vertices positions by a matrix

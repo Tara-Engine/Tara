@@ -339,13 +339,19 @@ namespace Tara {
 		case MaterialParamaterType::Sampler2D: {
 			uniformType = UniformType::Int1;
 			uniformData.Int1 = bindingA;
-			std::get<Texture2DRef>(data)->Bind(bindingA++, bindingB);
+			auto& ref = std::get<Texture2DRef>(data);
+			if (ref) {
+				ref->Bind(bindingA++, bindingB);
+			}
 			break;
 		}
 		case MaterialParamaterType::SamplerCube: {
 			uniformType = UniformType::Int1;
 			uniformData.Int1 = bindingA;
-			std::get<TextureCubemapRef>(data)->Bind(bindingA++, bindingB);
+			auto& ref = std::get<TextureCubemapRef>(data);
+			if (ref) {
+				ref->Bind(bindingA++, bindingB);
+			}
 			break;
 		}
 

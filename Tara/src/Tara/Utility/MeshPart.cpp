@@ -65,6 +65,46 @@ namespace Tara{
 		return *this;
 	}
 
+	MeshPart& MeshPart::CalculateTangents()
+	{
+		//first, get the usage count
+		std::vector<int32_t> usageCount(Vertices.size(), 0);
+		for (auto& index : Indices) {
+			if (index < usageCount.size()) { //in case there is an index that is logically outside of the mesh. Could happen
+				usageCount[index] += 1;
+			}
+		}
+		//clear tangent and bitangent
+		for (auto& vert : Vertices) {
+			vert.Tangent = Vector{ 0 };
+		}
+		//calculate new tangent and bitangent
+		for (int i = 0; i < Indices.size(); i += 3) {
+			auto& Vert1 = Vertices[Indices[i]];
+			auto& Vert2 = Vertices[Indices[i + 1]];
+			auto& Vert3 = Vertices[Indices[i + 2]];
+			//get edges and deltaUVs
+			Vector edge1 = Vert2.Position - Vert1.Position;
+			Vector edge2 = Vert3.Position - Vert1.Position;
+			glm::vec2 deltaUV1 = Vert2.UV - Vert1.UV;
+			glm::vec2 deltaUV2 = Vert3.UV - Vert1.UV;
+			//calculate tangent and bitangent
+			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+			Vector tangent = {
+				f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x),
+				f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y),
+				f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z),
+			};
+
+			for (int j = i; j < i + 3; j++) {
+				//Vertices[Indices[j]].Normal -= (norm / (float)usageCount[Indices[j]]);
+				Vertices[Indices[j]].Tangent -= (tangent / (float)usageCount[Indices[j]]);
+			}
+		}
+
+		return *this;
+	}
+
 	MeshPart& MeshPart::Transform(glm::mat4 matrix)
 	{
 		for (auto& vert : Vertices) {
@@ -75,7 +115,7 @@ namespace Tara{
 
 	MeshPart MeshPart::UnitCube()
 	{
-		return MeshPart(
+		auto mp = MeshPart(
 			{ 
 				{0,0,1,  0, 0, 1, 1,1,1,1, 0,0}, {1,0,1,  0, 0, 1, 1,1,1,1, 1,0}, {1,1,1,  0, 0, 1, 1,1,1,1, 1,1}, {0,1,1,  0, 0, 1, 1,1,1,1, 0,1}, //Front (+Z)
 				{0,0,0,  0, 0,-1, 1,1,1,1, 1,0}, {1,0,0,  0, 0,-1, 1,1,1,1, 0,0}, {1,1,0,  0, 0,-1, 1,1,1,1, 0,1}, {0,1,0,  0, 0,-1, 1,1,1,1, 1,1}, //Back (-Z)
@@ -92,6 +132,8 @@ namespace Tara{
 				16,17,18,18,19,16,	//Top(+Y) 
 				20,22,21,22,20,23	//Bottom(-Y) 
 			});
+		mp.CalculateTangents();
+		return mp;
 	}
 
 	MeshPart MeshPart::UnitSphere(int32_t strips_v, int32_t strips_h)
