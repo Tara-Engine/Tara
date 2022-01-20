@@ -64,14 +64,9 @@ void ModelBuildLayer::Activate()
 		testerMat->SetTextureParmamter("ambientOcclusionTexture", Tara::Texture2D::Create("assets/Material/Tester_AmbientOcclusion.png"));
 
 		auto postProcess1 = Tara::Material::Create(Tara::MaterialType::POSTPROCESS, "assets/postProcess1.glsl", Tara::Shader::SourceType::TextFiles, "PostProcessMaterial1");
-		postProcess1->SetParamater("tint", glm::vec4{ 0,1,1,1 });
-
-		auto postProcess2 = postProcess1->CreateInstance("PostProcessMaterial1Instance");
-		postProcess2->SetParamater("tint", glm::vec4(1, 0, 1, 1));
 
 		
 		m_Camera->GetCamera()->AddPostProcessMaterial(postProcess1);
-		m_Camera->GetCamera()->AddPostProcessMaterial(postProcess2);
 		
 		//scene setup (meshes, lights)
 

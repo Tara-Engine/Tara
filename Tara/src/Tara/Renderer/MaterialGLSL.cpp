@@ -439,6 +439,58 @@ vec3 NormalStrength(vec3 norm, float frac){
 	return normalize(norm);
 })V0G0N"
 		}, //Normal utilities
-
+		{"fxaa", R"V0G0N(
+vec3 FXAA(float span_max, float reduce_mul, float reduce_min, vec2 uv, sampler2D sampler, vec2 samplerSize){
+	vec3 rgbNW = texture(sampler, (uv + vec2(-1.0,-1.0) / samplerSize)).xyz;
+	vec3 rgbNE = texture(sampler, (uv + vec2( 1.0,-1.0) / samplerSize)).xyz;
+	vec3 rgbSW = texture(sampler, (uv + vec2(-1.0, 1.0) / samplerSize)).xyz;
+	vec3 rgbSE = texture(sampler, (uv + vec2( 1.0, 1.0) / samplerSize)).xyz;
+	vec3 rgbM = texture(sampler, uv).xyz;
+	//luminescence
+	vec3 luma = vec3(0.299, 0.589, 0.144); //magic numbers?
+	float lumaNW = dot(rgbNW, luma);
+	float lumaNE = dot(rgbNE, luma);
+	float lumaSW = dot(rgbSW, luma);
+	float lumaSE = dot(rgbSE, luma);
+	float lumaM  = dot(rgbM, luma);
+	float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+	float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
+	//direction luminescence is flowing
+	vec2 dir;
+	dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+	dir.y = -((lumaNW + lumaSW) - (lumaNE + lumaSE));
+	float dirReduce = max(
+		(lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * reduce_mul),
+		reduce_min
+	);
+	//no idea what this is
+	float rcpDirMin = 1.0/(min(abs(dir.x), abs(dir.y)) + dirReduce);
+	dir = min(
+		vec2(span_max, span_max), 
+		max(
+			vec2(-span_max, -span_max), 
+			dir * rcpDirMin
+		)
+	) / samplerSize;
+	//getting into wild territory here
+	//choose two colors, mixed from the final color sampler. Not entirely sure how the UVs are being modified
+	vec3 rgbA = 0.5 * (
+		texture(sampler, (uv + dir * (1.0/3.0 - 0.5))).xyz + 
+		texture(sampler, (uv + dir * (2.0/3.0 - 0.5))).xyz
+	);
+	vec3 rgbB = 0.5 * (
+		texture(sampler, (uv + dir * (0.0/3.0 - 0.5))).xyz + 
+		texture(sampler, (uv + dir * (3.0/3.0 - 0.5))).xyz
+	);
+	float lumaB = dot(rgbB, luma);
+	//choose which rgb value to use
+	if((lumaB < lumaMin) || (lumaB > lumaMax)){
+		return rgbA;
+	}
+	else{
+		return rgbB;
+	}
+}
+)V0G0N"}
 	};
 }

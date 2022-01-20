@@ -71,6 +71,9 @@ uniform vec3 u_CameraForwardVector;
 
 uniform vec3 u_LightPosition;
 uniform vec3 u_LightForwardVector; //forward vector
+uniform float u_CameraNearClipPlane;
+uniform float u_CameraFarClipPlane;
+
 uniform vec3 u_LightColor;
 uniform int u_LightType;
 uniform float u_LightIntensity;
@@ -122,6 +125,8 @@ uniform sampler2D u_FinalColorSampler;
 uniform vec2 u_TargetSize;
 uniform vec3 u_CameraPositionWS;
 uniform vec3 u_CameraForwardVector;
+uniform float u_CameraNearClipPlane;
+uniform float u_CameraFarClipPlane;
 
 vec2 UVs;
 
@@ -177,6 +182,25 @@ NormalTexture samples a texture as if it were a normalmap. (ie, it performs the 
 
 NormalStrength is used to strengthen or weaken a normal. When strength = 1, the normal is unchanged. When strength < 1, it is weakened, and when strength > 1, it is strengthened.
 
+## fxaa
+`#include <fxaa>`
+Gives access to a FXAA (Fast Approximate Anti-Aliasing). This is a general-purpose algorithm, however, it is intended to be used in Post-Process shaders (though it can be used elsewhere).
+
+Functions
+```
+vec3 FXAA(float span_max, float reduce_mul, float reduce_min, vec2 uv, sampler2D sampler, vec2 samplerSize)
+```
+FXAA is the only function provided, and it takes a lot of paramaters.
+* span_max - the span of the FXAA algorithm. A good default is somewhere around 8 or 16.
+* reduce_mul - the reduction multiplier for the FXAA algorithm. A good default is somewhere around 1/8 or 1/12.
+* reduce_min - the minimum reducer value for the FXAA algorithm. A good value is around 1/180.
+* uv - the UV coordinates of the pixel under consideration
+* sampler - the sampler2D to take said pixel from
+* samplerSize - the size (in pixels) of the sampler above. Used to get pixel sized offsets.
+This function does not use any of the default uniforms or variables, and thus can be used conceivably in any material type. However, it is designed to be used with the PostProcessing material, to apply postprocessing to the scene:
+```
+vec3 resultColor = FXAA(16.0, 1.0/12.0;, 1.0/128.0, UVs, u_FinalColorSampler, u_TargetSize);
+```
 
 
 ## Light Types
