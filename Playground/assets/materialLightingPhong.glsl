@@ -7,9 +7,7 @@ vec4 color(){
 	
 	vec3 resultColor = (phongResults.x * (Diffuse * u_LightColor)) + (phongResults.y * (Diffuse * Specular * u_LightColor));
 
-	resultColor = resultColor * Shadow(0.015); 
-	resultColor += Emissive;
-	resultColor = resultColor * AmbientOcclusion;
+	resultColor = (resultColor * Shadow(0.015) * AmbientOcclusion) + Emissive; 
 	
 	return vec4(resultColor, 1);
 }

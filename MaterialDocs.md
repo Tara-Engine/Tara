@@ -48,6 +48,8 @@ vec3 PixelNormal; //(this is set by the normal() function's results, and holds a
 
 ```
 
+One thing to be careful about is single-channel textures store their value in the `w` component (ie, the alpha channel). This is likely to apply to metallic, roughness, and AO maps.
+
 # Lighting Materials
 Lighting materials are used by cameras to light a scene, as part of the deferred rendering process.
 
@@ -119,6 +121,19 @@ float GetLightDepth(vec3 position);
 Shadow calculates the shadow multiplier for the current pixel. It can be directly multiplied with the result of calculating the lighting. It is not a boolean, but does contain values between 0.0 and 1.0, depending on the disk radius. (contains optimizations for when the radius is 0.0, in which case it is boolean 0.0 or 1.0). If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned. If the distance to the light is greater than its radius, then 1.0 is returned.
 
 GetLightDepth returns the stored depth for a specific position for the current light. This is normalized to be between 0.0 and 1.0, with 1.0 being equivilent to the light radius. If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned.
+
+## normals
+`#include <normals>`
+Gives access to several utilities related to normal mapping. Not Material-specific, but it is intended for Lit materials. Normals are represented as vectors with Z being up, and {0,0,1} being the proverbial face normal. In a lit material, they are then converted into the space of the Face normal and tangent internally, once returned from the `normal()` function.
+
+Functions:
+```
+NormalTexture(sampler2D tex, vec2 uv)
+NormalStrength(vec3 normal, float strength)
+```
+NormalTexture samples a texture as if it were a normalmap. (ie, it performs the convserions from a color to a normalized vector). It should be prefered when sampling a texture that is a normalmap.
+
+NormalStrength is used to strengthen or weaken a normal. When strength = 1, the normal is unchanged. When strength < 1, it is weakened, and when strength > 1, it is strengthened.
 
 
 

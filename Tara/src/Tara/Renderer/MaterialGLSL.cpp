@@ -214,11 +214,11 @@ void main(){
 		PixelNormal = v_WorldNorm;
 	}
 
-	ColorMetallic = vec4(diffuse().xyz, metallic() + 1);
-	SpecularRoughness = vec4(specular().xyz, roughness() + 1);
-	EmissiveAO = vec4(emissive().xyz, ambientOcclusion() + 1);
-	WorldSpaceNormal = vec4(PixelNormal,1);
-	WorldSpacePosition = vec4(v_WorldPos,1);
+	ColorMetallic = vec4(diffuse().xyz, metallic() + 1.0);
+	SpecularRoughness = vec4(specular().xyz, roughness() + 1.0);
+	EmissiveAO = vec4(emissive().xyz, ambientOcclusion() + 1.0);
+	WorldSpaceNormal = vec4(PixelNormal,1.0);
+	WorldSpacePosition = vec4(v_WorldPos,1.0);
 }
 )V0G0N"
 		},
@@ -230,11 +230,11 @@ void main(){
 	UVs = vec2(gl_FragCoord.x / u_TargetSize.x, gl_FragCoord.y / u_TargetSize.y );
 	
 	Diffuse = texture(u_ColorMetallicSampler, UVs).xyz;
-	Metallic = texture(u_ColorMetallicSampler, UVs).w -1;
+	Metallic = texture(u_ColorMetallicSampler, UVs).w -1.0;
 	Specular = texture(u_SpecularRoughnessSampler, UVs).xyz;
-	Roughness = texture(u_SpecularRoughnessSampler, UVs).w -1;
+	Roughness = texture(u_SpecularRoughnessSampler, UVs).w -1.0;
 	Emissive = texture(u_EmissiveAOSampler, UVs).xyz;
-	AmbientOcclusion = texture(u_EmissiveAOSampler, UVs).w -1;
+	AmbientOcclusion = texture(u_EmissiveAOSampler, UVs).w -1.0;
 	WorldSpaceNormal = texture(u_WorldSpaceNormalSampler, UVs).xyz;
 	WorldSpacePosition = texture(u_WorldSpacePositionSampler, UVs).xyz;
 	Depth = length(WorldSpacePosition - u_CameraPositionWS) / u_CameraFarClipPlane;
@@ -343,6 +343,21 @@ float Shadow(float diskRadius){
 }
 )V0G0N"
 		}, //Shadow
+		{"normals", R"V0G0N(
+vec3 NormalTexture(sampler2D tex, vec2 uv){
+	return normalize((texture(tex, uv).xyz * 2.0 - 1.0));
+}
+vec3 NormalStrength(vec3 norm, float frac){
+	norm.x = asin(norm.x);
+	norm.y = asin(norm.y);
+	norm.z = acos(norm.z);
+	norm *= frac;
+	norm.x = sin(norm.x);
+	norm.y = sin(norm.y);
+	norm.z = cos(norm.z);
+	return normalize(norm);
+})V0G0N"
+		}, //Normal utilities
 
 	};
 }
