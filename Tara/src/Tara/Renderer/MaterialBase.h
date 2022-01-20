@@ -40,12 +40,13 @@ namespace Tara {
 	>;
 
 	/// <summary>
-	/// The type of material. UNLIT is rendered in a Forward manner, while LIT is rendered in a Deferred manner. LIGHTING is used to calculate lighting.
+	/// The type of material. UNLIT is rendered in a Forward manner, while LIT is rendered in a Deferred manner. LIGHTING is used to calculate lighting. POSTPROCESS is used after lighting.
 	/// </summary>
 	enum class MaterialType {
 		LIGHTING = 0b0000,
 		UNLIT = 0b0001, 
 		LIT = 0b0010, 
+		POSTPROCESS = 0b0100,
 	};
 
 	class MaterialBase : public std::enable_shared_from_this<MaterialBase> {

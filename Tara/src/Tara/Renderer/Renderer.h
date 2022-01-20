@@ -145,7 +145,10 @@ namespace Tara {
 		/// </summary>
 		static void SceneRender();
 
-		
+		/// <summary>
+		/// load the assets nesecary to render a scene
+		/// </summary>
+		static void LoadSceneParts();
 
 	private:
 
@@ -190,6 +193,8 @@ namespace Tara {
 		/// The Gbuffer for the current render
 		/// </summary>
 		static RenderTarget2DRef s_GBuffer;
+		static RenderTarget2DRef s_PostProcessBufferA;
+		static RenderTarget2DRef s_PostProcessBufferB;
 		/// <summary>
 		/// full screen quad for rendering the GBuffer
 		/// </summary>

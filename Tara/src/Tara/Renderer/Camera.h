@@ -183,12 +183,31 @@ namespace Tara {
 		/// <param name="mat"></param>
 		inline void SetLightingMaterial(MaterialBaseRef mat) { if (mat->GetType() == MaterialType::LIGHTING) { m_LightingMaterial = mat; } }
 
+		/// <summary>
+		/// Push a new post-process material onto the list of post-process materials
+		/// </summary>
+		/// <param name="mat"></param>
+		inline void AddPostProcessMaterial(MaterialBaseRef mat) { if (mat->GetType() == MaterialType::POSTPROCESS) { m_PostProcessMaterials.push_back(mat); } }
+
+		/// <summary>
+		/// Remove a post-process material by reference.
+		/// </summary>
+		/// <param name="mat"></param>
+		void RemovePostProcessMaterial(MaterialBaseRef mat);
+
+		/// <summary>
+		/// Get a list of post-process materials
+		/// </summary>
+		/// <returns></returns>
+		inline const std::vector<MaterialBaseRef>& GetPostProcessMaterials() const { return m_PostProcessMaterials; }
+
 	protected:
 		inline virtual void UpdateProjectionMatrix() { return; }
 		
 		std::pair<float, float> GetRenderTargetSize() const;
 
 	protected:
+		std::vector<MaterialBaseRef> m_PostProcessMaterials;
 		Transform m_Transform;
 		const ProjectionType m_Type;
 		glm::mat4 m_ProjectionMatrix;

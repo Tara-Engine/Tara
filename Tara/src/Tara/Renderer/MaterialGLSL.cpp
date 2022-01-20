@@ -97,6 +97,29 @@ void main(){
 
 )V0G0N"
 		},
+		{
+			MaterialType::POSTPROCESS,
+			R"V0G0N(
+//POSTPROCESS
+#version 450 core
+layout(location=0) in vec3 a_Position;
+layout(location=1) in vec3 a_Normal;
+layout(location=2) in vec3 a_Tangent;
+layout(location=3) in vec4 a_Color;
+layout(location=4) in vec2 a_UV;
+
+uniform mat4 u_MatrixViewProjection;
+uniform mat4 u_MatrixModel;
+
+out vec2 UVs;
+
+void main(){
+	UVs = a_UV;
+	gl_Position = u_MatrixViewProjection * u_MatrixModel * vec4(a_Position, 1);
+}
+
+)V0G0N"
+		},
 	};
 
 	std::unordered_map<MaterialType, std::string> Material::SourcePartsFragmentBegin = {
@@ -192,6 +215,44 @@ const int LightType_Rect		= 4;
 
 )V0G0N"
 		},
+		{
+			MaterialType::POSTPROCESS,
+			R"V0G0N(
+//LIGHTING
+#version 450 core
+layout(location=0)out vec4 outColor;
+
+layout(pixel_center_integer) in vec4 gl_FragCoord;
+
+in vec2 UVs;
+
+uniform sampler2D u_ColorMetallicSampler;
+uniform sampler2D u_SpecularRoughnessSampler;
+uniform sampler2D u_EmissiveAOSampler;
+uniform sampler2D u_WorldSpaceNormalSampler;
+uniform sampler2D u_WorldSpacePositionSampler;
+uniform sampler2D u_FinalColorSampler;
+
+uniform vec2 u_TargetSize;			
+uniform vec3 u_CameraPositionWS;
+uniform vec3 u_CameraForwardVector;
+
+uniform float u_CameraNearClipPlane;
+uniform float u_CameraFarClipPlane;
+
+float Metallic          = 0;
+float Roughness         = 0;
+float AmbientOcclusion  = 0;
+vec3 Diffuse            = vec3(0);
+vec3 Specular           = vec3(0);
+vec3 Emissive           = vec3(0);
+vec3 WorldSpaceNormal   = vec3(0);
+vec3 WorldSpacePosition = vec3(0);
+float Depth				= 0;
+vec3 FinalColor       = vec3(0);
+
+)V0G0N"
+		},
 	};
 
 	std::unordered_map<MaterialType, std::string> Material::SourcePartsFragmentEnd = {
@@ -238,6 +299,26 @@ void main(){
 	WorldSpaceNormal = texture(u_WorldSpaceNormalSampler, UVs).xyz;
 	WorldSpacePosition = texture(u_WorldSpacePositionSampler, UVs).xyz;
 	Depth = length(WorldSpacePosition - u_CameraPositionWS) / u_CameraFarClipPlane;
+
+	outColor = color();
+}
+)V0G0N"
+		},
+		{
+			MaterialType::POSTPROCESS,
+			R"V0G0N(
+//LIGHTING
+void main(){
+	Diffuse = texture(u_ColorMetallicSampler, UVs).xyz;
+	Metallic = texture(u_ColorMetallicSampler, UVs).w -1.0;
+	Specular = texture(u_SpecularRoughnessSampler, UVs).xyz;
+	Roughness = texture(u_SpecularRoughnessSampler, UVs).w -1.0;
+	Emissive = texture(u_EmissiveAOSampler, UVs).xyz;
+	AmbientOcclusion = texture(u_EmissiveAOSampler, UVs).w -1.0;
+	WorldSpaceNormal = texture(u_WorldSpaceNormalSampler, UVs).xyz;
+	WorldSpacePosition = texture(u_WorldSpacePositionSampler, UVs).xyz;
+	Depth = length(WorldSpacePosition - u_CameraPositionWS) / u_CameraFarClipPlane;
+	FinalColor = texture(u_FinalColorSampler, UVs).xyz;
 
 	outColor = color();
 }

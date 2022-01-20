@@ -30,6 +30,8 @@ namespace Tara {
 	RenderSceneData Renderer::s_SceneData = { nullptr, nullptr };
 	
 	RenderTarget2DRef Renderer::s_GBuffer = nullptr;
+	RenderTarget2DRef Renderer::s_PostProcessBufferA = nullptr;
+	RenderTarget2DRef Renderer::s_PostProcessBufferB = nullptr;
 	StaticMeshRef Renderer::s_ScreenQuadMesh = nullptr;
 	StaticMeshRef Renderer::s_LightSphereMesh = nullptr;
 
@@ -408,54 +410,68 @@ namespace Tara {
 		}
 	}
 
-
+	static bool s_LoadedSceneParts = false;
 	void Renderer::SceneRender()
 	{
 		RenderCommand::StopQueue();
 		RenderCommand::EnableDepthTesting(true);
 		auto& lightingMat = s_SceneData.camera->GetLightingMaterial();
+		auto& ppMaterials = s_SceneData.camera->GetPostProcessMaterials();
+
+		//load all the assets nesecary to render
+		if (!s_LoadedSceneParts){
+			LoadSceneParts();
+			s_LoadedSceneParts = true;
+		}
+
+		glm::vec2 finalSize;
+		if (s_SceneData.target) {
+			finalSize = { s_SceneData.target->GetWidth(), s_SceneData.target->GetHeight() };
+		}
+		else {
+			auto window = Application::Get()->GetWindow();
+			finalSize = { window->GetWidth(), window->GetHeight() };
+		}
+		//setup post process RenderTargets
+
+		//check for resize. YES, this is BAD if the engine is rendering to a bunch of different-sized rendertargets every frame.
+		if (finalSize.x != s_GBuffer->GetWidth() || finalSize.y != s_GBuffer->GetHeight()) {
+			s_PostProcessBufferA->SetSize(finalSize.x, finalSize.y);
+		}
+		
+		//check for resize. YES, this is BAD if the engine is rendering to a bunch of different-sized rendertargets every frame.
+		if (finalSize.x != s_GBuffer->GetWidth() || finalSize.y != s_GBuffer->GetHeight()) {
+			s_PostProcessBufferB->SetSize(finalSize.x, finalSize.y);
+		}
+		//check for resize. YES, this is BAD if the engine is rendering to a bunch of different-sized rendertargets every frame.
+		if (finalSize.x != s_GBuffer->GetWidth() || finalSize.y != s_GBuffer->GetHeight()) {
+			s_GBuffer->SetSize(finalSize.x, finalSize.y);
+		}
+		
+
 		if (lightingMat) {
 			RenderCommand::SetBlendMode(RenderBlendMode::REPLACE);
 
-			auto window = Application::Get()->GetWindow();
-			if (s_GBuffer == nullptr) {
-				s_GBuffer = RenderTarget2D::Create(window->GetWidth(), window->GetHeight(), 5, RenderTarget::InternalType::FLOAT, false, "gBuffer");
-			}
-			else {
-				//check for resize
-				if (window->GetWidth() != s_GBuffer->GetWidth() || window->GetHeight() != s_GBuffer->GetHeight()) {
-					s_GBuffer->SetSize(window->GetWidth(), window->GetHeight());
-				}
-			}
 			s_GBuffer->RenderTo(true);
 			RenderCommand::Clear();
 			RenderCommand::EnableBackfaceCulling(true);
 			RenderCommand::EnableDeferred(true);
 			RenderCommand::ExecuteQueue();
 
-			//End rendering to GBuffer, blit its depth to the passed RenderTarget
-			if (s_SceneData.target) {
-				s_SceneData.target->RenderTo(true);
+			//End rendering to GBuffer, render to passed rendertarget, screen, or postprocess buffer A
+			if (ppMaterials.size() > 0) {
+				s_PostProcessBufferA->RenderTo(true);
 			}
-			else {
-				s_GBuffer->RenderTo(false);
+			else{
+				if (s_SceneData.target) {
+					s_SceneData.target->RenderTo(true);
+				}
+				else {
+					s_GBuffer->RenderTo(false);
+				}
 			}
-			//render the quad
-			//VertexArrayRef screenQuad;
-			if (!s_ScreenQuadMesh){
-				//load the ScreenQuad
-				MeshMaker mm(MeshMaker::Mode::QUADS);
-				mm.Vertex(-1, -1, 0); mm.TextureCoord(0, 0); mm.Color(1, 1, 1, 1);
-				mm.Vertex(-1,  1, 0); mm.TextureCoord(0, 1); mm.Color(1, 1, 1, 1);
-				mm.Vertex( 1,  1, 0); mm.TextureCoord(1, 1); mm.Color(1, 1, 1, 1);
-				mm.Vertex( 1, -1, 0); mm.TextureCoord(1, 0); mm.Color(1, 1, 1, 1);
-				s_ScreenQuadMesh = StaticMesh::Create({ mm.GetMeshPart() }, "__ScreenQuadMesh__");
-			}
-			if (!s_LightSphereMesh) {
-				auto sphere = MeshPart::UnitSphere();
-				sphere.FlipWindings();
-				s_LightSphereMesh = StaticMesh::Create({ sphere }, "__LightSphereMesh__");
-			}
+			RenderCommand::Clear();
+			
 
 			//render the screen quad with light material
 			lightingMat->Use();
@@ -476,14 +492,7 @@ namespace Tara {
 
 			//these might be optimized away if the specific material does not use them
 			if (shader->ValidUniform("u_TargetSize")) {
-				glm::vec2 size;
-				if (s_SceneData.target) {
-					size = glm::vec2(s_SceneData.target->GetWidth(), s_SceneData.target->GetHeight());
-				}
-				else {
-					size = glm::vec2(Application::Get()->GetWindow()->GetWidth(), Application::Get()->GetWindow()->GetHeight());
-				}
-				shader->Send("u_TargetSize", size);
+				shader->Send("u_TargetSize", finalSize);
 			}
 			if (shader->ValidUniform("u_CameraPositionWS")) {
 				shader->Send("u_CameraPositionWS", s_SceneData.camera->GetPosition());
@@ -594,28 +603,173 @@ namespace Tara {
 				s_SceneData.camera->SetFarClipPlane(originalFarPlane);
 			}
 			
-
-			//copy depth
-			s_GBuffer->BlitDepthToOther(s_SceneData.target);
+			//copy depth, and implicitly set the s_SceneData.target as targeted RenderBuffer
+			if (ppMaterials.size() > 0) {
+				//set the PostProcess renderTarget 
+				s_GBuffer->BlitDepthToOther(s_PostProcessBufferA);
+			}
+			else {
+				s_GBuffer->BlitDepthToOther(s_SceneData.target);
+			}
 		}
 		else {
-			//LOG_S(WARNING) << "No lighting material in the camera, thus, no deferred rendering will take place";
-			if (s_SceneData.target) {
-				s_SceneData.target->RenderTo(true);
+			if (ppMaterials.size() > 0) {
+				//set the PostProcess renderTarget 
+				s_PostProcessBufferA->RenderTo(true);
 			}
+			else {
+				//set the camera target as the targeted rendertarget
+				if (s_SceneData.target) {
+					s_SceneData.target->RenderTo(true);
+				}
+			}
+
 			//discard the deferred queue
 			RenderCommand::EnableDeferred(true);
 			RenderCommand::DiscardQueue();
 		}
+		
+		//execute forward rendering (so much simpler)
 		RenderCommand::SetBlendMode(RenderBlendMode::NORMAL);
 		RenderCommand::EnableDepthTesting(true);
 		RenderCommand::EnableDeferred(false);
 		RenderCommand::ExecuteQueue();
 
+		//Post-processing!
+		if (ppMaterials.size() > 0) {
+			RenderCommand::SetBlendMode(RenderBlendMode::REPLACE);
+			RenderCommand::EnableDepthTesting(false);
+			bool renderingToA = false;
+			auto vertArray = s_ScreenQuadMesh->GetVertexArrays()[0];
+
+			for (int i = 0; i < ppMaterials.size(); i++) {
+				if (!ppMaterials[i]) {
+					continue;
+				}
+				//setup the current target
+				if(i < ppMaterials.size()-1){
+					//flipflop on which is rendered to and which is rendered from
+					if (renderingToA) {
+						s_PostProcessBufferA->RenderTo(true);
+					}
+					else {
+						s_PostProcessBufferB->RenderTo(true);
+					}
+				}
+				else {
+					//render to screen on last pass
+					if (s_SceneData.target) {
+						s_SceneData.target->RenderTo(true);
+					}
+					else {
+						s_PostProcessBufferB->RenderTo(false);
+					}
+				}
+				RenderCommand::Clear();
+
+				//use the material, and set up the uniforms
+				ppMaterials[i]->Use();
+				auto& shader = ppMaterials[i]->GetShader();
+
+				//These are all guaranteed to be used
+				s_GBuffer->ImplBind(0, 0);
+				shader->Send("u_ColorMetallicSampler", 0);
+				s_GBuffer->ImplBind(1, 1);
+				shader->Send("u_SpecularRoughnessSampler", 1);
+				s_GBuffer->ImplBind(2, 2);
+				shader->Send("u_EmissiveAOSampler", 2);
+				s_GBuffer->ImplBind(3, 3);
+				shader->Send("u_WorldSpaceNormalSampler", 3);
+				s_GBuffer->ImplBind(4, 4);
+				shader->Send("u_WorldSpacePositionSampler", 4);
+				if (renderingToA) {
+					s_PostProcessBufferB->ImplBind(5, 0);
+				}
+				else {
+					s_PostProcessBufferA->ImplBind(5, 0);
+				}
+				shader->Send("u_FinalColorSampler", 5);
+
+				//these might be optimized away if the specific material does not use them
+				if (shader->ValidUniform("u_TargetSize")) {
+					shader->Send("u_TargetSize", finalSize);
+				}
+				if (shader->ValidUniform("u_CameraPositionWS")) {
+					shader->Send("u_CameraPositionWS", s_SceneData.camera->GetPosition());
+				}
+				if (shader->ValidUniform("u_CameraForwardVector")) {
+					shader->Send("u_CameraForwardVector", s_SceneData.camera->GetRotation().GetForwardVector());
+				}
+				if (shader->ValidUniform("u_CameraNearClipPlane")) {
+					shader->Send("u_CameraNearClipPlane", s_SceneData.camera->GetNearClipPlane());
+				}
+				if (shader->ValidUniform("u_CameraFarClipPlane")) {
+					shader->Send("u_CameraFarClipPlane", s_SceneData.camera->GetFarClipPlane());
+				}
+
+				
+				vertArray->ImplBind(0, 0);
+				//send identity matricies
+				if (shader->ValidUniform("u_MatrixViewProjection")) {
+					shader->Send("u_MatrixViewProjection", glm::mat4(1.0f));
+				}
+				if (shader->ValidUniform("u_MatrixModel")) {
+					shader->Send("u_MatrixModel", glm::mat4(1.0f));
+				}
+				RenderCommand::Draw(vertArray);
+
+				//switch which is being rendered to
+				renderingToA = !renderingToA;
+			}
+			vertArray->ImplUnbind();
+
+			
+			
+		}
+
 		//unset the target RenderTarget
 		//if target is nullptr, then it should be fine.
 		if (s_SceneData.target) {
 			s_SceneData.target->RenderTo(false);
+		}
+	}
+
+
+
+	void Renderer::LoadSceneParts()
+	{
+		if (s_ScreenQuadMesh == nullptr) {
+			//load the ScreenQuad (if unloaded)
+			MeshMaker mm(MeshMaker::Mode::QUADS);
+			mm.Vertex(-1, -1, 0); mm.TextureCoord(0, 0); mm.Color(1, 1, 1, 1);
+			mm.Vertex(-1, 1, 0); mm.TextureCoord(0, 1); mm.Color(1, 1, 1, 1);
+			mm.Vertex(1, 1, 0); mm.TextureCoord(1, 1); mm.Color(1, 1, 1, 1);
+			mm.Vertex(1, -1, 0); mm.TextureCoord(1, 0); mm.Color(1, 1, 1, 1);
+			s_ScreenQuadMesh = StaticMesh::Create({ mm.GetMeshPart() }, "__ScreenQuadMesh__");
+		}
+		if (s_LightSphereMesh == nullptr) {
+			auto sphere = MeshPart::UnitSphere();
+			sphere.FlipWindings();
+			s_LightSphereMesh = StaticMesh::Create({ sphere }, "__LightSphereMesh__");
+		}
+
+		glm::vec2 FinalSize;
+		if (s_SceneData.target) {
+			FinalSize = { s_SceneData.target->GetWidth(), s_SceneData.target->GetHeight() };
+		}
+		else {
+			auto window = Application::Get()->GetWindow();
+			FinalSize = { window->GetWidth(), window->GetHeight() };
+		}
+
+		if (s_GBuffer == nullptr) {
+			s_GBuffer = RenderTarget2D::Create(FinalSize.x, FinalSize.y, 5, RenderTarget::InternalType::FLOAT, false, "__gBuffer__");
+		}
+		if (s_PostProcessBufferA == nullptr) {
+			s_PostProcessBufferA = RenderTarget2D::Create(FinalSize.x, FinalSize.y, 1, RenderTarget::InternalType::FLOAT, false, "__PostProcessBufferA__");
+		}
+		if (s_PostProcessBufferB == nullptr) {
+			s_PostProcessBufferB = RenderTarget2D::Create(FinalSize.x, FinalSize.y, 1, RenderTarget::InternalType::FLOAT, false, "__PostProcessBufferB__");
 		}
 	}
 }

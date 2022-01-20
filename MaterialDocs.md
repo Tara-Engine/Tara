@@ -57,6 +57,13 @@ Lighting materials are used by cameras to light a scene, as part of the deferred
 //You define:
 vec4 color() 
 
+//texture inputs (usually, you don't need to touch these):
+uniform sampler2D u_ColorMetallicSampler;
+uniform sampler2D u_SpecularRoughnessSampler;
+uniform sampler2D u_EmissiveAOSampler;
+uniform sampler2D u_WorldSpaceNormalSampler;
+uniform sampler2D u_WorldSpacePositionSampler;
+
 //predefined:
 uniform vec2 u_TargetSize;
 uniform vec3 u_CameraPositionWS;
@@ -93,6 +100,41 @@ const int LightType_Spot		= 1;
 const int LightType_Directional	= 2;			
 const int LightType_Ambient		= 3;			
 const int LightType_Rect		= 4;		
+```
+
+# PostProcess Materials
+PostProcess materials run after the lighting is calculated, and the output of one is the input to the next. (thus the order is important)
+They take many of the same scene inputs as lighting materials, but no light data, as well as the final scene (which is what is transferred from one to the next)
+
+```
+//You define:
+vec4 color() 
+
+//texture inputs (usually, you don't need to touch these):
+uniform sampler2D u_ColorMetallicSampler;
+uniform sampler2D u_SpecularRoughnessSampler;
+uniform sampler2D u_EmissiveAOSampler;
+uniform sampler2D u_WorldSpaceNormalSampler;
+uniform sampler2D u_WorldSpacePositionSampler;
+uniform sampler2D u_FinalColorSampler;
+
+//predefined:
+uniform vec2 u_TargetSize;
+uniform vec3 u_CameraPositionWS;
+uniform vec3 u_CameraForwardVector;
+
+vec2 UVs;
+
+float Metallic
+float Roughness
+float AmbientOcclusion
+vec3 Diffuse
+vec3 Specular
+vec3 Emissive
+vec3 WorldSpaceNormal
+vec3 WorldSpacePosition
+float Depth
+vec3 FinalColor
 ```
 
 # Material Includes

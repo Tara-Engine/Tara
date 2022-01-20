@@ -265,6 +265,23 @@ namespace Tara {
 	}
 
 	
+	void Camera::RemovePostProcessMaterial(MaterialBaseRef mat)
+	{
+		auto it = std::remove_if(m_PostProcessMaterials.begin(), m_PostProcessMaterials.end(), [mat](MaterialBaseRef ref) {
+			if (ref == mat) {
+				LOG_S(INFO) << "Removed!";
+				return true;
+			}
+			else {
+				return false;
+			}
+			});
+		int removed = std::distance(it, m_PostProcessMaterials.end());
+		for (int i = 0; i < removed; i++) {
+			m_PostProcessMaterials.pop_back();
+		}
+	}
+
 }
 
 

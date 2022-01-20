@@ -142,6 +142,7 @@ namespace Tara{
 		case MaterialType::LIGHTING: {typestr = "LIGHTING"; break; }
 		case MaterialType::LIT: {typestr = "LIT"; break; }
 		case MaterialType::UNLIT: {typestr = "UNLIT"; break; }
+		case MaterialType::POSTPROCESS: {typestr = "POSTPROCESS"; break; }
 		}
 		LOG_S(INFO) << "Compiling Material: " << GetAssetName() << "Type: " << typestr;
 
