@@ -40,21 +40,27 @@ void ModelBuildLayer::Activate()
 		auto unlitMat = Tara::Material::Create(Tara::MaterialType::UNLIT, "assets/material1.glsl", Tara::Shader::SourceType::TextFiles, "UnlitMaterial");
 		unlitMat->SetVector4Paramater("tintColor", glm::vec4(0, 0, 1, 1));
 
-		m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material3deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
-		m_Material->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
-		m_Material->SetScalarParamater("roughnessValue", 1.0f);
-		m_Material->SetTextureParmamter("diffuseTexture", basicTexture);
+		auto litMat = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material3deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
+		litMat->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
+		litMat->SetScalarParamater("roughnessValue", 1.0f);
+		litMat->SetTextureParmamter("diffuseTexture", basicTexture);
 
-		auto litMat2 = m_Material->CreateInstance("BaseMaterialInstance");
+		auto litMat2 = litMat->CreateInstance("BaseMaterialInstance");
 		litMat2->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
 		litMat2->SetScalarParamater("roughnessValue", 0.1f);
 		litMat2->SetTextureParmamter("diffuseTexture", wallTexture);
 
 		//light material
-		auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingPhong.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
+		auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingBRDF.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
 		m_Camera->GetCamera()->SetLightingMaterial(lightMaterial);
 
+
+		//TesterSingleColor
 		
+		//auto m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/Material/TesterSingleColor.glsl", Tara::Shader::SourceType::TextFiles, "TesterMaterial");
+		//m_Material->SetParamater("metallicValue", 0.5f);
+		//m_Material->SetParamater("roughnessValue", 0.5f);
+
 		auto testerMat = Tara::Material::Create(Tara::MaterialType::LIT, "assets/Material/Tester.glsl", Tara::Shader::SourceType::TextFiles, "TesterMaterial");
 		testerMat->SetTextureParmamter("diffuseTexture", Tara::Texture2D::Create("assets/Material/Tester_Diffuse.png"));
 		testerMat->SetTextureParmamter("emissiveTexture", Tara::Texture2D::Create("assets/Material/Tester_Emissive.png"));
@@ -62,6 +68,7 @@ void ModelBuildLayer::Activate()
 		testerMat->SetTextureParmamter("roughnessTexture", Tara::Texture2D::Create("assets/Material/Tester_Roughness.png"));
 		testerMat->SetTextureParmamter("metallicTexture", Tara::Texture2D::Create("assets/Material/Tester_Metallic.png"));
 		testerMat->SetTextureParmamter("ambientOcclusionTexture", Tara::Texture2D::Create("assets/Material/Tester_AmbientOcclusion.png"));
+		m_Material = testerMat;
 
 		auto postProcess1 = Tara::Material::Create(Tara::MaterialType::POSTPROCESS, "assets/postProcess1.glsl", Tara::Shader::SourceType::TextFiles, "PostProcessMaterial1");
 
@@ -90,7 +97,7 @@ void ModelBuildLayer::Activate()
 		invertedCube.Transform(Tara::Transform({ -8,-8,-8 }, { 0,0,0 }, { 16,16,16 }).GetTransformMatrix());
 		invertedCube.FlipTriangles();
 		auto invertedCubeMesh = Tara::StaticMesh::Create({ invertedCube }, "InvertedCubeMesh");
-		auto invertedCubeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), invertedCubeMesh, m_Material, "Static Mesh Entity");
+		//auto invertedCubeObject = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), invertedCubeMesh, litMat, "Static Mesh Entity");
 
 		Tara::MeshPart cube = Tara::MeshPart::UnitCube();
 		auto cubeMesh = Tara::StaticMesh::Create({ cube }, "CubeMesh");
@@ -107,7 +114,7 @@ void ModelBuildLayer::Activate()
 					(float)(rd() % 180) - 90,
 					(float)(rd() % 360) - 180
 				}, { 1,1,1 }
-			), cubeMesh, m_Material, "StaticMeshEntity1");
+			), cubeMesh, litMat, "StaticMeshEntity1");
 		}
 		*/
 
@@ -127,17 +134,17 @@ void ModelBuildLayer::Activate()
 			);
 		auto light5 = Tara::CreateEntity<Tara::DirectionalLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,7,0 }, { 0,-36,45 }, { 1,1,1 }),
-			Tara::Vector(1, 1, 1), 0.5, "DirectionalLightEntity"
+			Tara::Vector(1, 1, 1), 1, "DirectionalLightEntity"
 			);
 		m_DirectionalLight = light5;
 
-		/*
 		auto light6 = Tara::CreateEntity<Tara::SpotLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,6,0 }, { 0,-90,0 }, { 1,1,1 }),
 			Tara::Vector(0, 0.5, 1), 4, 35, "SpotLightEntity"
 			);
 		light6->SetSpotlightInnerAngle(25);
 
+		/*
 		auto light7 = Tara::CreateEntity<Tara::SpotLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 4,6,0 }, { 0,-45,90 }, { 1,1,1 }),
 			Tara::Vector(0, 1, 0.5), 4, 35, "SpotLightEntity"
@@ -152,7 +159,7 @@ void ModelBuildLayer::Activate()
 		light3->SetDrawingEditorLogo(true);
 		light4->SetDrawingEditorLogo(true);
 		light5->SetDrawingEditorLogo(true);
-		//light6->SetDrawingEditorLogo(true);
+		light6->SetDrawingEditorLogo(true);
 		//light7->SetDrawingEditorLogo(true);
 
 
@@ -164,8 +171,8 @@ void ModelBuildLayer::Activate()
 		
 		auto CenterObject = Tara::CreateEntity<Tara::StaticMeshEntity>(
 			Tara::EntityNoRef(), weak_from_this(),
-			Tara::Transform({ 0,-2,0 }, { 0,0,0 }, { 1,1,1 }),
-			cubeMesh, testerMat, "Static Mesh Entity"
+			Tara::Transform({ 0,-6,0 }, { 0,0,0 }, { 5,5,5 }),
+			cubeMesh, m_Material, "Static Mesh Entity"
 		);
 
 
@@ -226,77 +233,137 @@ void ModelBuildLayer::Activate()
 			list->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
 			list->SetSpacing(5, 5);
 
-			auto text = Tara::CreateEntity<Tara::UITextEntity>(list, PARENT_LAYER, font, "Text Entity");
-			text->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
-			text->SetText("Light Strength: ?");
-			text->SetTextSize(32);
+			{
+				auto text = Tara::CreateEntity<Tara::UITextEntity>(list, PARENT_LAYER, font, "Text Entity");
+				text->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				text->SetText("Material Roughness: ?");
+				text->SetTextSize(32);
 
-			Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT,
-				[light1](Tara::LambdaComponent* self, float deltaTime) {
-					std::stringstream ss;
-					ss << "Light Strength: " << light1->GetLightIntensity();
-					std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock())->SetText(ss.str());
-				},
-				LAMBDA_EVENT_DEFAULT);
+				Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT,
+					[m_Material](Tara::LambdaComponent* self, float deltaTime) {
+						std::stringstream ss;
+						auto param = m_Material->GetParamaterValue("roughnessValue");
+						ss << "Material Roughness: " << std::get<float>(param.second);
+						std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock())->SetText(ss.str());
+					},
+					LAMBDA_EVENT_DEFAULT);
 
-			auto hlist = Tara::CreateEntity<Tara::UIListEntity>(list, PARENT_LAYER, "UIListEntity");
-			hlist->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
-			hlist->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
-			hlist->SetSpacing(5, 5);
+				auto hlist = Tara::CreateEntity<Tara::UIListEntity>(list, PARENT_LAYER, "UIListEntity");
+				hlist->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				hlist->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
+				hlist->SetSpacing(5, 5);
+			
+			
+				auto buttonLess = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+				buttonLess->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+				buttonLess->SetBorderFromPatch();
+				buttonLess->SetTint({ 1, 1, 1, 1 });
+				Tara::CreateComponent<Tara::LambdaComponent>(buttonLess, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
+						Tara::EventFilter filter(e);
+						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
+							auto param = m_Material->GetParamaterValue("roughnessValue");
+							float value = std::get<float>(param.second);
+							value -= 0.05;
+							value = std::clamp<float>(value, 0.0f, 1.0f);
+							m_Material->SetParamater("roughnessValue", value);
+							return true;
+							});
+					});
 
-			auto buttonLess = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
-			buttonLess->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-			buttonLess->SetBorderFromPatch();
-			buttonLess->SetTint({ 1, 1, 1, 1 });
-			Tara::CreateComponent<Tara::LambdaComponent>(buttonLess, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
-				[light1, light2, light3](Tara::LambdaComponent* self, Tara::Event& e) {
-					Tara::EventFilter filter(e);
-					filter.Call<Tara::UIToggleEvent>([light1, light2, light3](Tara::UIToggleEvent& ee) {
-						float intensity = light1->GetLightIntensity();
-						if (intensity <= 1) {
-							intensity /= 2;
-						}
-						else {
-							intensity -= 1;
-						}
-						light1->SetLightIntensity(intensity); light1->SetLightRadiusFromIntensity();
-						light2->SetLightIntensity(intensity); light2->SetLightRadiusFromIntensity();
-						light3->SetLightIntensity(intensity); light3->SetLightRadiusFromIntensity();
-						return true;
-						});
-				});
+				auto textLess = Tara::CreateEntity<Tara::UITextEntity>(buttonLess, PARENT_LAYER, font, "Text Entity");
+				textLess->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				textLess->SetText("<<");
+				textLess->SetTextSize(32);
 
-			auto textLess = Tara::CreateEntity<Tara::UITextEntity>(buttonLess, PARENT_LAYER, font, "Text Entity");
-			textLess->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
-			textLess->SetText("<<");
-			textLess->SetTextSize(32);
+				auto buttonMore = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+				buttonMore->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+				buttonMore->SetBorderFromPatch();
+				buttonMore->SetTint({ 1, 1, 1, 1 });
+				Tara::CreateComponent<Tara::LambdaComponent>(buttonMore, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
+						Tara::EventFilter filter(e);
+						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
+							auto param = m_Material->GetParamaterValue("roughnessValue");
+							float value = std::get<float>(param.second);
+							value += 0.05;
+							value = std::clamp<float>(value, 0.0f, 1.0f);
+							m_Material->SetParamater("roughnessValue", value);
+							return true;
+							});
+					});
 
-			auto buttonMore = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
-			buttonMore->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
-			buttonMore->SetBorderFromPatch();
-			buttonMore->SetTint({ 1, 1, 1, 1 });
-			Tara::CreateComponent<Tara::LambdaComponent>(buttonMore, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
-				[light1, light2, light3](Tara::LambdaComponent* self, Tara::Event& e) {
-					Tara::EventFilter filter(e);
-					filter.Call<Tara::UIToggleEvent>([light1, light2, light3](Tara::UIToggleEvent& ee) {
-						float intensity = light1->GetLightIntensity();
-						if (intensity <= 1) {
-							intensity *= 2;
-						}
-						else {
-							intensity += 1;
-						}
-						light1->SetLightIntensity(intensity); light1->SetLightRadiusFromIntensity();
-						light2->SetLightIntensity(intensity); light2->SetLightRadiusFromIntensity();
-						light3->SetLightIntensity(intensity); light3->SetLightRadiusFromIntensity();
-						return true;
-						});
-				});
+				auto textMore = Tara::CreateEntity<Tara::UITextEntity>(buttonMore, PARENT_LAYER, font, "Text Entity");
+				textMore->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				textMore->SetText(">>");
+				textMore->SetTextSize(32);
+			}
 
-			auto textMore = Tara::CreateEntity<Tara::UITextEntity>(buttonMore, PARENT_LAYER, font, "Text Entity");
-			textMore->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
-			textMore->SetText(">>");
-			textMore->SetTextSize(32);
+
+			{
+				auto text = Tara::CreateEntity<Tara::UITextEntity>(list, PARENT_LAYER, font, "Text Entity");
+				text->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				text->SetText("Material Metallic: ?");
+				text->SetTextSize(32);
+
+				Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT,
+					[m_Material](Tara::LambdaComponent* self, float deltaTime) {
+						std::stringstream ss;
+						auto param = m_Material->GetParamaterValue("metallicValue");
+						ss << "Material Metallic: " << std::get<float>(param.second);
+						std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock())->SetText(ss.str());
+					},
+					LAMBDA_EVENT_DEFAULT);
+
+				auto hlist = Tara::CreateEntity<Tara::UIListEntity>(list, PARENT_LAYER, "UIListEntity");
+				hlist->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				hlist->SetDirecton(Tara::UIListEntity::Direction::Horizontal);
+				hlist->SetSpacing(5, 5);
+
+				auto buttonLess = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+				buttonLess->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+				buttonLess->SetBorderFromPatch();
+				buttonLess->SetTint({ 1, 1, 1, 1 });
+				Tara::CreateComponent<Tara::LambdaComponent>(buttonLess, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
+						Tara::EventFilter filter(e);
+						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
+							auto param = m_Material->GetParamaterValue("metallicValue");
+							float value = std::get<float>(param.second);
+							value -= 0.05;
+							value = std::clamp<float>(value, 0.0f, 1.0f);
+							m_Material->SetParamater("metallicValue", value);
+							return true;
+							});
+					});
+
+				auto textLess = Tara::CreateEntity<Tara::UITextEntity>(buttonLess, PARENT_LAYER, font, "Text Entity");
+				textLess->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				textLess->SetText("<<");
+				textLess->SetTextSize(32);
+
+				auto buttonMore = Tara::CreateEntity<Tara::UIButtonEntity>(hlist, PARENT_LAYER, patchButtonNormal, patchButtonHover, patchButtonClicked, patchButtonDisabled, "baseButton");
+				buttonMore->SetSnapRules(Tara::UISnapRule::TOP | Tara::UISnapRule::LEFT);
+				buttonMore->SetBorderFromPatch();
+				buttonMore->SetTint({ 1, 1, 1, 1 });
+				Tara::CreateComponent<Tara::LambdaComponent>(buttonMore, LAMBDA_BEGIN_PLAY_DEFAULT, LAMBDA_UPDATE_DEFAULT,
+					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
+						Tara::EventFilter filter(e);
+						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
+							auto param = m_Material->GetParamaterValue("metallicValue");
+							float value = std::get<float>(param.second);
+							value += 0.05;
+							value = std::clamp<float>(value, 0.0f, 1.0f);
+							m_Material->SetParamater("metallicValue", value);
+							return true;
+							});
+					});
+
+				auto textMore = Tara::CreateEntity<Tara::UITextEntity>(buttonMore, PARENT_LAYER, font, "Text Entity");
+				textMore->SetSnapRules(Tara::UISnapRule::CENTER_HORIZONTAL | Tara::UISnapRule::CENTER_VERTICAL);
+				textMore->SetText(">>");
+				textMore->SetTextSize(32);
+			}
 		}
 		*/
 
@@ -410,7 +477,7 @@ void ModelBuildLayer::OnEvent(Tara::Event& e)
 			LOG_S(INFO) << "Camera Transform" << m_Camera->GetWorldTransform();
 		}
 		if (ee.GetKey() == TARA_KEY_T) {
-			m_Camera->SetWorldPosition(m_Light->GetWorldPosition());
+			//m_Camera->SetWorldPosition(m_Light->GetWorldPosition());
 		}
 		return false;
 	});

@@ -53,14 +53,14 @@ namespace Tara {
 			return LightData(
 				pos, GetLightColor(), GetLightIntensity(),
 				m_BackDistance * 2, GetLightType(),
-				-GetWorldRotation().GetForwardVector()
+				GetWorldRotation().GetForwardVector()
 			);
 		}
 		else {
 			return LightData(
 				pos, GetLightColor(), GetLightIntensity(), 
 				-(m_BackDistance * 2), GetLightType(),
-				-GetWorldRotation().GetForwardVector()
+				GetWorldRotation().GetForwardVector()
 			);
 		}
 	}

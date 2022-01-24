@@ -296,7 +296,7 @@ void main(){
 	Roughness = texture(u_SpecularRoughnessSampler, UVs).w -1.0;
 	Emissive = texture(u_EmissiveAOSampler, UVs).xyz;
 	AmbientOcclusion = texture(u_EmissiveAOSampler, UVs).w -1.0;
-	WorldSpaceNormal = texture(u_WorldSpaceNormalSampler, UVs).xyz;
+	WorldSpaceNormal = normalize(texture(u_WorldSpaceNormalSampler, UVs).xyz);
 	WorldSpacePosition = texture(u_WorldSpacePositionSampler, UVs).xyz;
 	Depth = length(WorldSpacePosition - u_CameraPositionWS) / u_CameraFarClipPlane;
 
@@ -341,7 +341,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 	}
 	else if (u_LightType == LightType_Spot){
 		vec3 lightDir = normalize(u_LightPosition - WorldSpacePosition);
-		float theta = dot(lightDir, normalize(-u_LightForwardVector));
+		float theta = dot(lightDir, normalize(u_LightForwardVector));
 		if (theta > u_LightParam1){
 			float intensity = clamp((theta - u_LightParam1) / u_LightParam2, 0.0, 1.0);
 			float lightDist = length(u_LightPosition - WorldSpacePosition);	
@@ -355,7 +355,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 		}
 	}
 	else if (u_LightType == LightType_Directional){
-		vec3 lightDir = normalize(-u_LightForwardVector);
+		vec3 lightDir = normalize(u_LightForwardVector);
 		float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 		float specularFactor = pow(max(dot(normalize(u_CameraPositionWS - WorldSpacePosition), reflect(-lightDir, WorldSpaceNormal)), 0.0), pow(2, (1-Roughness)*8));
 		if(diffuseFactor == 0.0) {specularFactor = 0.0;}

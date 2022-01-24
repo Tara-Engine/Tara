@@ -195,6 +195,9 @@ namespace Tara {
 		static RenderTarget2DRef s_GBuffer;
 		static RenderTarget2DRef s_PostProcessBufferA;
 		static RenderTarget2DRef s_PostProcessBufferB;
+		static RenderTarget2DRef s_FakeDepth2D;
+		static RenderTargetCubemapRef s_FakeDepthCubemap;
+		
 		/// <summary>
 		/// full screen quad for rendering the GBuffer
 		/// </summary>

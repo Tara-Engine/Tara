@@ -32,6 +32,8 @@ namespace Tara {
 	RenderTarget2DRef Renderer::s_GBuffer = nullptr;
 	RenderTarget2DRef Renderer::s_PostProcessBufferA = nullptr;
 	RenderTarget2DRef Renderer::s_PostProcessBufferB = nullptr;
+	RenderTarget2DRef Renderer::s_FakeDepth2D = nullptr;
+	RenderTargetCubemapRef Renderer::s_FakeDepthCubemap = nullptr;
 	StaticMeshRef Renderer::s_ScreenQuadMesh = nullptr;
 	StaticMeshRef Renderer::s_LightSphereMesh = nullptr;
 
@@ -558,8 +560,16 @@ namespace Tara {
 							light->GetDepthTarget()->ImplBind(5, 0);
 							shader->Send("u_LightDepthMapPanoramic", 5);
 						}
+						if (shader->ValidUniform("u_LightDepthMapPlanar")) {
+							s_FakeDepth2D->ImplBind(6, 0);
+							shader->Send("u_LightDepthMapPlanar", 6);
+						}
 					}
 					else {
+						if (shader->ValidUniform("u_LightDepthMapPanoramic")) {
+							s_FakeDepthCubemap->ImplBind(5, 0);
+							shader->Send("u_LightDepthMapPanoramic", 5);
+						}
 						if (shader->ValidUniform("u_LightDepthMapPlanar")) {
 							light->GetDepthTarget()->ImplBind(6, 0);
 							shader->Send("u_LightDepthMapPlanar", 6);
@@ -567,6 +577,19 @@ namespace Tara {
 					}
 					if (shader->ValidUniform("u_LightDepthMapSize")) {
 						shader->Send("u_LightDepthMapSize", (float)light->GetDepthTarget()->GetWidth());
+					}
+				}
+				else {
+					if (shader->ValidUniform("u_LightDepthMapPanoramic")) {
+						s_FakeDepthCubemap->ImplBind(5, 0);
+						shader->Send("u_LightDepthMapPanoramic", 5);
+					}
+					if (shader->ValidUniform("u_LightDepthMapPlanar")) {
+						s_FakeDepth2D->ImplBind(6, 0);
+						shader->Send("u_LightDepthMapPlanar", 6);
+					}
+					if (shader->ValidUniform("u_LightDepthMapSize")) {
+						shader->Send("u_LightDepthMapSize", 1.0f);
 					}
 				}
 
@@ -770,6 +793,12 @@ namespace Tara {
 		}
 		if (s_PostProcessBufferB == nullptr) {
 			s_PostProcessBufferB = RenderTarget2D::Create(FinalSize.x, FinalSize.y, 1, RenderTarget::InternalType::FLOAT, false, "__PostProcessBufferB__");
+		}
+		if (s_FakeDepth2D == nullptr) {
+			s_FakeDepth2D = RenderTarget2D::Create(1, 1, 0, RenderTarget::InternalType::FLOAT, true, "__FakeDepth2d__");
+		}
+		if (s_FakeDepthCubemap == nullptr) {
+			s_FakeDepthCubemap = RenderTargetCubemap::Create(1, 1, 0, RenderTarget::InternalType::FLOAT, "__FakeDepthCubemap__");
 		}
 	}
 }

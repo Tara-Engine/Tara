@@ -46,7 +46,7 @@ namespace Tara{
 		float theta = glm::cos(glm::radians(GetSpotlightAngle()));//the cos is so that when we have this value in the shader, we are working with the same units as vector dot products.
 		return LightData(
 			GetWorldPosition(), GetLightColor(), GetLightIntensity(), GetLightRadius(), GetLightType(),
-			-(GetWorldRotation().GetForwardVector()), 
+			(GetWorldRotation().GetForwardVector()), 
 			theta, 
 			glm::cos(glm::radians(GetSpotlightInnerAngle())) - theta //the difference between inner and outer angle
 		);
