@@ -695,16 +695,26 @@ namespace Tara {
 				auto& shader = ppMaterials[i]->GetShader();
 
 				//These are all guaranteed to be used
-				s_GBuffer->ImplBind(0, 0);
-				shader->Send("u_ColorMetallicSampler", 0);
-				s_GBuffer->ImplBind(1, 1);
-				shader->Send("u_SpecularRoughnessSampler", 1);
-				s_GBuffer->ImplBind(2, 2);
-				shader->Send("u_EmissiveAOSampler", 2);
-				s_GBuffer->ImplBind(3, 3);
-				shader->Send("u_WorldSpaceNormalSampler", 3);
-				s_GBuffer->ImplBind(4, 4);
-				shader->Send("u_WorldSpacePositionSampler", 4);
+				if (shader->ValidUniform("u_ColorMetallicSampler")) {
+					s_GBuffer->ImplBind(0, 0);
+					shader->Send("u_ColorMetallicSampler", 0);
+				}
+				if (shader->ValidUniform("u_SpecularRoughnessSampler")) {
+					s_GBuffer->ImplBind(1, 1);
+					shader->Send("u_SpecularRoughnessSampler", 1);
+				}
+				if (shader->ValidUniform("u_EmissiveAOSampler")) {
+					s_GBuffer->ImplBind(2, 2);
+					shader->Send("u_EmissiveAOSampler", 2);
+				}
+				if (shader->ValidUniform("u_WorldSpaceNormalSampler")) {
+					s_GBuffer->ImplBind(3, 3);
+					shader->Send("u_WorldSpaceNormalSampler", 3);
+				}
+				if (shader->ValidUniform("u_WorldSpacePositionSampler")) {
+					s_GBuffer->ImplBind(4, 4);
+					shader->Send("u_WorldSpacePositionSampler", 4);
+				}
 				if (renderingToA) {
 					s_PostProcessBufferB->ImplBind(5, 0);
 				}
