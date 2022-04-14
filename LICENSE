@@ -1,4 +1,26 @@
-            GNU LESSER GENERAL PUBLIC LICENSE
+Tara Game Engine
+Copyright (2021-2022) Stephen Kelly (Fesmaster) <fesmaster@tuta.io>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+------------------------------------------------------------------
+Other parts of this project, normally added via git submodules, are
+subject to their own licenses, see their git pages for more details.
+
+GLAD (as provided by https://glad.dav1d.de/) and its components are 
+not under this license, but its own. See its source files for more details.
+
+
+-------------------------------------------------------------------
+          GNU LESSER GENERAL PUBLIC LICENSE
                 Version 3, 29 June 2007
 
 Copyright © 2007 Free Software Foundation, Inc. <https://fsf.org/>
