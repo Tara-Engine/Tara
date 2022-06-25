@@ -5,7 +5,10 @@ namespace Tara {
 	class Asset {
 	public:
 		Asset(const std::string& name)
-			: m_Name(name) {}
+			: m_Name(name) 
+		{
+			LOG_S(8) << "Creating asset with name: " << name;
+		}
 		virtual ~Asset() {}
 		
 		const inline std::string& GetAssetName() { return m_Name; }

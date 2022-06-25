@@ -1,0 +1,1 @@
+the HDRI images (folders Helibad_GoldenHour and Milkyway) are sourced from <http://www.hdrlabs.com/sibl/archive.html>.

@@ -89,6 +89,7 @@ namespace Tara {
 		/// For example, "assets/textures/funny_rabbit.png" becomes "assets.textures.funny_rabbit.png"
 		/// </summary>
 		/// <param name="path">the path to the texture</param>
+		/// <param name="name">the name of the asset</param>
 		/// <returns>Reference to the new texture</returns>
 		static Texture2DRef Create(const std::string& path, const std::string& name = "");
 
@@ -111,6 +112,15 @@ namespace Tara {
 	public:
 		TextureCubemap(const std::string& name) : Texture(name) {}
 		virtual ~TextureCubemap() = default;
+
+		/// <summary>
+		/// Create a Cubemap from and HDRI panoramic image
+		/// </summary>
+		/// <param name="path">the path to the image</param>
+		/// <param name="size">the size of the square cube faces in pixels</param>
+		/// <param name="name">the name of the asset</param>
+		/// <returns>Reference to the new TextureCubemap</returns>
+		static TextureCubemapRef CreateHDRI(const std::string& path, uint32_t size, const std::string& name = "");
 	};
 	
 }

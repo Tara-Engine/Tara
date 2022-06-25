@@ -5,272 +5,272 @@
 
 namespace Tara {
 
-	MaterialParamaterType MaterialBase::MaterialParamaterTypeFromData(const MaterialParamater& data)
+	MaterialParameterType MaterialBase::MaterialParameterTypeFromData(const MaterialParameter& data)
 	{
 		if (std::holds_alternative<float>(data)) {
-			return MaterialParamaterType::Float1;
+			return MaterialParameterType::Float1;
 		}
 		else if (std::holds_alternative<glm::vec2>(data)) {
-			return MaterialParamaterType::Float2;
+			return MaterialParameterType::Float2;
 		}
 		else if (std::holds_alternative<glm::vec3>(data)) {
-			return MaterialParamaterType::Float3;
+			return MaterialParameterType::Float3;
 		}
 		else if (std::holds_alternative<glm::vec4>(data)) {
-			return MaterialParamaterType::Float4;
+			return MaterialParameterType::Float4;
 		}
 
 		else if (std::holds_alternative<int32_t>(data)) {
-			return MaterialParamaterType::Int1;
+			return MaterialParameterType::Int1;
 		}
 		else if (std::holds_alternative<glm::ivec2>(data)) {
-			return MaterialParamaterType::Int2;
+			return MaterialParameterType::Int2;
 		}
 		else if (std::holds_alternative<glm::ivec3>(data)) {
-			return MaterialParamaterType::Int3;
+			return MaterialParameterType::Int3;
 		}
 		else if (std::holds_alternative<glm::ivec4>(data)) {
-			return MaterialParamaterType::Int4;
+			return MaterialParameterType::Int4;
 		}
 
 		else if (std::holds_alternative<uint32_t>(data)) {
-			return MaterialParamaterType::UInt1;
+			return MaterialParameterType::UInt1;
 		}
 		else if (std::holds_alternative<glm::uvec2>(data)) {
-			return MaterialParamaterType::UInt2;
+			return MaterialParameterType::UInt2;
 		}
 		else if (std::holds_alternative<glm::uvec3>(data)) {
-			return MaterialParamaterType::UInt3;
+			return MaterialParameterType::UInt3;
 		}
 		else if (std::holds_alternative<glm::uvec4>(data)) {
-			return MaterialParamaterType::UInt4;
+			return MaterialParameterType::UInt4;
 		}
 
 		else if (std::holds_alternative<std::vector<float>>(data)) {
-			return MaterialParamaterType::Float1Vector;
+			return MaterialParameterType::Float1Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::vec2>>(data)) {
-			return MaterialParamaterType::Float2Vector;
+			return MaterialParameterType::Float2Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::vec3>>(data)) {
-			return MaterialParamaterType::Float3Vector;
+			return MaterialParameterType::Float3Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::vec4>>(data)) {
-			return MaterialParamaterType::Float4Vector;
+			return MaterialParameterType::Float4Vector;
 		}
 
 		else if (std::holds_alternative< std::vector<int32_t>>(data)) {
-			return MaterialParamaterType::Int1Vector;
+			return MaterialParameterType::Int1Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::ivec2>>(data)) {
-			return MaterialParamaterType::Int2Vector;
+			return MaterialParameterType::Int2Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::ivec3>>(data)) {
-			return MaterialParamaterType::Int3Vector;
+			return MaterialParameterType::Int3Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::ivec4>>(data)) {
-			return MaterialParamaterType::Int4Vector;
+			return MaterialParameterType::Int4Vector;
 		}
 
 		else if (std::holds_alternative< std::vector<uint32_t>>(data)) {
-			return MaterialParamaterType::UInt1Vector;
+			return MaterialParameterType::UInt1Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::uvec2>>(data)) {
-			return MaterialParamaterType::UInt2Vector;
+			return MaterialParameterType::UInt2Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::uvec3>>(data)) {
-			return MaterialParamaterType::UInt3Vector;
+			return MaterialParameterType::UInt3Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::uvec4>>(data)) {
-			return MaterialParamaterType::UInt4Vector;
+			return MaterialParameterType::UInt4Vector;
 		}
 
 		else if (std::holds_alternative< std::vector<glm::mat2>>(data)) {
-			return MaterialParamaterType::Matrix2Vector;
+			return MaterialParameterType::Matrix2Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::mat3>>(data)) {
-			return MaterialParamaterType::Matrix3Vector;
+			return MaterialParameterType::Matrix3Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::mat4>>(data)) {
-			return MaterialParamaterType::Matrix4Vector;
+			return MaterialParameterType::Matrix4Vector;
 		}
 
 		else if (std::holds_alternative< std::vector<glm::mat2x3>>(data)) {
-			return MaterialParamaterType::Matrix2x3Vector;
+			return MaterialParameterType::Matrix2x3Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::mat3x2>>(data)) {
-			return MaterialParamaterType::Matrix3x2Vector;
+			return MaterialParameterType::Matrix3x2Vector;
 		}
 
 		else if (std::holds_alternative< std::vector<glm::mat2x4>>(data)) {
-			return MaterialParamaterType::Matrix2x4Vector;
+			return MaterialParameterType::Matrix2x4Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::mat4x2>>(data)) {
-			return MaterialParamaterType::Matrix4x2Vector;
+			return MaterialParameterType::Matrix4x2Vector;
 		}
 
 		else if (std::holds_alternative< std::vector<glm::mat3x4>>(data)) {
-			return MaterialParamaterType::Matrix3x4Vector;
+			return MaterialParameterType::Matrix3x4Vector;
 		}
 		else if (std::holds_alternative< std::vector<glm::mat4x3>>(data)) {
-			return MaterialParamaterType::Matrix4x3Vector;
+			return MaterialParameterType::Matrix4x3Vector;
 		}
 
 		else if (std::holds_alternative<Texture2DRef>(data)) {
-			return MaterialParamaterType::Sampler2D;
+			return MaterialParameterType::Sampler2D;
 		}
 
 		else if (std::holds_alternative<TextureCubemapRef>(data)) {
-		return MaterialParamaterType::SamplerCube;
+		return MaterialParameterType::SamplerCube;
 		}
 
-		LOG_S(WARNING) << "Unknown MatieralParamaterType in the data";
-		return MaterialParamaterType::Float1;
+		LOG_S(WARNING) << "Unknown MatieralParameterType in the data";
+		return MaterialParameterType::Float1;
 	}
 
-	bool MaterialBase::MaterialParamaterDataAndTypeMatch(const MaterialParamater& data, MaterialParamaterType type)
+	bool MaterialBase::MaterialParameterDataAndTypeMatch(const MaterialParameter& data, MaterialParameterType type)
 	{
-		return MaterialParamaterTypeFromData(data) == type;
+		return MaterialParameterTypeFromData(data) == type;
 	}
 
-	Uniform MaterialBase::MaterialParamaterToUniform(const MaterialParamater& data, MaterialParamaterType type, int32_t& bindingA, int32_t bindingB)
+	Uniform MaterialBase::MaterialParameterToUniform(const MaterialParameter& data, MaterialParameterType type, int32_t& bindingA, int32_t bindingB)
 	{
 		UniformData uniformData{ 1.0f };
 		UniformType uniformType = UniformType::Float1;
 		//Select the correct data and type format for the Uniform, performing any conversions or bindings nesecary.
 		switch (type) {
-		case MaterialParamaterType::Float1: {
+		case MaterialParameterType::Float1: {
 			uniformType = UniformType::Float1;
 			uniformData.Float1 = std::get<float>(data);
 			break;
 		}
-		case MaterialParamaterType::Float2: {
+		case MaterialParameterType::Float2: {
 			uniformType = UniformType::Float2;
 			uniformData.Float2 = std::get<glm::vec2>(data);
 			break;
 		}
-		case MaterialParamaterType::Float3: {
+		case MaterialParameterType::Float3: {
 			uniformType = UniformType::Float3;
 			uniformData.Float3 = std::get<glm::vec3>(data);
 			break;
 		}
-		case MaterialParamaterType::Float4: {
+		case MaterialParameterType::Float4: {
 			uniformType = UniformType::Float4;
 			uniformData.Float4 = std::get<glm::vec4>(data);
 			break;
 		}
 
-		case MaterialParamaterType::Int1: {
+		case MaterialParameterType::Int1: {
 			uniformType = UniformType::Int1;
 			uniformData.Int1 = std::get<int32_t>(data);
 			break;
 		}
-		case MaterialParamaterType::Int2: {
+		case MaterialParameterType::Int2: {
 			uniformType = UniformType::Int2;
 			uniformData.Int2 = std::get<glm::ivec2>(data);
 			break;
 		}
-		case MaterialParamaterType::Int3: {
+		case MaterialParameterType::Int3: {
 			uniformType = UniformType::Int3;
 			uniformData.Int3 = std::get<glm::ivec3>(data);
 			break;
 		}
-		case MaterialParamaterType::Int4: {
+		case MaterialParameterType::Int4: {
 			uniformType = UniformType::Int4;
 			uniformData.Int4 = std::get<glm::ivec4>(data);
 			break;
 		}
 
-		case MaterialParamaterType::UInt1: {
+		case MaterialParameterType::UInt1: {
 			uniformType = UniformType::UInt1;
 			uniformData.UInt1 = std::get<uint32_t>(data);
 			break;
 		}
-		case MaterialParamaterType::UInt2: {
+		case MaterialParameterType::UInt2: {
 			uniformType = UniformType::UInt2;
 			uniformData.UInt2 = std::get<glm::uvec2>(data);
 			break;
 		}
-		case MaterialParamaterType::UInt3: {
+		case MaterialParameterType::UInt3: {
 			uniformType = UniformType::UInt3;
 			uniformData.UInt3 = std::get<glm::uvec3>(data);
 			break;
 		}
-		case MaterialParamaterType::UInt4: {
+		case MaterialParameterType::UInt4: {
 			uniformType = UniformType::UInt4;
 			uniformData.UInt4 = std::get<glm::uvec4>(data);
 			break;
 		}
 
-		case MaterialParamaterType::Float1Vector: {
+		case MaterialParameterType::Float1Vector: {
 			uniformType = UniformType::Float1Vector;
 			auto& vec = std::get<std::vector<float>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ vec.data(), 1, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Float2Vector: {
+		case MaterialParameterType::Float2Vector: {
 			uniformType = UniformType::Float2Vector;
 			auto& vec = std::get<std::vector<glm::vec2>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 2, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Float3Vector: {
+		case MaterialParameterType::Float3Vector: {
 			uniformType = UniformType::Float3Vector;
 			auto& vec = std::get<std::vector<glm::vec3>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 3, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Float4Vector: {
+		case MaterialParameterType::Float4Vector: {
 			uniformType = UniformType::Float4Vector;
 			auto& vec = std::get<std::vector<glm::vec4>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 4, (int32_t)vec.size() };
 			break;
 		}
 
-		case MaterialParamaterType::Int1Vector: {
+		case MaterialParameterType::Int1Vector: {
 			uniformType = UniformType::Int1Vector;
 			auto& vec = std::get<std::vector<int32_t>>(data);
 			uniformData.IntVector = UniformData::IntVectorType{ vec.data(), 1, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Int2Vector: {
+		case MaterialParameterType::Int2Vector: {
 			uniformType = UniformType::Int2Vector;
 			auto& vec = std::get<std::vector<glm::ivec2>>(data);
 			uniformData.IntVector = UniformData::IntVectorType{ (int32_t*)vec.data(), 2, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Int3Vector: {
+		case MaterialParameterType::Int3Vector: {
 			uniformType = UniformType::Int3Vector;
 			auto& vec = std::get<std::vector<glm::ivec3>>(data);
 			uniformData.IntVector = UniformData::IntVectorType{ (int32_t*)vec.data(), 3, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Int4Vector: {
+		case MaterialParameterType::Int4Vector: {
 			uniformType = UniformType::Int4Vector;
 			auto& vec = std::get<std::vector<glm::ivec4>>(data);
 			uniformData.IntVector = UniformData::IntVectorType{ (int32_t*)vec.data(), 4, (int32_t)vec.size() };
 			break;
 		}
 
-		case MaterialParamaterType::UInt1Vector: {
+		case MaterialParameterType::UInt1Vector: {
 			uniformType = UniformType::UInt1Vector;
 			auto& vec = std::get<std::vector<uint32_t>>(data);
 			uniformData.UIntVector = UniformData::UIntVectorType{ vec.data(), 1, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::UInt2Vector: {
+		case MaterialParameterType::UInt2Vector: {
 			uniformType = UniformType::UInt2Vector;
 			auto& vec = std::get<std::vector<glm::uvec2>>(data);
 			uniformData.UIntVector = UniformData::UIntVectorType{ (uint32_t*)vec.data(), 2, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::UInt3Vector: {
+		case MaterialParameterType::UInt3Vector: {
 			uniformType = UniformType::UInt3Vector;
 			auto& vec = std::get<std::vector<glm::ivec3>>(data);
 			uniformData.UIntVector = UniformData::UIntVectorType{ (uint32_t*)vec.data(), 3, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::UInt4Vector: {
+		case MaterialParameterType::UInt4Vector: {
 			uniformType = UniformType::UInt4Vector;
 			auto& vec = std::get<std::vector<glm::ivec4>>(data);
 			uniformData.UIntVector = UniformData::UIntVectorType{ (uint32_t*)vec.data(), 4, (int32_t)vec.size() };
@@ -278,65 +278,65 @@ namespace Tara {
 		}
 
 
-		case MaterialParamaterType::Matrix2Vector: {
+		case MaterialParameterType::Matrix2Vector: {
 			uniformType = UniformType::Matrix2Vector;
 			auto& vec = std::get<std::vector<glm::mat2>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 4, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Matrix3Vector: {
+		case MaterialParameterType::Matrix3Vector: {
 			uniformType = UniformType::Matrix3Vector;
 			auto& vec = std::get<std::vector<glm::mat3>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 9, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Matrix4Vector: {
+		case MaterialParameterType::Matrix4Vector: {
 			uniformType = UniformType::Matrix4Vector;
 			auto& vec = std::get<std::vector<glm::mat4>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 16, (int32_t)vec.size() };
 			break;
 		}
 
-		case MaterialParamaterType::Matrix2x3Vector: {
+		case MaterialParameterType::Matrix2x3Vector: {
 			uniformType = UniformType::Matrix2x3Vector;
 			auto& vec = std::get<std::vector<glm::mat2x3>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 6, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Matrix3x2Vector: {
+		case MaterialParameterType::Matrix3x2Vector: {
 			uniformType = UniformType::Matrix3x2Vector;
 			auto& vec = std::get<std::vector<glm::mat3x2>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 6, (int32_t)vec.size() };
 			break;
 		}
 
-		case MaterialParamaterType::Matrix2x4Vector: {
+		case MaterialParameterType::Matrix2x4Vector: {
 			uniformType = UniformType::Matrix2x4Vector;
 			auto& vec = std::get<std::vector<glm::mat2x4>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 8, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Matrix4x2Vector: {
+		case MaterialParameterType::Matrix4x2Vector: {
 			uniformType = UniformType::Matrix4x2Vector;
 			auto& vec = std::get<std::vector<glm::mat4x2>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 8, (int32_t)vec.size() };
 			break;
 		}
 
-		case MaterialParamaterType::Matrix3x4Vector: {
+		case MaterialParameterType::Matrix3x4Vector: {
 			uniformType = UniformType::Matrix3x4Vector;
 			auto& vec = std::get<std::vector<glm::mat3x4>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 12, (int32_t)vec.size() };
 			break;
 		}
-		case MaterialParamaterType::Matrix4x3Vector: {
+		case MaterialParameterType::Matrix4x3Vector: {
 			uniformType = UniformType::Matrix4x3Vector;
 			auto& vec = std::get<std::vector<glm::mat4x3>>(data);
 			uniformData.FloatVector = UniformData::FloatVectorType{ (float*)vec.data(), 12, (int32_t)vec.size() };
 			break;
 		}
 
-		case MaterialParamaterType::Sampler2D: {
+		case MaterialParameterType::Sampler2D: {
 			uniformType = UniformType::Int1;
 			uniformData.Int1 = bindingA;
 			auto& ref = std::get<Texture2DRef>(data);
@@ -345,7 +345,7 @@ namespace Tara {
 			}
 			break;
 		}
-		case MaterialParamaterType::SamplerCube: {
+		case MaterialParameterType::SamplerCube: {
 			uniformType = UniformType::Int1;
 			uniformData.Int1 = bindingA;
 			auto& ref = std::get<TextureCubemapRef>(data);
@@ -367,149 +367,149 @@ namespace Tara {
 	}
 
 
-	MaterialParamaterType MaterialBase::MaterialParamaterTypeFromString(const std::string type, bool isVector)
+	MaterialParameterType MaterialBase::MaterialParameterTypeFromString(const std::string type, bool isVector)
 	{
 		if (type == "float") {
-			if (isVector) { return MaterialParamaterType::Float1Vector; }
-			else { return MaterialParamaterType::Float1; }
+			if (isVector) { return MaterialParameterType::Float1Vector; }
+			else { return MaterialParameterType::Float1; }
 		}
 		else if (type == "vec2") {
-			if (isVector) { return MaterialParamaterType::Float2Vector; }
-			else { return MaterialParamaterType::Float2; }
+			if (isVector) { return MaterialParameterType::Float2Vector; }
+			else { return MaterialParameterType::Float2; }
 		}
 		else if (type == "vec3") {
-			if (isVector) { return MaterialParamaterType::Float3Vector; }
-			else { return MaterialParamaterType::Float3; }
+			if (isVector) { return MaterialParameterType::Float3Vector; }
+			else { return MaterialParameterType::Float3; }
 		}
 		else if (type == "vec4") {
-			if (isVector) { return MaterialParamaterType::Float4Vector; }
-			else { return MaterialParamaterType::Float4; }
+			if (isVector) { return MaterialParameterType::Float4Vector; }
+			else { return MaterialParameterType::Float4; }
 		}
 		else if (type == "int") {
-			if (isVector) { return MaterialParamaterType::Int1Vector; }
-			else { return MaterialParamaterType::Int1; }
+			if (isVector) { return MaterialParameterType::Int1Vector; }
+			else { return MaterialParameterType::Int1; }
 		}
 		else if (type == "ivec2") {
-			if (isVector) { return MaterialParamaterType::Int2Vector; }
-			else { return MaterialParamaterType::Int2; }
+			if (isVector) { return MaterialParameterType::Int2Vector; }
+			else { return MaterialParameterType::Int2; }
 		}
 		else if (type == "ivec3") {
-			if (isVector) { return MaterialParamaterType::Int3Vector; }
-			else { return MaterialParamaterType::Int3; }
+			if (isVector) { return MaterialParameterType::Int3Vector; }
+			else { return MaterialParameterType::Int3; }
 		}
 		else if (type == "ivec4") {
-			if (isVector) { return MaterialParamaterType::Int4Vector; }
-			else { return MaterialParamaterType::Int4; }
+			if (isVector) { return MaterialParameterType::Int4Vector; }
+			else { return MaterialParameterType::Int4; }
 		}
 		else if (type == "uint") {
-			if (isVector) { return MaterialParamaterType::UInt1Vector; }
-			else { return MaterialParamaterType::UInt1; }
+			if (isVector) { return MaterialParameterType::UInt1Vector; }
+			else { return MaterialParameterType::UInt1; }
 		}
 		else if (type == "uvec2") {
-			if (isVector) { return MaterialParamaterType::UInt2Vector; }
-			else { return MaterialParamaterType::UInt2; }
+			if (isVector) { return MaterialParameterType::UInt2Vector; }
+			else { return MaterialParameterType::UInt2; }
 		}
 		else if (type == "uvec3") {
-			if (isVector) { return MaterialParamaterType::UInt3Vector; }
-			else { return MaterialParamaterType::UInt3; }
+			if (isVector) { return MaterialParameterType::UInt3Vector; }
+			else { return MaterialParameterType::UInt3; }
 		}
 		else if (type == "uvec4") {
-			if (isVector) { return MaterialParamaterType::UInt4Vector; }
-			else { return MaterialParamaterType::UInt4; }
+			if (isVector) { return MaterialParameterType::UInt4Vector; }
+			else { return MaterialParameterType::UInt4; }
 		}
 		else if (type == "mat2") {
-			return MaterialParamaterType::Matrix2Vector;
+			return MaterialParameterType::Matrix2Vector;
 		}
 		else if (type == "mat3") {
-			return MaterialParamaterType::Matrix3Vector;
+			return MaterialParameterType::Matrix3Vector;
 		}
 		else if (type == "mat4") {
-			return MaterialParamaterType::Matrix4Vector;
+			return MaterialParameterType::Matrix4Vector;
 		}
 		else if (type == "mat2x3") {
-			return MaterialParamaterType::Matrix2x3Vector;
+			return MaterialParameterType::Matrix2x3Vector;
 		}
 		else if (type == "mat3x2") {
-			return MaterialParamaterType::Matrix3x2Vector;
+			return MaterialParameterType::Matrix3x2Vector;
 		}
 		else if (type == "mat2x4") {
-			return MaterialParamaterType::Matrix2x4Vector;
+			return MaterialParameterType::Matrix2x4Vector;
 		}
 		else if (type == "mat4x2") {
-			return MaterialParamaterType::Matrix4x2Vector;
+			return MaterialParameterType::Matrix4x2Vector;
 		}
 		else if (type == "mat3x4") {
-			return MaterialParamaterType::Matrix3x4Vector;
+			return MaterialParameterType::Matrix3x4Vector;
 		}
 		else if (type == "mat4x3") {
-			return MaterialParamaterType::Matrix4x3Vector;
+			return MaterialParameterType::Matrix4x3Vector;
 		}
 		else if (type == "sampler1D" || type == "isampler1D" || type == "usampler1D") {
-			return MaterialParamaterType::Sampler1D;
+			return MaterialParameterType::Sampler1D;
 		}
 		else if (type == "sampler2D" || type == "isampler2D" || type == "usampler2D") {
-			return MaterialParamaterType::Sampler2D;
+			return MaterialParameterType::Sampler2D;
 		}
 		else if (type == "sampler3D" || type == "isampler3D" || type == "usampler3D") {
-			return MaterialParamaterType::Sampler3D;
+			return MaterialParameterType::Sampler3D;
 		}
 		else if (type == "samplerCube" || type == "isamplerCube" || type == "usamplerCube") {
-			return MaterialParamaterType::SamplerCube;
+			return MaterialParameterType::SamplerCube;
 		}
 		else if (type == "sampler1DArray" || type == "isampler1DArray" || type == "usampler1DArray") {
-			return MaterialParamaterType::Sampler1DArray;
+			return MaterialParameterType::Sampler1DArray;
 		}
 		else if (type == "sampler2DArray" || type == "isampler2DArray" || type == "usampler2DArray") {
-			return MaterialParamaterType::Sampler2DArray;
+			return MaterialParameterType::Sampler2DArray;
 		}
 		else {
-			LOG_S(WARNING) << "Unknown Material Paramater Type : '" << type << "'. If you are using a custom struct, don't do this!";
-			return MaterialParamaterType::INVALID;
+			LOG_S(WARNING) << "Unknown Material Parameter Type : '" << type << "'. If you are using a custom struct, don't do this!";
+			return MaterialParameterType::INVALID;
 		}
 	}
 
-	MaterialParamater MaterialBase::DefaultMaterialParamaterFromType(MaterialParamaterType type)
+	MaterialParameter MaterialBase::DefaultMaterialParameterFromType(MaterialParameterType type)
 	{
 		switch (type) {
-		case MaterialParamaterType::Float1: return 0.0f;
-		case MaterialParamaterType::Float2: return glm::vec2(0);
-		case MaterialParamaterType::Float3: return glm::vec3(0);
-		case MaterialParamaterType::Float4: return glm::vec4(0);
-		case MaterialParamaterType::Int1: return 0;
-		case MaterialParamaterType::Int2: return glm::ivec2(0);
-		case MaterialParamaterType::Int3: return glm::ivec3(0);
-		case MaterialParamaterType::Int4: return glm::ivec4(0);
-		case MaterialParamaterType::UInt1: return 0u;
-		case MaterialParamaterType::UInt2: return glm::uvec2(0);
-		case MaterialParamaterType::UInt3: return glm::uvec3(0);
-		case MaterialParamaterType::UInt4: return glm::uvec4(0);
+		case MaterialParameterType::Float1: return 0.0f;
+		case MaterialParameterType::Float2: return glm::vec2(0);
+		case MaterialParameterType::Float3: return glm::vec3(0);
+		case MaterialParameterType::Float4: return glm::vec4(0);
+		case MaterialParameterType::Int1: return 0;
+		case MaterialParameterType::Int2: return glm::ivec2(0);
+		case MaterialParameterType::Int3: return glm::ivec3(0);
+		case MaterialParameterType::Int4: return glm::ivec4(0);
+		case MaterialParameterType::UInt1: return 0u;
+		case MaterialParameterType::UInt2: return glm::uvec2(0);
+		case MaterialParameterType::UInt3: return glm::uvec3(0);
+		case MaterialParameterType::UInt4: return glm::uvec4(0);
 			
-		case MaterialParamaterType::Float1Vector: return std::vector<float>();
-		case MaterialParamaterType::Float2Vector: return std::vector<glm::vec2>();
-		case MaterialParamaterType::Float3Vector: return std::vector<glm::vec3>();
-		case MaterialParamaterType::Float4Vector: return std::vector<glm::vec4>();
-		case MaterialParamaterType::Int1Vector: return std::vector<int32_t>();
-		case MaterialParamaterType::Int2Vector: return std::vector<glm::ivec2>();
-		case MaterialParamaterType::Int3Vector: return std::vector<glm::ivec3>();
-		case MaterialParamaterType::Int4Vector: return std::vector<glm::ivec4>();
-		case MaterialParamaterType::UInt1Vector: return std::vector<uint32_t>();
-		case MaterialParamaterType::UInt2Vector: return std::vector<glm::uvec2>();
-		case MaterialParamaterType::UInt3Vector: return std::vector<glm::uvec3>();
-		case MaterialParamaterType::UInt4Vector: return std::vector<glm::uvec4>();
+		case MaterialParameterType::Float1Vector: return std::vector<float>();
+		case MaterialParameterType::Float2Vector: return std::vector<glm::vec2>();
+		case MaterialParameterType::Float3Vector: return std::vector<glm::vec3>();
+		case MaterialParameterType::Float4Vector: return std::vector<glm::vec4>();
+		case MaterialParameterType::Int1Vector: return std::vector<int32_t>();
+		case MaterialParameterType::Int2Vector: return std::vector<glm::ivec2>();
+		case MaterialParameterType::Int3Vector: return std::vector<glm::ivec3>();
+		case MaterialParameterType::Int4Vector: return std::vector<glm::ivec4>();
+		case MaterialParameterType::UInt1Vector: return std::vector<uint32_t>();
+		case MaterialParameterType::UInt2Vector: return std::vector<glm::uvec2>();
+		case MaterialParameterType::UInt3Vector: return std::vector<glm::uvec3>();
+		case MaterialParameterType::UInt4Vector: return std::vector<glm::uvec4>();
 
-		case MaterialParamaterType::Matrix2Vector: return std::vector<glm::mat2>();
-		case MaterialParamaterType::Matrix3Vector: return std::vector<glm::mat3>();
-		case MaterialParamaterType::Matrix4Vector: return std::vector<glm::mat4>();
+		case MaterialParameterType::Matrix2Vector: return std::vector<glm::mat2>();
+		case MaterialParameterType::Matrix3Vector: return std::vector<glm::mat3>();
+		case MaterialParameterType::Matrix4Vector: return std::vector<glm::mat4>();
 		
-		case MaterialParamaterType::Matrix2x3Vector: return std::vector<glm::mat2x3>();
-		case MaterialParamaterType::Matrix3x2Vector: return std::vector<glm::mat3x2>();
-		case MaterialParamaterType::Matrix2x4Vector: return std::vector<glm::mat2x4>();
-		case MaterialParamaterType::Matrix4x2Vector: return std::vector<glm::mat4x2>();
-		case MaterialParamaterType::Matrix3x4Vector: return std::vector<glm::mat3x4>();
-		case MaterialParamaterType::Matrix4x3Vector: return std::vector<glm::mat4x3>();
+		case MaterialParameterType::Matrix2x3Vector: return std::vector<glm::mat2x3>();
+		case MaterialParameterType::Matrix3x2Vector: return std::vector<glm::mat3x2>();
+		case MaterialParameterType::Matrix2x4Vector: return std::vector<glm::mat2x4>();
+		case MaterialParameterType::Matrix4x2Vector: return std::vector<glm::mat4x2>();
+		case MaterialParameterType::Matrix3x4Vector: return std::vector<glm::mat3x4>();
+		case MaterialParameterType::Matrix4x3Vector: return std::vector<glm::mat4x3>();
 
-		case MaterialParamaterType::Sampler2D: return Texture2DRef(nullptr);
-		case MaterialParamaterType::SamplerCube: return TextureCubemapRef(nullptr);
+		case MaterialParameterType::Sampler2D: return Texture2DRef(nullptr);
+		case MaterialParameterType::SamplerCube: return TextureCubemapRef(nullptr);
 
 		default: return 0.0f;
 		}

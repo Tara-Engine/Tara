@@ -124,9 +124,11 @@ namespace Tara{
 		case RenderBlendMode::MULTIPLY: {
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			break;
 		}
 		case RenderBlendMode::REPLACE: {
 			glDisable(GL_BLEND);
+			break;
 		}
 		}
 	}

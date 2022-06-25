@@ -38,17 +38,17 @@ void ModelBuildLayer::Activate()
 		auto wallTexture = Tara::Texture2D::Create("assets/wall.png");
 
 		auto unlitMat = Tara::Material::Create(Tara::MaterialType::UNLIT, "assets/material1.glsl", Tara::Shader::SourceType::TextFiles, "UnlitMaterial");
-		unlitMat->SetVector4Paramater("tintColor", glm::vec4(0, 0, 1, 1));
+		unlitMat->SetVector4Parameter("tintColor", glm::vec4(0, 0, 1, 1));
 
 		auto litMat = Tara::Material::Create(Tara::MaterialType::LIT, "assets/material3deferred.glsl", Tara::Shader::SourceType::TextFiles, "BasicMaterial");
-		litMat->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
-		litMat->SetScalarParamater("roughnessValue", 1.0f);
-		litMat->SetTextureParmamter("diffuseTexture", basicTexture);
+		litMat->SetVector4Parameter("tintColor", glm::vec4(1, 1, 1, 1));
+		litMat->SetScalarParameter("roughnessValue", 1.0f);
+		litMat->SetTextureParameter("diffuseTexture", basicTexture);
 
 		auto litMat2 = litMat->CreateInstance("BaseMaterialInstance");
-		litMat2->SetVector4Paramater("tintColor", glm::vec4(1, 1, 1, 1));
-		litMat2->SetScalarParamater("roughnessValue", 0.1f);
-		litMat2->SetTextureParmamter("diffuseTexture", wallTexture);
+		litMat2->SetVector4Parameter("tintColor", glm::vec4(1, 1, 1, 1));
+		litMat2->SetScalarParameter("roughnessValue", 0.1f);
+		litMat2->SetTextureParameter("diffuseTexture", wallTexture);
 
 		//light material
 		auto lightMaterial = Tara::Material::Create(Tara::MaterialType::LIGHTING, "assets/materialLightingBRDF.glsl", Tara::Shader::SourceType::TextFiles, "LightingMaterial");
@@ -58,21 +58,24 @@ void ModelBuildLayer::Activate()
 		//TesterSingleColor
 		
 		//auto m_Material = Tara::Material::Create(Tara::MaterialType::LIT, "assets/Material/TesterSingleColor.glsl", Tara::Shader::SourceType::TextFiles, "TesterMaterial");
-		//m_Material->SetParamater("metallicValue", 0.5f);
-		//m_Material->SetParamater("roughnessValue", 0.5f);
+		//m_Material->SetParameter("metallicValue", 0.5f);
+		//m_Material->SetParameter("roughnessValue", 0.5f);
 
 		auto testerMat = Tara::Material::Create(Tara::MaterialType::LIT, "assets/Material/Tester.glsl", Tara::Shader::SourceType::TextFiles, "TesterMaterial");
-		testerMat->SetTextureParmamter("diffuseTexture", Tara::Texture2D::Create("assets/Material/Tester_Diffuse.png"));
-		testerMat->SetTextureParmamter("emissiveTexture", Tara::Texture2D::Create("assets/Material/Tester_Emissive.png"));
-		testerMat->SetTextureParmamter("normalTexture", Tara::Texture2D::Create("assets/Material/Tester_Normal.png"));
-		testerMat->SetTextureParmamter("roughnessTexture", Tara::Texture2D::Create("assets/Material/Tester_Roughness.png"));
-		testerMat->SetTextureParmamter("metallicTexture", Tara::Texture2D::Create("assets/Material/Tester_Metallic.png"));
-		testerMat->SetTextureParmamter("ambientOcclusionTexture", Tara::Texture2D::Create("assets/Material/Tester_AmbientOcclusion.png"));
+		testerMat->SetTextureParameter("diffuseTexture", Tara::Texture2D::Create("assets/Material/Tester_Diffuse.png"));
+		testerMat->SetTextureParameter("emissiveTexture", Tara::Texture2D::Create("assets/Material/Tester_Emissive.png"));
+		testerMat->SetTextureParameter("normalTexture", Tara::Texture2D::Create("assets/Material/Tester_Normal.png"));
+		testerMat->SetTextureParameter("roughnessTexture", Tara::Texture2D::Create("assets/Material/Tester_Roughness.png"));
+		testerMat->SetTextureParameter("metallicTexture", Tara::Texture2D::Create("assets/Material/Tester_Metallic.png"));
+		testerMat->SetTextureParameter("ambientOcclusionTexture", Tara::Texture2D::Create("assets/Material/Tester_AmbientOcclusion.png"));
 		m_Material = testerMat;
 
 		auto postProcess1 = Tara::Material::Create(Tara::MaterialType::POSTPROCESS, "assets/postProcess1.glsl", Tara::Shader::SourceType::TextFiles, "PostProcessMaterial1");
 
-		
+		auto cubemaptexture = Tara::TextureCubemap::CreateHDRI("assets/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_8k.jpg", 512);
+		auto panoramicMat = Tara::Material::Create(Tara::MaterialType::LIT, "assets/Material/panoramic.glsl", Tara::Shader::SourceType::TextFiles, "PanoramicMateial");
+		panoramicMat->SetTextureParameter("cubemap", cubemaptexture);
+
 		m_Camera->GetCamera()->AddPostProcessMaterial(postProcess1);
 		
 		//scene setup (meshes, lights)
@@ -101,6 +104,10 @@ void ModelBuildLayer::Activate()
 
 		Tara::MeshPart cube = Tara::MeshPart::UnitCube();
 		auto cubeMesh = Tara::StaticMesh::Create({ cube }, "CubeMesh");
+		
+		auto sphereMesh = Tara::StaticMesh::Create({ Tara::MeshPart::UnitSphere() }, "SphereMesh");
+		auto sphereEntity = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({-4, 10, -4}, {0,0,0}, {5,5,5}), sphereMesh, panoramicMat, "panoramic Test Entity");
+		
 		/*
 		std::random_device rd;
 		for (int i = 0; i < 16; i++) {
@@ -242,7 +249,7 @@ void ModelBuildLayer::Activate()
 				Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT,
 					[m_Material](Tara::LambdaComponent* self, float deltaTime) {
 						std::stringstream ss;
-						auto param = m_Material->GetParamaterValue("roughnessValue");
+						auto param = m_Material->GetParameterValue("roughnessValue");
 						ss << "Material Roughness: " << std::get<float>(param.second);
 						std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock())->SetText(ss.str());
 					},
@@ -262,11 +269,11 @@ void ModelBuildLayer::Activate()
 					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
 						Tara::EventFilter filter(e);
 						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
-							auto param = m_Material->GetParamaterValue("roughnessValue");
+							auto param = m_Material->GetParameterValue("roughnessValue");
 							float value = std::get<float>(param.second);
 							value -= 0.05;
 							value = std::clamp<float>(value, 0.0f, 1.0f);
-							m_Material->SetParamater("roughnessValue", value);
+							m_Material->SetParameter("roughnessValue", value);
 							return true;
 							});
 					});
@@ -284,11 +291,11 @@ void ModelBuildLayer::Activate()
 					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
 						Tara::EventFilter filter(e);
 						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
-							auto param = m_Material->GetParamaterValue("roughnessValue");
+							auto param = m_Material->GetParameterValue("roughnessValue");
 							float value = std::get<float>(param.second);
 							value += 0.05;
 							value = std::clamp<float>(value, 0.0f, 1.0f);
-							m_Material->SetParamater("roughnessValue", value);
+							m_Material->SetParameter("roughnessValue", value);
 							return true;
 							});
 					});
@@ -309,7 +316,7 @@ void ModelBuildLayer::Activate()
 				Tara::CreateComponent<Tara::LambdaComponent>(text, LAMBDA_BEGIN_PLAY_DEFAULT,
 					[m_Material](Tara::LambdaComponent* self, float deltaTime) {
 						std::stringstream ss;
-						auto param = m_Material->GetParamaterValue("metallicValue");
+						auto param = m_Material->GetParameterValue("metallicValue");
 						ss << "Material Metallic: " << std::get<float>(param.second);
 						std::dynamic_pointer_cast<Tara::UITextEntity>(self->GetParent().lock())->SetText(ss.str());
 					},
@@ -328,11 +335,11 @@ void ModelBuildLayer::Activate()
 					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
 						Tara::EventFilter filter(e);
 						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
-							auto param = m_Material->GetParamaterValue("metallicValue");
+							auto param = m_Material->GetParameterValue("metallicValue");
 							float value = std::get<float>(param.second);
 							value -= 0.05;
 							value = std::clamp<float>(value, 0.0f, 1.0f);
-							m_Material->SetParamater("metallicValue", value);
+							m_Material->SetParameter("metallicValue", value);
 							return true;
 							});
 					});
@@ -350,11 +357,11 @@ void ModelBuildLayer::Activate()
 					[m_Material](Tara::LambdaComponent* self, Tara::Event& e) {
 						Tara::EventFilter filter(e);
 						filter.Call<Tara::UIToggleEvent>([m_Material](Tara::UIToggleEvent& ee) {
-							auto param = m_Material->GetParamaterValue("metallicValue");
+							auto param = m_Material->GetParameterValue("metallicValue");
 							float value = std::get<float>(param.second);
 							value += 0.05;
 							value = std::clamp<float>(value, 0.0f, 1.0f);
-							m_Material->SetParamater("metallicValue", value);
+							m_Material->SetParameter("metallicValue", value);
 							return true;
 							});
 					});

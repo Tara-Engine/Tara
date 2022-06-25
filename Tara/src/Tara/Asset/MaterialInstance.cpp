@@ -11,14 +11,14 @@ namespace Tara{
 	{
 		m_BaseMaterial->Use();
 		int32_t bindSlot = 0;
-		for (auto& param : m_ParamaterOverrides) {
+		for (auto& param : m_ParameterOverrides) {
 			//dealing with textures. Maybe
-			if (param.second.first == MaterialParamaterType::Sampler2D) {
-				auto oldTex = std::get<Texture2DRef>(m_BaseMaterial->GetParamaterValue(param.first).second);
+			if (param.second.first == MaterialParameterType::Sampler2D) {
+				auto oldTex = std::get<Texture2DRef>(m_BaseMaterial->GetParameterValue(param.first).second);
 				auto p = oldTex->GetLastBindPoint();
 				bindSlot = p.first;
 			}
-			Uniform u = MaterialBase::MaterialParamaterToUniform(param.second.second, param.second.first, bindSlot, 0);
+			Uniform u = MaterialBase::MaterialParameterToUniform(param.second.second, param.second.first, bindSlot, 0);
 			m_BaseMaterial->GetShader()->Send(param.first, u);
 		}
 	}
@@ -33,38 +33,38 @@ namespace Tara{
 		return m_BaseMaterial->GetShader();
 	}
 
-	std::vector<std::pair<std::string, MaterialParamaterType>> MaterialInstance::GetParamaterList()
+	std::vector<std::pair<std::string, MaterialParameterType>> MaterialInstance::GetParameterList()
 	{
-		return m_BaseMaterial->GetParamaterList();
+		return m_BaseMaterial->GetParameterList();
 	}
 
-	MaterialParamaterType MaterialInstance::GetParamaterType(const std::string& name)
+	MaterialParameterType MaterialInstance::GetParameterType(const std::string& name)
 	{
-		return m_BaseMaterial->GetParamaterType(name);
+		return m_BaseMaterial->GetParameterType(name);
 	}
 
-	bool MaterialInstance::GetParamaterValid(const std::string& name)
+	bool MaterialInstance::GetParameterValid(const std::string& name)
 	{
-		return m_BaseMaterial->GetParamaterValid(name);
+		return m_BaseMaterial->GetParameterValid(name);
 	}
 
-	std::pair<MaterialParamaterType, MaterialParamater> MaterialInstance::GetParamaterValue(const std::string& name)
+	std::pair<MaterialParameterType, MaterialParameter> MaterialInstance::GetParameterValue(const std::string& name)
 	{
-		auto iter = m_ParamaterOverrides.find(name);
-		if (iter != m_ParamaterOverrides.end()) {
+		auto iter = m_ParameterOverrides.find(name);
+		if (iter != m_ParameterOverrides.end()) {
 			return std::make_pair(iter->second.first, iter->second.second);
 		}
-		return m_BaseMaterial->GetParamaterValue(name);
+		return m_BaseMaterial->GetParameterValue(name);
 	}
 
-	void MaterialInstance::SetParamater(const std::string& name, MaterialParamater value)
+	void MaterialInstance::SetParameter(const std::string& name, MaterialParameter value)
 	{
-		auto t = m_BaseMaterial->GetParamaterType(name);
-		if (m_BaseMaterial->GetParamaterValid(name) && MaterialBase::MaterialParamaterDataAndTypeMatch(value, t)) {
-			m_ParamaterOverrides[name] = std::make_pair(t, value);
+		auto t = m_BaseMaterial->GetParameterType(name);
+		if (m_BaseMaterial->GetParameterValid(name) && MaterialBase::MaterialParameterDataAndTypeMatch(value, t)) {
+			m_ParameterOverrides[name] = std::make_pair(t, value);
 		}
 		else {
-			LOG_S(WARNING) << "Setting an invalid paramater '" << name << "' in a MaterialInstance blocked.";
+			LOG_S(WARNING) << "Setting an invalid Parameter '" << name << "' in a MaterialInstance blocked.";
 		}
 	}
 

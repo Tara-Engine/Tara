@@ -11,12 +11,12 @@ namespace Tara{
 	{
 		if (sourceType == Shader::SourceType::Strings) {
 			ShaderFromString(source);
-			ParamatersFromString(source);
+			ParametersFromString(source);
 		}
 		else if (sourceType == Shader::SourceType::TextFiles) {
 			std::string readSource = Material::ReadSourceTextFile(source);
 			ShaderFromString(readSource);
-			ParamatersFromString(readSource);
+			ParametersFromString(readSource);
 		}
 	}
 
@@ -40,65 +40,65 @@ namespace Tara{
 		}
 		m_Shader->Bind();
 		int32_t bindSlot = 0;
-		for (auto& param : m_Paramaters) {
-			Uniform u = MaterialBase::MaterialParamaterToUniform(param.second.second, param.second.first, bindSlot, 0);
+		for (auto& param : m_Parameters) {
+			Uniform u = MaterialBase::MaterialParameterToUniform(param.second.second, param.second.first, bindSlot, 0);
 			m_Shader->Send(param.first, u);
 		}
 	}
 
-	std::vector<std::pair<std::string, MaterialParamaterType>> Material::GetParamaterList()
+	std::vector<std::pair<std::string, MaterialParameterType>> Material::GetParameterList()
 	{
-		std::vector<std::pair<std::string, MaterialParamaterType>> ret;
-		ret.reserve(m_Paramaters.size());
-		for (auto& param : m_Paramaters) {
+		std::vector<std::pair<std::string, MaterialParameterType>> ret;
+		ret.reserve(m_Parameters.size());
+		for (auto& param : m_Parameters) {
 			ret.push_back(std::make_pair(param.first, param.second.first));
 		}
 		return ret;
 	}
 
-	MaterialParamaterType Material::GetParamaterType(const std::string& name)
+	MaterialParameterType Material::GetParameterType(const std::string& name)
 	{
-		auto iter = m_Paramaters.find(name);
-		if (iter != m_Paramaters.end()) {
+		auto iter = m_Parameters.find(name);
+		if (iter != m_Parameters.end()) {
 			return iter->second.first;
 		}
-		LOG_S(WARNING) << "Attempted to get a Material Paramater Type of an invalid name. Name: [" << name << "]";
-		return MaterialParamaterType::Float1;
+		LOG_S(WARNING) << "Attempted to get a Material Parameter Type of an invalid name. Name: [" << name << "]";
+		return MaterialParameterType::Float1;
 	}
 
-	bool Material::GetParamaterValid(const std::string& name)
+	bool Material::GetParameterValid(const std::string& name)
 	{
-		auto iter = m_Paramaters.find(name);
-		if (iter != m_Paramaters.end()) {
+		auto iter = m_Parameters.find(name);
+		if (iter != m_Parameters.end()) {
 			return true;
 		}
 		return false;
 	}
 
-	std::pair<MaterialParamaterType, MaterialParamater> Material::GetParamaterValue(const std::string& name)
+	std::pair<MaterialParameterType, MaterialParameter> Material::GetParameterValue(const std::string& name)
 	{
-		auto iter = m_Paramaters.find(name);
-		if (iter != m_Paramaters.end()) {
+		auto iter = m_Parameters.find(name);
+		if (iter != m_Parameters.end()) {
 			return std::make_pair(iter->second.first, iter->second.second);
 		}
-		LOG_S(WARNING) << "Attempted to get a Material Paramater of an invalid name. Name: [" << name << "]";
-		return std::make_pair(MaterialParamaterType::Float1, MaterialParamater(0.0f));
+		LOG_S(WARNING) << "Attempted to get a Material Parameter of an invalid name. Name: [" << name << "]";
+		return std::make_pair(MaterialParameterType::Float1, MaterialParameter(0.0f));
 	}
 
-	void Material::SetParamater(const std::string& name, MaterialParamater value)
+	void Material::SetParameter(const std::string& name, MaterialParameter value)
 	{
-		auto iter = m_Paramaters.find(name);
-		if (iter == m_Paramaters.end()) {
-			LOG_S(WARNING) << "Setting a Material Paramater of an unknown name. Name: [" << name << "]. This will likely cause crashes!";
-			MaterialParamaterType t = MaterialBase::MaterialParamaterTypeFromData(value);
-			m_Paramaters[name] = std::make_pair(t, value);
+		auto iter = m_Parameters.find(name);
+		if (iter == m_Parameters.end()) {
+			LOG_S(WARNING) << "Setting a Material Parameter of an unknown name. Name: [" << name << "]. This will likely cause crashes!";
+			MaterialParameterType t = MaterialBase::MaterialParameterTypeFromData(value);
+			m_Parameters[name] = std::make_pair(t, value);
 		}
 		else {
-			if (MaterialBase::MaterialParamaterDataAndTypeMatch(value, iter->second.first)) {
+			if (MaterialBase::MaterialParameterDataAndTypeMatch(value, iter->second.first)) {
 				iter->second.second = value;
 			}
 			else {
-				LOG_S(WARNING) << "Setting a Material Paramater to the wrong datatype. Operation ignored. Name: [" << name << "]. !";
+				LOG_S(WARNING) << "Setting a Material Parameter to the wrong datatype. Operation ignored. Name: [" << name << "]. !";
 			}
 		}
 	}
@@ -109,7 +109,6 @@ namespace Tara{
 		std::stringstream oss;
 
 		for (std::string code; std::getline(iss, code); ) {
-
 			std::regex filter{ "#include <([a-z]*)>.*" };
 
 			std::smatch sm;
@@ -154,14 +153,14 @@ namespace Tara{
 		const std::string& fragmentEnd = SourcePartsFragmentEnd[m_Type];
 
 		std::string fragmentSource = fragmentBegin + PreprocessSource(source) + fragmentEnd;
-
+		
 		std::unordered_map<Shader::TargetStage, std::string> sources;
 		sources[Shader::TargetStage::Vertex] = vertexSource;
 		sources[Shader::TargetStage::Pixel] = std::move(fragmentSource);
 		m_Shader = Shader::Create(GetAssetName() + "_Shader", Shader::SourceType::Strings, sources);
 	}
 
-	void Material::ParamatersFromString(const std::string& source)
+	void Material::ParametersFromString(const std::string& source)
 	{
 
 		std::istringstream iss(source);
@@ -178,9 +177,9 @@ namespace Tara{
 				std::string paramName = sm[3];
 				bool vector = (sm[4] != "");
 
-				MaterialParamaterType type = MaterialBase::MaterialParamaterTypeFromString(typeName, vector);
-				if (type != MaterialParamaterType::INVALID){
-					m_Paramaters[paramName] = std::make_pair(type, MaterialBase::DefaultMaterialParamaterFromType(type));
+				MaterialParameterType type = MaterialBase::MaterialParameterTypeFromString(typeName, vector);
+				if (type != MaterialParameterType::INVALID){
+					m_Parameters[paramName] = std::make_pair(type, MaterialBase::DefaultMaterialParameterFromType(type));
 				}
 			}
 		}

@@ -15,7 +15,7 @@ namespace Tara {
 		/// <summary>
 		/// Bind it  with two paramaters
 		/// </summary>
-		/// <param name="a">this paramater is used for the GPU (mainly with textures)</param>
+		/// <param name="a">this paramater is used for the GPU slot selection(mainly with textures)</param>
 		/// <param name="b">this paramater is used to select what to bind (ie, multiple textures in a RenderTarget)</param>
 		inline virtual void Bind(int a = 0, int b = 0) { RenderCommand::Bind(shared_from_this(), true, a, b); m_LastBindPoint = std::make_pair(a, b); }
 
@@ -27,8 +27,8 @@ namespace Tara {
 		/// <summary>
 		/// Implementation-specific binding. Called by RenderCommand. Never call manually.
 		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
+		/// <param name="a">this paramater is used for the GPU slot selection(mainly with textures)</param>
+		/// <param name="b">this paramater is used to select what to bind (ie, multiple textures in a RenderTarget)</param>
 		virtual void ImplBind(int a, int b) const = 0;
 
 		/// <summary>

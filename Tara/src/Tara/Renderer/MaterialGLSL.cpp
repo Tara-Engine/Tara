@@ -332,7 +332,7 @@ void main(){
 vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 	if (u_LightType == LightType_Point){
 		float lightDist = length(u_LightPosition - WorldSpacePosition);	
-		float attenuation = min((u_LightIntensity / (1 +  attenuationLinear + lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
+		float attenuation = min((u_LightIntensity / (1 +  attenuationLinear * lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
 		vec3 lightDir = normalize(u_LightPosition - WorldSpacePosition);
 		float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 		float specularFactor = pow(max(dot(normalize(u_CameraPositionWS - WorldSpacePosition), reflect(-lightDir, WorldSpaceNormal)), 0.0), pow(2, (1-Roughness)*8));
@@ -345,7 +345,7 @@ vec2 Phong(float attenuationLinear, float attenuationQuadratic){
 		if (theta > u_LightParam1){
 			float intensity = clamp((theta - u_LightParam1) / u_LightParam2, 0.0, 1.0);
 			float lightDist = length(u_LightPosition - WorldSpacePosition);	
-			float attenuation = min(((u_LightIntensity *intensity) / (1 +  attenuationLinear + lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
+			float attenuation = min(((u_LightIntensity *intensity) / (1 +  attenuationLinear * lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
 			float diffuseFactor = max(dot(WorldSpaceNormal, lightDir), 0.0);
 			float specularFactor = pow(max(dot(normalize(u_CameraPositionWS - WorldSpacePosition), reflect(-lightDir, WorldSpaceNormal)), 0.0), pow(2, (1-Roughness)*8));
 			if(diffuseFactor == 0.0) {specularFactor = 0.0;}

@@ -5,6 +5,7 @@
 
 //platform-dependant
 #include "Platform/OpenGL/OpenGLTexture2D.h"
+#include "Platform/OpenGL/OpenGLTextureCubemap.h"
 
 
 namespace Tara{
@@ -46,6 +47,29 @@ namespace Tara{
             case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
             }
             AssetLibrary::Get()->RegisterAsset(ref);
+        }
+        return ref;
+    }
+
+    TextureCubemapRef TextureCubemap::CreateHDRI(const std::string& path, uint32_t size, const std::string& name)
+    {
+        std::string lName = name;
+        if (name == "") { lName = GetAssetNameFromPath(path); }
+        TextureCubemapRef ref;
+        ref = AssetLibrary::Get()->GetAssetIf<TextureCubemap>(lName);
+        if (ref == nullptr) {
+            try {
+                switch (Renderer::GetRenderBackend()) { //GetAssetNameFromPath(path)
+                case RenderBackend::OpenGl: ref = std::make_shared<OpenGLTextureCubemap>(path, size, lName); break;
+
+                case RenderBackend::None: ABORT_F("Renderbackend::None not supported!");
+                }
+                AssetLibrary::Get()->RegisterAsset(ref);
+            }
+            catch (std::exception e) {
+                LOG_S(ERROR) << "File Loading Error: " << e.what();
+                return nullptr;
+            }
         }
         return ref;
     }

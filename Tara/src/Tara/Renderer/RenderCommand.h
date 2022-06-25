@@ -93,6 +93,11 @@ namespace Tara {
 		/// </summary>
 		inline static void StopQueue() { s_EnqueingCommands = false; };
 
+		/// <summary>
+		/// Check if currently enqueueing commands.
+		/// </summary>
+		/// <returns>True if currently enqueueing commands, false otherwise</returns>
+		inline static bool CheckQueue() { return s_EnqueingCommands; }
 	public:
 		//Drawing functions. Can be queued.
 

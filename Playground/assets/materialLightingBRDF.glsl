@@ -5,6 +5,7 @@
 
 const float PI = 3.14159265359;
 
+//Trowbridge-Reitx GGX
 float DistributionGGX(vec3 normal, vec3 halfDir, float roughness){
 	float a = roughness * roughness;
 	float a2 = a * a;
@@ -78,12 +79,12 @@ vec4 color(){
 		//float attenuation = 1.0 / lightDist * lightDist; //IMPROVE THIS
 		float lightDist = length(u_LightPosition - WorldSpacePosition);
 		if (u_LightType == LightType_Point){
-			attenuation = min((1 / (1 +  attenuationLinear + lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
+			attenuation = min((1 / (1 +  attenuationLinear * lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
 		}
 		if (u_LightType == LightType_Spot){
 			float theta = dot(lightDir, normalize(-u_LightForwardVector));
 			float intensity = clamp((theta - u_LightParam1) / u_LightParam2, 0.0, 1.0);
-			attenuation = min((1 / (intensity +  attenuationLinear + lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
+			attenuation = min((1 / (intensity +  attenuationLinear * lightDist + attenuationQuadratic * (lightDist*lightDist))), 1);
 		}
 		//half-dir and radiance
 		vec3 halfDir = normalize(viewDir + lightDir);

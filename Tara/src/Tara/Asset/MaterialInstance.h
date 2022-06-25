@@ -31,41 +31,41 @@ namespace Tara {
 		virtual const ShaderRef& GetShader() override;
 
 		/// <summary>
-		/// Get a paramater list
+		/// Get a Parameter list
 		/// </summary>
 		/// <returns></returns>
-		virtual std::vector<std::pair<std::string, MaterialParamaterType>> GetParamaterList() override;
+		virtual std::vector<std::pair<std::string, MaterialParameterType>> GetParameterList() override;
 
 		/// <summary>
-		/// Get the type of the paramater. If the name is not a valid paramater, then a warning will be printed, and Float1 returned.
+		/// Get the type of the Parameter. If the name is not a valid Parameter, then a warning will be printed, and Float1 returned.
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		virtual MaterialParamaterType GetParamaterType(const std::string& name) override;
+		virtual MaterialParameterType GetParameterType(const std::string& name) override;
 
 		/// <summary>
-		/// Check if a paramater name is a valid paramater
+		/// Check if a Parameter name is a valid Parameter
 		/// </summary>
-		/// <param name="name">the paramater name</param>
+		/// <param name="name">the Parameter name</param>
 		/// <returns></returns>
-		virtual bool GetParamaterValid(const std::string& name) override;
+		virtual bool GetParameterValid(const std::string& name) override;
 
 		/// <summary>
-		/// Get the current value of a paramater
+		/// Get the current value of a Parameter
 		/// </summary>
 		/// <param name="name">the name of the paramamter</param>
 		/// <returns>pair of the type and the value</returns>
-		virtual std::pair<MaterialParamaterType, MaterialParamater> GetParamaterValue(const std::string& name) override;
+		virtual std::pair<MaterialParameterType, MaterialParameter> GetParameterValue(const std::string& name) override;
 
 		/// <summary>
-		/// Base setting of a paramater
+		/// Base setting of a Parameter
 		/// </summary>
-		/// <param name="name">the paramater name</param>
-		/// <param name="value">the paramater value</param>
-		virtual void SetParamater(const std::string& name, MaterialParamater value) override;
+		/// <param name="name">the Parameter name</param>
+		/// <param name="value">the Parameter value</param>
+		virtual void SetParameter(const std::string& name, MaterialParameter value) override;
 
 	private:
 		const MaterialBaseRef m_BaseMaterial;
-		std::unordered_map<std::string, std::pair<MaterialParamaterType, MaterialParamater>> m_ParamaterOverrides;
+		std::unordered_map<std::string, std::pair<MaterialParameterType, MaterialParameter>> m_ParameterOverrides;
 	};
 }
