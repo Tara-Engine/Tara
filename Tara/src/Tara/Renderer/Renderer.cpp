@@ -34,6 +34,8 @@ namespace Tara {
 	RenderTarget2DRef Renderer::s_PostProcessBufferB = nullptr;
 	RenderTarget2DRef Renderer::s_FakeDepth2D = nullptr;
 	RenderTargetCubemapRef Renderer::s_FakeDepthCubemap = nullptr;
+	TextureCubemapRef Renderer::s_FakeDiffuseCubemap  = nullptr;
+	TextureCubemapRef Renderer::s_FakeSpecularCubemap = nullptr;
 	StaticMeshRef Renderer::s_ScreenQuadMesh = nullptr;
 	StaticMeshRef Renderer::s_LightSphereMesh = nullptr;
 
@@ -337,15 +339,14 @@ namespace Tara {
 			
 			if (s_SceneData.light->DepthIsPanoramic()) {
 					glm::mat4 proj = s_SceneData.light->GetLightProjectionMatrix();
-					std::vector<glm::mat4> viewProjMatricies;
-					viewProjMatricies.reserve(6);
-					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 1.0f, 0.0f, 0.0f}, { 0.0f,-1.0f, 0.0f}));
-					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{-1.0f, 0.0f, 0.0f}, { 0.0f,-1.0f, 0.0f}));
-					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 1.0f, 0.0f}, { 0.0f, 0.0f, 1.0f}));
-					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f,-1.0f, 0.0f}, { 0.0f, 0.0f,-1.0f}));
-					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 0.0f, 1.0f}, { 0.0f,-1.0f, 0.0f}));
-					viewProjMatricies.push_back(proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 0.0f,-1.0f}, { 0.0f,-1.0f, 0.0f}));
-					
+					std::array<glm::mat4, 6> viewProjMatricies{
+						proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 1.0f, 0.0f, 0.0f}, { 0.0f,-1.0f, 0.0f}),
+						proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{-1.0f, 0.0f, 0.0f}, { 0.0f,-1.0f, 0.0f}),
+						proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 1.0f, 0.0f}, { 0.0f, 0.0f, 1.0f}),
+						proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f,-1.0f, 0.0f}, { 0.0f, 0.0f,-1.0f}),
+						proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 0.0f, 1.0f}, { 0.0f,-1.0f, 0.0f}),
+						proj * glm::lookAt((glm::vec3)lightData.Position, (glm::vec3)(lightData.Position) + glm::vec3{ 0.0f, 0.0f,-1.0f}, { 0.0f,-1.0f, 0.0f})
+					};
 					
 				for (int i = 0; i < mesh->GetArrayCount(); i++) {
 					vertexArrays[i]->Bind();
@@ -381,9 +382,10 @@ namespace Tara {
 		if (s_QuadGroups.size() > 0){
 			RenderCommand::EnableDeferred(false);
 			RenderCommand::EnableBackfaceCulling(false);
-			if (s_SceneData.camera->GetProjectionType() == Camera::ProjectionType::Screen) {
-				RenderCommand::EnableDepthTesting(false);
-			}
+			RenderCommand::EnableDepthTesting(
+				s_SceneData.camera->GetProjectionType() != Camera::ProjectionType::Screen
+			);
+			
 			//execute batch rendering
 			s_QuadShader->Bind();
 			s_QuadShader->Send("u_MatrixViewProjection", s_SceneData.camera->GetViewProjectionMatrix());
@@ -590,6 +592,28 @@ namespace Tara {
 					}
 					if (shader->ValidUniform("u_LightDepthMapSize")) {
 						shader->Send("u_LightDepthMapSize", 1.0f);
+					}
+				}
+
+				//bind diffuse and specular cubemaps for some lights
+				if (shader->ValidUniform("u_LightDiffuseMapPanoramic")){
+					if (light->GetDiffuseMap()) {
+						light->GetDiffuseMap()->ImplBind(7, 0);
+						shader->Send("u_LightDiffuseMapPanoramic", 7);
+					}
+					else {
+						s_FakeDiffuseCubemap->ImplBind(7, 0);
+						shader->Send("u_LightDiffuseMapPanoramic", 7);
+					}
+				}
+				if (shader->ValidUniform("u_LightSpecularMapPanoramic")){
+					if (light->GetSpecularMap()) {
+						light->GetSpecularMap()->ImplBind(8, 0);
+						shader->Send("u_LightSpecularMapPanoramic", 8);
+					}
+					else {
+						s_FakeSpecularCubemap->ImplBind(8, 0);
+						shader->Send("u_LightSpecularMapPanoramic", 8);
 					}
 				}
 
@@ -810,5 +834,13 @@ namespace Tara {
 		if (s_FakeDepthCubemap == nullptr) {
 			s_FakeDepthCubemap = RenderTargetCubemap::Create(1, 1, 0, RenderTarget::InternalType::FLOAT, "__FakeDepthCubemap__");
 		}
+
+		if (s_FakeDiffuseCubemap == nullptr) {
+			s_FakeDiffuseCubemap = RenderTargetCubemap::Create(1, 1, 0, RenderTarget::InternalType::FLOAT, "__FakeDiffuseCubemap__");
+		}
+		if (s_FakeSpecularCubemap == nullptr) {
+			s_FakeSpecularCubemap = RenderTargetCubemap::Create(1, 1, 0, RenderTarget::InternalType::FLOAT, "__FakeSpecularCubemap__");
+		}
+
 	}
 }

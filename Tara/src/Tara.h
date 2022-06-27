@@ -56,6 +56,7 @@
 #include "Tara/Entities/AmbientLightEntity.h"
 #include "Tara/Entities/DirectionalLightEntity.h"
 #include "Tara/Entities/SpotLightEntity.h"
+#include "Tara/Entities/SkyboxLightEntity.h"
 
 //Components
 #include "Tara/Components/ScriptComponent.h"

@@ -72,7 +72,7 @@ void ModelBuildLayer::Activate()
 
 		auto postProcess1 = Tara::Material::Create(Tara::MaterialType::POSTPROCESS, "assets/postProcess1.glsl", Tara::Shader::SourceType::TextFiles, "PostProcessMaterial1");
 
-		auto cubemaptexture = Tara::TextureCubemap::CreateHDRI("assets/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_8k.jpg", 512);
+		auto cubemaptexture = Tara::TextureCubemap::CreateHDRI("assets/Helipad_GoldenHour/LA_Downtown_Helipad_GoldenHour_8k.jpg", 2048);
 		auto panoramicMat = Tara::Material::Create(Tara::MaterialType::LIT, "assets/Material/panoramic.glsl", Tara::Shader::SourceType::TextFiles, "PanoramicMateial");
 		panoramicMat->SetTextureParameter("cubemap", cubemaptexture);
 
@@ -105,8 +105,8 @@ void ModelBuildLayer::Activate()
 		Tara::MeshPart cube = Tara::MeshPart::UnitCube();
 		auto cubeMesh = Tara::StaticMesh::Create({ cube }, "CubeMesh");
 		
-		auto sphereMesh = Tara::StaticMesh::Create({ Tara::MeshPart::UnitSphere() }, "SphereMesh");
-		auto sphereEntity = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({-4, 10, -4}, {0,0,0}, {5,5,5}), sphereMesh, panoramicMat, "panoramic Test Entity");
+		//auto sphereMesh = Tara::StaticMesh::Create({ Tara::MeshPart::UnitSphere() }, "SphereMesh");
+		//auto sphereEntity = Tara::CreateEntity<Tara::StaticMeshEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({-4, 10, -4}, {0,0,0}, {5,5,5}), sphereMesh, panoramicMat, "panoramic Test Entity");
 		
 		/*
 		std::random_device rd;
@@ -127,14 +127,16 @@ void ModelBuildLayer::Activate()
 
 		Tara::PointLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/PointLightLogo.png"));
 		Tara::AmbientLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/AmbientLightLogo.png"));
+		Tara::SkyboxLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/SkyboxLightLogo.png"));
 		Tara::DirectionalLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/DirectionallightLogo.png"));
 		Tara::SpotLightEntity::SetEditorLogo(Tara::Texture2D::Create("assets/SpotLightLogo.png"));
 
 		//auto light1 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,0,0 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
-		auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 6,-2,-6 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
-		auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -1,1,1 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+		//auto light2 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 6,-2,-6 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
+		//auto light3 = Tara::CreateEntity<Tara::PointLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ -1,1,1 }, { 0,0,0 }, { 1,1,1 }), Tara::Vector(1, 1, 1), 1, "LightEntity");
 		
-		m_Light = light2;
+		//m_Light = light2;
+		/*
 		auto light4 = Tara::CreateEntity<Tara::AmbientLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,1,0 }, { 0,0,0 }, { 1,1,1 }),
 			Tara::Vector(1, 1, 1), 1, "AmbientLightEntity"
@@ -150,7 +152,10 @@ void ModelBuildLayer::Activate()
 			Tara::Vector(0, 0.5, 1), 4, 35, "SpotLightEntity"
 			);
 		light6->SetSpotlightInnerAngle(25);
+		*/
 
+		auto light7 = Tara::CreateEntity<Tara::SkyboxLightEntity>(Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 0,4,0 }, { 0,0,0 }, { 1,1,1 }), cubemaptexture, 1, "SkyboxLightEntity");
+		//m_Light = light7;
 		/*
 		auto light7 = Tara::CreateEntity<Tara::SpotLightEntity>(
 			Tara::EntityNoRef(), weak_from_this(), Tara::Transform({ 4,6,0 }, { 0,-45,90 }, { 1,1,1 }),
@@ -162,12 +167,12 @@ void ModelBuildLayer::Activate()
 		//m_SpotLight = light6;
 
 		//light1->SetDrawingEditorLogo(true);
-		light2->SetDrawingEditorLogo(true);
-		light3->SetDrawingEditorLogo(true);
-		light4->SetDrawingEditorLogo(true);
-		light5->SetDrawingEditorLogo(true);
-		light6->SetDrawingEditorLogo(true);
-		//light7->SetDrawingEditorLogo(true);
+		//light2->SetDrawingEditorLogo(true);
+		//light3->SetDrawingEditorLogo(true);
+		//light4->SetDrawingEditorLogo(true);
+		//light5->SetDrawingEditorLogo(true);
+		//light6->SetDrawingEditorLogo(true);
+		light7->SetDrawingEditorLogo(true);
 
 
 		//m_Light = light1;

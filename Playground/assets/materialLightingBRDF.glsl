@@ -49,6 +49,13 @@ vec3 FrensnelSchlick(float cosTheta, vec3 F0){
 	//return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+vec3 FrensnelSchlickRoughness(float cosTheta, vec3 F0, float roughness){
+	//from Epic's implementation, with the roughness tweak from learnOpenGL.com
+	float ct = clamp(cosTheta, 0.0, 1.0);
+	float p = (-5.55473 * cosTheta - 6.98316) * cosTheta;
+	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(2.0, p);
+}
+
 const float attenuationLinear = 0.07;
 const float attenuationQuadratic = 0.017;
 
@@ -112,7 +119,29 @@ vec4 color(){
 		finalColor = (finalColor * Shadow(0.015) * AmbientOcclusion) + Emissive;
 		return vec4(finalColor, 1.0); //error here. Emissive is becoming stronger and stronger each light added.
 	}	
-	else{ //assume ambient light. Eventually replace with IBL
+	else if (u_LightType == LightType_Ambient){ //assume ambient light. Eventually replace with IBL
 		return vec4(Diffuse * u_LightColor * (u_LightIntensity / 100), 1.0);
+	}
+	else if (u_LightType == LightType_Skybox){
+		//this if guard is here to prevent the BG from being improperly rendered to. 
+		float bgControl = 1.0;
+		if (Depth >= 1.0){
+			bgControl = 0;
+		}
+		vec3 F0 = vec3(0.04);
+		F0 = mix(F0, Diffuse, Metallic);
+		
+		vec3 viewDir = normalize(u_CameraPositionWS - WorldSpacePosition);
+		vec3 kS = FrensnelSchlickRoughness(max(dot(WorldSpaceNormal, viewDir), 0.0), F0, Roughness); 
+		vec3 kD = 1.0 - kS;
+		vec3 diffuseLight = texture(u_LightDiffuseMapPanoramic, -viewDir).xyz;
+		diffuseLight = diffuseLight * Diffuse;
+		vec3 ambient = (kD * diffuseLight) * AmbientOcclusion;
+
+		//note to self: don't forget emmissive!
+		return vec4(ambient, 1);
+	}
+	else{
+		return vec4(0,0,0,0);
 	}
 }

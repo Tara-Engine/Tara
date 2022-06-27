@@ -1,5 +1,6 @@
 #pragma once
 #include "Tara/Math/Types.h"
+#include "Tara/Renderer/Texture.h"
 
 namespace Tara {
 	REFTYPE(LightBase);
@@ -12,7 +13,9 @@ namespace Tara {
 		SPOT		= 1, 
 		DIRECTIOAL	= 2, 
 		AMBIENT		= 3, 
-		RECT		= 4
+		RECT		= 4,
+		SKYBOX		= 5,
+		REFLECTION	= 6
 	};
 
 	/// <summary>
@@ -29,8 +32,12 @@ namespace Tara {
 		float Custom2;
 		//Texture2Dref FalloffTexture
 
-		LightData(Vector pos, Vector color, float intensity, float maxRadius, LightType type, Vector forward = { 0,0,0 }, float custom1 = 0.0f, float custom2 = 0.0f)
-			:Position(pos), Color(color), Intensity(intensity), MaxRadius(maxRadius), Type(type), ForwardVector(forward), Custom1(custom1), Custom2(custom2)
+		LightData(
+			Vector pos, Vector color, float intensity, float maxRadius, LightType type, 
+			Vector forward = { 0,0,0 }, float custom1 = 0.0f, float custom2 = 0.0f
+		)
+			:Position(pos), Color(color), Intensity(intensity), MaxRadius(maxRadius), Type(type), 
+			ForwardVector(forward), Custom1(custom1), Custom2(custom2)
 		{}
 	};
 
@@ -106,6 +113,18 @@ namespace Tara {
 		/// </summary>
 		/// <returns></returns>
 		virtual RenderTargetRef GetDepthTarget() { return nullptr; };
+
+		/// <summary>
+		/// Get the panoramic diffuse map for some lights
+		/// </summary>
+		/// <returns></returns>
+		virtual TextureCubemapRef GetDiffuseMap() { return nullptr; };
+
+		/// <summary>
+		/// Get the panoramic specular map for some lights
+		/// </summary>
+		/// <returns></returns>
+		virtual TextureCubemapRef GetSpecularMap() { return nullptr; };
 
 		/// <summary>
 		/// Get the projection matrix for this light

@@ -84,6 +84,8 @@ uniform mat4 u_LightProjectionMatrix;
 uniform sampler2D u_LightDepthMapPlanar;
 uniform samplerCube u_LightDepthMapPanoramic;
 uniform float u_LightDepthMapSize;
+uniform samplerCube u_LightDiffuseMapPanoramic;
+uniform samplerCube u_LightSpecularMapPanoramic;
 
 vec2 UVs; //this is calculated from the fragment location on the screen, not passed from vertex shader.
 
@@ -98,11 +100,13 @@ vec3 WorldSpacePosition
 float Depth
 
 //light types
-const int LightType_Point		= 0;			
-const int LightType_Spot		= 1;			
-const int LightType_Directional	= 2;			
-const int LightType_Ambient		= 3;			
-const int LightType_Rect		= 4;		
+const int LightType_Point		= 0;
+const int LightType_Spot		= 1;
+const int LightType_Directional	= 2;
+const int LightType_Ambient		= 3;
+const int LightType_Rect		= 4; //no lights of this type yet exist
+const int LightType_Skybox		= 5; //no lights of this type yet exist
+const itn LightType_Reflection	= 6; //no lights of this type yet exist
 ```
 
 # PostProcess Materials
@@ -153,8 +157,8 @@ Functions:
 ```
 vec2 Phong(float attenuationLinear, float attenuationQuadratic);
 ```
-The Phong function calculates Phong lighting for the light, with the provided attentuation factors.
-Good default values are `(0.07, 0.017)`. As for the return value it is a vec2 of either `{diffuseFactor, specularFactor}` or `{ambientFactor, 0}`, depending on the light type. (ie, the first for all lights but AmbientLight, and the second for AmbientLight). Since both diffuse and ambient factors are usually treated in the same way (multiplied by the light color, and the diffuse color of the material) this is fairly safe to ignore.
+The Phong function calculates Phong lighting for the light, with the provided attenuation factors.
+Good default values are `(0.07, 0.017)`. As for the return value it is a vec2 of either `{diffuseFactor, specularFactor}` or `{ambientFactor, 0}`, depending on the light type. (i.e., the first for all lights but AmbientLight, and the second for AmbientLight). Since both diffuse and ambient factors are usually treated in the same way (multiplied by the light color, and the diffuse color of the material) this is fairly safe to ignore.
 
 ## shadow
 `#include <shadow>`
@@ -165,9 +169,9 @@ Functions:
 float Shadow(float diskRadius);
 float GetLightDepth(vec3 position);
 ```
-Shadow calculates the shadow multiplier for the current pixel. It can be directly multiplied with the result of calculating the lighting. It is not a boolean, but does contain values between 0.0 and 1.0, depending on the disk radius. (contains optimizations for when the radius is 0.0, in which case it is boolean 0.0 or 1.0). If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned. If the distance to the light is greater than its radius, then 1.0 is returned.
+Shadow calculates the shadow multiplier for the current pixel. It can be directly multiplied with the result of calculating the lighting. It is not a Boolean, but does contain values between 0.0 and 1.0, depending on the disk radius. (contains optimizations for when the radius is 0.0, in which case it is Boolean 0.0 or 1.0). If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned. If the distance to the light is greater than its radius, then 1.0 is returned.
 
-GetLightDepth returns the stored depth for a specific position for the current light. This is normalized to be between 0.0 and 1.0, with 1.0 being equivilent to the light radius. If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned.
+GetLightDepth returns the stored depth for a specific position for the current light. This is normalized to be between 0.0 and 1.0, with 1.0 being equivalent to the light radius. If the current light is not a PointLight, SpotLight, or DirectionalLight, then 1.0 is returned.
 
 ## normals
 `#include <normals>`

@@ -76,26 +76,26 @@ namespace Tara {
 	*/
 	static std::string panoramicToCubemapVertexSource = R"VOGON(
 #version 450 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec3 a_Position;
 
-out vec3 localPos;
+out vec3 v_Position;
 
-uniform mat4 projection;
-uniform mat4 view;
+uniform mat4 u_MatrixProjection;
+uniform mat4 u_MatrixView;
 
 void main()
 {
-    localPos = aPos;  
-    gl_Position =  projection * view * vec4(localPos, 1.0);
+    v_Position = a_Position;  
+    gl_Position =  u_MatrixProjection * u_MatrixView * vec4(a_Position, 1.0);
 }
 )VOGON";
 
 	static std::string panoramicToCubemapFragmentSource = R"VOGON(
 #version 450 core
 out vec4 FragColor;
-in vec3 localPos;
+in vec3 v_Position;
 
-uniform sampler2D equirectangularMap;
+uniform sampler2D u_EquirectangularMap;
 
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 SampleSphericalMap(vec3 v)
@@ -108,8 +108,8 @@ vec2 SampleSphericalMap(vec3 v)
 
 void main()
 {		
-    vec2 uv = SampleSphericalMap(normalize(localPos)); // make sure to normalize localPos
-    vec3 color = texture(equirectangularMap, uv).rgb;
+    vec2 uv = SampleSphericalMap(normalize(v_Position)); // make sure to normalize localPos
+    vec3 color = texture(u_EquirectangularMap, uv).rgb;
     
     FragColor = vec4(color, 1.0);
 }
@@ -215,7 +215,7 @@ void main()
 		);
 
 		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-		glm::mat4 captureViews[] = {
+		std::array<glm::mat4, 6> captureViews{
 		   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 		   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
 		   glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
@@ -227,8 +227,8 @@ void main()
 		//THEN performing the render.
 		//since we know this is OpenGL renderer, we can skip using the Renderer and render much of this manually.
 		panoramicToCubemapShader->Bind();
-		panoramicToCubemapShader->Send("projection", captureProjection);
-		panoramicToCubemapShader->Send("equirectangularMap", 0);
+		panoramicToCubemapShader->Send("u_MatrixProjection", captureProjection);
+		panoramicToCubemapShader->Send("u_EquirectangularMap", 0);
 		glBindTextureUnit(0, hdriTexture);
 		auto& cubeVertexArray = cubeMesh->GetVertexArrays()[0];
 		cubeVertexArray->Bind();
@@ -238,7 +238,7 @@ void main()
 		glViewport(0, 0, m_Width, m_Height);
 		for (uint32_t i = 0; i < 6; i++) {
 			//we have to render the cube six times, one for each face of the cube map
-			panoramicToCubemapShader->Send("view", captureViews[i]);
+			panoramicToCubemapShader->Send("u_MatrixView", captureViews[i]);
 			glFramebufferTexture2D(
 				GL_FRAMEBUFFER, 
 				GL_COLOR_ATTACHMENT0, 

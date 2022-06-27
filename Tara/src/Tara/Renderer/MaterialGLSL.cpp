@@ -195,6 +195,8 @@ uniform mat4 u_LightProjectionMatrix;
 uniform sampler2D u_LightDepthMapPlanar;
 uniform samplerCube  u_LightDepthMapPanoramic;
 uniform float u_LightDepthMapSize;
+uniform samplerCube u_LightDiffuseMapPanoramic;
+uniform samplerCube u_LightSpecularMapPanoramic;
 
 float Metallic         = 0;
 float Roughness        = 0;
@@ -211,7 +213,9 @@ const int LightType_Point		= 0;
 const int LightType_Spot		= 1;			
 const int LightType_Directional	= 2;			
 const int LightType_Ambient		= 3;			
-const int LightType_Rect		= 4;			
+const int LightType_Rect		= 4;
+const int LightType_Skybox		= 5;
+const int LightType_Reflection	= 6;			
 
 )V0G0N"
 		},
